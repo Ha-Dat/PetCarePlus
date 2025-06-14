@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "hotel_bookings")
+@Table(name = "HotelBookings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,18 +17,22 @@ public class HotelBooking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer hotelBookingId;
 
+    @Column(nullable = false)
     private LocalDateTime bookDate;
+
     private String note;
+
+    @Column(nullable = false)
     private String status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_profile_id")
     private PetProfile petProfile;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private Service service;
 }

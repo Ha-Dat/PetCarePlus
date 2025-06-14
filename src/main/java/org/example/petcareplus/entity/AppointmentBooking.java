@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "appoinment_bookings")
+@Table(name = "AppointmentBookings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +17,12 @@ public class AppointmentBooking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer appointmentBookingId;
 
+    @Column(nullable = false)
     private LocalDateTime bookDate;
+
     private String note;
+
+    @Column(nullable = false)
     private String status;
 
     @Column(name = "created_at")

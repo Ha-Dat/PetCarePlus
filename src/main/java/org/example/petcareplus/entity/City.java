@@ -17,6 +17,7 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cityId;
 
+    @Column(length = 50)
     private String name;
 
     @OneToMany(mappedBy = "city")

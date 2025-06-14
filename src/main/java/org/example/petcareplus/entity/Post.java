@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "Posts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,14 +17,22 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer postId;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String description;
+
     private Integer rating;
+
     private String image;
+
     private String video;
+
+    @Column(nullable = false)
     private Boolean isChecked;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
