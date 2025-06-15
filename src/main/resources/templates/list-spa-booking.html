@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Groomer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f9fafc;
+            display: flex;
+        }
+
+        aside {
+            width: 200px;
+            background-color: #fff;
+            padding: 20px;
+            border-right: 1px solid #eee;
+            height: 690px;
+        }
+
+        aside h2 {
+            font-size: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        aside ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        aside ul li {
+            margin: 15px 0;
+            color: #666;
+            cursor: pointer;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .filters input {
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .role.staff { color: green; }
+        .role.Doctor { color: orange; }
+        .role.seller { color: blue; }
+
+        .actions {
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<aside>
+    <h2>🟢 Groomer</h2>
+    <ul>
+        <li>ca làm việc</li>
+        <li><strong>đơn spa</strong></li>
+        <li>đơn hotel</li>
+    </ul>
+</aside>
+
+<main>
+    <div class="header">
+        <h1>quản lý đơn spa</h1>
+        <div class="filters">
+            <label>Từ: <input type="date" value="2021-06-10"></label>
+            <label>Đến: <input type="date" value="2021-10-10"></label>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ngày đặt</th>
+            <th>Trạng thái</th>
+            <th>Ghi chú</th>
+            <th>Loài</th>
+            <th>Tên dịch vụ</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="spaBookings : ${spaBookings}">
+            <td th:text="${spaBookings.spaBookingId}"></td>
+            <td th:text="${spaBookings.bookDate}"></td>
+            <td th:text="${spaBookings.status}"></td>
+            <td th:text="${spaBookings.note}"></td>
+            <td th:text="${spaBookings.petProfile.species}"></td>
+            <td th:text="${spaBookings.service.name}"></td>
+            <td>
+                <button>Duyệt</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
+
