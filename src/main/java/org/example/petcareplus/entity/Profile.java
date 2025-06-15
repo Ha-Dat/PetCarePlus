@@ -30,4 +30,6 @@ public class Profile {
 
     @OneToMany(mappedBy = "profile")
     private List<PetProfile> petProfiles;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

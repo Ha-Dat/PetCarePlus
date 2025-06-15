@@ -38,4 +38,6 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private List<CommentPost> comments;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

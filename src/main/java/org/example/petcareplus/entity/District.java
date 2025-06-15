@@ -25,4 +25,6 @@ public class District {
 
     @OneToMany(mappedBy = "district")
     private List<Ward> wards;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

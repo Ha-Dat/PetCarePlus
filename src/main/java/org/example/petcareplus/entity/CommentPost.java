@@ -33,4 +33,6 @@ public class CommentPost {
 
     @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL)
     private List<ReplyComment> replies;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

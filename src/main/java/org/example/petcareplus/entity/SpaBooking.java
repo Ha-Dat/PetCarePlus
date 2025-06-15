@@ -35,4 +35,6 @@ public class SpaBooking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private Service service;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

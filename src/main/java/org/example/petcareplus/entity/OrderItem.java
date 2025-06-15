@@ -23,4 +23,6 @@ public class OrderItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

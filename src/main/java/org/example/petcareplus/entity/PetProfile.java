@@ -47,4 +47,93 @@ public class PetProfile {
 
     @OneToMany(mappedBy = "petProfile")
     private List<SpaBooking> spaBookings;
+
+    //method thêm trong trường hợp lombok không hoạt động
+    public Integer getPetProfileId() {
+        return petProfileId;
+    }
+
+    public void setPetProfileId(Integer petProfileId) {
+        this.petProfileId = petProfileId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public String getBreeds() {
+        return breeds;
+    }
+
+    public void setBreeds(String breeds) {
+        this.breeds = breeds;
+    }
+
+    public Float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Float weight) {
+        this.weight = weight;
+    }
+
+    public @Size(min = 1, max = 50) Integer getAge() {
+        return age;
+    }
+
+    public void setAge(@Size(min = 1, max = 50) Integer age) {
+        this.age = age;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public List<AppointmentBooking> getAppointmentBookings() {
+        return appointmentBookings;
+    }
+
+    public void setAppointmentBookings(List<AppointmentBooking> appointmentBookings) {
+        this.appointmentBookings = appointmentBookings;
+    }
+
+    public List<HotelBooking> getHotelBookings() {
+        return hotelBookings;
+    }
+
+    public void setHotelBookings(List<HotelBooking> hotelBookings) {
+        this.hotelBookings = hotelBookings;
+    }
+
+    public List<SpaBooking> getSpaBookings() {
+        return spaBookings;
+    }
+
+    public void setSpaBookings(List<SpaBooking> spaBookings) {
+        this.spaBookings = spaBookings;
+    }
 }

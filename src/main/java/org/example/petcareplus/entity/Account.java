@@ -51,4 +51,5 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<ReplyComment> replyComments;
 
+    //method thêm trong trường hợp lombok không hoạt động
 }

@@ -29,4 +29,6 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Product> products;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

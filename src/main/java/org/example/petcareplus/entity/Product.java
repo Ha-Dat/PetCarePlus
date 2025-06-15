@@ -50,4 +50,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }
