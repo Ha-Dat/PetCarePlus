@@ -140,6 +140,7 @@
             <th>Ghi chú</th>
             <th>Loài</th>
             <th>Tên dịch vụ</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -151,9 +152,34 @@
             <!-- Dữ liệu từ khóa ngoại -->
             <td th:text="${hotelBookings.petProfile.species}"></td>
             <td th:text="${hotelBookings.service.name}"></td>
+            <td>
+                <button th:onclick="'duyetBooking(' + ${hotelBookings.hotelBookingId} + ')'">Duyệt</button>
+            </td>
+
         </tr>
         </tbody>
     </table>
 </main>
+</tbody>
+</table>
+<script>
+    function duyetBooking(id) {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
+            fetch(`/approve-booking/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload(); // Cập nhật lại bảng
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+</script>
 </body>
 </html>
+
