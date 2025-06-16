@@ -38,4 +38,6 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

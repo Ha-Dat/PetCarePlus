@@ -25,4 +25,6 @@ public class City {
 
     @OneToMany(mappedBy = "city")
     private List<Profile> profiles;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

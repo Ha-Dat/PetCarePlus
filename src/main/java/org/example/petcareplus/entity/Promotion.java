@@ -39,4 +39,6 @@ public class Promotion {
 
     @OneToMany(mappedBy = "promotion")
     private List<Order> orders;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

@@ -20,4 +20,6 @@ public class Ward {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     private District district;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }

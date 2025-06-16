@@ -29,5 +29,7 @@ public class ReplyComment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
+
+    //method thêm trong trường hợp lombok không hoạt động
 }
 
