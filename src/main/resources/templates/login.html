@@ -3,6 +3,19 @@
 <head>
     <title>Đăng nhập</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
 </head>
 <body class="bg">
 <div class="login-container">
@@ -10,10 +23,25 @@
         <h2>Đăng nhập</h2>
         <p th:if="${error}" th:text="${error}" class="error-message"></p>
         <input type="text" name="phone" placeholder="Số điện thoại" required />
-        <input type="password" name="password" placeholder="Mật khẩu" required />
+
+        <div class="password-wrapper">
+            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+            <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+        </div>
+
         <button type="submit">ĐĂNG NHẬP</button>
         <a th:href="@{/register}" class="link">Đăng ký</a>
     </form>
 </div>
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+        } else {
+            input.type = "password";
+        }
+    }
+</script>
 </body>
 </html>
