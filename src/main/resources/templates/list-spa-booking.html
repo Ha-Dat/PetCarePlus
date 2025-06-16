@@ -152,12 +152,48 @@
             <td th:text="${spaBookings.petProfile.species}"></td>
             <td th:text="${spaBookings.service.name}"></td>
             <td>
-                <button>Duyệt</button>
+                <button th:onClick="'approveSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Duyệt</button>
+                <button th:onClick="'rejectSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Từ chối</button>
             </td>
         </tr>
         </tbody>
     </table>
 </main>
 </body>
+<script>
+    function approveSpaBooking(id) {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
+            fetch(`/list-spa-booking/approve-spa/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+
+    function rejectSpaBooking(id) {
+        if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
+            fetch(`/list-spa-booking/reject-spa/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+</script>
 </html>
 
