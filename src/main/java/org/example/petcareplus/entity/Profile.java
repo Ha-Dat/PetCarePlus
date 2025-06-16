@@ -32,4 +32,51 @@ public class Profile {
     private List<PetProfile> petProfiles;
 
     //method thêm trong trường hợp lombok không hoạt động
+    public Integer getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(Integer profileId) {
+        this.profileId = profileId;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public Integer getWardId() {
+        return wardId;
+    }
+
+    public void setWardId(Integer wardId) {
+        this.wardId = wardId;
+    }
+
+    public List<PetProfile> getPetProfiles() {
+        return petProfiles;
+    }
+
+    public void setPetProfiles(List<PetProfile> petProfiles) {
+        this.petProfiles = petProfiles;
+    }
 }

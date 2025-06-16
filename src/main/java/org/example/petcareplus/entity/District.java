@@ -27,4 +27,36 @@ public class District {
     private List<Ward> wards;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public List<Ward> getWards() {
+        return wards;
+    }
+
+    public void setWards(List<Ward> wards) {
+        this.wards = wards;
+    }
 }
