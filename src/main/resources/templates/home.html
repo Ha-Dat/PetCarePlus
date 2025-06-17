@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{../static/js/home.js  }"></script>
+</head>
+<body>
+<header class="main_header">
+    <div class="header_container">
+        <div class="left">
+            <div>
+                <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Search here..." name="Tìm kiếm sản phẩm" style="width: 300px"></input>
+                <button class="search-btn">Search</button>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="slogan">Your Pets, <br> Our Passion</div>
+            <div class="hotline">
+                099.99.9999 <br><span>hotline</span>
+            </div>
+            <div class="auth">
+                <button class="login-btn">Đăng nhập</button>
+                <button class="register-btn">Đăng ký</button>
+            </div>
+            <div>
+                <img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart" style="width: 50px"/>
+            </div>
+        </div>
+    </div>
+</header>
+
+<nav class="nav-bar">
+    <nav class="nav-left">
+        <div class="nav-margin">
+            <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
+<!--            <div id="categoryPopup" class="popup">-->
+<!--                <div class="popup-content">-->
+<!--                    <ul class="main-categories">-->
+<!--                        <li th:each="category : ${categories}">-->
+<!--                            <span th:text="${category.name}" class="parent-item"></span>-->
+<!--                            <ul class="sub-categories">-->
+<!--                                <li th:each="subCategory : ${category.subCategories}">-->
+<!--                                    <span th:text="${subCategory.name}"></span>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+        <div>
+            <a href="#">Siêu Sale</a>
+        </div>
+
+    </nav>
+    <nav class="nav-right">
+        <div class="nav-margin">
+            <a href="#">Tư vấn</a>
+        </div>
+        <div class="nav-margin">
+            <a href="#">Đặt lịch</a>
+        </div>
+        <div>
+            <a href="#">Diễn đàn</a>
+        </div>
+    </nav>
+</nav>
+
+<main>
+    <section class="main-section">
+        <a href="#">Trang chủ</a> > Cửa hàng
+    </section>
+
+    <div class="featured-product">
+        <section class="featured-products">
+            <div class="featured-product">
+                <img src="https://nhasen.vn/wp-content/uploads/2025/03/posr-pre-288x400.png" alt="Featured Product"/>
+            </div>
+            <div class="featured-product" th:each="product : ${products}">
+                <img th:src="@{'/images/' + ${product.image}}" />
+                <h3 th:text="${product.name}">Tên sản phẩm</h3>
+                <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Giá</p>
+                <div class="stars">★★★★★</div>
+                <button class="add-to-cart">Thêm vào giỏ hàng</button>
+            </div>
+        </section>
+    </div>
+
+    <section>
+        <h3>Thương hiệu</h3>
+        <p>top các thương hiệu hàng đầu</p>
+        <section class="brand-logos">
+            <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Brand Logo 1">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Brand Logo 2">
+            <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Brand Logo 3">
+        </section>
+    </section>
+
+    <section class="vouchers">
+        <div class="voucher-item">
+            <div style="background-color: #92d050; color: #fff; padding: 5px;">giảm 10%</div>
+            <div>PET10</div>
+            <div>bắt đầu từ 10/7</div>
+        </div>
+        <div class="voucher-item">
+            <div style="background-color: #f44336; color: #fff; padding: 5px;">giảm 50%</div>
+            <div>PET50</div>
+            <div>bắt đầu từ 19/7</div>
+        </div>
+        <div class="voucher-item">
+            <div style="background-color: #ff9800; color: #fff; padding: 5px;">giảm 30%</div>
+            <div>PET30</div>
+            <div>bắt đầu từ 12/7</div>
+        </div>
+    </section>
+
+    <div class="main-content">
+        <div class="sidebar-container">
+            <aside class="sidebar">
+                <h4>Danh mục sản phẩm</h4>
+                <ul class="checkbox-list">
+                    <li><input type="checkbox" id="dog"><label for="dog">chó</label></li>
+                    <li><input type="checkbox" id="cat"><label for="cat">mèo</label></li>
+                    <li><input type="checkbox" id="bird"><label for="bird">chim</label></li>
+                    <li><input type="checkbox" id="fish"><label for="fish">cá</label></li>
+                    <li><input type="checkbox" id="small_animal"><label for="small_animal">bò sát & lưỡng cư</label></li>
+                </ul>
+
+                <h4>Giá</h4>
+                <ul class="checkbox-list">
+                    <li><input type="checkbox" id="price1"><label for="price1">tất cả khoảng giá</label></li>
+                    <li><input type="checkbox" id="price2"><label for="price2">0 - 500.000 ₫</label></li>
+                    <li><input type="checkbox" id="price3"><label for="price3">500.000 ₫ - 1.000.000 ₫</label></li>
+                    <li><input type="checkbox" id="price4"><label for="price4">1.000.000 ₫ - 5.000.000 ₫</label></li>
+                </ul>
+
+                <h4>Trọng Lượng</h4>
+                <ul class="checkbox-list">
+                    <li><input type="checkbox" id="weight1"><label for="weight1">100g</label></li>
+                    <li><input type="checkbox" id="weight2"><label for="weight2">200g</label></li>
+                    <li><input type="checkbox" id="weight3"><label for="weight3">500g</label></li>
+                    <li><input type="checkbox" id="weight4"><label for="weight4">1kg</label></li>
+                    <li><input type="checkbox" id="weight5"><label for="weight5">2kg</label></li>
+                    <li><input type="checkbox" id="weight6"><label for="weight6">5kg</label></li>
+                </ul>
+
+                <h4>Thương hiệu</h4>
+                <ul class="checkbox-list">
+                    <li><input type="checkbox" id="brand1"><label for="brand1">Me-O</label></li>
+                    <li><input type="checkbox" id="brand2"><label for="brand2">Royal Canin</label></li>
+                    <li><input type="checkbox" id="brand3"><label for="brand3">Dog Food</label></li>
+                    <li><input type="checkbox" id="brand4"><label for="brand4">Nutrience</label></li>
+                </ul>
+            </aside>
+        </div>
+
+        <div class="product-grid-container">
+            <section class="product-grid">
+                <div th:each="product : ${product}" class="product-item">
+                    <img th:src="${product.image}" alt="Product Image">
+                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
+                    <div class="stars">★★★★★</div>
+                    <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">VND</div>
+
+                    <button>Thêm vào giỏ hàng</button>
+                </div>
+            </section>
+
+            <section class="pagination">
+                <a href="#">&laquo;</a>
+                <a href="#">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <a href="#">6</a>
+                <a href="#">&raquo;</a>
+            </section>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
