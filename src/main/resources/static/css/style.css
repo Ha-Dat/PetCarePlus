@@ -51,5 +51,56 @@ body.bg {
     color: red;
     font-size: 0.9em;
     margin: 5px 0;
+    .container {
+        display: flex;
+        font-family: sans-serif;
+    }
+
+    .sidebar {
+        width: 200px;
+        background: #f0f0f0;
+        padding: 20px;
+    }
+
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .sidebar li {
+        margin: 10px 0;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .sidebar a.active {
+        color: red;
+        font-weight: bold;
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .profile-form {
+        display: flex;
+        gap: 40px;
+    }
+
+    .avatar img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+
+    .form-fields label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
 }
 

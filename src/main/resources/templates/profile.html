@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ của tôi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            background: #ffffff;
+            height: 100vh;
+            border-right: 1px solid #ccc;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin: 10px 0;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .sidebar .active {
+            color: red;
+        }
+
+        .main-content {
+            padding: 40px;
+            background: #f0f0f3;
+            width: 100%;
+        }
+
+        .form-section {
+            display: flex;
+            align-items: center;
+            background: #eeeeee;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-custom {
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="/profile" class="active">Hồ Sơ</a></li>
+            <li><a href="/address">Địa chỉ</a></li>
+            <li><a href="/change-password">Đổi mật khẩu</a></li>
+            <li><a href="/pet-profiles">Hồ Sơ thú cưng</a></li>
+            <li><a href="/orders">Đơn mua</a></li>
+            <li><a href="/schedule">Lịch</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h4>Hồ sơ của tôi</h4>
+        <hr>
+        <form th:action="@{/profile/update}" th:object="${profile}" method="post" enctype="multipart/form-data">
+            <div class="form-section row">
+                <!-- Avatar -->
+                <div class="col-md-3 text-center">
+                    <img th:src="@{${profile.avatarPath}}" class="avatar-preview mb-2" alt="Avatar">
+                    <div>
+                        <input type="file" name="imageFile" class="form-control">
+                        <small class="text-muted">Chọn ảnh</small>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="col-md-9">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Họ tên:</label>
+                        <div class="col-sm-9">
+                            <input type="text" th:field="*{fullName}" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Số điện thoại:</label>
+                        <div class="col-sm-9">
+                            <input type="text" th:field="*{phone}" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Giới tính:</label>
+                        <div class="col-sm-9">
+                            <input type="text" th:field="*{gender}" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Ngày sinh:</label>
+                        <div class="col-sm-9">
+                            <input type="date" th:field="*{dob}" class="form-control"/>
+                        </div>
+                    </div>
+                    <!-- Tỉnh / Thành phố -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Tỉnh / Thành phố:</label>
+                        <div class="col-sm-9">
+                            <select id="city" name="cityId" class="form-select">
+                                <option value="">-- Chọn tỉnh/thành phố --</option>
+                                <option th:each="c : ${cities}" th:value="${c.cityId}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quận / Huyện -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Quận / Huyện:</label>
+                        <div class="col-sm-9">
+                            <select id="district" name="districtId" class="form-select">
+                                <option value="">-- Chọn quận/huyện --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Phường / Xã -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Phường / Xã:</label>
+                        <div class="col-sm-9">
+                            <select id="ward" name="wardId" class="form-select">
+                                <option value="">-- Chọn phường/xã --</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="text-end">
+                        <a href="/" class="btn btn-success btn-custom">Quay lại</a>
+                        <button type="submit" class="btn btn-success btn-custom">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById("city").addEventListener("change", function () {
+        const cityId = this.value;
+        fetch(`/api/location/districts?cityId=${cityId}`)
+            .then(res => res.json())
+            .then(data => {
+                const districtSelect = document.getElementById("district");
+                districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                data.forEach(d => {
+                    districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                });
+                document.getElementById("ward").innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+            });
+    });
+
+    document.getElementById("district").addEventListener("change", function () {
+        const districtId = this.value;
+        fetch(`/api/location/wards?districtId=${districtId}`)
+            .then(res => res.json())
+            .then(data => {
+                const wardSelect = document.getElementById("ward");
+                wardSelect.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+                data.forEach(w => {
+                    wardSelect.innerHTML += `<option value="${w.id}">${w.name}</option>`;
+                });
+            });
+    });
+</script>
+
+</body>
+</html>
