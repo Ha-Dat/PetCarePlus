@@ -1,17 +1,4 @@
-// document.addEventListener("DOMContentLoaded", function (){
-//     const btn = document.getElementById("categoryBtn");
-//     const popup = document.getElementById("categoryPopup");
-//
-//     btn.addEventListener("click", function (){
-//         popup.style.display = popup.style.display === "block" ? "none" : "block";
-//     });
-//
-//     document.addEventListener("click", function (event){
-//         if(!popup.contains(event.target) && event.target !== btn){
-//             popup.style.display = "none";
-//         }
-//     });
-// });
+// Caroucel Show
 
 let currentIndex = 0;
 let intervalId;
@@ -53,4 +40,31 @@ window.addEventListener("load", () => {
     const carousel = document.querySelector(".featured-product");
     carousel.addEventListener("mouseenter", stopCarousel);
     carousel.addEventListener("mouseleave", startCarousel);
+
+    // Popup logic
+    const btn = document.getElementById("categoryBtn");
+    const popup = document.getElementById("categoryPopup");
+    const categoryItems = document.querySelectorAll(".category-item");
+    const subLists = document.querySelectorAll(".sub-list");
+
+    btn.addEventListener("click", () => {
+        popup.style.display = popup.style.display === "none" ? "block" : "none";
+    });
+
+    categoryItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const index = item.getAttribute("data-index");
+
+            categoryItems.forEach(i => i.classList.remove("active"));
+            subLists.forEach(s => s.classList.remove("active"));
+
+            item.classList.add("active");
+            const sub = document.querySelector(`.sub-list[data-index="${index}"]`);
+            if (sub) sub.classList.add("active");
+        });
+    });
+
+    if (categoryItems.length > 0) {
+        categoryItems[0].click();
+    }
 });

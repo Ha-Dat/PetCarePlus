@@ -119,44 +119,75 @@ body {
     font-weight: bold;
 }
 
-.category-btn {
-    background-color: #006400;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 20px;
-    cursor: pointer;
-}
 .popup {
-    display: none;
     position: absolute;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    padding: 16px 24px;
+    display: flex;
+    gap: 32px; /* khoảng cách giữa category cha và con */
     z-index: 10;
-    width: 250px;
 }
 
 .popup-content {
-    padding: 15px;
+    display: flex;
+    gap: 32px;
 }
 
-.main-categories {
+.main-categories, .sub-categories-list {
     list-style: none;
+    margin: 0;
     padding: 0;
+    margin-right: 20px;
 }
 
-.main-categories li {
+.category-item {
+    padding: 10px 18px;
     margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
-.sub-categories {
-    list-style: none;
-    padding-left: 15px;
+.category-item:hover {
+    background-color: #e0f0e9;
+    cursor: pointer;
+}
+
+.category-item.active {
+    background-color: #97db9a;
+    color: black;
+    font-weight: bold;
+}
+
+.sub-list {
     display: none;
 }
 
-.parent-item:hover + .sub-categories {
+.sub-list.active {
     display: block;
+}
+
+.sub-list span {
+    display: block;
+    padding: 6px 12px;
+    font-size: 15px;
+}
+
+/* Khi được click: class active sẽ được thêm bằng JavaScript */
+.category-item.active {
+    background-color: #88df82; /* màu khi click */
+    color: #333;
+    font-weight: bold;
+}
+
+#categoryBtn {
+    position: relative;
+    z-index: 1010;
+    color: white;
+    background: green;
+    border-radius: 10px;
 }
 
 /* Main Content */

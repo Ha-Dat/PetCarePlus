@@ -40,26 +40,33 @@
     <nav class="nav-left">
         <div class="nav-margin">
             <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
-<!--            <div id="categoryPopup" class="popup">-->
-<!--                <div class="popup-content">-->
-<!--                    <ul class="main-categories">-->
-<!--                        <li th:each="category : ${categories}">-->
-<!--                            <span th:text="${category.name}" class="parent-item"></span>-->
-<!--                            <ul class="sub-categories">-->
-<!--                                <li th:each="subCategory : ${category.subCategories}">-->
-<!--                                    <span th:text="${subCategory.name}"></span>-->
-<!--                                </li>-->
-<!--                            </ul>-->
-<!--                        </li>-->
-<!--                    </ul>-->
-<!--                </div>-->
-<!--            </div>-->
+            <div id="categoryPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <ul class="main-categories">
+                        <li th:each="category, iterStat : ${categories}" class="category-item"
+                            th:attr="data-index=${iterStat.index}">
+                            <span th:text="${category.name}" class="parent-item"></span>
+                        </li>
+                    </ul>
+
+                    <ul class="sub-categories-list">
+                        <li th:each="category, iterStat : ${categories}" class="sub-list"
+                            th:attr="data-index=${iterStat.index}">
+                            <ul>
+                                <li th:each="subCategory : ${category.subCategories}">
+                                    <span th:text="${subCategory.name}"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div>
             <a href="#">Siêu Sale</a>
         </div>
-
     </nav>
+
     <nav class="nav-right">
         <div class="nav-margin">
             <a href="#">Tư vấn</a>
@@ -117,7 +124,6 @@
                     <h3 th:text="${product.name}">Tên sản phẩm</h3>
                     <div class="stars">★★★★★</div>
                     <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">VND</div>
-
                     <button>Thêm vào giỏ hàng</button>
                 </div>
             </section>
