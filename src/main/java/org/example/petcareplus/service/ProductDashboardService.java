@@ -1,8 +1,10 @@
 package org.example.petcareplus.service;
-import java.util.Iterator;
-import java.util.List;
 import org.example.petcareplus.entity.Product;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Service
 public interface ProductDashboardService {
-    Iterator<Product> findAllProducts();
+    List<Product> findAll();
 }
