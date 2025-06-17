@@ -30,6 +30,12 @@ public class AuthController {
                            @RequestParam String confirmPassword,
                            HttpSession session,
                            Model model) {
+
+        if (!phone.matches("^(0[3|5|7|8|9])[0-9]{8}$")) {
+            model.addAttribute("error", "Số điện thoại không hợp lệ!");
+            return "register";
+        }
+
         if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$")) {
             model.addAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và không chứa khoảng trắng.");
             return "register";
