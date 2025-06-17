@@ -173,19 +173,28 @@ main {
 .featured-products {
     display: flex;
     gap: 20px;
-    margin-bottom: 20px;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    max-width: 1200px; /* hoặc tuỳ thuộc layout */
+    margin: 0 auto;
 }
 .featured-product {
     background-color: rgba(71, 255, 193, 0.3);
     border-radius: 10px;
     padding: 15px;
     text-align: center;
-    flex: 1;
+    flex: 0 0 85%;
 }
 .featured-product img {
     width: 150px;
 }
 
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: max-content;
+}
 .add-to-cart {
     background-color: orange;
     color: white;
@@ -198,6 +207,8 @@ main {
     display: flex;
     justify-content: space-around;
     margin: 20px 0;
+    background: antiquewhite;
+    padding: 10px;
 }
 
 .brand-logos img {
@@ -217,21 +228,6 @@ main {
     border-radius: 5px;
     text-align: center;
 }
-
-.pagination {
-    text-align: right;
-    margin-top: 20px;
-}
-
-.pagination a {
-    display: inline-block;
-    padding: 5px 10px;
-    margin: 0 3px;
-    border: 1px solid #ccc;
-    text-decoration: none;
-    color: #333;
-}
-
 .main-content {
     display: flex;
     gap: 20px;
@@ -241,12 +237,8 @@ main {
     flex: 3;
     background-color: #f0f8ff;
     padding: 10px;
+    margin: 0px 100px 0px 100px;
 }
-
-.sidebar-container {
-    flex: 1;
-}
-
 .checkbox-list li {
     display: flex;
     align-items: center;
