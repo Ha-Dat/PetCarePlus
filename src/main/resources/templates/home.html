@@ -11,7 +11,8 @@
     <div class="header_container">
         <div class="left">
             <div>
-                <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
+                <a href="home"><img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/></a>
+
             </div>
 
             <div class="search-bar">
@@ -62,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="sale-badge">
             <a href="#">Siêu Sale</a>
         </div>
     </nav>
@@ -82,7 +83,7 @@
 
 <main>
     <section class="main-section">
-        <a href="#">Trang chủ</a> > Cửa hàng
+        <a href="#">Trang chủ</a>
     </section>
 
     <div class="featured-product">
@@ -117,19 +118,76 @@
     </section>
 
     <div class="main-content">
-        <div class="product-grid-container">
-            <section class="product-grid">
-                <div th:each="product : ${product}" class="product-item">
-                    <img th:src="${product.image}" alt="Product Image">
-                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <div class="stars">★★★★★</div>
-                    <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">VND</div>
-                    <button>Thêm vào giỏ hàng</button>
+        <div class="featured">
+            <div th:each="category, iterStat : ${categories}" th:if="${iterStat.index} < 3" class="category-section">
+                <h2 th:text="${category.name}"></h2>
+                <div class="product-row">
+                    <div th:each="product, iterStat : ${category.products}"
+                         th:if="${iterStat.index} < 3"
+                         class="product-item">
+                        <img th:src="${product.image}" alt="Product Image">
+                        <h3 th:text="${product.name}"></h3>
+                        <div class="stars">★★★★★</div>
+                        <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                        <button>Thêm vào giỏ hàng</button>
+                    </div>
+
+                    <div class="product-item see-more-item"
+                         th:if="${category.products.size() > 3}">
+                        <a class="see-more-link"
+                           th:href="@{/category/{categoryId}(id=${category.categoryId})}">
+                            Xem thêm sản phẩm →
+                        </a>
+                    </div>
                 </div>
-            </section>
+            </div>
+            <div class="show-more-product">
+                <a class="see-more-link" href="#">Xem thêm sản phẩm →</a>
+            </div>
         </div>
     </div>
 </main>
+
+<footer>
+    <section>
+        <h4>Công ty cổ phần...</h4>
+        <ul>
+            <li>Email: abc@gmail.com</li>
+            <li>Điện thoại: 099.999.9999</li>
+            <li>Văn phòng: tầng 190 tòa abc, 02 abc, mỹ đình, hà nội</li>
+        </ul>
+    </section>
+    <section>
+        <h4>Về shop</h4>
+        <ul>
+            <li><a href="#">Giới thiệu về shop</a></li>
+            <li><a href="#">Chính sách vận chuyển</a></li>
+            <li><a href="#">Điều khoản chung</a></li>
+            <li><a href="#">Khuyến mãi</a></li>
+            <li><a href="#">Dịch vụ</a></li>
+        </ul>
+    </section>
+    <section>
+        <h4>Hỗ trợ khách hàng</h4>
+        <ul>
+            <li><a href="#">Mua & giao nhận online</a></li>
+            <li><a href="#">Đổi trả & hoàn tiền</a></li>
+        </ul>
+    </section>
+    <section class="payment-methods">
+        <h4>Chấp nhận thanh toán</h4>
+        <img style="width: 100px" src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" alt="VNPAYQR">
+    </section>
+    <section class="newsletter">
+        <h4>Cập nhật các chương trình khuyến mãi và tin tức mới nhất tại đây!</h4>
+        <input type="email" placeholder="nhập email">
+        <p>Kết nối với chúng tôi</p>
+        <div class="social-links">
+            <a href="#"><img style="width: 30px" src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook"></a>
+            <a href="#"><img style="width: 30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/2048px-Icon_of_Zalo.svg.png" alt="Zalo"></a>
+        </div>
+    </section>
+</footer>
 
 </body>
 </html>
