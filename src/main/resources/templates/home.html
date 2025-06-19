@@ -4,38 +4,11 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
     <script th:src="@{/js/home.js}"></script>
 </head>
 <body>
-<header class="main_header">
-    <div class="header_container">
-        <div class="left">
-            <div>
-                <a href="home"><img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/></a>
-
-            </div>
-
-            <div class="search-bar">
-                <input type="text" placeholder="Search here..." name="Tìm kiếm sản phẩm" style="width: 300px"></input>
-                <button class="search-btn">Search</button>
-            </div>
-        </div>
-
-        <div class="right">
-            <div class="slogan">Your Pets, <br> Our Passion</div>
-            <div class="hotline">
-                099.99.9999 <br><span>hotline</span>
-            </div>
-            <div class="auth">
-                <button class="login-btn">Đăng nhập</button>
-                <button class="register-btn">Đăng ký</button>
-            </div>
-            <div>
-                <img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart" style="width: 50px"/>
-            </div>
-        </div>
-    </div>
-</header>
+<div th:replace="component/header :: header"></div>
 
 <nav class="nav-bar">
     <nav class="nav-left">
@@ -54,8 +27,22 @@
                         <li th:each="category, iterStat : ${categories}" class="sub-list"
                             th:attr="data-index=${iterStat.index}">
                             <ul>
-                                <li th:each="subCategory : ${category.subCategories}">
-                                    <span th:text="${subCategory.name}"></span>
+                                <li th:each="subCategory, subStat : ${category.subCategories}">
+                        <span th:text="${subCategory.name}" class="child-item"
+                              th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="child-sub-list-wrapper">
+                        <li th:each="category, iterStat : ${categories}">
+                            <ul th:each="subCategory, subStat : ${category.subCategories}"
+                                class="child-sub-list"
+                                th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
+                                style="display: none;">
+                                <li th:each="child : ${subCategory.subCategories}">
+                                    <span th:text="${child.name}"></span>
                                 </li>
                             </ul>
                         </li>
@@ -83,7 +70,7 @@
 
 <main>
     <section class="main-section">
-        <a href="#">Trang chủ</a>
+        <a href="home">Trang chủ</a>
     </section>
 
     <div class="featured-product">
@@ -92,21 +79,21 @@
                 <div class="featured-product" th:each="product : ${products}">
                     <img th:src="${product.image}" alt="product">
                     <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Giá</p>
+                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Đánh giá</p>
                     <div class="stars">★★★★★</div>
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
-
                 <div class="featured-product" th:each="product : ${products}">
                     <img th:src="${product.image}" alt="product">
                     <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Giá</p>
+                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Đánh giá</p>
                     <div class="stars">★★★★★</div>
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
             </div>
         </section>
     </div>
+
     <section class="brand-logos">
         <div>
             <h2>Thương hiệu</h2>
@@ -118,6 +105,27 @@
     </section>
 
     <div class="main-content">
+        <div class="featured">
+            <h2 th:if="${keyword != null}">Kết quả tìm kiếm cho: "<span th:text="${keyword}"></span>"</h2>
+
+            <div th:if="${!#strings.isEmpty(keyword)} and ${#lists.isEmpty(result_product)}">
+                <p>Không tìm thấy sản phẩm nào.</p>
+            </div>
+
+            <div class="product-result"
+                 th:if="${!#strings.isEmpty(keyword)}"
+                 th:each="result_product : ${result_product}">
+                <div class="product-item">
+                    <img th:src="${result_product.image}" alt="Product Image">
+                    <h3 th:text="${result_product.name}"></h3>
+                    <p th:text="${result_product.price} + ' VND'"></p>
+                    <button>Thêm vào giỏ hàng</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 th:if="${keyword != null}" style="justify-self: center;">Các sản phẩm khác</h2>
+
         <div class="featured">
             <div th:each="category, iterStat : ${categories}" th:if="${iterStat.index} < 3" class="category-section">
                 <h2 th:text="${category.name}"></h2>
@@ -141,6 +149,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="show-more-product">
                 <a class="see-more-link" href="#">Xem thêm sản phẩm →</a>
             </div>
@@ -148,46 +157,6 @@
     </div>
 </main>
 
-<footer>
-    <section>
-        <h4>Công ty cổ phần...</h4>
-        <ul>
-            <li>Email: abc@gmail.com</li>
-            <li>Điện thoại: 099.999.9999</li>
-            <li>Văn phòng: tầng 190 tòa abc, 02 abc, mỹ đình, hà nội</li>
-        </ul>
-    </section>
-    <section>
-        <h4>Về shop</h4>
-        <ul>
-            <li><a href="#">Giới thiệu về shop</a></li>
-            <li><a href="#">Chính sách vận chuyển</a></li>
-            <li><a href="#">Điều khoản chung</a></li>
-            <li><a href="#">Khuyến mãi</a></li>
-            <li><a href="#">Dịch vụ</a></li>
-        </ul>
-    </section>
-    <section>
-        <h4>Hỗ trợ khách hàng</h4>
-        <ul>
-            <li><a href="#">Mua & giao nhận online</a></li>
-            <li><a href="#">Đổi trả & hoàn tiền</a></li>
-        </ul>
-    </section>
-    <section class="payment-methods">
-        <h4>Chấp nhận thanh toán</h4>
-        <img style="width: 100px" src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" alt="VNPAYQR">
-    </section>
-    <section class="newsletter">
-        <h4>Cập nhật các chương trình khuyến mãi và tin tức mới nhất tại đây!</h4>
-        <input type="email" placeholder="nhập email">
-        <p>Kết nối với chúng tôi</p>
-        <div class="social-links">
-            <a href="#"><img style="width: 30px" src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook"></a>
-            <a href="#"><img style="width: 30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/2048px-Icon_of_Zalo.svg.png" alt="Zalo"></a>
-        </div>
-    </section>
-</footer>
-
+<div th:replace="component/footer :: footer"></div>
 </body>
 </html>

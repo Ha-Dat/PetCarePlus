@@ -13,6 +13,14 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public List<Category> getParentCategory() {
-        return categoryRepository.findByParentIsNull();
+        List<Category> topCategories = categoryRepository.findByParentIsNull();
+
+        // Lazy fetch có thể cần thiết nếu không tự load sub-categories
+        topCategories.forEach(parent -> {
+            parent.getSubCategories().size(); // force initialize nếu cần
+            parent.getSubCategories().forEach(sub -> sub.getSubCategories().size());
+        });
+
+        return topCategories;
     }
 }

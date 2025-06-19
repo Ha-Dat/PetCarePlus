@@ -1,0 +1,119 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    border-bottom: 1px solid #ddd;
+}
+
+.header_container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+}
+
+.logo {
+    width: 60px;
+}
+
+.search-bar input {
+    border-radius: 10px;
+    width: 310px;
+    height: 35px;
+}
+
+.search-btn {
+    border: none;
+    background: #1c9a00d4;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: medium;
+}
+
+.search-btn:hover {
+    cursor: pointer;
+    background: rgba(16, 55, 2, 0.83);
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.slogan {
+    color: green;
+    font-style: italic;
+    text-align: center;
+}
+
+.hotline {
+    color: green;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.login-btn {
+    background: #e0e0e0;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.register-btn {
+    background: #3b5f2a;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.cart {
+    font-size: 24px;
+    cursor: pointer;
+    width: 50px;
+}
+
+footer {
+    font-size: small;
+    background-color: #f0f8f0;
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+footer section {
+    margin-bottom: 20px;
+}
+
+footer h4 {
+    margin-bottom: 10px;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer a {
+    color: #333;
+    text-decoration: none;
+}

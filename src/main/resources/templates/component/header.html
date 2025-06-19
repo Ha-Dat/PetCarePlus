@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+</head>
+<body>
+<header class="main_header" th:component="header">
+    <div class="header_container">
+        <div class="left">
+            <div>
+                <a href="home"><img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/></a>
+
+            </div>
+
+            <form th:action="@{/search}" method="get" class="search-bar">
+                <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." style="width: 300px"/>
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+        </div>
+
+        <div class="right">
+            <div class="slogan">Your Pets, <br> Our Passion</div>
+            <div class="hotline">
+                099.99.9999 <br><span>hotline</span>
+            </div>
+            <div class="auth">
+                <button class="login-btn">Đăng nhập</button>
+                <button class="register-btn">Đăng ký</button>
+            </div>
+            <div>
+                <img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart" style="width: 50px"/>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+</html>
