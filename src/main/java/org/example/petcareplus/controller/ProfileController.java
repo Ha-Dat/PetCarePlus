@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import jakarta.validation.Valid;
 import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,9 +29,12 @@ public class ProfileController {
     @GetMapping
     public String viewProfile(Model model) {
         // Dữ liệu mặc định
-        if (profile.getFullName() == null) {
-            profile.setFullName("Nguyễn Văn A");
-            profile.setPhone("0901234567");
+        if (profile.getAccount() == null) {
+            Account acc = new Account();
+            acc.setName("Nguyễn Văn A");
+            acc.setPhone("0901234567");
+
+            profile.setAccount(acc);
             profile.setGender("Nam");
             profile.setDob(LocalDate.of(2000, 1, 1));
             profile.setAvatarPath("/images/default-avatar.png");

@@ -52,4 +52,92 @@ public class Account {
     private List<ReplyComment> replyComments;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
+
+    public List<CommentPost> getCommentPosts() {
+        return commentPosts;
+    }
+
+    public void setCommentPosts(List<CommentPost> commentPosts) {
+        this.commentPosts = commentPosts;
+    }
+
+    public List<ProductFeedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<ProductFeedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+
+    public @Length(min = 2, max = 100) String getName() {
+        return name;
+    }
+
+    public void setName(@Length(min = 2, max = 100) String name) {
+        this.name = name;
+    }
+
+    public @Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String password) {
+        this.password = password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public List<ReplyComment> getReplyComments() {
+        return replyComments;
+    }
+
+    public void setReplyComments(List<ReplyComment> replyComments) {
+        this.replyComments = replyComments;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

@@ -29,10 +29,6 @@ public class Profile {
     private Integer districtId;
     private Integer wardId;
 
-    private String fullName;
-
-    private String phone;
-
     private String gender;
 
     private LocalDate dob;
@@ -44,20 +40,45 @@ public class Profile {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-    public String getFullName() {
-        return fullName;
+
+    public Account getAccount() {
+        return account;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
-    public String getPhone() {
-        return phone;
+    public City getCity() {
+        return city;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public List<PetProfile> getPetProfiles() {
+        return petProfiles;
+    }
+
+    public void setPetProfiles(List<PetProfile> petProfiles) {
+        this.petProfiles = petProfiles;
+    }
+
+    public Integer getWardId() {
+        return wardId;
+    }
+
+    public void setWardId(Integer wardId) {
+        this.wardId = wardId;
     }
 
     public String getGender() {
