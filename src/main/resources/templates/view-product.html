@@ -81,7 +81,7 @@
                 <aside class="sidebar">
                     <h4>Danh mục sản phẩm</h4>
                     <ul class="checkbox-list">
-                        <li th:each="kw : ${ {'chó','mèo','chim','cá','bò sát'} }">
+                        <li th:each="kw : ${ {'Chó','Mèo','Chim','Cá','Bò sát'} }">
                             <input type="checkbox" name="keyword" th:value="${kw}"
                                    th:checked="${param.keyword != null and #arrays.contains(param.keyword, kw)}">
                             <label th:text="${kw}"></label>

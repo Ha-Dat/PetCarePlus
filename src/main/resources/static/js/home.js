@@ -3,7 +3,7 @@ let intervalId;
 
 function showSlide(index) {
     const track = document.getElementById("carouselTrack");
-    if (!track) return; // Không tồn tại thì không xử lý
+    if (!track) return;
 
     const items = track.children;
     if (!items.length) return;
@@ -25,7 +25,7 @@ function showSlide(index) {
 }
 
 function startCarousel() {
-    stopCarousel(); // Dừng trước nếu đã chạy rồi
+    stopCarousel();
     intervalId = setInterval(() => {
         showSlide(currentIndex + 1);
     }, 3000);
@@ -36,7 +36,6 @@ function stopCarousel() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    // Carousel logic
     showSlide(currentIndex);
     startCarousel();
 
@@ -46,13 +45,13 @@ window.addEventListener("DOMContentLoaded", () => {
         carousel.addEventListener("mouseleave", startCarousel);
     }
 
-    // === Popup Category Logic ===
     const btn = document.getElementById("categoryBtn");
     const popup = document.getElementById("categoryPopup");
     const categoryItems = document.querySelectorAll(".category-item");
     const subLists = document.querySelectorAll(".sub-list");
     const childItems = document.querySelectorAll(".child-item");
     const childSubLists = document.querySelectorAll(".child-sub-list");
+    const grandchildItems = document.querySelectorAll(".grandchild-item");
 
     if (btn && popup) {
         btn.addEventListener("click", () => {
@@ -61,7 +60,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Main category click → activate sub-list
+    // Main category click
     categoryItems.forEach(item => {
         item.addEventListener("click", () => {
             const index = item.getAttribute("data-index");
@@ -78,7 +77,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Sub-category click → activate child-sub-list
+    // Sub-category click
     childItems.forEach(item => {
         item.addEventListener("click", () => {
             const subIndex = item.getAttribute("data-sub-index");
@@ -89,14 +88,64 @@ window.addEventListener("DOMContentLoaded", () => {
             item.classList.add("active");
 
             const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
-            if (targetList) {
-                targetList.style.display = "block";
+            if (targetList) targetList.style.display = "block";
+        });
+    });
+
+    // Auto-select first category
+    if (categoryItems.length > 0) {
+        categoryItems[0].click();
+    }
+
+    // Click parent category
+    document.querySelectorAll(".parent-item").forEach(item => {
+        item.addEventListener("click", () => {
+            const li = item.closest("li.category-item");
+            const index = li.dataset.index;
+            const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
+            const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
+
+            if (!hasChild) {
+                const categoryName = item.textContent.trim();
+                window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
             }
         });
     });
 
-    // Optional: Auto-select first category
-    if (categoryItems.length > 0) {
-        categoryItems[0].click();
-    }
+    // Click category con
+    document.querySelectorAll(".child-item").forEach(item => {
+        item.addEventListener("click", () => {
+            const subIndex = item.dataset.subIndex;
+            const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+            const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
+
+            if (!hasGrandchild) {
+                // Nếu không có cháu → chuyển theo category cha
+                const parentLi = item.closest(".sub-list");
+                const parentIndex = parentLi.getAttribute("data-index");
+                const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+                window.location.href = `/view-product?category=${encodeURIComponent(parentName)}`;
+            }
+            // Nếu có cháu → chỉ hiển thị danh sách cháu, không chuyển trang
+        });
+    });
+
+// Click category cháu
+    document.querySelectorAll(".grandchild-item").forEach(item => {
+        item.addEventListener("click", () => {
+            const grandchildName = item.textContent.trim();
+
+            const subList = item.closest(".child-sub-list");
+            const subIndex = subList.getAttribute("data-sub-index");
+
+            // Từ subIndex "0-1", tách thành index cha và con
+            const [parentIndex, childIndex] = subIndex.split("-");
+            const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+            const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
+            const keyword = childItem ? childItem.textContent.trim() : "";
+
+            window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+        });
+    });
+
 });

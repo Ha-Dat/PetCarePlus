@@ -102,6 +102,12 @@ body {
     font-weight: bold;
 }
 
+.parent-item,
+.child-item,
+.child-sub-list span {
+    cursor: pointer;
+}
+
 .sub-list {
     display: none;
 }
