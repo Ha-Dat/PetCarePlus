@@ -2,9 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>List Product</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <script th:src="@{/js/home.js}"></script>
 </head>
 <body>
+<div th:replace="component/header :: header"></div>
 
+<nav class="nav-bar">
+    <nav class="nav-left">
+        <div class="nav-margin">
+            <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
+            <div id="categoryPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <ul class="main-categories">
+                        <li th:each="category, iterStat : ${categories}" class="category-item"
+                            th:attr="data-index=${iterStat.index}">
+                            <span th:text="${category.name}" class="parent-item"></span>
+                        </li>
+                    </ul>
+
+                    <ul class="sub-categories-list">
+                        <li th:each="category, iterStat : ${categories}" class="sub-list"
+                            th:attr="data-index=${iterStat.index}">
+                            <ul>
+                                <li th:each="subCategory, subStat : ${category.subCategories}">
+                        <span th:text="${subCategory.name}" class="child-item"
+                              th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="child-sub-list-wrapper">
+                        <li th:each="category, iterStat : ${categories}">
+                            <ul th:each="subCategory, subStat : ${category.subCategories}"
+                                class="child-sub-list"
+                                th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
+                                style="display: none;">
+                                <li th:each="child : ${subCategory.subCategories}">
+                                    <span th:text="${child.name}"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="sale-badge"><a href="#">Siêu Sale</a></div>
+    </nav>
+
+    <nav class="nav-right">
+        <div class="nav-margin"><a href="#">Tư vấn</a></div>
+        <div class="nav-margin"><a href="#">Đặt lịch</a></div>
+        <div><a href="#">Diễn đàn</a></div>
+    </nav>
+</nav>
+
+<main>
+    <section class="main-section">
+        <a href="home">Trang chủ</a> > Danh sách sản phẩm
+    </section>
+
+    <section class="brand-logos">
+        <div>
+            <h2>Thương hiệu</h2>
+            <p>top các thương hiệu hàng đầu</p>
+        </div>
+        <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Brand Logo 1">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Brand Logo 2">
+        <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Brand Logo 3">
+    </section>
+
+    <div class="main-container">
+        <div class="sidebar-container">
+            <form method="get" th:action="@{/view-product}">
+                <aside class="sidebar">
+                    <h4>Danh mục sản phẩm</h4>
+                    <ul class="checkbox-list">
+                        <li th:each="kw : ${ {'chó','mèo','chim','cá','bò sát'} }">
+                            <input type="checkbox" name="keyword" th:value="${kw}"
+                                   th:checked="${param.keyword != null and #arrays.contains(param.keyword, kw)}">
+                            <label th:text="${kw}"></label>
+                        </li>
+                    </ul>
+
+                    <h4>Loại</h4>
+                    <ul class="checkbox-list">
+                        <li th:each="cate : ${ {'Thức ăn','Đồ chơi','Vòng / Dây xích','Chuồng / đệm','Dụng cụ vệ sinh','Thuốc / Thực phẩm chức năng','Dụng cụ ăn uống','Khác'} }">
+                            <input type="radio" name="category" th:value="${cate}"
+                                   th:checked="${param.category != null and param.category[0] == cate}">
+                            <label th:text="${cate}"></label>
+                        </li>
+                    </ul>
+
+                    <h4>Giá</h4>
+                    <ul class="checkbox-list">
+                        <li><input type="radio" name="priceRange" value="1"
+                                   th:checked="${param.priceRange != null and param.priceRange[0] == '1'}">
+                            <label>0 - 100.000 ₫</label></li>
+                        <li><input type="radio" name="priceRange" value="2"
+                                   th:checked="${param.priceRange != null and param.priceRange[0] == '2'}">
+                            <label>100.000 ₫ - 500.000 ₫</label></li>
+                        <li><input type="radio" name="priceRange" value="3"
+                                   th:checked="${param.priceRange != null and param.priceRange[0] == '3'}">
+                            <label>500.000 ₫ - 1.000.000 ₫</label></li>
+                    </ul>
+
+                    <button type="submit">Lọc sản phẩm</button>
+                    <a href="view-product">Xóa lựa chọn</a>
+                </aside>
+            </form>
+        </div>
+
+        <div class="product-grid-container">
+            <section class="product-grid">
+                <h2>Danh sách tất cả sản phẩm</h2>
+                <div class="product-grid-item">
+                    <div class="product-item" th:each="product : ${products}">
+                        <img th:src="${product.image}" alt="Product Image">
+                        <h3 th:text="${product.name}"></h3>
+                        <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+                        <button>Thêm vào giỏ hàng</button>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <ul>
+                        <li th:if="${currentPage > 0}">
+                            <a th:href="@{/view-product(page=${currentPage - 1})}">« Trước</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a th:href="@{/view-product(page=${i})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li th:if="${currentPage < totalPages - 1}">
+                            <a th:href="@{/view-product(page=${currentPage + 1})}">Tiếp »</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<div th:replace="component/footer :: footer"></div>
 </body>
 </html>

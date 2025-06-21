@@ -142,16 +142,13 @@
 
                     <div class="product-item see-more-item"
                          th:if="${category.products.size() > 3}">
-                        <a class="see-more-link"
-                           th:href="@{/category/{categoryId}(id=${category.categoryId})}">
-                            Xem thêm sản phẩm →
-                        </a>
+                        <a class="see-more-link" th:href="@{'/view-product'(category=${category.name})}">Xem thêm sản phẩm</a>
                     </div>
                 </div>
             </div>
 
             <div class="show-more-product">
-                <a class="see-more-link" href="#">Xem thêm sản phẩm →</a>
+                <a class="see-more-link" href="view-product">Xem thêm sản phẩm →</a>
             </div>
         </div>
     </div>
