@@ -1,24 +1,21 @@
 package org.example.petcareplus.controller;
 
-import org.example.petcareplus.entity.District;
-import org.example.petcareplus.entity.HotelBooking;
-import org.example.petcareplus.entity.Ward;
-import org.example.petcareplus.repository.DistrictRepository;
-import org.example.petcareplus.repository.HotelBookingRepository;
-import org.example.petcareplus.repository.WardRepository;
+import org.example.petcareplus.entity.*;
+import org.example.petcareplus.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,18 +23,21 @@ import java.util.Optional;
 @RequestMapping("/")
 public class HotelBookingController {
     private HotelBookingRepository hotelBookingRepository;
-
     private DistrictRepository districtRepository;
     private WardRepository wardRepository;
+    private ServiceRepository serviceRepository;
+    private PetProfileRepository petProfileRepository;
 
     @Autowired
-    public HotelBookingController(HotelBookingRepository hotelBookingRepository, DistrictRepository districtRepository, WardRepository wardRepository) {
+    public HotelBookingController(HotelBookingRepository hotelBookingRepository, DistrictRepository districtRepository, WardRepository wardRepository, ServiceRepository serviceRepository, PetProfileRepository petProfileRepository) {
         this.hotelBookingRepository = hotelBookingRepository;
         this.districtRepository = districtRepository;
         this.wardRepository = wardRepository;
+        this.serviceRepository = serviceRepository;
+        this.petProfileRepository = petProfileRepository;
     }
 
-    @GetMapping("/groomer_hotel_page")
+    @GetMapping("/groomer-hotel-page")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size) {
@@ -47,7 +47,7 @@ public class HotelBookingController {
         model.addAttribute("hotelBookings", hotelBookings.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", hotelBookings.getTotalPages());
-        return "groomer_hotel_page";
+        return "groomer-hotel-page";
     }
 
 
@@ -124,4 +124,59 @@ public class HotelBookingController {
         }
         return "Not found";
     }
+
+    @GetMapping("/booking-hotel")
+    public String showHotelBookingForm(Model model) {
+        model.addAttribute("hotelBooking", new HotelBooking()); // model binding
+        model.addAttribute("services", serviceRepository.findAll()); // list dịch vụ
+        return "booking-hotel";
+    }
+
+    @PostMapping("/booking-hotel/add")
+    public String addHotelBooking(
+            @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
+            @RequestParam("note") String note,
+            @RequestParam("serviceId") Integer serviceId,
+            @RequestParam("ownerInfo") String ownerInfo, // chưa co login
+            @RequestParam("petName") String petName,
+            @RequestParam("petSpecies") String petSpecies,
+            @RequestParam("petBreed") String petBreed,
+            @RequestParam("phoneNumber") String phoneNumber, // chưa co login
+            Model model
+    ) {
+        try {
+            // Tạo pet profile mới từ form
+            PetProfile petProfile = new PetProfile();
+            petProfile.setName(petName);
+            petProfile.setSpecies(petSpecies);
+            petProfile.setBreeds(petBreed);
+            petProfile.setAge(2);
+            petProfileRepository.save(petProfile);
+
+            // gán dữ liệu từ form
+            HotelBooking booking = new HotelBooking();
+            booking.setBookDate(bookDate);
+            booking.setNote(note);
+            booking.setStatus("chờ duyệt");
+            booking.setCreatedAt(LocalDateTime.now());
+
+            booking.setPetProfile(petProfile);
+
+            Optional<Service> service = serviceRepository.findById(serviceId);
+            if (service.isEmpty()) {
+                model.addAttribute("error", "Dịch vụ không tồn tại");
+                return "error";
+            }
+            booking.setService(service.get());
+
+            hotelBookingRepository.save(booking);
+            return "redirect:/booking-hotel";
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
+            return "error";
+        }
+    }
+
+
 }
