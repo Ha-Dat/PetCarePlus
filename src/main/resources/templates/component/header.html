@@ -14,9 +14,11 @@
 
             </div>
 
-            <form th:action="@{/search}" method="get" class="search-bar">
-                <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." style="width: 300px"/>
-                <button type="submit" class="search-btn">Search</button>
+            <form th:action="@{/view-product}" method="get" class="search-bar">
+                <input type="text" name="searchkeyword"
+                       th:value="${searchkeyword}"
+                       placeholder="Tìm kiếm sản phẩm...">
+                <button type="submit" class="search-btn">Tìm kiếm</button>
             </form>
         </div>
 

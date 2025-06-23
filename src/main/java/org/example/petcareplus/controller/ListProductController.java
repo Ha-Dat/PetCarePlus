@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/")
@@ -33,7 +34,13 @@ public class ListProductController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer priceRange,
+            @RequestParam(required = false) String searchkeyword,
             Model model) {
+
+        // Đảm bảo page không âm
+        if (page < 0) {
+            page = 0;
+        }
 
         Pageable pageable = PageRequest.of(page, 12);
         BigDecimal minPrice = null;
@@ -51,6 +58,11 @@ public class ListProductController {
                 keyword, category, minPrice, maxPrice, pageable
         );
 
+        List<Product> resultSearch = new ArrayList<>();
+        if (searchkeyword != null && !searchkeyword.trim().isEmpty()) {
+            resultSearch = productRepository.findByNameContainingIgnoreCase(searchkeyword.trim());
+        }
+
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
@@ -58,7 +70,10 @@ public class ListProductController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedCategory", category);
         model.addAttribute("priceRange", priceRange);
+        model.addAttribute("searchkeyword", searchkeyword);
+        model.addAttribute("result_product", resultSearch);
 
         return "view-product";
     }
+
 }

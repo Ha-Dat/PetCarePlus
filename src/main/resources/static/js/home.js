@@ -3,18 +3,17 @@ let intervalId;
 
 function showSlide(index) {
     const track = document.getElementById("carouselTrack");
-    if (!track) return;
+    const items = track?.querySelectorAll(".carousel-item");
+    if (!track || !items.length) return;
 
-    const items = track.children;
-    if (!items.length) return;
-
+    const itemWidth = items[0].offsetWidth + 20;
     const totalItems = items.length;
-    const itemWidth = items[0].offsetWidth;
 
     currentIndex = index;
     track.style.transition = "transform 0.5s ease-in-out";
     track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
 
+    // Nếu đến hết bản chính (giữa danh sách clone)
     if (currentIndex >= totalItems / 2) {
         setTimeout(() => {
             track.style.transition = "none";
@@ -32,7 +31,7 @@ function startCarousel() {
 }
 
 function stopCarousel() {
-    if (intervalId) clearInterval(intervalId);
+    clearInterval(intervalId);
 }
 
 window.addEventListener("DOMContentLoaded", () => {

@@ -68,11 +68,13 @@
     <section class="brand-logos">
         <div>
             <h2>Thương hiệu</h2>
-            <p>top các thương hiệu hàng đầu</p>
+            <p>Top các thương hiệu hàng đầu</p>
         </div>
-        <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Brand Logo 1">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Brand Logo 2">
-        <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Brand Logo 3">
+        <div class="brand-logos-images">
+            <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Me-o">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Royal Canin">
+            <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Nutrience">
+        </div>
     </section>
 
     <div class="main-container">
@@ -117,8 +119,27 @@
         </div>
 
         <div class="product-grid-container">
+            <div class="search">
+                <h2 th:if="${searchkeyword != null}">Kết quả tìm kiếm cho: "<span th:text="${searchkeyword}"></span>"</h2>
+                <div class="search-result">
+                    <div th:if="${searchkeyword != null and #lists.isEmpty(result_product)}">
+                        <p>Không tìm thấy sản phẩm nào.</p>
+                    </div>
+
+                    <div class="product-result"
+                         th:if="${searchkeyword != null and not #lists.isEmpty(result_product)}"
+                         th:each="result_product : ${result_product}">
+                        <div class="product-item">
+                            <img th:src="${result_product.image}" alt="Product Image">
+                            <h3 th:text="${result_product.name}"></h3>
+                            <p th:text="${result_product.price} + ' VND'"></p>
+                            <button>Thêm vào giỏ hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <section class="product-grid">
-                <h2>Danh sách tất cả sản phẩm</h2>
+                <h2>Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
                         <img th:src="${product.image}" alt="Product Image">

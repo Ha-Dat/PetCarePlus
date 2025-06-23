@@ -1,119 +1,186 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fdf9;
+    margin: 0;
 }
 
+/* -----------------------------
+   Header Styling
+----------------------------- */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 40px;
-    border-bottom: 1px solid #ddd;
+    padding: 15px 40px;
+    background: linear-gradient(to right, #e8f5e9, #ffffff);
+    border-bottom: 2px solid #b2dfdb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
 }
 
 .header_container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
 }
 
 .left {
     display: flex;
     align-items: center;
-    gap: 80px;
+    gap: 50px;
+    margin-left: 30px;
+    margin-top: 10px;
 }
 
 .logo {
     width: 60px;
 }
 
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .search-bar input {
-    border-radius: 10px;
-    width: 310px;
-    height: 35px;
+    border-radius: 8px;
+    width: 320px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
 }
 
 .search-btn {
     border: none;
-    background: #1c9a00d4;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 10px;
+    color: white;
+    background: #43a047;
+    padding: 10px 16px;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: medium;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
 .search-btn:hover {
-    cursor: pointer;
-    background: rgba(16, 55, 2, 0.83);
+    background: #2e7d32;
+    color: white;
 }
 
+/* Right Header Area */
 .right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
 }
 
 .slogan {
-    color: green;
+    color: #2e7d32;
     font-style: italic;
+    font-size: 14px;
     text-align: center;
 }
 
 .hotline {
-    color: green;
-    font-size: 14px;
+    color: #43a047;
+    font-size: 15px;
+    font-weight: bold;
     text-align: center;
 }
 
 .auth {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
+    align-items: flex-end;
+}
+
+.login-btn,
+.register-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
 }
 
 .login-btn {
     background: #e0e0e0;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+    color: #333;
+}
+
+.login-btn:hover {
+    background: #d5d5d5;
 }
 
 .register-btn {
-    background: #3b5f2a;
+    background: #388e3c;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
 }
 
+.register-btn:hover {
+    background: #2e7d32;
+}
+
+/* Cart Icon */
 .cart {
     font-size: 24px;
     cursor: pointer;
-    width: 50px;
+    color: #2e7d32;
+    transition: transform 0.2s ease;
 }
 
+.cart:hover {
+    transform: scale(1.2);
+}
+
+/* -----------------------------
+   Footer Styling
+----------------------------- */
 footer {
-    font-size: small;
-    background-color: #f0f8f0;
-    padding: 20px;
+    background-color: #e8f5e9;
+    padding: 30px 40px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    font-size: 14px;
+    color: #333;
+    border-top: 2px solid #c8e6c9;
 }
 
 footer section {
     margin-bottom: 20px;
+    min-width: 200px;
 }
 
 footer h4 {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #1b5e20;
 }
 
 footer ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 footer a {
     color: #333;
     text-decoration: none;
+    display: block;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    color: #2e7d32;
 }
