@@ -1,6 +1,8 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +32,8 @@ public class PetProfile {
 
     private Float weight;
 
-    @Size(min = 1, max = 50)
+    @Min(2)
+    @Max(50)
     private Integer age;
 
     private String image;
@@ -49,6 +52,8 @@ public class PetProfile {
     private List<SpaBooking> spaBookings;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+
     public Integer getPetProfileId() {
         return petProfileId;
     }
@@ -89,11 +94,11 @@ public class PetProfile {
         this.weight = weight;
     }
 
-    public @Size(min = 1, max = 50) Integer getAge() {
+    public @Min(2) @Max(50) Integer getAge() {
         return age;
     }
 
-    public void setAge(@Size(min = 1, max = 50) Integer age) {
+    public void setAge(@Min(2) @Max(50) Integer age) {
         this.age = age;
     }
 

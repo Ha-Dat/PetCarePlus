@@ -6,6 +6,7 @@ import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,9 +19,9 @@ public class SpaBookingServiceImpl implements SpaBookingService {
         this.spaBookingRepository = spaBookingRepository;
     }
 
-
     @Override
     public List<SpaBooking> findAll() {
         return spaBookingRepository.findAll();
     }
+
 }
