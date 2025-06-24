@@ -232,6 +232,7 @@ body {
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    margin-top: 15px;
     transition: background 0.3s ease;
 }
 
@@ -331,7 +332,7 @@ body {
 
 .product-item {
     flex: 1 1 270px;
-    max-width: 270px;
+    max-width: 250px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -381,6 +382,7 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: 15px;
 }
 
 .product-item button:hover {
@@ -434,7 +436,9 @@ body {
     background-color: #b2ebf2;
 }
 .product-result {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
     justify-content: center;
     margin: 10px;
 }
@@ -443,7 +447,7 @@ body {
     background: #ffc989cc;
     padding: 10px;
     width: fit-content;
-    margin-bottom: 15px;
+    margin: 15px 0;
     border-radius: 10px;
     font-weight: bold;
 }
@@ -484,9 +488,6 @@ body {
 
 /* Search Result */
 .search-result{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-    gap: 20px;
     padding: 15px;
     background: aliceblue;
 }
@@ -611,4 +612,185 @@ body {
     border-color: #007bff;
     font-weight: bold;
     pointer-events: none;
+}
+
+/* product-detail styles */
+.product-detail-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.product-main {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.image-gallery {
+    flex: 1;
+    text-align: center;
+}
+
+.main-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-stock {
+    color: green;
+    font-weight: bold;
+}
+
+.product-title .category {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.product-title h2 {
+    font-size: 26px;
+    margin: 0;
+    color: #333;
+}
+
+.price-section {
+    font-size: 20px;
+}
+
+.price {
+    color: #d54b4b;
+    font-weight: bold;
+}
+
+.sale-value {
+    background-color: #fdd835;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.quantity-selector label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.quantity-selector input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.action-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.buy-now {
+    background-color: #ff5722;
+    color: white;
+}
+
+.buy-now:hover {
+    background-color: #e64a19;
+}
+
+.description {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.description h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.description p {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.product-card .stars {
+    color: #ffc107;
+    margin-bottom: 6px;
+}
+
+.product-card .price {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #2e7d32;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.product-image-wrapper {
+    width: 70%;
+    padding-top: 100%; /* 1:1 aspect ratio */
+    position: relative;
+}
+
+.product-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+}
+
+.product-details {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.product-name {
+    font-size: 1rem;
+    color: #333;
+    margin: 5px 0;
 }

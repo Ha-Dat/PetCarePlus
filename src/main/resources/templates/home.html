@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Home Page</title>
+    <title>Trang chủ</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/header_footer.css}">
     <script th:src="@{/js/home.js}"></script>
@@ -76,17 +76,31 @@
         <section class="featured-products">
             <div class="carousel-track" id="carouselTrack">
                 <div class="carousel-item" th:each="product : ${products}">
-                    <img th:src="${product.image}" alt="product">
-                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Đánh giá</p>
-                    <div class="stars">★★★★★</div>
+                    <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
+                        <div class="product-image-wrapper">
+                            <img th:src="${product.image}" alt="Product Image">
+                        </div>
+                        <div class="product-details">
+                            <h3 th:text="${product.name}" class="product-name"></h3>
+                        </div>
+                        <div class="stars">★★★★★</div>
+                        <div class="price"
+                             th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                    </a>
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
                 <div class="carousel-item" th:each="product : ${products}">
-                    <img th:src="${product.image}" alt="product">
-                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
-                    <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' vnd'">Đánh giá</p>
-                    <div class="stars">★★★★★</div>
+                    <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
+                        <div class="product-image-wrapper">
+                            <img th:src="${product.image}" alt="Product Image">
+                        </div>
+                        <div class="product-details">
+                            <h3 th:text="${product.name}" class="product-name"></h3>
+                        </div>
+                        <div class="stars">★★★★★</div>
+                        <div class="price"
+                             th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                    </a>
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
             </div>
@@ -105,7 +119,6 @@
         </div>
     </section>
 
-
     <div class="main-content">
         <div class="featured">
             <div th:each="category, iterStat : ${categories}" th:if="${iterStat.index} < 3" class="category-section">
@@ -114,11 +127,17 @@
                     <div th:each="product, iterStat : ${category.products}"
                          th:if="${iterStat.index} < 3"
                          class="product-item">
-                        <img th:src="${product.image}" alt="Product Image">
-                        <h3 th:text="${product.name}"></h3>
-                        <div class="stars">★★★★★</div>
-                        <div class="price"
-                             th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                        <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
+                            <div class="product-image-wrapper">
+                                <img th:src="${product.image}" alt="Product Image">
+                            </div>
+                            <div class="product-details">
+                                <h3 th:text="${product.name}" class="product-name"></h3>
+                            </div>
+                            <div class="stars">★★★★★</div>
+                            <div class="price"
+                                 th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                        </a>
                         <button>Thêm vào giỏ hàng</button>
                     </div>
 

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <script th:src="@{/js/home.js}"></script>
+</head>
+<body>
+<div th:replace="component/header :: header"></div>
+
+<nav class="nav-bar">
+    <nav class="nav-left">
+        <div class="nav-margin">
+            <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
+            <div id="categoryPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <ul class="main-categories">
+                        <li th:each="category, iterStat : ${categories}" class="category-item"
+                            th:attr="data-index=${iterStat.index}">
+                            <span th:text="${category.name}" class="parent-item" style="cursor:pointer;"></span>
+                        </li>
+                    </ul>
+
+                    <ul class="sub-categories-list">
+                        <li th:each="category, iterStat : ${categories}" class="sub-list"
+                            th:attr="data-index=${iterStat.index}">
+                            <ul>
+                                <li th:each="subCategory, subStat : ${category.subCategories}">
+                                    <span th:text="${subCategory.name}"
+                                          class="child-item"
+                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
+                                          style="cursor:pointer;"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="child-sub-list-wrapper">
+                        <li th:each="category, iterStat : ${categories}">
+                            <ul th:each="subCategory, subStat : ${category.subCategories}"
+                                class="child-sub-list"
+                                th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
+                                style="display: none;">
+                                <li th:each="child, childStat : ${subCategory.subCategories}">
+                                    <span th:text="${child.name}"
+                                          class="grandchild-item"
+                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
+                                          style="cursor:pointer;"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="sale-badge">
+            <a href="#">Siêu Sale</a>
+        </div>
+    </nav>
+
+    <nav class="nav-right">
+        <div class="nav-margin"><a href="#">Tư vấn</a></div>
+        <div class="nav-margin"><a href="#">Đặt lịch</a></div>
+        <div><a href="#">Diễn đàn</a></div>
+    </nav>
+</nav>
+
+<main class="product-detail-container">
+    <section class="product-main">
+        <div class="image-gallery">
+            <img class="main-image" th:src="${product.image}" alt="Product Image">
+        </div>
+
+        <div class="product-info">
+            <div class="status-stock">Còn hàng</div>
+            <div class="product-title">
+                <span class="category" th:text="${product.category.name}"></span>
+                <h2 th:text="${product.name}"></h2>
+            </div>
+            <div class="price-section">
+                <div class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+            </div>
+            <div class="quantity-selector">
+                <label for="qty">Số lượng</label>
+                <input type="number" id="qty" name="qty" min="1" value="1">
+            </div>
+            <div class="action-buttons">
+                <button class="buy-now">Mua ngay</button>
+                <button class="add-to-cart">Thêm vào giỏ hàng</button>
+            </div>
+        </div>
+    </section>
+    <section class="description">
+        <h3>Thông tin về sản phẩm</h3>
+        <p th:text="${product.description}">
+            Mô tả sản phẩm chi tiết sẽ được hiển thị tại đây.
+        </p>
+    </section>
+
+    <section class="featured">
+        <h2>Sản phẩm nổi bật khác</h2>
+        <div class="product-row">
+            <div class="product-item" th:each="item : ${top9Products}">
+                <a th:href="@{/product-detail(productId=${item.productId})}" class="product-card">
+                    <div class="product-image-wrapper">
+                        <img th:src="${item.image}" alt="Product Image">
+                    </div>
+                    <div class="product-details">
+                        <h3 th:text="${item.name}" class="product-name"></h3>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <div class="price"
+                         th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                </a>
+                <button>Thêm vào giỏ hàng</button>
+            </div>
+        </div>
+        <div class="show-more-product">
+            <a class="see-more-link" th:href="@{/view-product}">Xem thêm sản phẩm</a>
+        </div>
+    </section>
+</main>
+
+<div th:replace="component/footer :: footer"></div>
+</body>
+</html>

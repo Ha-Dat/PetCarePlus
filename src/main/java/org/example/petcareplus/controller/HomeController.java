@@ -22,7 +22,7 @@ public class HomeController {
 
     @GetMapping("/home")
     public String Viewhome(Model model) {
-        List<Product> products = productRepository.findTop4ByOrderByProductIdAsc();
+        List<Product> products = productRepository.findTop5ByOrderByProductIdAsc();
         List<Product> product = productRepository.findAll();
 
         List<Category> parentCategories = categoryService.getParentCategory();

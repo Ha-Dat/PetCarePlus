@@ -13,8 +13,9 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    List<Product> findTop4ByOrderByProductIdAsc();
+    List<Product> findTop5ByOrderByProductIdAsc();
     List<Product> findByNameContainingIgnoreCase(String keyword);
+    List<Product> findTop9ByOrderByProductIdAsc();
 
     @Query("SELECT p FROM Product p " +
             "WHERE (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +

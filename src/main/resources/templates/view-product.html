@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>List Product</title>
+    <title>Danh mục sản phẩm</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/header_footer.css}">
     <script th:src="@{/js/home.js}"></script>
@@ -28,8 +28,8 @@
                             th:attr="data-index=${iterStat.index}">
                             <ul>
                                 <li th:each="subCategory, subStat : ${category.subCategories}">
-                        <span th:text="${subCategory.name}" class="child-item"
-                              th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
+                                    <span th:text="${subCategory.name}" class="child-item"
+                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
                                 </li>
                             </ul>
                         </li>
@@ -122,29 +122,44 @@
             <div class="search">
                 <h2 th:if="${searchkeyword != null}">Kết quả tìm kiếm cho: "<span th:text="${searchkeyword}"></span>"</h2>
                 <div class="search-result">
-                    <div th:if="${searchkeyword != null and #lists.isEmpty(result_product)}">
+                    <div th:if="${searchkeyword != null and result_product != null and #lists.isEmpty(result_product)}">
                         <p>Không tìm thấy sản phẩm nào.</p>
                     </div>
-
-                    <div class="product-result"
-                         th:if="${searchkeyword != null and not #lists.isEmpty(result_product)}"
-                         th:each="result_product : ${result_product}">
-                        <div class="product-item">
-                            <img th:src="${result_product.image}" alt="Product Image">
-                            <h3 th:text="${result_product.name}"></h3>
-                            <p th:text="${result_product.price} + ' VND'"></p>
+                    <div class="product-result" th:if="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
+                        <div class="product-item" th:each="result_product : ${result_product}">
+                            <a th:href="@{/product-detail(productId=${result_product.productId})}" class="product-card">
+                                <div class="product-image-wrapper">
+                                    <img th:src="${result_product.image}" alt="Product Image">
+                                </div>
+                                <div class="product-details">
+                                    <h3 th:text="${result_product.name}" class="product-name"></h3>
+                                </div>
+                                <div class="stars">★★★★★</div>
+                                <div class="price"
+                                     th:text="${#numbers.formatDecimal(result_product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                            </a>
                             <button>Thêm vào giỏ hàng</button>
                         </div>
                     </div>
+
                 </div>
             </div>
-            <section class="product-grid">
+
+            <section class="product-grid" th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
                 <h2>Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
-                        <img th:src="${product.image}" alt="Product Image">
-                        <h3 th:text="${product.name}"></h3>
-                        <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
+                        <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
+                            <div class="product-image-wrapper">
+                                <img th:src="${product.image}" alt="Product Image">
+                            </div>
+                            <div class="product-details">
+                                <h3 th:text="${product.name}" class="product-name"></h3>
+                            </div>
+                            <div class="stars">★★★★★</div>
+                            <div class="price"
+                                 th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                        </a>
                         <button>Thêm vào giỏ hàng</button>
                     </div>
                 </div>
@@ -152,14 +167,14 @@
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/view-product(page=${currentPage - 1})}">« Trước</a>
+                            <a th:href="@{/view-product(page=${currentPage - 1}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}">« Trước</a>
                         </li>
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active'">
-                            <a th:href="@{/view-product(page=${i})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/view-product(page=${i}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}" th:text="${i + 1}"></a>
                         </li>
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/view-product(page=${currentPage + 1})}">Tiếp »</a>
+                            <a th:href="@{/view-product(page=${currentPage + 1}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}">Tiếp »</a>
                         </li>
                     </ul>
                 </div>
