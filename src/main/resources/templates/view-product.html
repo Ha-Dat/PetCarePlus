@@ -5,61 +5,10 @@
     <title>Danh mục sản phẩm</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/header_footer.css}">
-    <script th:src="@{/js/home.js}"></script>
+    <script th:src="@{/js/pop_up.js}"></script>
 </head>
 <body>
 <div th:replace="component/header :: header"></div>
-
-<nav class="nav-bar">
-    <nav class="nav-left">
-        <div class="nav-margin">
-            <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
-            <div id="categoryPopup" class="popup" style="display: none;">
-                <div class="popup-content">
-                    <ul class="main-categories">
-                        <li th:each="category, iterStat : ${categories}" class="category-item"
-                            th:attr="data-index=${iterStat.index}">
-                            <span th:text="${category.name}" class="parent-item"></span>
-                        </li>
-                    </ul>
-
-                    <ul class="sub-categories-list">
-                        <li th:each="category, iterStat : ${categories}" class="sub-list"
-                            th:attr="data-index=${iterStat.index}">
-                            <ul>
-                                <li th:each="subCategory, subStat : ${category.subCategories}">
-                                    <span th:text="${subCategory.name}" class="child-item"
-                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <ul class="child-sub-list-wrapper">
-                        <li th:each="category, iterStat : ${categories}">
-                            <ul th:each="subCategory, subStat : ${category.subCategories}"
-                                class="child-sub-list"
-                                th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
-                                style="display: none;">
-                                <li th:each="child : ${subCategory.subCategories}">
-                                    <span th:text="${child.name}"></span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="sale-badge"><a href="#">Siêu Sale</a></div>
-    </nav>
-
-    <nav class="nav-right">
-        <div class="nav-margin"><a href="#">Tư vấn</a></div>
-        <div class="nav-margin"><a href="#">Đặt lịch</a></div>
-        <div><a href="#">Diễn đàn</a></div>
-    </nav>
-</nav>
-
 <main>
     <section class="main-section">
         <a href="home">Trang chủ</a> > Danh sách sản phẩm
@@ -146,7 +95,7 @@
             </div>
 
             <section class="product-grid" th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
-                <h2>Tất cả sản phẩm</h2>
+                <h2 style="display: flow; justify-self: center;">Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">

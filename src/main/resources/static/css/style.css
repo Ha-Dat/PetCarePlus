@@ -208,6 +208,32 @@ body {
     transition: transform 0.5s ease-in-out;
 }
 
+.carousel-btn {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background-color: rgba(200, 200, 200, 0.8);
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
 .carousel-item {
     background: #ffffff;
     border-radius: 10px;
@@ -232,7 +258,6 @@ body {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 15px;
     transition: background 0.3s ease;
 }
 
@@ -307,7 +332,7 @@ body {
     padding: 24px;
     border-radius: 16px;
     margin: 30px auto;
-    max-width: 1200px;
+    max-width: 1000px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -317,17 +342,18 @@ body {
 
 .category-section h2 {
     margin-bottom: 16px;
-    font-size: 22px;
+    font-size: 25px;
     color: #2e7d32;
-    border-left: 5px solid #4caf50;
     padding-left: 12px;
+    display: flow;
+    justify-self: center;
 }
 
 .product-row {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 .product-item {
@@ -699,6 +725,21 @@ body {
     border: 1px solid #ccc;
 }
 
+.unit-stock, .unit-sold {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    gap: 5px;
+    color: #333;
+    border-radius: 6px;
+}
+
+.unit-stock label,
+.unit-sold label {
+    font-weight: bold;
+    min-width: 130px;
+}
+
 .action-buttons {
     display: flex;
     gap: 15px;
@@ -715,12 +756,12 @@ body {
 }
 
 .buy-now {
-    background-color: #ff5722;
+    background-color: #3dba3a;
     color: white;
 }
 
 .buy-now:hover {
-    background-color: #e64a19;
+    background-color: #1d7c02;
 }
 
 .description {
@@ -746,6 +787,8 @@ body {
     align-items: center;
     text-decoration: none;
     border: 1px solid #e0e0e0;
+    margin-bottom: 15px;
+    padding: 0 10px;
     border-radius: 12px;
     overflow: hidden;
     background-color: #fff;
@@ -770,19 +813,20 @@ body {
 }
 
 .product-image-wrapper {
-    width: 70%;
-    padding-top: 100%; /* 1:1 aspect ratio */
-    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .product-image-wrapper img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
 }
+
 
 .product-details {
     text-align: center;

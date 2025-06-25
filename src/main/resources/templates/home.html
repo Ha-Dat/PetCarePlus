@@ -5,68 +5,11 @@
     <title>Trang chủ</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/header_footer.css}">
-    <script th:src="@{/js/home.js}"></script>
+    <script th:src="@{/js/pop_up.js}"></script>
+    <script th:src="@{/js/carousel.js}"></script>
 </head>
 <body>
 <div th:replace="component/header :: header"></div>
-
-<nav class="nav-bar">
-    <nav class="nav-left">
-        <div class="nav-margin">
-            <button class="category-btn" id="categoryBtn">Danh mục sản phẩm</button>
-            <div id="categoryPopup" class="popup" style="display: none;">
-                <div class="popup-content">
-                    <ul class="main-categories">
-                        <li th:each="category, iterStat : ${categories}" class="category-item"
-                            th:attr="data-index=${iterStat.index}">
-                            <span th:text="${category.name}" class="parent-item" style="cursor:pointer;"></span>
-                        </li>
-                    </ul>
-
-                    <ul class="sub-categories-list">
-                        <li th:each="category, iterStat : ${categories}" class="sub-list"
-                            th:attr="data-index=${iterStat.index}">
-                            <ul>
-                                <li th:each="subCategory, subStat : ${category.subCategories}">
-                                    <span th:text="${subCategory.name}"
-                                          class="child-item"
-                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
-                                          style="cursor:pointer;"></span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <ul class="child-sub-list-wrapper">
-                        <li th:each="category, iterStat : ${categories}">
-                            <ul th:each="subCategory, subStat : ${category.subCategories}"
-                                class="child-sub-list"
-                                th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
-                                style="display: none;">
-                                <li th:each="child, childStat : ${subCategory.subCategories}">
-                                    <span th:text="${child.name}"
-                                          class="grandchild-item"
-                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
-                                          style="cursor:pointer;"></span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="sale-badge">
-            <a href="#">Siêu Sale</a>
-        </div>
-    </nav>
-
-    <nav class="nav-right">
-        <div class="nav-margin"><a href="#">Tư vấn</a></div>
-        <div class="nav-margin"><a href="#">Đặt lịch</a></div>
-        <div><a href="#">Diễn đàn</a></div>
-    </nav>
-</nav>
-
 <main>
     <section class="main-section">
         <a href="home">Trang chủ</a>
@@ -74,6 +17,7 @@
 
     <div class="featured-product">
         <section class="featured-products">
+            <button class="carousel-btn prev" id="prevBtn">❮</button>
             <div class="carousel-track" id="carouselTrack">
                 <div class="carousel-item" th:each="product : ${products}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
@@ -104,6 +48,7 @@
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
             </div>
+            <button class="carousel-btn next" id="nextBtn">❯</button>
         </section>
     </div>
 
@@ -144,13 +89,13 @@
                     <div class="product-item see-more-item"
                          th:if="${category.products.size() > 3}">
                         <a class="see-more-link"
-                           th:href="@{'/view-product'(category=${category.name})}">Xem thêm sản phẩm</a>
+                           th:href="@{'/view-product'(category=${category.name})}">Xem thêm sản phẩm tương tự</a>
                     </div>
                 </div>
             </div>
 
             <div class="show-more-product">
-                <a class="see-more-link" href="view-product">Xem thêm sản phẩm →</a>
+                <a class="see-more-link" href="view-product">Tất cả sản phẩm</a>
             </div>
         </div>
     </div>
