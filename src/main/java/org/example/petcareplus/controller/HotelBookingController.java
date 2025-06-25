@@ -150,7 +150,6 @@ public class HotelBookingController {
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
-            petProfile.setAge(2);
             petProfileRepository.save(petProfile);
 
             // gán dữ liệu từ form

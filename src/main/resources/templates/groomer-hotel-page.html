@@ -236,7 +236,7 @@
         <div class="pagination">
             <!-- Nút Previous -->
             <span th:if="${currentPage > 0}">
-            <a th:href="@{'/groomer_hotel_page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+            <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
         </span>
             <!-- Tính startPage và endPage -->
             <th:block th:with="
@@ -244,14 +244,14 @@
             endPage=${T(java.lang.Math).min(startPage + 4, totalPages - 1)}">
                 <!-- Danh sách trang -->
                 <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
-                <a th:href="@{'/groomer_hotel_page'(page=${i}, size=8)}"
+                <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}"
                    th:text="${i + 1}"
                    th:classappend="${i == currentPage} ? 'active' : ''"></a>
             </span>
             </th:block>
             <!-- Nút Next -->
             <span th:if="${currentPage < totalPages - 1}">
-            <a th:href="@{'/groomer_hotel_page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+            <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
         </span>
         </div>
     </div>
