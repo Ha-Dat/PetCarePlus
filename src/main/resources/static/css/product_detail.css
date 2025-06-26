@@ -1,0 +1,140 @@
+/* product-detail*/
+.product-detail-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.product-main {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.image-gallery {
+    flex: 1;
+    text-align: center;
+}
+
+.main-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-stock {
+    color: green;
+    font-weight: bold;
+}
+
+.product-title .category {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.product-title h2 {
+    font-size: 26px;
+    margin: 0;
+    color: #333;
+}
+
+.price-section {
+    font-size: 20px;
+}
+
+.price {
+    color: #d54b4b;
+    font-weight: bold;
+}
+
+.sale-value {
+    background-color: #fdd835;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.quantity-selector label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.quantity-selector input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.unit-stock, .unit-sold {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    gap: 5px;
+    color: #333;
+    border-radius: 6px;
+}
+
+.unit-stock label,
+.unit-sold label {
+    font-weight: bold;
+    min-width: 130px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.action-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.buy-now {
+    background-color: #3dba3a;
+    color: white;
+}
+
+.buy-now:hover {
+    background-color: #1d7c02;
+}
+
+.description {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.description h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.description p {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+}

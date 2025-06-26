@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh mục sản phẩm</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/nagivation.css}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/view_product_main.css}">
+    <link rel="stylesheet" th:href="@{/css/pagination.css}">
     <link rel="stylesheet" th:href="@{/css/header_footer.css}">
     <script th:src="@{/js/pop_up.js}"></script>
 </head>
@@ -94,7 +99,7 @@
                 </div>
             </div>
 
-            <section class="product-grid" th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
+            <section th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
                 <h2 style="display: flow; justify-self: center;">Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
@@ -115,15 +120,95 @@
 
                 <div class="pagination">
                     <ul>
+                        <!-- Nút "Trước" -->
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/view-product(page=${currentPage - 1}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}">« Trước</a>
+                            <!-- Không lọc -->
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1})}">« Trước</a>
+
+                            <!-- Chỉ lọc theo keyword -->
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, keyword=${keyword})}">« Trước</a>
+
+                            <!-- Chỉ lọc theo category -->
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, category=${selectedCategory})}">« Trước</a>
+
+                            <!-- Chỉ lọc theo priceRange -->
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, priceRange=${priceRange})}">« Trước</a>
+
+                            <!-- keyword + category -->
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, keyword=${keyword}, category=${selectedCategory})}">« Trước</a>
+
+                            <!-- keyword + priceRange -->
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, keyword=${keyword}, priceRange=${priceRange})}">« Trước</a>
+
+                            <!-- category + priceRange -->
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, category=${selectedCategory}, priceRange=${priceRange})}">« Trước</a>
+
+                            <!-- keyword + category + priceRange -->
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, keyword=${keyword}, category=${selectedCategory}, priceRange=${priceRange})}">« Trước</a>
                         </li>
+
+                        <!-- Các số trang -->
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active'">
-                            <a th:href="@{/view-product(page=${i}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}" th:text="${i + 1}"></a>
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${i})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${i}, keyword=${keyword})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${i}, category=${selectedCategory})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${i}, keyword=${keyword}, category=${selectedCategory})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, keyword=${keyword}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, category=${selectedCategory}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
+
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, keyword=${keyword}, category=${selectedCategory}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
                         </li>
+
+                        <!-- Nút "Tiếp" -->
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/view-product(page=${currentPage + 1}, keyword=${param.keyword}, category=${param.category}, priceRange=${param.priceRange})}">Tiếp »</a>
+                            <!-- Các điều kiện y hệt như ở nút "Trước", chỉ thay page + 1 -->
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1})}">Tiếp »</a>
+
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, keyword=${keyword})}">Tiếp »</a>
+
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, category=${selectedCategory})}">Tiếp »</a>
+
+                            <a th:if="${keyword == null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, priceRange=${priceRange})}">Tiếp »</a>
+
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, keyword=${keyword}, category=${selectedCategory})}">Tiếp »</a>
+
+                            <a th:if="${keyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, keyword=${keyword}, priceRange=${priceRange})}">Tiếp »</a>
+
+                            <a th:if="${keyword == null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, category=${selectedCategory}, priceRange=${priceRange})}">Tiếp »</a>
+
+                            <a th:if="${keyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, keyword=${keyword}, category=${selectedCategory}, priceRange=${priceRange})}">Tiếp »</a>
                         </li>
                     </ul>
                 </div>
