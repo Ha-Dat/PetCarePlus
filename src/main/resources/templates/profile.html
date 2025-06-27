@@ -103,6 +103,7 @@
                         <label class="col-sm-3 col-form-label">Họ tên:</label>
                         <div class="col-sm-9">
                             <input type="text" th:field="*{account.name}" class="form-control"/>
+                            <div th:if="${#fields.hasErrors('account.name')}" th:errors="*{account.name}" class="text-danger small"></div>
                         </div>
                     </div>
 
@@ -110,13 +111,19 @@
                         <label class="col-sm-3 col-form-label">Số điện thoại:</label>
                         <div class="col-sm-9">
                             <input type="text" th:field="*{account.phone}" class="form-control"/>
+                            <div th:if="${#fields.hasErrors('account.phone')}" th:errors="*{account.phone}" class="text-danger small"></div>
                         </div>
                     </div>
 
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Giới tính:</label>
                         <div class="col-sm-9">
-                            <input type="text" th:field="*{gender}" class="form-control"/>
+                            <select th:field="*{gender}" class="form-select">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
                         </div>
                     </div>
 
@@ -124,16 +131,19 @@
                         <label class="col-sm-3 col-form-label">Ngày sinh:</label>
                         <div class="col-sm-9">
                             <input type="date" th:field="*{dob}" class="form-control"/>
+                            <div th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-danger small"></div>
+
                         </div>
                     </div>
                     <!-- Tỉnh / Thành phố -->
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Tỉnh / Thành phố:</label>
                         <div class="col-sm-9">
-                            <select id="city" name="cityId" class="form-select">
+                            <select id="city" name="cityId" class="form-select"
+                                    th:attr="data-init-city=${profile.city != null ? profile.city.cityId : ''}">
                                 <option value="">-- Chọn tỉnh/thành phố --</option>
-                                <option th:each="c : ${cities}" th:value="${c.cityId}" th:text="${c.name}"></option>
                             </select>
+
                         </div>
                     </div>
 
@@ -141,7 +151,8 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Quận / Huyện:</label>
                         <div class="col-sm-9">
-                            <select id="district" name="districtId" class="form-select">
+                            <select id="district" th:field="*{districtId}" class="form-select"
+                                    th:attr="data-init-district=${profile.districtId}">
                                 <option value="">-- Chọn quận/huyện --</option>
                             </select>
                         </div>
@@ -151,12 +162,12 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Phường / Xã:</label>
                         <div class="col-sm-9">
-                            <select id="ward" name="wardId" class="form-select">
+                            <select id="ward" th:field="*{wardId}" class="form-select"
+                                    th:attr="data-init-ward=${profile.wardId}">
                                 <option value="">-- Chọn phường/xã --</option>
                             </select>
                         </div>
                     </div>
-
 
                     <div class="text-end">
                         <a href="/" class="btn btn-success btn-custom">Quay lại</a>
@@ -167,32 +178,94 @@
         </form>
     </div>
 </div>
-<script>
-    document.getElementById("city").addEventListener("change", function () {
-        const cityId = this.value;
-        fetch(`/api/location/districts?cityId=${cityId}`)
-            .then(res => res.json())
-            .then(data => {
-                const districtSelect = document.getElementById("district");
-                districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-                data.forEach(d => {
-                    districtSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                });
-                document.getElementById("ward").innerHTML = '<option value="">-- Chọn phường/xã --</option>';
-            });
-    });
 
-    document.getElementById("district").addEventListener("change", function () {
-        const districtId = this.value;
-        fetch(`/api/location/wards?districtId=${districtId}`)
-            .then(res => res.json())
-            .then(data => {
-                const wardSelect = document.getElementById("ward");
-                wardSelect.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
-                data.forEach(w => {
-                    wardSelect.innerHTML += `<option value="${w.id}">${w.name}</option>`;
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const city = document.getElementById("city"),
+            district = document.getElementById("district"),
+            ward = document.getElementById("ward");
+
+        loadCities();
+
+        city.addEventListener("change", () => loadDistricts(city.value));
+        district.addEventListener("change", () => loadWards(district.value));
+
+        function loadCities() {
+            city.innerHTML = '<option>-- Đang tải... --</option>';
+
+            fetch("https://provinces.open-api.vn/api/p")
+                .then(res => res.json())
+                .then(data => {
+                    city.innerHTML = '<option value="">-- Chọn tỉnh/thành phố --</option>';
+
+                    const initCity = city.getAttribute("data-init-city");
+                    data.forEach(c => {
+                        const opt = document.createElement("option");
+                        opt.value = c.code;
+                        opt.text = c.name;
+                        if (initCity && initCity == c.code) {
+                            opt.selected = true;
+                            loadDistricts(c.code); // Nếu đã có sẵn city, load luôn district
+                        }
+                        city.appendChild(opt);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi load tỉnh/thành phố:", error);
                 });
-            });
+        }
+
+        function loadDistricts(cityCode) {
+            district.innerHTML = '<option>-- Đang tải... --</option>';
+            ward.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+            if (!cityCode) return;
+
+            fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    district.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+
+                    const initDistrict = district.getAttribute("data-init-district");
+                    data.districts.forEach(d => {
+                        const opt = document.createElement("option");
+                        opt.value = d.code;
+                        opt.text = d.name;
+                        if (initDistrict && initDistrict == d.code) {
+                            opt.selected = true;
+                            loadWards(d.code); // Nếu đã có sẵn district, load ward luôn
+                        }
+                        district.appendChild(opt);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi load quận/huyện:", error);
+                });
+        }
+
+        function loadWards(districtCode) {
+            ward.innerHTML = '<option>-- Đang tải... --</option>';
+            if (!districtCode) return;
+
+            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    ward.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+
+                    const initWard = ward.getAttribute("data-init-ward");
+                    data.wards.forEach(w => {
+                        const opt = document.createElement("option");
+                        opt.value = w.code;
+                        opt.text = w.name;
+                        if (initWard && initWard == w.code) {
+                            opt.selected = true;
+                        }
+                        ward.appendChild(opt);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi load phường/xã:", error);
+                });
+        }
     });
 </script>
 
