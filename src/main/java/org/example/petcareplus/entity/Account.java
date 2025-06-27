@@ -1,6 +1,7 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,9 +21,12 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer accountId;
 
-    @Length(min = 2, max = 100)
+    @NotBlank(message = "Họ tên không được để trống")
+    @Length(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự")
     private String name;
 
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Pattern(regexp = "0[0-9]{9}", message = "Số điện thoại phải là 10 số và bắt đầu bằng 0")
     @Column(unique = true, nullable = false)
     private String phone;
 
