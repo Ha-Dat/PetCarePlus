@@ -784,6 +784,7 @@
                     <form th:action="@{/add-to-cart}" method="post">
                         <input type="hidden" name="productId" th:value="${product.productId}" />
                         <input type="hidden" name="quantity" id="formQuantity" value="1" />
+                        <div id="unitInStock" style="display: none;" th:text="${product.unitInStock}"></div>
                         <button type="button" class="add-to-cart" id="detailAddToCartBtn"
                                 th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
                     </form>
@@ -943,7 +944,16 @@
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+
+        // Màu nền theo loại thông báo
+        if (type === 'error') {
+            toast.style.backgroundColor = '#e74c3c'; // đỏ
+        } else if (type === 'warning') {
+            toast.style.backgroundColor = '#f39c12'; // cam
+        } else {
+            toast.style.backgroundColor = '#4caf50'; // xanh lá
+        }
+
         toast.innerText = message;
         document.body.appendChild(toast);
 
@@ -955,12 +965,26 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        // 1. Xử lý thêm vào giỏ hàng từ product-detail
+        // 1. Thêm từ trang product-detail
         const detailBtn = document.getElementById("detailAddToCartBtn");
         if (detailBtn) {
             detailBtn.addEventListener("click", () => {
                 const productId = detailBtn.getAttribute("data-product-id");
-                const qty = document.getElementById("qty")?.value || 1;
+                const qtyInput = document.getElementById("qty");
+                const qty = parseInt(qtyInput?.value || 1);
+
+                // Kiểm tra số lượng hợp lệ
+                if (qty <= 0) {
+                    showToast("⚠️ Số lượng không hợp lệ", "warning");
+                    return;
+                }
+
+                // Kiểm tra vượt quá kho nếu có
+                const unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
+                if (!isNaN(unitInStock) && qty > unitInStock) {
+                    showToast("⚠️ Không đủ hàng trong kho", "warning");
+                    return;
+                }
 
                 const params = new URLSearchParams();
                 params.append("productId", productId);
@@ -972,14 +996,18 @@
                     body: params
                 })
                     .then(res => {
-                        showToast("✅ Đã thêm vào giỏ hàng!");
-                        setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if (res.ok) {
+                            showToast("✅ Đã thêm vào giỏ hàng!");
+                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        } else {
+                            showToast("❌ Thêm vào giỏ hàng thất bại", "error");
+                        }
                     })
-                    .catch(() => showToast("❌ Lỗi khi thêm sản phẩm", "error"));
+                    .catch(() => showToast("❌ Lỗi kết nối", "error"));
             });
         }
 
-        // 2. Xử lý các nút js-add-to-cart (ở sản phẩm nổi bật, view-product...)
+        // 2. Thêm từ các nút nổi bật / view-product
         const allAddToCartBtns = document.querySelectorAll(".js-add-to-cart");
         allAddToCartBtns.forEach(btn => {
             btn.addEventListener("click", () => {
@@ -995,10 +1023,14 @@
                     body: params
                 })
                     .then(res => {
-                        showToast("✅ Đã thêm vào giỏ hàng!");
-                        setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if (res.ok) {
+                            showToast("✅ Đã thêm vào giỏ hàng!");
+                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        } else {
+                            showToast("❌ Không thể thêm sản phẩm", "error");
+                        }
                     })
-                    .catch(() => showToast("❌ Lỗi khi thêm sản phẩm", "error"));
+                    .catch(() => showToast("❌ Lỗi kết nối", "error"));
             });
         });
     });

@@ -447,9 +447,16 @@
         }
 
         .delete-btn {
-            color: red;
+            background: red;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        .delete-btn:hover {
+            background: #b50303;
         }
 
         .cart-actions {
@@ -473,8 +480,16 @@
             background-color: #f44336;
         }
 
+        .remove-selected:hover {
+            background: #b50303;
+        }
+
         .checkout-btn {
             background-color: #4CAF50;
+        }
+
+        .checkout-btn:hover {
+            background-color: #3e8e41;
         }
 
         .action {
@@ -507,6 +522,25 @@
 
         .main-section a:hover{
             color: #013301;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f39c12;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 9999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -673,6 +707,21 @@
     // 2. CẬP NHẬT SỐ LƯỢNG GIỎ HÀNG VÀ TỔNG TIỀN
     // ======================================
     document.addEventListener('DOMContentLoaded', () => {
+        // Hàm hiện thông báo toast
+        function showToast(message, type = "warning") {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#f39c12";
+            toast.innerText = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add("show"), 100);
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
         document.querySelectorAll('.cart-item').forEach(item => {
             const decreaseBtn = item.querySelector('.decrease');
             const increaseBtn = item.querySelector('.increase');
@@ -717,6 +766,8 @@
                 if (qty > 1) {
                     qtyInput.value = --qty;
                     updateCart(qty);
+                } else {
+                    showToast("Số lượng sản phẩm không thể bằng 0");
                 }
             });
 
