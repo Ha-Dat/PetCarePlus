@@ -7,6 +7,7 @@ import org.example.petcareplus.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,20 +20,17 @@ import java.util.UUID;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    // Dữ liệu giả lập để demo (chưa kết nối database)
     private Profile profile = new Profile();
-
 
     @Autowired
     private CityRepository cityRepository;
 
     @GetMapping
     public String viewProfile(Model model) {
-        // Dữ liệu mặc định
         if (profile.getAccount() == null) {
             Account acc = new Account();
             acc.setName("Nguyễn Văn A");
-            acc.setPhone("0901234567");
+            acc.setPhone("0912345678");
 
             profile.setAccount(acc);
             profile.setGender("Nam");
@@ -45,12 +43,18 @@ public class ProfileController {
         return "profile";
     }
 
-
     @PostMapping("/update")
-    public String updateProfile(@ModelAttribute("profile") Profile formProfile,
-                                @RequestParam("imageFile") MultipartFile imageFile) {
+    public String updateProfile(
+            @Valid @ModelAttribute("profile") Profile formProfile,
+            BindingResult result,
+            @RequestParam("imageFile") MultipartFile imageFile,
+            Model model) {
 
-        // Nếu có ảnh mới thì lưu lại
+        if (result.hasErrors()) {
+            model.addAttribute("cities", cityRepository.findAll());
+            return "profile";
+        }
+
         if (!imageFile.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
             File dest = new File("src/main/resources/static/images/" + fileName);
@@ -61,15 +65,18 @@ public class ProfileController {
                 e.printStackTrace();
             }
         } else {
-            formProfile.setAvatarPath(profile.getAvatarPath()); // giữ nguyên ảnh cũ
+            formProfile.setAvatarPath(profile.getAvatarPath());
         }
 
-        profile = formProfile; // cập nhật lại thông tin hồ sơ
+        profile.setAccount(formProfile.getAccount());
+        profile.setGender(formProfile.getGender());
+        profile.setDob(formProfile.getDob());
+        profile.setAvatarPath(formProfile.getAvatarPath());
+
+        profile.setCity(formProfile.getCity());
+        profile.setDistrictId(formProfile.getDistrictId());
+        profile.setWardId(formProfile.getWardId());
+
         return "redirect:/profile";
     }
 }
-
-
-
-
-
