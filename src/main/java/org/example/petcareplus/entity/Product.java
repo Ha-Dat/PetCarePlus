@@ -11,9 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Products")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,4 +49,114 @@ public class Product {
     private List<OrderItem> orderItems;
 
     //method thêm trong trường hợp lombok không hoạt động
+    public Product(Integer productId, String name, String description, BigDecimal price,
+                   int unitInStock, int unitSold, String status, String image,
+                   Category category, List<ProductFeedback> feedbacks, List<OrderItem> orderItems) {
+        this.productId = productId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.unitInStock = unitInStock;
+        this.unitSold = unitSold;
+        this.status = status;
+        this.image = image;
+        this.category = category;
+        this.feedbacks = feedbacks;
+        this.orderItems = orderItems;
+    }
+
+    public Product() {
+
+    }
+
+    // Getters and Setters
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getUnitInStock() {
+        return unitInStock;
+    }
+
+    public void setUnitInStock(int unitInStock) {
+        this.unitInStock = unitInStock;
+    }
+
+    public int getUnitSold() {
+        return unitSold;
+    }
+
+    public void setUnitSold(int unitSold) {
+        this.unitSold = unitSold;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public List<ProductFeedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<ProductFeedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
 }

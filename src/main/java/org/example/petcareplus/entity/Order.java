@@ -12,9 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Orders")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +37,73 @@ public class Order {
     private List<OrderItem> orderItems;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Order(Integer orderId, LocalDateTime orderDate, String status, BigDecimal totalPrice, String deliverAddress, Promotion promotion, List<OrderItem> orderItems) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.deliverAddress = deliverAddress;
+        this.promotion = promotion;
+        this.orderItems = orderItems;
+    }
+
+    public Order() {
+    }
+
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getDeliverAddress() {
+        return deliverAddress;
+    }
+
+    public void setDeliverAddress(String deliverAddress) {
+        this.deliverAddress = deliverAddress;
+    }
+
+    public Promotion getPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }

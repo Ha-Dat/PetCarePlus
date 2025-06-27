@@ -9,9 +9,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Categories")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +28,53 @@ public class Category {
     private List<Product> products;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Category(Integer categoryId, String name, Category parent, List<Category> subCategories, List<Product> products) {
+        this.categoryId = categoryId;
+        this.name = name;
+        this.parent = parent;
+        this.subCategories = subCategories;
+        this.products = products;
+    }
+    public Category() {}
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Category getParent() {
+        return parent;
+    }
+
+    public void setParent(Category parent) {
+        this.parent = parent;
+    }
+
+    public List<Category> getSubCategories() {
+        return subCategories;
+    }
+
+    public void setSubCategories(List<Category> subCategories) {
+        this.subCategories = subCategories;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 }
