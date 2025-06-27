@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Cart</title>
-    <link rel="stylesheet" th:href="@{/css/base.css}">
-    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
-    <link rel="stylesheet" th:href="@{/css/nagivation.css}">
-    <script th:src="@{/js/pop_up.js}"></script>
     <style>
         /* Base Styles */
         body {
@@ -584,7 +580,7 @@
     <div class="action">
         <span>Tổng cộng: <span class="total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
         <div class="cart-actions">
-            <button class="remove-selected">xóa khỏi giỏ hàng</button>
+            <button id="clearCartBtn" class="remove-selected">xóa khỏi giỏ hàng</button>
             <button class="checkout-btn">Mua Hàng</button>
         </div>
     </div>
@@ -707,7 +703,7 @@
     // 2. CẬP NHẬT SỐ LƯỢNG GIỎ HÀNG VÀ TỔNG TIỀN
     // ======================================
     document.addEventListener('DOMContentLoaded', () => {
-        // Hàm hiện thông báo toast
+        // Hiện toast thông báo
         function showToast(message, type = "warning") {
             const toast = document.createElement("div");
             toast.className = "toast";
@@ -722,6 +718,7 @@
             }, 2000);
         }
 
+        // Xử lý tăng/giảm số lượng và cập nhật cart
         document.querySelectorAll('.cart-item').forEach(item => {
             const decreaseBtn = item.querySelector('.decrease');
             const increaseBtn = item.querySelector('.increase');
@@ -730,12 +727,8 @@
             const subtotalText = item.querySelector('.subtotal');
             const productId = item.getAttribute('data-product-id');
 
-            // Hàm chuyển chuỗi giá thành số
-            const parsePrice = (priceStr) => {
-                return Number(priceStr.replace(/[^\d]/g, ''));
-            };
+            const parsePrice = (priceStr) => Number(priceStr.replace(/[^\d]/g, ''));
 
-            // Gửi request cập nhật số lượng lên server
             const updateCart = (newQty) => {
                 fetch('/update-cart', {
                     method: 'POST',
@@ -744,12 +737,10 @@
                 })
                     .then(res => res.json())
                     .then(data => {
-                        // Cập nhật tiền của sản phẩm
                         const price = parsePrice(priceText.innerText);
                         const newSubtotal = price * newQty;
                         subtotalText.innerText = newSubtotal.toLocaleString('vi-VN') + ' đ';
 
-                        // Cập nhật tổng tiền toàn bộ giỏ hàng
                         const totalAmount = document.querySelector('.total-amount');
                         if (totalAmount && data.total !== undefined) {
                             totalAmount.innerText = data.total.toLocaleString('vi-VN') + ' đ';
@@ -760,24 +751,69 @@
                     });
             };
 
-            // Nút giảm số lượng
             decreaseBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyInput.value);
                 if (qty > 1) {
                     qtyInput.value = --qty;
                     updateCart(qty);
                 } else {
-                    showToast("Số lượng sản phẩm không thể bằng 0");
+                    showToast("⚠️ Số lượng sản phẩm không thể bằng 0", "warning");
                 }
             });
 
-            // Nút tăng số lượng
             increaseBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyInput.value);
                 qtyInput.value = ++qty;
                 updateCart(qty);
             });
         });
+
+        // Xử lý xóa từng sản phẩm
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const row = btn.closest(".cart-item");
+                const productId = row.getAttribute("data-product-id");
+
+                if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+                    fetch("/remove-from-cart", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: new URLSearchParams({ productId })
+                    })
+                        .then(res => {
+                            if (res.ok) {
+                                row.remove();
+                                showToast("🗑️ Đã xóa sản phẩm thành công");
+                                fetch("/cart-total")
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        const totalSpan = document.querySelector(".total-amount");
+                                        totalSpan.innerText = data.total.toLocaleString('vi-VN') + " đ";
+                                    });
+                            } else {
+                                showToast("❌ Xóa sản phẩm thất bại", "error");
+                            }
+                        })
+                        .catch(() => showToast("❌ Lỗi kết nối", "error"));
+                }
+            });
+        });
+
+        // Xử lý xóa toàn bộ giỏ hàng
+        const clearCartBtn = document.getElementById("clearCartBtn");
+        if (clearCartBtn) {
+            clearCartBtn.addEventListener("click", () => {
+                if (confirm("Bạn muốn xóa hết sản phẩm trong giỏ hàng?")) {
+                    fetch("/clear-cart", { method: "POST" })
+                        .then(() => {
+                            showToast("🗑️ Đã xóa hết sản phẩm!");
+                            setTimeout(() => window.location.reload(), 1500);
+                        })
+                        .catch(() => showToast("❌ Lỗi khi xóa giỏ hàng!", "error"));
+                }
+            });
+        }
     });
 </script>
 </html>

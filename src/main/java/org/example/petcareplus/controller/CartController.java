@@ -104,5 +104,40 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/remove-from-cart")
+    @ResponseBody
+    public ResponseEntity<?> removeFromCart(@RequestParam("productId") Integer productId,
+                                            HttpSession session) {
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+        if (cart != null) {
+            cart.remove(productId);
+            session.setAttribute("cart", cart);
+        }
+        return ResponseEntity.ok().build();
+    }
 
+    @PostMapping("/clear-cart")
+    @ResponseBody
+    public ResponseEntity<?> clearCart(HttpSession session) {
+        session.removeAttribute("cart");
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/cart-total")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCartTotal(HttpSession session) {
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+        BigDecimal total = BigDecimal.ZERO;
+        if (cart != null) {
+            for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+                Product product = productService.getProductById(entry.getKey()).orElse(null);
+                if (product != null) {
+                    total = total.add(product.getPrice().multiply(BigDecimal.valueOf(entry.getValue())));
+                }
+            }
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", total);
+        return ResponseEntity.ok(result);
+    }
 }
