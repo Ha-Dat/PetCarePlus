@@ -1,9 +1,13 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +23,7 @@ public class Profile {
     private Integer profileId;
 
     @OneToOne
+    @Valid
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -29,8 +34,11 @@ public class Profile {
     private Integer districtId;
     private Integer wardId;
 
+    @NotBlank(message = "Giới tính không được để trống")
     private String gender;
 
+    @NotNull(message = "Ngày sinh không được để trống")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
     private String avatarPath;
