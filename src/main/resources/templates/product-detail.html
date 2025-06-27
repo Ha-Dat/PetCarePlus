@@ -521,6 +521,15 @@
             background-color: #1d7c02;
         }
 
+        .add-to-cart {
+            background-color: #ff8800;
+            color: white;
+        }
+
+        .add-to-cart:hover {
+            background-color: #ff6600;
+        }
+
         .description {
             background-color: #f9f9f9;
             padding: 20px;
@@ -715,6 +724,25 @@
         footer a:hover {
             color: #2e7d32;
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 9999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -753,7 +781,12 @@
                 </div>
                 <div class="action-buttons">
                     <button class="buy-now">Mua ngay</button>
-                    <button class="add-to-cart">Thêm vào giỏ hàng</button>
+                    <form th:action="@{/add-to-cart}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.productId}" />
+                        <input type="hidden" name="quantity" id="formQuantity" value="1" />
+                        <button type="button" class="add-to-cart" id="detailAddToCartBtn"
+                                th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -777,9 +810,14 @@
                         </div>
                         <div class="stars">★★★★★</div>
                         <div class="price"
-                             th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                             th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                     </a>
-                    <button>Thêm vào giỏ hàng</button>
+                    <form th:action="@{/add-to-cart}" method="post">
+                        <input type="hidden" name="productId" th:value="${item.productId}"/>
+                        <input type="hidden" name="quantity" value="1"/>
+                        <button type="button" class="add-to-cart js-add-to-cart"
+                                th:attr="data-product-id=${item.productId}">Thêm vào giỏ hàng</button>
+                    </form>
                 </div>
             </div>
             <div class="show-more-product">
@@ -890,6 +928,77 @@
                 const keyword = childItem ? childItem.textContent.trim() : "";
 
                 window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+            });
+        });
+    });
+
+    // Đồng bộ giá trị từ input số lượng về input hidden trước khi submit
+    const qtyInput = document.getElementById('qty');
+    const formQtyInput = document.getElementById('formQuantity');
+    qtyInput.addEventListener('input', () => {
+        formQtyInput.value = qtyInput.value;
+    });
+
+    // Hiện toast thông báo
+    function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+        toast.innerText = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add("show"), 100);
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Xử lý thêm vào giỏ hàng từ product-detail
+        const detailBtn = document.getElementById("detailAddToCartBtn");
+        if (detailBtn) {
+            detailBtn.addEventListener("click", () => {
+                const productId = detailBtn.getAttribute("data-product-id");
+                const qty = document.getElementById("qty")?.value || 1;
+
+                const params = new URLSearchParams();
+                params.append("productId", productId);
+                params.append("quantity", qty);
+
+                fetch("/add-to-cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params
+                })
+                    .then(res => {
+                        showToast("✅ Đã thêm vào giỏ hàng!");
+                        setTimeout(() => window.location.href = "/view-cart", 1500);
+                    })
+                    .catch(() => showToast("❌ Lỗi khi thêm sản phẩm", "error"));
+            });
+        }
+
+        // 2. Xử lý các nút js-add-to-cart (ở sản phẩm nổi bật, view-product...)
+        const allAddToCartBtns = document.querySelectorAll(".js-add-to-cart");
+        allAddToCartBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const productId = btn.getAttribute("data-product-id");
+
+                const params = new URLSearchParams();
+                params.append("productId", productId);
+                params.append("quantity", 1); // mặc định là 1
+
+                fetch("/add-to-cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params
+                })
+                    .then(res => {
+                        showToast("✅ Đã thêm vào giỏ hàng!");
+                        setTimeout(() => window.location.href = "/view-cart", 1500);
+                    })
+                    .catch(() => showToast("❌ Lỗi khi thêm sản phẩm", "error"));
             });
         });
     });
