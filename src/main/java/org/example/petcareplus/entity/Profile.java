@@ -1,9 +1,7 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,18 +16,72 @@ public class Profile {
     private Integer profileId;
 
     @OneToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
 
-    private Integer districtId;
-    private Integer wardId;
+    @ManyToOne
+    @JoinColumn(name = "district_id")
+    private District district;
+
+    @ManyToOne
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
 
     @OneToMany(mappedBy = "profile")
     private List<PetProfile> petProfiles;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+
+    public Integer getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(Integer profileId) {
+        this.profileId = profileId;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public Ward getWard() {
+        return ward;
+    }
+
+    public void setWard(Ward ward) {
+        this.ward = ward;
+    }
+
+    public List<PetProfile> getPetProfiles() {
+        return petProfiles;
+    }
+
+    public void setPetProfiles(List<PetProfile> petProfiles) {
+        this.petProfiles = petProfiles;
+    }
 }

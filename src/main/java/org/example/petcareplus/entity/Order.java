@@ -17,27 +17,36 @@ import java.util.List;
 @AllArgsConstructor
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @Column(nullable = false)
-    private LocalDateTime orderDate;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
-    @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false, scale = 2, precision = 10)
-    private BigDecimal totalPrice;
-
-    @Column(nullable = false)
-    private String deliverAddress;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
+
+    private LocalDateTime orderDate;
+
+    private String status;
+
+    private BigDecimal totalPrice;
+
+    @Column(columnDefinition = "TEXT")
+    private String deliverAddress;
+
+    private BigDecimal shippingFee;
+
+    private BigDecimal discountAmount;
+
+    @Column(nullable = false)
+    private String paymentMethod;
+
+    @Column(columnDefinition = "TEXT")
+    private String note;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
 
-    //method thêm trong trường hợp lombok không hoạt động
 }
