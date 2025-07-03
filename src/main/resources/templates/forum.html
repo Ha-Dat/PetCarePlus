@@ -231,12 +231,18 @@
                                 </div>
 
                                 <!-- Post Title -->
-                                <a th:href="@{'/post/' + ${post.postId}}">
+                                <a th:href="@{'/post-detail/' + ${post.postId}}">
                                     <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer"
                                             th:text="${post.title}">
                                         Tiêu đề
                                     </h3>
                                 </a>
+
+                                <!-- Media -->
+                                <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
+                                     th:if="${post.image != null}">
+                                    <img th:src="${post.image}" alt="" class="w-full h-auto object-cover"/>
+                                </div>
 
                                 <!-- Post Content -->
                                 <p class="text-sm text-muted-foreground mb-3 line-clamp-3"
@@ -244,15 +250,9 @@
                                     Nội dung...
                                 </p>
 
-                                <!-- Media -->
-                                <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
-                                        th:if="${post.image != null}">
-                                    <img th:src="${post.image}" alt="" class="w-full h-auto object-cover"/>
-                                </div>
-
                                 <!-- Post Actions -->
                                 <div class="flex items-center space-x-2">
-                                    <a th:href="@{'/post/' + ${post.postId}}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                                    <a th:href="@{'/post-detail/' + ${post.postId}}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
                                         <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                                         </svg>
@@ -467,15 +467,15 @@
                 <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer">${post.title}</h3>
               </a>
 
-              <!-- Post Content -->
-              <p class="text-sm text-muted-foreground mb-3 line-clamp-3">${post.description}</p>
-
               <!-- Media -->
               ${post.image ? `
                 <div class="mb-3 rounded-md overflow-hidden max-h-96 relative">
                   <img src="${post.image}" alt="" class="w-full h-auto object-cover"/>
                 </div>
               ` : ''}
+
+              <!-- Post Content -->
+              <p class="text-sm text-muted-foreground mb-3 line-clamp-3">${post.description}</p>
 
               <!-- Post Actions -->
               <div class="flex items-center space-x-2">

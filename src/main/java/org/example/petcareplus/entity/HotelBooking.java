@@ -92,4 +92,9 @@ public class HotelBooking {
     public void setService(Service service) {
         this.service = service;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
