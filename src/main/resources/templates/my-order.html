@@ -1047,7 +1047,7 @@
           <div class="order-header">
             <div>
                   <span class="order-status text-pet-success"
-                  >Giao hàng thành công</span
+                  >Sản phẩm</span
                   >
             </div>
             <div class="flex items-center gap-4">
@@ -1069,11 +1069,11 @@
               <div class="product-name">Sản phẩm A</div>
               <div class="product-quantity">x1</div>
             </div>
-            <div class="product-price">xx.xxx đ</div>
+            <div class="product-price">?</div>
           </div>
           <div class="order-total">
             <span class="total-label">Thành tiền:</span>
-            <span class="total-amount">xxx.xxx đ</span>
+            <span class="total-amount" th:text="${order?.totalPrice}">đ</span>
           </div>
         </div>
 

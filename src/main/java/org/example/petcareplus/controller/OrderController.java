@@ -19,10 +19,10 @@ public class OrderController {
     }
     @GetMapping("/list_order")
     public String listOrder(@RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "5") int size,
                                    Model model) {
         Page<Order> orderPage = orderService.findAll(PageRequest.of(page, size));
-        model.addAttribute("products", orderPage.getContent());
+        model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orderPage.getTotalPages());
         return "my-order.html";
