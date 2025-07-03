@@ -18,7 +18,6 @@ public class ProductFeedback {
     private Integer feedbackId;
 
     private int rating;
-
     private String comment;
 
     @Column(name = "created_at")
