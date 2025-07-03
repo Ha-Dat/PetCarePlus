@@ -1,9 +1,8 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -11,6 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "Products")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    @Size(min = 1)
+    @Min(value = 0)
     private int unitInStock;
 
     @Column(nullable = false)
@@ -47,27 +48,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
-
-    //method thêm trong trường hợp lombok không hoạt động
-    public Product(Integer productId, String name, String description, BigDecimal price,
-                   int unitInStock, int unitSold, String status, String image,
-                   Category category, List<ProductFeedback> feedbacks, List<OrderItem> orderItems) {
-        this.productId = productId;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.unitInStock = unitInStock;
-        this.unitSold = unitSold;
-        this.status = status;
-        this.image = image;
-        this.category = category;
-        this.feedbacks = feedbacks;
-        this.orderItems = orderItems;
-    }
-
-    public Product() {
-
-    }
 
     // Getters and Setters
 

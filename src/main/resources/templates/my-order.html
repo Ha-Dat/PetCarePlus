@@ -1065,11 +1065,13 @@
                     alt="Sản phẩm A"
                     class="product-image"
             />
+            <div th:each="orderItems : ${order.orderItems}">
             <div class="product-info">
-              <div class="product-name">Sản phẩm A</div>
-              <div class="product-quantity">x1</div>
+              <div class="product-name" th:text="${orderItems.product.name}"></div>
+              <div class="product-quantity" th:text="'Số:'+${orderItems.quantity}"></div>
             </div>
-            <div class="product-price">?</div>
+            <div class="product-price" th:text="'Product price:'+${orderItems.product.price}">đ</div>
+            </div>
           </div>
           <div class="order-total">
             <span class="total-label">Thành tiền:</span>

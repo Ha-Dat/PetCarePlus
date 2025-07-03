@@ -2,11 +2,12 @@ package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Orderitems")
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderItem {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,15 +23,6 @@ public class OrderItem {
     private Integer quantity;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public OrderItem(Order order, Product product, Integer quantity) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-    public OrderItem() {
-    }
 
     public Order getOrder() {
         return order;

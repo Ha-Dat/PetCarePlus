@@ -2,13 +2,14 @@ package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "Categories")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,15 +29,6 @@ public class Category {
     private List<Product> products;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Category(Integer categoryId, String name, Category parent, List<Category> subCategories, List<Product> products) {
-        this.categoryId = categoryId;
-        this.name = name;
-        this.parent = parent;
-        this.subCategories = subCategories;
-        this.products = products;
-    }
-    public Category() {}
 
     public Integer getCategoryId() {
         return categoryId;
