@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng ký</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+    </style>
+</head>
+<body class="bg">
+<div class="login-container">
+    <form th:action="@{/register}" method="post" class="form-box">
+        <h2>Đăng ký</h2>
+        <input type="text" name="phone" placeholder="Số điện thoại" required />
+
+        <div class="password-wrapper">
+            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+            <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+        </div>
+
+        <div class="password-wrapper">
+            <input type="password" name="confirmPassword" placeholder="Xác nhận lại mật khẩu" id="confirmPassword" required />
+            <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+        </div>
+
+        <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+        <p th:if="${message}" th:text="${message}" style="color: green;"></p>
+        <p th:if="${fieldError_password}" th:text="${fieldError_password}" style="color: red;"></p>
+
+        <button type="submit">ĐĂNG KÝ</button>
+        <a th:href="@{/login}" class="link">Quay lại đăng nhập</a>
+    </form>
+</div>
+
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+        } else {
+            input.type = "password";
+        }
+    }
+</script>
+<!--<script>-->
+<!--    document.querySelector("form").addEventListener("submit", function(event) {-->
+<!--        const pwd = document.getElementById("password").value;-->
+<!--        const confirmPwd = document.getElementById("confirmPassword").value;-->
+<!--        const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\S+$).{8,}$/;-->
+
+<!--        if (!regex.test(pwd)) {-->
+<!--            alert("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và không chứa khoảng trắng.");-->
+<!--            event.preventDefault();-->
+<!--            return;-->
+<!--        }-->
+
+<!--        if (pwd !== confirmPwd) {-->
+<!--            alert("Mật khẩu xác nhận không khớp!");-->
+<!--            event.preventDefault();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+</body>
+</html>

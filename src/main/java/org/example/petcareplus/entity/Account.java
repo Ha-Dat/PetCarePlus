@@ -1,6 +1,7 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -18,9 +19,12 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer accountId;
 
-    @Length(min = 2, max = 100)
+    @NotBlank(message = "Họ tên không được để trống")
+    @Length(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự")
     private String name;
 
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Pattern(regexp = "0[0-9]{9}", message = "Số điện thoại phải là 10 số và bắt đầu bằng 0")
     @Column(unique = true, nullable = false)
     private String phone;
 
@@ -58,52 +62,12 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public @Length(min = 2, max = 100) String getName() {
-        return name;
+    public List<CommentPost> getCommentPosts() {
+        return commentPosts;
     }
 
-    public void setName(@Length(min = 2, max = 100) String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public @Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String getPassword() {
-        return password;
-    }
-
-    public void setPassword(@Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String password) {
-        this.password = password;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setCommentPosts(List<CommentPost> commentPosts) {
+        this.commentPosts = commentPosts;
     }
 
     public List<ProductFeedback> getFeedbacks() {
@@ -114,6 +78,30 @@ public class Account {
         this.feedbacks = feedbacks;
     }
 
+    public @Length(min = 2, max = 100) String getName() {
+        return name;
+    }
+
+    public void setName(@Length(min = 2, max = 100) String name) {
+        this.name = name;
+    }
+
+    public @Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String password) {
+        this.password = password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public List<Post> getPosts() {
         return posts;
     }
@@ -122,12 +110,12 @@ public class Account {
         this.posts = posts;
     }
 
-    public List<CommentPost> getCommentPosts() {
-        return commentPosts;
+    public Profile getProfile() {
+        return profile;
     }
 
-    public void setCommentPosts(List<CommentPost> commentPosts) {
-        this.commentPosts = commentPosts;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public List<ReplyComment> getReplyComments() {
@@ -136,5 +124,21 @@ public class Account {
 
     public void setReplyComments(List<ReplyComment> replyComments) {
         this.replyComments = replyComments;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

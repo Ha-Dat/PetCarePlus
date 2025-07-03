@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trang chính</title>
+</head>
+<body>
+<h2>Chào mừng đến PetCarePlus!</h2>
+<p th:if="${message}" th:text="${message}"></p>
+<p th:if="${phone}">SĐT của bạn: <span th:text="${phone}"></span></p>
+</body>
+</html>

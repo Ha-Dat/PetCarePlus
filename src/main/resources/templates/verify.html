@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Xác minh OTP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg">
+<div class="login-container">
+    <form th:action="@{/verify}" method="post" class="form-box">
+        <h2>Nhập mã xác nhận</h2>
+        <p>Mã xác minh của bạn sẽ được gửi đến số điện thoại đã đăng ký</p>
+        <input type="text" name="otp" maxlength="6" placeholder="Nhập mã OTP" required />
+
+        <p id="countdown">Bạn có thể gửi lại OTP sau <span id="timer">60</span> giây</p>
+
+        <a id="resend-link" th:href="@{/resend-otp}" style="display: none;">Gửi lại mã</a>
+
+        <script>
+            let timeLeft = 30;
+            const timer = document.getElementById("timer");
+            const resend = document.getElementById("resend-link");
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById("countdown").style.display = "none";
+                    resend.style.display = "inline";
+                }
+            }, 1000);
+        </script>
+        <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+        <button type="submit">XÁC NHẬN</button>
+        <a th:href="@{/register}" class="link">Quay lại</a>
+    </form>
+</div>
+</body>
+</html>

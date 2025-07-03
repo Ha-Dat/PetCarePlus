@@ -2,7 +2,15 @@ package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -30,6 +38,15 @@ public class Profile {
     @ManyToOne
     @JoinColumn(name = "ward_id")
     private Ward ward;
+
+    @NotBlank(message = "Giới tính không được để trống")
+    private String gender;
+
+    @NotNull(message = "Ngày sinh không được để trống")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dob;
+
+    private String avatarPath;
 
     @OneToMany(mappedBy = "profile")
     private List<PetProfile> petProfiles;
@@ -62,7 +79,7 @@ public class Profile {
     public Integer getDistrictId() {
         return districtId;
     }
-
+x   
     public void setDistrictId(Integer districtId) {
         this.districtId = districtId;
     }
