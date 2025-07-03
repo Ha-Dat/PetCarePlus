@@ -1,9 +1,8 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -11,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Products")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -29,7 +27,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    @Size(min = 1)
+    @Min(value = 0)
     private int unitInStock;
 
     @Column(nullable = false)
@@ -83,12 +81,11 @@ public class Product {
         this.price = price;
     }
 
-    @Size(min = 1)
     public int getUnitInStock() {
         return unitInStock;
     }
 
-    public void setUnitInStock(@Size(min = 1) int unitInStock) {
+    public void setUnitInStock(int unitInStock) {
         this.unitInStock = unitInStock;
     }
 

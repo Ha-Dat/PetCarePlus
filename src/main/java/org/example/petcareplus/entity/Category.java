@@ -2,14 +2,12 @@ package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "Categories")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
