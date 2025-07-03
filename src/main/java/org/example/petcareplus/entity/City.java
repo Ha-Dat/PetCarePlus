@@ -28,7 +28,6 @@ public class City {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-
     public Integer getCityId() {
         return cityId;
     }

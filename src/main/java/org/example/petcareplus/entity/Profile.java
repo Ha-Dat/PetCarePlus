@@ -35,8 +35,6 @@ public class Profile {
     private List<PetProfile> petProfiles;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-
     public Integer getProfileId() {
         return profileId;
     }
@@ -61,20 +59,20 @@ public class Profile {
         this.city = city;
     }
 
-    public District getDistrict() {
-        return district;
+    public Integer getDistrictId() {
+        return districtId;
     }
 
-    public void setDistrict(District district) {
-        this.district = district;
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
     }
 
-    public Ward getWard() {
-        return ward;
+    public Integer getWardId() {
+        return wardId;
     }
 
-    public void setWard(Ward ward) {
-        this.ward = ward;
+    public void setWardId(Integer wardId) {
+        this.wardId = wardId;
     }
 
     public List<PetProfile> getPetProfiles() {

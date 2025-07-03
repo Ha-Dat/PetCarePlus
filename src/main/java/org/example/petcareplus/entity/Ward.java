@@ -23,7 +23,6 @@ public class Ward {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-
     public Integer getWardId() {
         return wardId;
     }

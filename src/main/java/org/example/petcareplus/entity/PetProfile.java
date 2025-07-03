@@ -32,7 +32,7 @@ public class PetProfile {
 
     private Float weight;
 
-    @Min(2)
+    @Min(1)
     @Max(50)
     private Integer age;
 
@@ -52,7 +52,6 @@ public class PetProfile {
     private List<SpaBooking> spaBookings;
 
     //method thêm trong trường hợp lombok không hoạt động
-
 
     public Integer getPetProfileId() {
         return petProfileId;
@@ -94,11 +93,11 @@ public class PetProfile {
         this.weight = weight;
     }
 
-    public @Min(2) @Max(50) Integer getAge() {
+    public @Min(1) @Max(50) Integer getAge() {
         return age;
     }
 
-    public void setAge(@Min(2) @Max(50) Integer age) {
+    public void setAge(@Min(1) @Max(50) Integer age) {
         this.age = age;
     }
 

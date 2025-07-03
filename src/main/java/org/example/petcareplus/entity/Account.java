@@ -50,8 +50,6 @@ public class Account {
     private List<ReplyComment> replyComments;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-
     public Integer getAccountId() {
         return accountId;
     }

@@ -36,5 +36,10 @@ public class AppointmentBooking {
     @JoinColumn(name = "service_id")
     private Service service;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     //method thêm trong trường hợp lombok không hoạt động
 }

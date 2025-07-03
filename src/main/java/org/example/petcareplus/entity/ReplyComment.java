@@ -30,6 +30,51 @@ public class ReplyComment {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Integer getReplyCommentId() {
+        return replyCommentId;
+    }
+
+    public void setReplyCommentId(Integer replyCommentId) {
+        this.replyCommentId = replyCommentId;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public CommentPost getCommentPost() {
+        return commentPost;
+    }
+
+    public void setCommentPost(CommentPost commentPost) {
+        this.commentPost = commentPost;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 }
 

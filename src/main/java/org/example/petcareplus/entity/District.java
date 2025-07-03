@@ -28,7 +28,6 @@ public class District {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-
     public Integer getDistrictId() {
         return districtId;
     }
