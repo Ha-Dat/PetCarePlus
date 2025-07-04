@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ProductFeedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer feedbackId;
+    private Long feedbackId;
 
     private int rating;
     private String comment;

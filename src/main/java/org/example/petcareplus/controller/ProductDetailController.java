@@ -26,7 +26,7 @@ public class ProductDetailController {
     private ProductService productService;
 
     @GetMapping("/product-detail")
-    public String showProductDetail(@RequestParam("productId") Integer productId, Model model) {
+    public String showProductDetail(@RequestParam("productId") Long productId, Model model) {
         Optional<Product> productOptional = productRepository.findById(productId);
         List<Category> parentCategories = categoryService.getParentCategory();
         List<Product> top9Products = productService.getTop9Products();

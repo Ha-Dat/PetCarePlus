@@ -7,10 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProfileRepository extends JpaRepository<Profile, Integer> {
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
+    Profile findByAccountAccountId(Long accountId);
     Optional<Profile> findByAccount_AccountId(Integer accountId);
-
-    Profile findByAccountAccountId(int accountId);
-
 }
 

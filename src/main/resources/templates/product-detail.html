@@ -780,14 +780,14 @@
                     <div th:text="${product.unitSold}"></div>
                 </div>
                 <div class="action-buttons">
-                    <button class="buy-now">Mua ngay</button>
-                    <form th:action="@{/add-to-cart}" method="post">
+                    <form th:action="@{/buy-now}" method="post">
                         <input type="hidden" name="productId" th:value="${product.productId}" />
                         <input type="hidden" name="quantity" id="formQuantity" value="1" />
                         <div id="unitInStock" style="display: none;" th:text="${product.unitInStock}"></div>
                         <button type="button" class="add-to-cart" id="detailAddToCartBtn"
-                                th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
+                                th:attr="data-product-id=${product.productId}">Mua ngay</button>
                     </form>
+                    <button class="add-to-cart">Thêm vào giỏ hàng</button>
                 </div>
             </div>
         </section>

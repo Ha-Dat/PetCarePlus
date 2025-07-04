@@ -16,7 +16,7 @@ import java.util.List;
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer serviceId;
+    private Long serviceId;
 
     @Column(unique = true, nullable = false)
     private String name;
@@ -40,11 +40,11 @@ public class Service {
     private List<SpaBooking> spaBookings;
 
     //method thêm trong trường hợp lombok không hoạt động
-    public Integer getServiceId() {
+    public Long getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(Integer serviceId) {
+    public void setServiceId(Long serviceId) {
         this.serviceId = serviceId;
     }
 

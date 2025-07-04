@@ -1,13 +1,11 @@
 package org.example.petcareplus.controller;
 
-import jakarta.annotation.PostConstruct;
 import org.example.petcareplus.entity.PetProfile;
-import org.example.petcareplus.service.PetProfileService;
+import org.example.petcareplus.service.impl.PetProfileServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -16,7 +14,7 @@ import java.util.*;
 public class PetProfileController {
 
     @Autowired
-    private PetProfileService petProfileService;
+    private PetProfileServiceImpl petProfileService;
 
     @GetMapping
     public String showPetProfilePage(Model model,

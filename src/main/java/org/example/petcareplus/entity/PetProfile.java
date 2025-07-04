@@ -19,7 +19,7 @@ import java.util.List;
 public class PetProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer petProfileId;
+    private Long petProfileId;
 
     @Column(nullable = false)
     private String name;
@@ -52,12 +52,11 @@ public class PetProfile {
     private List<SpaBooking> spaBookings;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Integer getPetProfileId() {
+    public Long getPetProfileId() {
         return petProfileId;
     }
 
-    public void setPetProfileId(Integer petProfileId) {
+    public void setPetProfileId(Long petProfileId) {
         this.petProfileId = petProfileId;
     }
 

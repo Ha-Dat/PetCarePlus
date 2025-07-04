@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface WardRepository extends JpaRepository<Ward, String> {
-    List<Ward> findByDistrict_DistrictId(Integer districtId);
+public interface WardRepository extends JpaRepository<Ward, Long> {
+    List<Ward> findByDistrict_DistrictId(Long districtId);
 }
