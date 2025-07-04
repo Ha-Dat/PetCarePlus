@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SpaBookingRepository extends JpaRepository<SpaBooking, Integer> {
+public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
 }

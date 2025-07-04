@@ -13,7 +13,7 @@ import java.util.List;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    private Long categoryId;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -28,11 +28,11 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 
-    public Integer getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

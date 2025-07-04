@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ReplyComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer replyCommentId;
+    private Long replyCommentId;
 
     private String comment;
 
@@ -36,12 +36,11 @@ public class ReplyComment {
     }
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Integer getReplyCommentId() {
+    public Long getReplyCommentId() {
         return replyCommentId;
     }
 
-    public void setReplyCommentId(Integer replyCommentId) {
+    public void setReplyCommentId(Long replyCommentId) {
         this.replyCommentId = replyCommentId;
     }
 

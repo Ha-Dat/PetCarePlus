@@ -294,7 +294,7 @@
                         </h3>
                     </div>
                     <div class="p-6 pt-0 space-y-3">
-                        <a href="/post/r1" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail/r1" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Cách chăm sóc chó con tốt nhất năm 2024
                             </h4>
@@ -309,7 +309,7 @@
                             </div>
                         </a>
 
-                        <a href="/post/r2" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail/r2" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Làm thế nào để tối ưu hóa chế độ ăn cho mèo
                             </h4>
@@ -324,7 +324,7 @@
                             </div>
                         </a>
 
-                        <a href="/post/r3" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail/r3" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Xây dựng kế hoạch chăm sóc thú cưng toàn diện
                             </h4>
@@ -339,7 +339,7 @@
                             </div>
                         </a>
 
-                        <a href="/post/r4" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail//r4" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Hướng dẫn huấn luyện thú cưng cho người mới bắt đầu
                             </h4>
@@ -354,7 +354,7 @@
                             </div>
                         </a>
 
-                        <a href="/post/r5" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail/r5" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Thức ăn khô vs thức ăn ướt: Khi nào dùng loại nào
                             </h4>
@@ -369,7 +369,7 @@
                             </div>
                         </a>
 
-                        <a href="/post/r6" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+                        <a href="/post-detail/r6" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
                             <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
                                 Kinh nghiệm tốt nhất trong việc tắm rửa cho thú cưng
                             </h4>
@@ -413,7 +413,6 @@
         });
     });
 
-    // Load more post
     // Load more post
     let currentPage = 0;
     const pageSize = 5;
@@ -463,7 +462,7 @@
               </div>
 
               <!-- Post Title -->
-              <a href="/post/${post.postId}">
+              <a href="/post-detail/${post.postId}">
                 <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer">${post.title}</h3>
               </a>
 
@@ -479,7 +478,7 @@
 
               <!-- Post Actions -->
               <div class="flex items-center space-x-2">
-                <a href="/post/${post.postId}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                <a href="/post-detail/${post.postId}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
                   <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                   </svg>

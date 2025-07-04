@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Controller
@@ -33,8 +32,6 @@ public class ProfileController {
             acc.setPhone("0912345678");
 
             profile.setAccount(acc);
-            profile.setGender("Nam");
-            profile.setDob(LocalDate.of(2000, 1, 1));
             profile.setAvatarPath("/images/default-avatar.png");
         }
 
@@ -69,13 +66,11 @@ public class ProfileController {
         }
 
         profile.setAccount(formProfile.getAccount());
-        profile.setGender(formProfile.getGender());
-        profile.setDob(formProfile.getDob());
         profile.setAvatarPath(formProfile.getAvatarPath());
 
         profile.setCity(formProfile.getCity());
-        profile.setDistrictId(formProfile.getDistrictId());
-        profile.setWardId(formProfile.getWardId());
+        profile.setDistrict(formProfile.getDistrict());
+        profile.setWard(formProfile.getWard());
 
         return "redirect:/profile";
     }

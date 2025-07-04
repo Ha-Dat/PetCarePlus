@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-
 
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -25,5 +25,21 @@ public class ProductServiceImpl implements ProductService {
         List<Product> allProducts = productRepository.findAll();
         Collections.shuffle(allProducts);
         return allProducts.stream().limit(count).collect(Collectors.toList());
+    }
+
+    public List<Product> searchProducts(String keyword) {
+        return productRepository.findByNameContainingIgnoreCase(keyword);
+    }
+
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public List<Product> getTop4Products() {
+        return productRepository.findTop5ByOrderByProductIdAsc();
+    }
+
+    public List<Product> getTop9Products() {
+        return productRepository.findTop9ByOrderByProductIdAsc();
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Order {
     @Id
-    private Integer orderId;
+    private Long orderId;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)

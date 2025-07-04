@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AppointmentBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer appointmentBookingId;
+    private Long appointmentBookingId;
 
     @Column(nullable = false)
     private LocalDateTime bookDate;

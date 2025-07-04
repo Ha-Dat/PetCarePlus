@@ -15,7 +15,7 @@ import java.util.List;
 public class District {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer districtId;
+    private Long districtId;
 
     private String name;
 
@@ -28,11 +28,11 @@ public class District {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-    public Integer getDistrictId() {
+    public Long getDistrictId() {
         return districtId;
     }
 
-    public void setDistrictId(Integer districtId) {
+    public void setDistrictId(Long districtId) {
         this.districtId = districtId;
     }
 

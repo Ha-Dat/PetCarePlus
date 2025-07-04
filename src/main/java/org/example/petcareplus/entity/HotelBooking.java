@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class HotelBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer hotelBookingId;
+    private Long hotelBookingId;
 
     @Column(nullable = false)
     private LocalDateTime bookDate;
@@ -37,15 +37,11 @@ public class HotelBooking {
     private Service service;
 
     //method thêm trong trường hợp lombok không hoạt động
-    public PetProfile getPetProfile() {
-        return this.petProfile;
-    }
-
-    public Integer getHotelBookingId() {
+    public Long getHotelBookingId() {
         return hotelBookingId;
     }
 
-    public void setHotelBookingId(Integer hotelBookingId) {
+    public void setHotelBookingId(Long hotelBookingId) {
         this.hotelBookingId = hotelBookingId;
     }
 
@@ -79,6 +75,10 @@ public class HotelBooking {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public PetProfile getPetProfile() {
+        return petProfile;
     }
 
     public void setPetProfile(PetProfile petProfile) {

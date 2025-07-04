@@ -21,7 +21,7 @@ import java.util.List;
 public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer profileId;
+    private Long profileId;
 
     @OneToOne
     @JoinColumn(name = "account_id", unique = true)
@@ -39,24 +39,17 @@ public class Profile {
     @JoinColumn(name = "ward_id")
     private Ward ward;
 
-    @NotBlank(message = "Giới tính không được để trống")
-    private String gender;
-
-    @NotNull(message = "Ngày sinh không được để trống")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dob;
-
     private String avatarPath;
 
     @OneToMany(mappedBy = "profile")
     private List<PetProfile> petProfiles;
 
     //method thêm trong trường hợp lombok không hoạt động
-    public Integer getProfileId() {
+    public Long getProfileId() {
         return profileId;
     }
 
-    public void setProfileId(Integer profileId) {
+    public void setProfileId(Long profileId) {
         this.profileId = profileId;
     }
 
@@ -76,20 +69,28 @@ public class Profile {
         this.city = city;
     }
 
-    public Integer getDistrictId() {
-        return districtId;
-    }
-x   
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
+    public District getDistrict() {
+        return district;
     }
 
-    public Integer getWardId() {
-        return wardId;
+    public void setDistrict(District district) {
+        this.district = district;
     }
 
-    public void setWardId(Integer wardId) {
-        this.wardId = wardId;
+    public Ward getWard() {
+        return ward;
+    }
+
+    public void setWard(Ward ward) {
+        this.ward = ward;
+    }
+
+    public String getAvatarPath() {
+        return avatarPath;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
     }
 
     public List<PetProfile> getPetProfiles() {
