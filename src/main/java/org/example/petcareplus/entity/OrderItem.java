@@ -2,12 +2,10 @@ package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "OrderItems")
-@Data
+@Table(name = "Orderitems")
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItem {
@@ -25,4 +23,28 @@ public class OrderItem {
     private Integer quantity;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }
