@@ -1,9 +1,9 @@
-package org.example.petcareplus.DTO;
+package org.example.petcareplus.dto;
 
 import java.math.BigDecimal;
 
 public class ProductDTO {
-    private Integer productId;
+    private Long productId;
     private String name;
     private String description;
     private BigDecimal price;
@@ -11,13 +11,12 @@ public class ProductDTO {
     private int unitSold;
     private String status;
     private String image;
-    private Integer categoryId;
+    private Long categoryId;
 
-    // Constructors
-    public ProductDTO() {}
+    public ProductDTO() {
+    }
 
-    public ProductDTO(Integer productId, String name, String description, BigDecimal price,
-                      int unitInStock, int unitSold, String status, String image, Integer categoryId) {
+    public ProductDTO(Long productId, String name, String description, BigDecimal price, int unitInStock, int unitSold, String status, String image, Long categoryId) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -29,12 +28,11 @@ public class ProductDTO {
         this.categoryId = categoryId;
     }
 
-    // Getters and Setters
-    public Integer getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -94,11 +92,11 @@ public class ProductDTO {
         this.image = image;
     }
 
-    public Integer getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 }
