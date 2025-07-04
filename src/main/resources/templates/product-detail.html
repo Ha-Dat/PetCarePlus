@@ -784,7 +784,7 @@
                         <input type="hidden" name="productId" th:value="${product.productId}" />
                         <input type="hidden" name="quantity" id="formQuantity" value="1" />
                         <div id="unitInStock" style="display: none;" th:text="${product.unitInStock}"></div>
-                        <button type="button" class="add-to-cart" id="detailAddToCartBtn"
+                        <button type="button" class="buy-now" id="detailAddToCartBtn"
                                 th:attr="data-product-id=${product.productId}">Mua ngay</button>
                     </form>
                     <button class="add-to-cart">Thêm vào giỏ hàng</button>
@@ -990,7 +990,7 @@
                 params.append("productId", productId);
                 params.append("quantity", qty);
 
-                fetch("/add-to-cart", {
+                fetch("/buy-now", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: params
