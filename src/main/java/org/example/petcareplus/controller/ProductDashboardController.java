@@ -1,9 +1,9 @@
 package org.example.petcareplus.controller;
-import org.example.petcareplus.DTO.ProductDTO;
+import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.CategoryRepository;
-import org.example.petcareplus.service.ProductDashboardService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,16 +17,17 @@ import java.util.List;
 import java.util.Optional;
 @Controller
 public class ProductDashboardController {
-    private final ProductDashboardService productDashboardService;
-    @Autowired
-    public ProductDashboardController(final ProductDashboardService productDashboardService) {
-        this.productDashboardService = productDashboardService;
+    private final ProductService productService;
+
+    public ProductDashboardController(ProductService productService) {
+        this.productService = productService;
     }
+
     @GetMapping("/productDashboard")
     public String productDashboard(@RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "10") int size,
                                    Model model) {
-        Page<Product> productPage = productDashboardService.findAll(PageRequest.of(page, size));
+        Page<Product> productPage = productService.findAll(PageRequest.of(page, size));
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
@@ -34,15 +35,15 @@ public class ProductDashboardController {
     }
 
     @GetMapping("/productDashboard/delete/{id}")
-    public String delete(@PathVariable("id") Integer id) {
-        productDashboardService.deleteById(id);
+    public String delete(@PathVariable("id") Long id) {
+        productService.deleteById(id);
         return "redirect:/productDashboard";
     }
 
     @GetMapping(value="/productDashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ProductDTO getProductById(@PathVariable Integer id) {
-        Optional<Product> product = productDashboardService.findById(id);
+    public ProductDTO getProductById(@PathVariable Long id) {
+        Optional<Product> product = productService.findById(id);
 
         return new ProductDTO(
                 product.get().getProductId(),
@@ -83,15 +84,15 @@ public class ProductDashboardController {
     @PostMapping(value = "/productDashboard/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createProduct(@RequestBody ProductDTO dto) {
         Product product = convertToProduct(dto);
-        productDashboardService.save(product);
+        productService.save(product);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/productDashboard/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO dto) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDTO dto) {
         Product product = convertToProduct(dto);
         product.setProductId(id);
-        productDashboardService.save(product);
+        productService.save(product);
         return ResponseEntity.ok().build();
     }
 }

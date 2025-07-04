@@ -3,6 +3,8 @@ package org.example.petcareplus.service.impl;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -41,5 +43,31 @@ public class ProductServiceImpl implements ProductService {
 
     public List<Product> getTop9Products() {
         return productRepository.findTop9ByOrderByProductIdAsc();
+    }
+
+    @Override
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
+    @Override
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    @Override
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    @Override
+    public Product get(Long id){
+        Optional<Product> result = productRepository.findById(id);
+        return result.get();
     }
 }
