@@ -1,8 +1,8 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,4 +19,14 @@ public interface ProductService {
     List<Product> getTop4Products();
 
     List<Product> getTop9Products();
+
+    Page<Product> findAll(Pageable pageable);
+
+    Optional<Product> findById(Long id);
+
+    Product save(Product product);
+
+    void deleteById(Long id);
+
+    public Product get(Long id);
 }

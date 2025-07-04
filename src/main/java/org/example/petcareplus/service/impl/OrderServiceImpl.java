@@ -1,7 +1,8 @@
-package org.example.petcareplus.service;
+package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.repository.OrderRepository;
+import org.example.petcareplus.service.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
