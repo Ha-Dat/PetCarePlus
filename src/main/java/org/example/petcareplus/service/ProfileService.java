@@ -1,6 +1,12 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Profile;
+
+public interface ProfileService {
+
+    Profile getProfileByAccountAccountId(int accountId);
+
+}
 import org.example.petcareplus.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

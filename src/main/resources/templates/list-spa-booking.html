@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý nhân viên</title>
+    <title>Groomer Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <style>
         * {
@@ -117,14 +117,14 @@
     <h2>🟢 Groomer</h2>
     <ul>
         <li>ca làm việc</li>
-        <li>đơn spa</li>
-        <li><strong>đơn hotel</strong></li>
+        <li><strong>đơn spa</strong></li>
+        <li>đơn hotel</li>
     </ul>
 </aside>
 
 <main>
     <div class="header">
-        <h1>quản lý đơn hotel</h1>
+        <h1>quản lý đơn spa</h1>
         <div class="filters">
             <label>Từ: <input type="date" value="2021-06-10"></label>
             <label>Đến: <input type="date" value="2021-10-10"></label>
@@ -144,34 +144,49 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="hotelBookings : ${hotelBookings}">
-            <td th:text="${hotelBookings.hotelBookingId}"></td>
-            <td th:text="${hotelBookings.bookDate}"></td>
-            <td th:text="${hotelBookings.status}"></td>
-            <td th:text="${hotelBookings.note}"></td>
-            <!-- Dữ liệu từ khóa ngoại -->
-            <td th:text="${hotelBookings.petProfile.species}"></td>
-            <td th:text="${hotelBookings.service.name}"></td>
+        <tr th:each="spaBookings : ${spaBookings}">
+            <td th:text="${spaBookings.spaBookingId}"></td>
+            <td th:text="${spaBookings.bookDate}"></td>
+            <td th:text="${spaBookings.status}"></td>
+            <td th:text="${spaBookings.note}"></td>
+            <td th:text="${spaBookings.petProfile.species}"></td>
+            <td th:text="${spaBookings.service.name}"></td>
             <td>
-                <button th:onclick="'duyetBooking(' + ${hotelBookings.hotelBookingId} + ')'">Duyệt</button>
+                <button th:onClick="'approveSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Duyệt</button>
+                <button th:onClick="'rejectSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Từ chối</button>
             </td>
-
         </tr>
         </tbody>
     </table>
 </main>
-</tbody>
-</table>
+</body>
 <script>
-    function duyetBooking(id) {
+    function approveSpaBooking(id) {
         if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
-            fetch(`/approve-booking/${id}`, {
+            fetch(`/list-spa-booking/approve-spa/${id}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
                 .then(data => {
                     alert(data);
-                    location.reload(); // Cập nhật lại bảng
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+
+    function rejectSpaBooking(id) {
+        if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
+            fetch(`/list-spa-booking/reject-spa/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -180,6 +195,5 @@
         }
     }
 </script>
-</body>
 </html>
 

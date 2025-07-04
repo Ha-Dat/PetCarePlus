@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý nhân viên</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f9fafc;
+            display: flex;
+        }
+
+        aside {
+            width: 200px;
+            background-color: #fff;
+            padding: 20px;
+            border-right: 1px solid #eee;
+            height: 690px;
+        }
+
+        aside h2 {
+            font-size: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        aside ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        aside ul li {
+            margin: 15px 0;
+            color: #666;
+            cursor: pointer;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .filters input {
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .role.staff { color: green; }
+        .role.Doctor { color: orange; }
+        .role.seller { color: blue; }
+
+        .actions {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .dots-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+            color: #555; /* Màu xám như hình */
+        }
+
+        .dots-btn:hover {
+            background-color: #f0f0f0;
+            border-radius: 50%;
+        }
+
+        .popup-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .popup-menu button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .popup-menu button:hover {
+            background-color: #f0f0f0;
+        }
+
+
+        .popup-menu button {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .popup-menu button:hover {
+            background-color: #f5f5f5;
+        }
+
+        #popup-note {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .pagination-container {
+            text-align: right;
+        }
+
+        .pagination {
+            display: inline-block;
+        }
+
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+        }
+        .pagination a.active {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+<aside>
+    <h2>🟢 Groomer</h2>
+    <ul>
+        <li>ca làm việc</li>
+        <li>đơn spa</li>
+        <li><strong>đơn hotel</strong></li>
+    </ul>
+</aside>
+
+<main>
+    <div class="header">
+        <h1>quản lý đơn hotel</h1>
+        <div class="filters">
+            <label>Từ: <input type="date" value="2021-06-10"></label>
+            <label>Đến: <input type="date" value="2021-10-10"></label>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ngày đặt</th>
+            <th>Trạng thái</th>
+            <th>Loài</th>
+            <th>Tên dịch vụ</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="hotelBookings : ${hotelBookings}">
+            <td th:text="${hotelBookings.hotelBookingId}"></td>
+            <td th:text="${hotelBookings.bookDate}"></td>
+            <td th:text="${hotelBookings.status}"></td>
+            <!-- Dữ liệu từ khóa ngoại -->
+            <td th:text="${hotelBookings.petProfile.species}"></td>
+            <td th:text="${hotelBookings.service.name}"></td>
+            <td style="position: relative;">
+                <button class="dots-btn" th:onclick="'openPopup(this, ' + ${hotelBookings.hotelBookingId} + ')'">•••</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+<!--    pagination    -->
+    <div class="pagination-container">
+        <div class="pagination">
+            <!-- Nút Previous -->
+            <span th:if="${currentPage > 0}">
+            <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+        </span>
+            <!-- Tính startPage và endPage -->
+            <th:block th:with="
+            startPage=${T(java.lang.Math).max(0, currentPage - 2)},
+            endPage=${T(java.lang.Math).min(startPage + 4, totalPages - 1)}">
+                <!-- Danh sách trang -->
+                <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == currentPage} ? 'active' : ''"></a>
+            </span>
+            </th:block>
+            <!-- Nút Next -->
+            <span th:if="${currentPage < totalPages - 1}">
+            <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+        </span>
+        </div>
+    </div>
+
+    <!-- Popup hiển thị thao tác -->
+    <div id="popup-menu" class="popup-menu" style="display: none;">
+        <button onclick="viewDetail(currentBookingId)">Xem chi tiết</button>
+        <button style="color: green" onclick="acceptBooking(currentBookingId)">Duyệt</button>
+        <button style="color: red" onclick="rejectBooking(currentBookingId)">Từ chối</button>
+    </div>
+
+    <!-- Popup hiển thị chi tiết booking -->
+    <div id="detail-popup" class="popup-menu" style="display: none; position: fixed; top: 5%; left: 50%; transform: translateX(-50%);
+    background: white; border: 1px solid #ccc; padding: 20px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 2000; width: 400px;
+    max-height: 80vh; overflow-y: auto;">
+        <h3>Chi tiết đơn booking</h3>
+        <p><strong>Booking ID:</strong> <span id="popup-id"></span></p>
+        <p><strong>Ngày đặt:</strong> <span id="popup-date"></span></p>
+        <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>
+        <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
+        <br>
+        <hr>
+        <p><img id="popup-image" src="" alt="Pet Image" style="max-width: 100%; height: auto; border-radius: 8px;"></p>
+        <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
+        <p><strong>Loài:</strong> <span id="popup-species"></span></p>
+        <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
+        <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+        <br>
+        <hr>
+        <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
+        <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+        <p><strong>Thành phố:</strong> <span id="popup-city"></span></p>
+        <p><strong>Huyện:</strong> <span id="popup-district"></span></p>
+        <p><strong>Xã:</strong> <span id="popup-ward"></span></p>
+        <p><strong>Ghi chú:</strong> <span id="popup-note"></span></p>
+        <button onclick="closeDetailPopup()">Đóng</button>
+    </div>
+
+</main>
+</tbody>
+</table>
+<script>
+    function acceptBooking(id) {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
+            fetch(`/approve-booking/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload(); // Cập nhật lại bảng
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+    let currentBookingId = null;
+    function openPopup(button, bookingId) {
+        const popup = document.getElementById('popup-menu');
+        const rect = button.getBoundingClientRect();
+        popup.style.top = (window.scrollY + rect.bottom + 5) + 'px';
+        popup.style.left = (window.scrollX + rect.left) + 'px';
+        popup.style.display = 'block';
+        currentBookingId = bookingId;
+    }
+    function rejectBooking(id) {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
+            fetch(`/reject-booking/${id}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload(); // Cập nhật lại bảng
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi duyệt.");
+                });
+        }
+    }
+    function viewDetail(id) {
+        fetch(`/booking-detail/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('popup-id').textContent = data.id;
+                document.getElementById('popup-date').textContent = data.bookDate;
+                document.getElementById('popup-status').textContent = data.status;
+                document.getElementById('popup-service').textContent = data.service;
+
+                document.getElementById('popup-image').src = data.image;
+                document.getElementById('popup-petName').textContent = data.petName;
+                document.getElementById('popup-species').textContent = data.species;
+                document.getElementById('popup-breed').textContent = data.breed;
+                document.getElementById('popup-weight').textContent = data.weight;
+
+                document.getElementById('popup-owner').textContent = data.name;
+                document.getElementById('popup-phone').textContent = data.phone;
+                document.getElementById('popup-city').textContent = data.city;
+                document.getElementById('popup-district').textContent = data.district;
+                document.getElementById('popup-ward').textContent = data.ward;
+                document.getElementById('popup-note').textContent = data.note;
+
+                document.getElementById('detail-popup').style.display = 'block';
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy dữ liệu chi tiết:", error);
+                alert("Không thể tải dữ liệu.");
+            });
+    }
+
+    function closeDetailPopup() {
+        document.getElementById('detail-popup').style.display = 'none';
+    }
+
+    // Tự động ẩn popup nếu click ra ngoài
+    document.addEventListener('click', function (e) {
+        const popup = document.getElementById('popup-menu');
+        if (!popup.contains(e.target) && !e.target.classList.contains('dots-btn')) {
+            popup.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
+

@@ -34,5 +34,58 @@ public class CommentPost {
     @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL)
     private List<ReplyComment> replies;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     //method thêm trong trường hợp lombok không hoạt động
+
+    public Integer getCommentPostId() {
+        return commentPostId;
+    }
+
+    public void setCommentPostId(Integer commentPostId) {
+        this.commentPostId = commentPostId;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public List<ReplyComment> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<ReplyComment> replies) {
+        this.replies = replies;
+    }
 }

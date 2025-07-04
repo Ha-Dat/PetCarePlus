@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Online - Đặt lịch dịch vụ thú cưng</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 16px;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 672px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .title {
+            color: #4a7c59;
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 0.9px;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            color: #4a7c59;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-container {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            padding: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group:first-child {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.4;
+            background-color: white;
+            transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .date-input {
+            position: relative;
+        }
+
+        .date-input input {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .submit-btn {
+            background-color: #4a7c59;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #6b9a76;
+        }
+
+        .submit-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.3);
+        }
+
+        .play-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .form-container {
+                padding: 24px;
+            }
+
+            .title {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">Booking Online</h1>
+            <h2 class="subtitle">Đặt lịch để chúng tôi phục vụ bạn tốt hơn</h2>
+            <p class="description">
+                vui lòng điền đầy đủ thông tin nhân viên của chúng tôi sẽ liên lạc
+                lại cho bạn trong ít phút.
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form id="bookingSpaForm" action="/spa-booking/book" method="post" onsubmit="handleSubmit(event)">
+            <div class="form-container">
+                <!-- Owner Information -->
+                <div class="form-group">
+                    <label for="ownerInfo">Thông tin chủ nuôi</label>
+                    <input
+                            type="text"
+                            id="ownerInfo"
+                            name="ownerInfo"
+                            placeholder="Họ và tên..."
+                            required
+                    />
+                </div>
+
+                <!-- Pet Name -->
+                <div class="form-group">
+                    <label for="petName">Tên vật nuôi</label>
+                    <input
+                            type="text"
+                            id="petName"
+                            name="petName"
+                            placeholder="Tên vật nuôi..."
+                            required
+                    />
+                </div>
+
+                <!-- Pet Species -->
+                <div class="form-group">
+                    <label for="petSpecies">Loài vật nuôi</label>
+                    <input
+                            type="text"
+                            id="petSpecies"
+                            name="petSpecies"
+                            placeholder="Chó, mèo, thỏ, hamster..."
+                            required
+                    />
+                </div>
+
+                <!-- Pet Breed -->
+                <div class="form-group">
+                    <label for="petBreed">Giống vật nuôi</label>
+                    <input
+                            type="text"
+                            id="petBreed"
+                            name="petBreed"
+                            placeholder="shiba, mèo ta, chó cỏ..."
+                            required
+                    />
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phoneNumber">Số điện thoại</label>
+                    <input
+                            type="tel"
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            placeholder="Số điện thoại..."
+                            required
+                    />
+                </div>
+
+                <!-- Chọn dịch vụ -->
+                <div class="form-group">
+                    <label for="serviceId">Chọn dịch vụ</label>
+                    <div class="select-wrapper">
+                        <select id="serviceId" name="serviceId" required>
+                            <option value="">Chọn loại dịch vụ spa</option>
+                            <option th:each="service : ${spaServices}"
+                                    th:value="${service.serviceId}"
+                                    th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + ')'}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Chọn thời gian -->
+                <div class="form-group">
+                    <label for="bookDate">Thời gian</label>
+                    <div class="date-input">
+                        <input
+                                type="datetime-local"
+                                id="bookDate"
+                                name="bookDate"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="form-group">
+                    <label for="note">Ghi chú</label>
+                    <textarea
+                            id="note"
+                            name="note"
+                            placeholder="Tình trạng vật nuôi..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Nút gửi -->
+            <div class="submit-container">
+                <button type="submit" class="submit-btn">
+                    Đặt lịch ngay
+                    <svg class="play-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 5v14l11-7z" fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    document.getElementById("appointmentDate").min = new Date()
+        .toISOString()
+        .split("T")[0];
+
+    // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000)
+        .toISOString()
+        .slice(0, 16);
+    document.getElementById("appointmentDate").min = local;
+</script>
+</body>
+</html>

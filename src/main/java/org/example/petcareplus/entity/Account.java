@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
@@ -56,7 +54,6 @@ public class Account {
     private List<ReplyComment> replyComments;
 
     //method thêm trong trường hợp lombok không hoạt động
-
     public Integer getAccountId() {
         return accountId;
     }

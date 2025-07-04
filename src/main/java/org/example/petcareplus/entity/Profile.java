@@ -1,6 +1,7 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,16 +24,20 @@ public class Profile {
     private Integer profileId;
 
     @OneToOne
-    @Valid
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
 
-    private Integer districtId;
-    private Integer wardId;
+    @ManyToOne
+    @JoinColumn(name = "district_id")
+    private District district;
+
+    @ManyToOne
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
 
     @NotBlank(message = "Giới tính không được để trống")
     private String gender;
@@ -47,7 +52,13 @@ public class Profile {
     private List<PetProfile> petProfiles;
 
     //method thêm trong trường hợp lombok không hoạt động
+    public Integer getProfileId() {
+        return profileId;
+    }
 
+    public void setProfileId(Integer profileId) {
+        this.profileId = profileId;
+    }
 
     public Account getAccount() {
         return account;
@@ -68,17 +79,9 @@ public class Profile {
     public Integer getDistrictId() {
         return districtId;
     }
-
+x   
     public void setDistrictId(Integer districtId) {
         this.districtId = districtId;
-    }
-
-    public List<PetProfile> getPetProfiles() {
-        return petProfiles;
-    }
-
-    public void setPetProfiles(List<PetProfile> petProfiles) {
-        this.petProfiles = petProfiles;
     }
 
     public Integer getWardId() {
@@ -89,34 +92,11 @@ public class Profile {
         this.wardId = wardId;
     }
 
-    public String getGender() {
-        return gender;
+    public List<PetProfile> getPetProfiles() {
+        return petProfiles;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public String getAvatarPath() {
-        return avatarPath;
-    }
-
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
-    }
-    public Integer getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(Integer profileId) {
-        this.profileId = profileId;
+    public void setPetProfiles(List<PetProfile> petProfiles) {
+        this.petProfiles = petProfiles;
     }
 }
