@@ -15,7 +15,7 @@ import java.util.List;
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer cityId;
+    private Long cityId;
 
     @Column(length = 50)
     private String name;
@@ -28,11 +28,11 @@ public class City {
 
     //method thêm trong trường hợp lombok không hoạt động
 
-    public Integer getCityId() {
+    public Long getCityId() {
         return cityId;
     }
 
-    public void setCityId(Integer cityId) {
+    public void setCityId(Long cityId) {
         this.cityId = cityId;
     }
 

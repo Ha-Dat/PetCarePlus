@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Ward {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer wardId;
+    private Long wardId;
 
     private String name;
 
@@ -22,12 +22,11 @@ public class Ward {
     private District district;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Integer getWardId() {
+    public Long getWardId() {
         return wardId;
     }
 
-    public void setWardId(Integer wardId) {
+    public void setWardId(Long wardId) {
         this.wardId = wardId;
     }
 

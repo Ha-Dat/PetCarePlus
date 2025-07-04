@@ -1,35 +1,24 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Profile;
-
-public interface ProfileService {
-
-    Profile getProfileByAccountAccountId(int accountId);
-
-}
-import org.example.petcareplus.repository.ProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class ProfileService {
 
-    @Autowired
-    private ProfileRepository profileRepository;
+public interface ProfileService {
 
-    public List<Profile> getAllProfiles() {
-        return profileRepository.findAll();
-    }
+    Profile getProfileByAccountAccountId(Long accountId);
 
-    public Optional<Profile> getProfileById(Integer id) {
-        return profileRepository.findById(id);
-    }
 
-    public Profile save(Profile profile) {
-        return profileRepository.save(profile);
-    }
+    List<Profile> getAllProfiles();
+
+    Optional<Profile> getProfileById(Integer id);
+
+    Optional<Profile> getProfileById(Long id);
+
+    Profile save(Profile profile);
 }
+
+
+
 

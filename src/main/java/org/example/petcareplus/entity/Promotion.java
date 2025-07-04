@@ -18,7 +18,7 @@ import java.util.List;
 public class Promotion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer promotionId;
+    private Long promotionId;
 
     @Column(nullable = false)
     private String title;

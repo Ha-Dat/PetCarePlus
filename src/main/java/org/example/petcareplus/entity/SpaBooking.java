@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class SpaBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer spaBookingId;
+    private Long spaBookingId;
 
     @Column(nullable = false)
     private LocalDateTime bookDate;
@@ -38,12 +38,11 @@ public class SpaBooking {
     private Service service;
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Integer getSpaBookingId() {
+    public Long getSpaBookingId() {
         return spaBookingId;
     }
 
-    public void setSpaBookingId(Integer spaBookingId) {
+    public void setSpaBookingId(Long spaBookingId) {
         this.spaBookingId = spaBookingId;
     }
 

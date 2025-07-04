@@ -32,7 +32,7 @@ public class CheckoutController {
     @GetMapping
     public String showCheckoutPage(Model model) {
         // Lấy thông tin profile của người dùng
-        int id = 1;
+        long id = 1;
         Profile profile = profileService.getProfileByAccountAccountId(id);
         model.addAttribute("profile", profile);
 

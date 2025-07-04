@@ -38,7 +38,7 @@ public class SpaBookingController {
 
     @PostMapping("/list-spa-booking/approve-spa/{id}")
     @ResponseBody
-    public String approveSpaBooking(@PathVariable("id") Integer id){
+    public String approveSpaBooking(@PathVariable("id") Long id){
         Optional<SpaBooking> booking = spaBookingRepository.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
@@ -55,7 +55,7 @@ public class SpaBookingController {
 
     @PostMapping("/list-spa-booking/reject-spa/{id}")
     @ResponseBody
-    public String rejectSpaBooking(@PathVariable("id") Integer id){
+    public String rejectSpaBooking(@PathVariable("id") Long id){
         Optional<SpaBooking> booking = spaBookingRepository.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
@@ -82,7 +82,7 @@ public class SpaBookingController {
     public String submitSpaBooking(
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
-            @RequestParam("serviceId") Integer serviceId,
+            @RequestParam("serviceId") Long serviceId,
             @RequestParam("ownerInfo") String ownerInfo,
             @RequestParam("petName") String petName,
             @RequestParam("petSpecies") String petSpecies,

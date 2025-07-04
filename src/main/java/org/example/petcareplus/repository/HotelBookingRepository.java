@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HotelBookingRepository extends JpaRepository<HotelBooking, Integer> {
+public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long> {
     @EntityGraph(attributePaths = {"petProfile", "service"})
     List<HotelBooking> findAll();
 }

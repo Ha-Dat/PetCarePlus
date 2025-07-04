@@ -16,7 +16,7 @@ import java.util.List;
 public class CommentPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer commentPostId;
+    private Long commentPostId;
 
     private String comment;
 
@@ -40,12 +40,11 @@ public class CommentPost {
     }
 
     //method thêm trong trường hợp lombok không hoạt động
-
-    public Integer getCommentPostId() {
+    public Long getCommentPostId() {
         return commentPostId;
     }
 
-    public void setCommentPostId(Integer commentPostId) {
+    public void setCommentPostId(Long commentPostId) {
         this.commentPostId = commentPostId;
     }
 
