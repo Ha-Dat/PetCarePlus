@@ -11,7 +11,6 @@ import java.util.Map;
 @Controller
 public class AuthController {
 
-    // Tạm lưu danh sách tài khoản: phone → password
     private Map<String, String> registeredAccounts = new HashMap<>();
 
     @GetMapping("/login")
@@ -51,15 +50,12 @@ public class AuthController {
             return "register";
         }
 
-        // Lưu tạm account chờ xác thực OTP
         session.setAttribute("pendingPhone", phone);
         session.setAttribute("pendingPassword", password);
 
-        // Tạo mã OTP ngẫu nhiên
         String otp = String.valueOf((int)((Math.random() * 900000) + 100000));
         session.setAttribute("otp", otp);
 
-        // In OTP ra console (demo) – sau này sẽ tích hợp gửi SMS
         System.out.println("OTP for phone " + phone + ": " + otp);
 
         return "verify";
@@ -83,7 +79,6 @@ public class AuthController {
             return "verify";
         }
 
-        // Lưu vào danh sách chính thức
         registeredAccounts.put(phone, password);
         session.removeAttribute("otp");
         session.removeAttribute("pendingPhone");
@@ -98,12 +93,10 @@ public class AuthController {
         String phone = (String) session.getAttribute("pendingPhone");
         if (phone == null) return "redirect:/register";
 
-        // Tạo mã OTP mới
         String otp = String.valueOf((int)((Math.random() * 900000) + 100000));
         session.setAttribute("otp", otp);
         session.setAttribute("otpTimestamp", System.currentTimeMillis());
 
-        // Hiển thị OTP trong console (tạm thời thay cho SMS)
         System.out.println("Resent OTP for phone " + phone + ": " + otp);
 
         model.addAttribute("message", "Mã OTP mới đã được gửi lại.");
