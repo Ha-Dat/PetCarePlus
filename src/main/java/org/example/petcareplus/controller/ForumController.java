@@ -58,4 +58,16 @@ public class ForumController {
         return "post-detail";
     }
 
+    @GetMapping("/create-post")
+    public String createPostForm(Model model) {
+        model.addAttribute("postDTO", new PostDTO());
+        return "create-post"; // Tên file HTML
+    }
+
+    @PostMapping("/create-post")
+    public String savePost(@ModelAttribute PostDTO postDTO) {
+        Long fakeAccountId = 1L; // Lấy từ session / auth thực tế
+        forumService.savePost(postDTO, fakeAccountId);
+        return "redirect:/forum"; // Redirect sau khi lưu
+    }
 }
