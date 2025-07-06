@@ -82,6 +82,33 @@ public class ForumServiceImpl implements ForumService {
         return postRepository.save(post);
     }
 
+    public void updatePost(PostDTO postDTO, Long accountId) {
+        Post existingPost = postRepository.findById(postDTO.getPostId())
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        existingPost.setTitle(postDTO.getTitle());
+        existingPost.setDescription(postDTO.getDescription());
+        existingPost.setRating(postDTO.getRating());
+
+        // Nếu có file mới, xử lý upload → set path mới
+        if (postDTO.getImageFile() != null && !postDTO.getImageFile().isEmpty()) {
+            String imageName = saveFile(postDTO.getImageFile(), "uploads/images/");
+            existingPost.setImage(imageName);
+        }
+
+        if (postDTO.getVideoFile() != null && !postDTO.getVideoFile().isEmpty()) {
+            String videoName = saveFile(postDTO.getVideoFile(), "uploads/videos/");
+            existingPost.setVideo(videoName);
+        }
+
+        postRepository.save(existingPost);
+    }
+
+    public void deletePostById(Long postId) {
+        postRepository.deleteById(postId);
+    }
+
+
     private String saveFile(MultipartFile file, String uploadDir) {
         String fileName = file.getOriginalFilename();
         File uploadPath = new File(uploadDir);

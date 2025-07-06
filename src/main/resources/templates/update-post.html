@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tạo bài viết - PetCare+</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(142 49% 58%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(142 49% 58%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+<!-- Header -->
+<header class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
+        <!-- Logo -->
+        <div class="mr-4 flex">
+            <a class="mr-6 flex items-center space-x-2" href="/forum">
+                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                    <span class="text-primary-foreground font-bold text-lg">P</span>
+                </div>
+                <span class="hidden font-bold sm:inline-block text-xl">PetCare+</span>
+            </a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="flex flex-1 items-center space-x-2 max-w-md">
+            <div class="relative w-full">
+                <svg class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input placeholder="Tìm kiếm cộng đồng và bài viết" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-8 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"/>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex flex-1 items-center justify-end space-x-2">
+            <a href="/submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex bg-accent text-accent-foreground">
+                <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+                <span>Tạo bài</span>
+            </a>
+
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                </svg>
+            </button>
+
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+            </button>
+
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="container max-w-7xl mx-auto px-4 py-6">
+    <div class="flex gap-6">
+        <!-- Left Sidebar -->
+        <div class="hidden lg:block">
+            <div class="w-64 sticky top-20 h-fit">
+                <div class="space-y-4">
+                    <!-- Main Navigation -->
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-3">
+                            <nav class="space-y-1">
+                                <a href="/" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                        <polyline points="9,22 9,12 15,12 15,22" />
+                                    </svg>
+                                    Trang chủ
+                                </a>
+                                <a href="/popular" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" />
+                                        <polyline points="16,7 22,7 22,13" />
+                                    </svg>
+                                    Phổ biến
+                                </a>
+                                <a href="/messages" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                                    </svg>
+                                    Tin nhắn
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-3">
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                                Người dùng
+                            </h3>
+                            <nav class="space-y-1">
+                                <a href="/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    Hồ sơ
+                                </a>
+                                <a href="/my-posts" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                        <polyline points="10,9 9,9 8,9" />
+                                    </svg>
+                                    Xem bài viết của tôi
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 max-w-4xl">
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a href="/forum" class="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <svg class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m12 19-7-7 7-7" />
+                        <path d="M19 12H5" />
+                    </svg>
+                    Quay lại trang chủ
+                </a>
+            </div>
+
+            <!-- Create Post Form -->
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6 pb-4">
+                    <h3 class="text-xl font-semibold leading-none tracking-tight">
+                        Tạo bài viết mới
+                    </h3>
+                </div>
+                <div class="p-6 pt-0 space-y-6">
+                    <!-- ⚠️ Form cần `th:action` + `method` + `enctype` -->
+                    <form action="/update-post" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="postId" th:value="${postDTO.postId}" />
+                        <!-- Title Input -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="title">Tiêu đề</label>
+                            <input name="title" th:value="${postDTO.title}" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" id="title" placeholder="Nhập tiêu đề thú vị và mô tả nội dung" type="text" required/>
+                        </div>
+
+                        <!-- Content Input -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="description">Nội dung</label>
+                            <textarea name="description" th:text="${postDTO.description}" class="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none" id="description" placeholder="Chia sẻ kinh nghiệm, câu chuyện hoặc thông tin hữu ích về thú cưng của bạn..." required></textarea>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">
+                                Tải lên hình ảnh
+                            </label>
+                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+
+                                <!-- ⚡️ Hiển thị ảnh cũ -->
+                                <div th:if="${postDTO.image}">
+                                    <p class="text-sm text-muted-foreground mb-2">Hình ảnh hiện tại:</p>
+                                    <img th:src="@{${postDTO.image}}" alt="Ảnh hiện tại" class="max-w-xs rounded-lg border mb-2"/>
+                                </div>
+
+                                <!-- Biểu tượng + Upload -->
+                                <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
+                                <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
+                                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
+                                <label for="image-upload" class="inline-flex ...">Chọn tệp hình ảnh</label>
+
+                            </div>
+                        </div>
+
+
+                        <!-- Video Upload -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">
+                                Tải lên video
+                            </label>
+                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+
+                                <!-- ⚡️ Hiển thị video cũ -->
+                                <div th:if="${postDTO.video}">
+                                    <p class="text-sm text-muted-foreground mb-2">Video hiện tại:</p>
+                                    <video controls class="max-w-xs rounded-lg border mb-4"
+                                           th:src="@{${postDTO.video}}"></video>
+                                </div>
+
+                                <!-- Biểu tượng + Upload -->
+                                <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
+                                <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
+                                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
+                                <label for="video-upload" class="inline-flex ...">Chọn tệp video</label>
+
+                            </div>
+                        </div>
+
+
+                        <!-- Submit Buttons -->
+                        <div class="flex justify-end space-x-2 pt-4 border-t">
+                            <a href="/" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                                Hủy
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                                Đăng bài
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="hidden lg:block">
+            <div class="w-80 sticky top-20">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                        <h3 class="text-sm font-semibold leading-none tracking-tight">
+                            Hướng dẫn đăng bài
+                        </h3>
+                    </div>
+                    <div class="p-6 pt-0 space-y-4 text-sm">
+
+                        <div>
+                            <h4 class="font-medium mb-2">Quy tắc cộng đồng</h4>
+                            <ul class="space-y-1 text-muted-foreground">
+                                <li>• Đối xử tôn trọng và lịch sự</li>
+                                <li>• Tìm kiếm trước khi đăng bài</li>
+                                <li>• Sử dụng tiêu đề mô tả rõ ràng</li>
+                                <li>• Tuân thủ quy tắc cộng đồng</li>
+                                <li>• Chia sẻ kinh nghiệm chăm sóc thú cưng</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-medium mb-2">Lời khuyên</h4>
+                            <ul class="space-y-1 text-muted-foreground">
+                                <li>• Sử dụng hình ảnh chất lượng cao</li>
+                                <li>• Viết tiêu đề thu hút và rõ ràng</li>
+                                <li>• Chia sẻ kinh nghiệm cụ thể</li>
+                                <li>• Tránh spam và quảng cáo</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("PetCare+ Create Post loaded successfully");
+
+        const titleInput = document.getElementById("title");
+        const charCount = document.getElementById("char-count");
+
+        if (titleInput && charCount) {
+            titleInput.addEventListener("input", function () {
+                const remaining = 300 - this.value.length;
+                charCount.textContent = remaining;
+
+                if (remaining < 50) {
+                    charCount.classList.add("text-destructive");
+                } else {
+                    charCount.classList.remove("text-destructive");
+                }
+            });
+        }
+
+        const imageUpload = document.getElementById("image-upload");
+        const videoUpload = document.getElementById("video-upload");
+
+        if (imageUpload) {
+            imageUpload.addEventListener("change", function () {
+                const files = this.files;
+                if (files.length > 0) {
+                    console.log(`Selected ${files.length} image(s)`);
+                }
+            });
+        }
+
+        if (videoUpload) {
+            videoUpload.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    console.log("Selected video:", file.name);
+                }
+            });
+        }
+
+        const form = document.querySelector("form");
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                const title = document.getElementById("title").value.trim();
+                if (!title) {
+                    e.preventDefault();
+                    alert("Vui lòng nhập tiêu đề");
+                    return;
+                }
+
+                console.log("Submitting post:", {
+                    title: title,
+                    description: document.getElementById("description").value.trim(),
+                });
+
+                // ❌ Không được redirect thủ công
+                // 👉 Xoá dòng này:
+                // window.location.href = "/";
+                // Để form SUBMIT bình thường
+            });
+        }
+    });
+
+</script>
+</body>
+</html>

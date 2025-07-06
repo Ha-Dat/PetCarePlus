@@ -2,6 +2,8 @@ package org.example.petcareplus.dto;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 public class PostDTO {
     private Long postId;
     private String title;

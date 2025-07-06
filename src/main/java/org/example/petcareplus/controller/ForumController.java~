@@ -94,7 +94,7 @@ public class ForumController {
     @GetMapping("/delete-post/{postId}")
     public String deletePost(@PathVariable Long postId) {
         forumService.deletePostById(postId);
-        return "redirect:/forum"; // Về trang chủ hoặc danh sách
+        return "redirect:/"; // Về trang chủ hoặc danh sách
     }
 
 }

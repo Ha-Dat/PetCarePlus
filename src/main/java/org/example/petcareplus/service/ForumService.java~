@@ -14,5 +14,4 @@ public interface ForumService {
     List<CommentPost> findCommentByPostId(Long postId);
     Post savePost(PostDTO postDTO, Long accountId);
     void updatePost(PostDTO postDTO, Long accountId);
-    void deletePostById(Long postId);
 }
