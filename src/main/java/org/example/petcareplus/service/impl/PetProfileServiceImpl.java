@@ -1,6 +1,7 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +10,15 @@ import java.util.*;
 @Service
 public class PetProfileServiceImpl implements PetProfileService {
 
+    private final PetProfileRepository petProfileRepository;
+
+    public PetProfileServiceImpl(PetProfileRepository petProfileRepository) {
+        this.petProfileRepository = petProfileRepository;
+    }
+
     private final List<PetProfile> petProfiles = new ArrayList<>();
     private Long nextId = 1L;
+
 
     @Override
     public List<PetProfile> findAll() {
@@ -49,6 +57,11 @@ public class PetProfileServiceImpl implements PetProfileService {
         pet.setWeight(0.0f);
         petProfiles.add(pet);
         return pet;
+    }
+
+    @Override
+    public PetProfile save(PetProfile petProfile) {
+        return petProfileRepository.save(petProfile);
     }
 
 //    @Override

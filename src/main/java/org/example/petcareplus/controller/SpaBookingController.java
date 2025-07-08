@@ -2,6 +2,8 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.repository.*;
+import org.example.petcareplus.service.PetProfileService;
+import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -17,16 +19,14 @@ import java.util.Optional;
 @RequestMapping()
 public class SpaBookingController {
 
-    private final SpaBookingRepository spaBookingRepository;
     private final SpaBookingService spaBookingService;
-    private final ServiceRepository serviceRepository;
-    private final PetProfileRepository petProfileRepository;
+    private final PetProfileService petProfileService;
+    private final ServiceService serviceService;
 
-    public SpaBookingController(SpaBookingRepository spaBookingRepository, SpaBookingService spaBookingService, ServiceRepository serviceRepository, PetProfileRepository petProfileRepository) {
-        this.spaBookingRepository = spaBookingRepository;
+    public SpaBookingController(SpaBookingService spaBookingService, PetProfileService petProfileService, ServiceService serviceService) {
         this.spaBookingService = spaBookingService;
-        this.serviceRepository = serviceRepository;
-        this.petProfileRepository = petProfileRepository;
+        this.petProfileService = petProfileService;
+        this.serviceService = serviceService;
     }
 
     @GetMapping("/list-spa-booking")
@@ -39,12 +39,12 @@ public class SpaBookingController {
     @PostMapping("/list-spa-booking/approve-spa/{id}")
     @ResponseBody
     public String approveSpaBooking(@PathVariable("id") Long id){
-        Optional<SpaBooking> booking = spaBookingRepository.findById(id);
+        Optional<SpaBooking> booking = spaBookingService.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
             if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
                 spaBooking.setStatus("Đã đặt");
-                spaBookingRepository.save(spaBooking);
+                spaBookingService.save(spaBooking);
                 return "Duyệt lịch thành công";
             }else {
                 return "Lịch đặt đã được duyệt";
@@ -56,12 +56,12 @@ public class SpaBookingController {
     @PostMapping("/list-spa-booking/reject-spa/{id}")
     @ResponseBody
     public String rejectSpaBooking(@PathVariable("id") Long id){
-        Optional<SpaBooking> booking = spaBookingRepository.findById(id);
+        Optional<SpaBooking> booking = spaBookingService.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
             if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
                 spaBooking.setStatus("Đã từ chối");
-                spaBookingRepository.save(spaBooking);
+                spaBookingService.save(spaBooking);
                 return "Từ chối lịch thành công";
             }else {
                 return "Lịch đặt đã từ chối";
@@ -74,7 +74,7 @@ public class SpaBookingController {
     public String showSpaBookingForm(Model model) {
         // TODO: Add Authen
         model.addAttribute("spaBooking", new SpaBooking());
-        model.addAttribute("spaServices", serviceRepository.findByServiceCategory("SPA"));
+        model.addAttribute("spaServices", serviceService.findByServiceCategory("SPA"));
         return "spa-booking";
     }
 
@@ -97,7 +97,7 @@ public class SpaBookingController {
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
             petProfile.setAge(2);
-            petProfileRepository.save(petProfile);
+            petProfileService.save(petProfile);
 
             // gán dữ liệu từ form
             SpaBooking booking = new SpaBooking();
@@ -108,14 +108,14 @@ public class SpaBookingController {
 
             booking.setPetProfile(petProfile);
 
-            Optional<Service> service = serviceRepository.findById(serviceId);
+            Optional<Service> service = serviceService.findById(serviceId);
             if (service.isEmpty()) {
                 model.addAttribute("error", "Dịch vụ không tồn tại");
                 return "error";
             }
             booking.setService(service.get());
 
-            spaBookingRepository.save(booking);
+            spaBookingService.save(booking);
             return "redirect:/spa-booking/form";
 
         } catch (Exception e) {

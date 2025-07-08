@@ -13,4 +13,6 @@ public interface PetProfileService {
 
     PetProfile createEmptyPet();
 
+    PetProfile save(PetProfile petProfile);
+
 }

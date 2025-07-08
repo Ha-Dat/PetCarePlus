@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SpaBookingServiceImpl implements SpaBookingService {
@@ -22,6 +23,16 @@ public class SpaBookingServiceImpl implements SpaBookingService {
     @Override
     public List<SpaBooking> findAll() {
         return spaBookingRepository.findAll();
+    }
+
+    @Override
+    public Optional<SpaBooking> findById(Long id) {
+        return spaBookingRepository.findById(id);
+    }
+
+    @Override
+    public SpaBooking save(SpaBooking spaBooking) {
+        return spaBookingRepository.save(spaBooking);
     }
 
 }
