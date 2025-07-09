@@ -119,23 +119,37 @@
             }
 
         }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body class="bg">
 <div class="login-container">
-    <form th:action="@{/login}" method="post" class="form-box">
-        <h2>Đăng nhập</h2>
-        <p th:if="${error}" th:text="${error}" class="error-message"></p>
-        <input type="text" name="phone" placeholder="Số điện thoại" required />
+    <form th:action="@{/login}" th:object="${loginDTO}" method="post" class="form-box">
+    <h2> Đăng nhập </h2>
+        <div th:if="${message}" class="success-message" th:text="${message}"></div>
+        <div class="form-group">
+            <input type="text" th:field="*{phone}" placeholder="Số điện thoại" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Số điện thoại lỗi</div>
+        </div>
 
-        <div class="password-wrapper">
-            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{password}" id="password" placeholder="Mật khẩu" />
             <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Mật khẩu lỗi</div>
         </div>
 
         <button type="submit">ĐĂNG NHẬP</button>
+
         <a th:href="@{/register}" class="link">Đăng ký</a>
+
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
     </form>
+
+
 </div>
 <script>
     function togglePassword(id) {
