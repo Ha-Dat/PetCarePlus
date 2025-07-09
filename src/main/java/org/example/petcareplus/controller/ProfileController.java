@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Controller
@@ -24,22 +25,6 @@ public class ProfileController {
     @Autowired
     private CityRepository cityRepository;
 
-    @GetMapping
-    public String viewProfile(Model model) {
-        if (profile.getAccount() == null) {
-            Account acc = new Account();
-            acc.setName("Nguyễn Văn A");
-            acc.setPhone("0912345678");
-
-            profile.setAccount(acc);
-            profile.setAvatarPath("/images/default-avatar.png");
-        }
-
-        model.addAttribute("profile", profile);
-        model.addAttribute("cities", cityRepository.findAll());
-        return "profile";
-    }
-
     @PostMapping("/update")
     public String updateProfile(
             @Valid @ModelAttribute("profile") Profile formProfile,
@@ -48,7 +33,7 @@ public class ProfileController {
             Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("cities", cityRepository.findAll());
+            model.addAttribute("cities", cityRepository.findAll());x
             return "profile";
         }
 
@@ -67,7 +52,6 @@ public class ProfileController {
 
         profile.setAccount(formProfile.getAccount());
         profile.setAvatarPath(formProfile.getAvatarPath());
-
         profile.setCity(formProfile.getCity());
         profile.setDistrict(formProfile.getDistrict());
         profile.setWard(formProfile.getWard());
