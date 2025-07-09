@@ -122,27 +122,41 @@
 </head>
 <body class="bg">
 <div class="login-container">
-    <form th:action="@{/register}" method="post" class="form-box">
+    <form th:action="@{/register}" th:object="${registerDTO}" method="post" class="form-box">
         <h2>Đăng ký</h2>
-        <input type="text" name="phone" placeholder="Số điện thoại" required />
 
-        <div class="password-wrapper">
-            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+        <div class="form-group">
+            <input type="text" th:field="*{name}" placeholder="Họ tên" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Tên lỗi</div>
+        </div>
+
+        <div class="form-group">
+            <input type="text" th:field="*{phone}" placeholder="Số điện thoại" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Lỗi số điện thoại</div>
+        </div>
+
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{password}" id="password" placeholder="Mật khẩu" class="form-control" />
             <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Lỗi mật khẩu</div>
         </div>
 
-        <div class="password-wrapper">
-            <input type="password" name="confirmPassword" placeholder="Xác nhận lại mật khẩu" id="confirmPassword" required />
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{confirmPassword}" id="confirmPassword" placeholder="Nhập lại mật khẩu" class="form-control" />
             <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Lỗi xác nhận</div>
         </div>
-
-        <p th:if="${error}" th:text="${error}" style="color: red;"></p>
-        <p th:if="${message}" th:text="${message}" style="color: green;"></p>
-        <p th:if="${fieldError_password}" th:text="${fieldError_password}" style="color: red;"></p>
 
         <button type="submit">ĐĂNG KÝ</button>
-        <a th:href="@{/login}" class="link">Quay lại đăng nhập</a>
+
+        <a th:href="@{/login}" class="link">Quay lại</a>
+
+        <div class="error-message" th:if="${error}" th:text="${error}"></div>
     </form>
+
+
+
+
 </div>
 
 <script>
