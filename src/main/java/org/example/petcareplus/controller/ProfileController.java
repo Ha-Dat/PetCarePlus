@@ -33,7 +33,7 @@ public class ProfileController {
             Model model) {
 
         if (result.hasErrors()) {
-            model.addAttribute("cities", cityRepository.findAll());x
+            model.addAttribute("cities", cityRepository.findAll());
             return "profile";
         }
 
