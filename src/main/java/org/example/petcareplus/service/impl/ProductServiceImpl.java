@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -29,16 +30,18 @@ public class ProductServiceImpl implements ProductService {
         return allProducts.stream().limit(count).collect(Collectors.toList());
     }
 
-    public List<Product> searchProducts(String keyword) {
+    @Override
+    public Page<Product> searchProducts(String keyword, String categoryName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        return productRepository.searchProducts(keyword, categoryName, minPrice, maxPrice, pageable);
+    }
+
+    @Override
+    public List<Product> findByNameContainingIgnoreCase(String keyword) {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
 
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
-    }
-
-    public List<Product> getTop4Products() {
-        return productRepository.findTop5ByOrderByProductIdAsc();
     }
 
     public List<Product> getTop9Products() {
@@ -69,5 +72,14 @@ public class ProductServiceImpl implements ProductService {
     public Product get(Long id){
         Optional<Product> result = productRepository.findById(id);
         return result.get();
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
+    public List<Product> getTop5ByOrderByProductId(){
+        return productRepository.findTop5ByOrderByProductIdAsc();
     }
 }

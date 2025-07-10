@@ -1036,16 +1036,13 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.redirected || res.ok) {
-                            showToast("✅ Đã thêm vào giỏ hàng!");
-                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if (res.ok) {
+                            showToast("Đã thêm vào giỏ hàng!");
                         } else {
-                            showToast("❌ Lỗi khi thêm vào giỏ hàng!", "error");
+                            showToast("Không thể thêm sản phẩm", "error");
                         }
                     })
-                    .catch(() => {
-                        showToast("❌ Không thể kết nối đến máy chủ!", "error");
-                    });
+                    .catch(() => showToast("Lỗi kết nối", "error"));
             });
         });
     });

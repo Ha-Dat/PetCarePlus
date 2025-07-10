@@ -3,7 +3,6 @@ package org.example.petcareplus.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,23 @@ public class CartController {
         session.setAttribute("cart", cart);
 
         return "redirect:/view-cart";
+    }
+
+    @PostMapping("/add-to-cart")
+    public ResponseEntity<?> addToCart(@RequestParam("productId") Long productId,
+                         @RequestParam(value = "quantity", defaultValue = "1") int quantity,
+                         HttpSession session,
+                         @RequestHeader(value = "Referer", required = false) String referer) {
+
+        Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new HashMap<>();
+        }
+
+        cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
+        session.setAttribute("cart", cart);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/view-cart")

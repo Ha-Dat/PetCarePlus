@@ -24,4 +24,9 @@ public class CategoryServiceImpl implements CategoryService {
 
         return topCategories;
     }
+
+    @Override
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
+    }
 }
