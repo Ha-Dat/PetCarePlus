@@ -16,13 +16,12 @@ public class PetProfileController {
     @Autowired
     private PetProfileServiceImpl petProfileService;
 
-    // Hiển thị trang "Thú cưng của tôi"
     @GetMapping
     public String showPetProfilePage(Model model,
                                      @RequestParam(value = "selectedId", required = false) Integer selectedId) {
         List<PetProfile> petProfiles = petProfileService.findAll();
         if (petProfiles.isEmpty()) {
-            return "pet-profile"; // hiển thị trang rỗng
+            return "pet-profile";
         }
 
         PetProfile selectedPet = selectedId != null
