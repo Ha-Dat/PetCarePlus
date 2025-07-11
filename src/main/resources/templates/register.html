@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Đăng ký</title>
-    <link rel="stylesheet" href="/css/style.css">
     <style>
         .password-wrapper {
             position: relative;
@@ -15,31 +14,149 @@
             cursor: pointer;
             color: #666;
         }
+        body.bg {
+            background: url("https://i.ibb.co/q3p27MRN/507038009-1245302843643877-8250570055874749465-n.png") no-repeat center center;
+            background-size: cover;
+            font-family: sans-serif;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        .form-box input {
+            width: 92%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        .form-box button {
+            background-color: #8dbd5c;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-box .link {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #8dbd5c;
+            text-decoration: none;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin: 5px 0;
+            .container {
+                display: flex;
+                font-family: sans-serif;
+            }
+
+            .sidebar {
+                width: 200px;
+                background: #f0f0f0;
+                padding: 20px;
+            }
+
+            .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .sidebar li {
+                margin: 10px 0;
+            }
+
+            .sidebar a {
+                text-decoration: none;
+                color: black;
+            }
+
+            .sidebar a.active {
+                color: red;
+                font-weight: bold;
+            }
+
+            .content {
+                flex: 1;
+                padding: 20px;
+            }
+
+            .profile-form {
+                display: flex;
+                gap: 40px;
+            }
+
+            .avatar img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
+            .form-fields label {
+                display: block;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body class="bg">
 <div class="login-container">
-    <form th:action="@{/register}" method="post" class="form-box">
+    <form th:action="@{/register}" th:object="${registerDTO}" method="post" class="form-box">
         <h2>Đăng ký</h2>
-        <input type="text" name="phone" placeholder="Số điện thoại" required />
 
-        <div class="password-wrapper">
-            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+        <div class="form-group">
+            <input type="text" th:field="*{name}" placeholder="Họ tên" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Tên lỗi</div>
+        </div>
+
+        <div class="form-group">
+            <input type="text" th:field="*{phone}" placeholder="Số điện thoại" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Lỗi số điện thoại</div>
+        </div>
+
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{password}" id="password" placeholder="Mật khẩu" class="form-control" />
             <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Lỗi mật khẩu</div>
         </div>
 
-        <div class="password-wrapper">
-            <input type="password" name="confirmPassword" placeholder="Xác nhận lại mật khẩu" id="confirmPassword" required />
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{confirmPassword}" id="confirmPassword" placeholder="Nhập lại mật khẩu" class="form-control" />
             <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Lỗi xác nhận</div>
         </div>
-
-        <p th:if="${error}" th:text="${error}" style="color: red;"></p>
-        <p th:if="${message}" th:text="${message}" style="color: green;"></p>
-        <p th:if="${fieldError_password}" th:text="${fieldError_password}" style="color: red;"></p>
 
         <button type="submit">ĐĂNG KÝ</button>
-        <a th:href="@{/login}" class="link">Quay lại đăng nhập</a>
+
+        <a th:href="@{/login}" class="link">Quay lại</a>
+
+        <div class="error-message" th:if="${error}" th:text="${error}"></div>
     </form>
+
+
+
+
 </div>
 
 <script>

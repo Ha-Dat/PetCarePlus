@@ -115,26 +115,6 @@
                         </div>
                     </div>
 
-                    <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label">Giới tính:</label>
-                        <div class="col-sm-9">
-                            <select th:field="*{gender}" class="form-select">
-                                <option value="">-- Chọn giới tính --</option>
-                                <option value="Nam">Nam</option>
-                                <option value="Nữ">Nữ</option>
-                                <option value="Khác">Khác</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label">Ngày sinh:</label>
-                        <div class="col-sm-9">
-                            <input type="date" th:field="*{dob}" class="form-control"/>
-                            <div th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-danger small"></div>
-
-                        </div>
-                    </div>
                     <!-- Tỉnh / Thành phố -->
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Tỉnh / Thành phố:</label>
@@ -151,8 +131,8 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Quận / Huyện:</label>
                         <div class="col-sm-9">
-                            <select id="district" th:field="*{districtId}" class="form-select"
-                                    th:attr="data-init-district=${profile.districtId}">
+                            <select id="district" th:field="*{district}" class="form-select"
+                                    th:attr="data-init-district=${profile.district}">
                                 <option value="">-- Chọn quận/huyện --</option>
                             </select>
                         </div>
@@ -162,8 +142,8 @@
                     <div class="mb-3 row">
                         <label class="col-sm-3 col-form-label">Phường / Xã:</label>
                         <div class="col-sm-9">
-                            <select id="ward" th:field="*{wardId}" class="form-select"
-                                    th:attr="data-init-ward=${profile.wardId}">
+                            <select id="ward" th:field="*{ward}" class="form-select"
+                                    th:attr="data-init-ward=${profile.ward}">
                                 <option value="">-- Chọn phường/xã --</option>
                             </select>
                         </div>
