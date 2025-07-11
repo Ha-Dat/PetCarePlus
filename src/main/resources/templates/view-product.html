@@ -541,7 +541,6 @@
         /* Product Grid */
         .product-grid-item {
             display: grid;
-            justify-self: center;
             max-width: 940px;
             grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
             gap: 20px;
@@ -635,7 +634,8 @@
 
         .header_container {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
+            gap: 420px;
             width: 100%;
             align-items: center;
         }
@@ -738,6 +738,7 @@
 
         .register-btn {
             background: #388e3c;
+            width: 91.19px;
             color: white;
         }
 
@@ -913,7 +914,7 @@
             </div>
 
             <section th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
-                <h2 style="display: flow; justify-self: center;">Tất cả sản phẩm</h2>
+                <h2 style="display: flow; margin: 30px;">Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">

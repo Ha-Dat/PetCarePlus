@@ -198,7 +198,8 @@
 
         .header_container {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
+            gap: 420px;
             width: 100%;
             align-items: center;
         }
@@ -301,6 +302,7 @@
 
         .register-btn {
             background: #388e3c;
+            width: 91.19px;
             color: white;
         }
 
@@ -387,7 +389,6 @@
         .cart-table th {
             background-color: #f2f2f2;
             font-weight: bold;
-            text-transform: lowercase;
             padding: 15px 10px;
             text-align: center;
         }
@@ -550,11 +551,11 @@
     <table class="cart-table">
         <thead>
         <tr>
-            <th style="width: 30%;">sản phẩm</th>
-            <th style="width: 20%;">đơn giá</th>
-            <th style="width: 20%;">số lượng</th>
-            <th style="width: 20%;">số tiền</th>
-            <th style="width: 10%;">thao tác</th>
+            <th style="width: 30%;">Sản phẩm</th>
+            <th style="width: 20%;">Đơn giá</th>
+            <th style="width: 20%;">Số lượng</th>
+            <th style="width: 20%;">Số tiền</th>
+            <th style="width: 10%;">Thao tác</th>
         </tr>
         </thead>
         <tbody>
@@ -580,7 +581,7 @@
     <div class="action">
         <span>Tổng cộng: <span class="total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
         <div class="cart-actions">
-            <button id="clearCartBtn" class="remove-selected">xóa khỏi giỏ hàng</button>
+            <button id="clearCartBtn" class="remove-selected">Xóa khỏi giỏ hàng</button>
             <button class="checkout-btn">Mua Hàng</button>
         </div>
     </div>
