@@ -27,5 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                  @Param("minPrice") BigDecimal minPrice,
                                  @Param("maxPrice") BigDecimal maxPrice,
                                  Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.category.categoryId = :categoryId")
+    long countProductsByCategoryId(@Param("categoryId") Long categoryId);
+
     Page<Product> findAll(Pageable pageable);
 }
