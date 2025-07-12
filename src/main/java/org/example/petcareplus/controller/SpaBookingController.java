@@ -1,18 +1,22 @@
 package org.example.petcareplus.controller;
 
-import org.example.petcareplus.entity.*;
-import org.example.petcareplus.repository.*;
+import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.Service;
+import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.service.PetProfileService;
 import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -68,6 +72,39 @@ public class SpaBookingController {
             }
         }
         return "Không tìm thấy lịch";
+    }
+
+    @GetMapping("/list-spa-booking/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getSpaBookingDetail(@PathVariable("id") Long id) {
+        Optional<SpaBooking> bookingOpt = spaBookingService.findById(id);
+        if (bookingOpt.isPresent()) {
+            SpaBooking booking = bookingOpt.get();
+            Map<String, Object> data = new HashMap<>();
+
+            // data đơn book
+            data.put("id", booking.getSpaBookingId());
+            data.put("bookDate", booking.getBookDate().toString());
+            data.put("status", booking.getStatus());
+            data.put("service", booking.getService().getName());
+            data.put("note", booking.getNote());
+            // data của pet
+            data.put("image", booking.getPetProfile().getImage());
+            data.put("petId", booking.getPetProfile().getPetProfileId());
+            data.put("petName", booking.getPetProfile().getName());
+            data.put("species", booking.getPetProfile().getSpecies());
+            data.put("breed", booking.getPetProfile().getBreeds());
+            data.put("weight", booking.getPetProfile().getWeight());
+            // data chủ nuôi
+            data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
+            data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
+            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
+            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
+            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
+
+            return ResponseEntity.ok(data);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
     @GetMapping("/spa-booking/form")
