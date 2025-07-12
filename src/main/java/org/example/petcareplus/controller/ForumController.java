@@ -1,6 +1,8 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.PostDTO;
+import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
 import org.example.petcareplus.entity.Post;
 import org.example.petcareplus.service.ForumService;
@@ -27,11 +29,15 @@ public class ForumController {
     public String getForumPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            Model model) {
+            Model model, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
 
         Page<Post> postsPage = forumService.findAll(page,size,"rating");
+        List<PostDTO> postDTOs = postsPage.getContent().stream()
+                .map(PostDTO::new)
+                .toList();
 
-        model.addAttribute("posts", postsPage.getContent());
+        model.addAttribute("posts", postDTOs);
         model.addAttribute("hasNext", postsPage.hasNext());
         return "forum";
     }
@@ -47,9 +53,11 @@ public class ForumController {
     }
 
     @GetMapping("/post-detail/{id}")
-    public String getPostDetail(@PathVariable Long id, Model model) {
+    public String getPostDetail(@PathVariable Long id, Model model, HttpSession session) {
         Post post = forumService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        Account account = (Account) session.getAttribute("loggedInUser");
 
         List<CommentPost> comments = forumService.findCommentByPostId(id);
 
@@ -60,21 +68,25 @@ public class ForumController {
     }
 
     @GetMapping("/create-post")
-    public String createPostForm(Model model) {
+    public String createPostForm(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
         model.addAttribute("postDTO", new PostDTO());
         return "create-post"; // Tên file HTML
     }
 
     @PostMapping("/create-post")
-    public String savePost(@ModelAttribute PostDTO postDTO) {
-        Long fakeAccountId = 1L; // Lấy từ session / auth thực tế
-        forumService.savePost(postDTO, fakeAccountId);
+    public String savePost(@ModelAttribute PostDTO postDTO, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        forumService.savePost(postDTO, account.getAccountId());
         return "redirect:/forum"; // Redirect sau khi lưu
     }
 
     // Hiển thị form update
     @GetMapping("/update-post/{id}")
-    public String updatePostForm(@PathVariable Long id, Model model) {
+    public String updatePostForm(@PathVariable Long id, Model model, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
         Post post = forumService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         PostDTO postDTO = new PostDTO(post);

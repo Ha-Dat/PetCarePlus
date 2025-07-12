@@ -12,6 +12,7 @@ public class PostDTO {
     private String image;
     private String video;
     private String accountName;
+    private Long accountId;
 
     private MultipartFile imageFile;
     private MultipartFile videoFile;
@@ -24,6 +25,7 @@ public class PostDTO {
         this.image = post.getImage();
         this.video = post.getVideo();
         this.accountName = post.getAccount() != null ? post.getAccount().getName() : "Ẩn danh";
+        this.accountId = post.getAccount() != null ? post.getAccount().getAccountId() : null;
     }
 
     public PostDTO() {
@@ -45,6 +47,9 @@ public class PostDTO {
 
     public String getAccountName() { return accountName; }
     public void setAccountName(String accountName) { this.accountName = accountName; }
+
+    public Long getAccountId() { return accountId; }
+    public void setAccountId(Long accountId) { this.accountId = accountId; }
 
     public String getImage() {
         return image;

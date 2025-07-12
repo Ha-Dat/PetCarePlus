@@ -97,7 +97,10 @@
 
         <!-- Navigation -->
         <div class="flex flex-1 items-center justify-end space-x-2">
-            <a href="/create-post" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex">
+            <!-- Nếu đã đăng nhập -->
+            <a th:if="${session.loggedInUser != null}"
+               href="/create-post"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex">
                 <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14" />
                     <path d="M12 5v14" />
@@ -105,26 +108,27 @@
                 <span>Tạo bài</span>
             </a>
 
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                </svg>
-            </button>
-
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-            </button>
-
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+            <!-- Avatar - Nếu đã đăng nhập thì về /profile -->
+            <a th:if="${session.loggedInUser != null}"
+               href="/profile"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                 </svg>
-            </button>
+            </a>
+
+            <!-- Avatar - Nếu chưa đăng nhập thì về /login -->
+            <a th:if="${session.loggedInUser == null}"
+               href="/login"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </a>
         </div>
+
     </div>
 </header>
 
@@ -225,7 +229,7 @@
                                 <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
                                 <span class="font-medium text-foreground">r/diendan</span>
                                     <span>•</span>
-                                    <span>Đăng bởi <u><span th:text="${post.account.name}">Username</span></u></span>
+                                    <span>Đăng bởi <u><span th:text="${post.accountName}">Username</span></u></span>
                                     <span>•</span>
 <!--                                    <span th:text="${#dates.format(post.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày đăng</span>-->
                                 </div>
@@ -251,26 +255,19 @@
                                 </p>
 
                                 <!-- Post Actions -->
-                                <!-- Post comment -->
                                 <div class="flex items-center space-x-2">
-                                    <a th:href="@{'/post-detail/' + ${post.postId}}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                                    <!-- Bình luận -->
+                                    <a th:href="@{'/post-detail/' + ${post.postId}}"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
                                         <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                                         </svg>
                                         <span>Bình luận</span>
                                     </a>
 
-<!--                                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">-->
-<!--                                        <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">-->
-<!--                                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />-->
-<!--                                            <polyline points="16,6 12,2 8,6" />-->
-<!--                                            <line x1="12" y1="2" x2="12" y2="15" />-->
-<!--                                        </svg>-->
-<!--                                        <span>Chia sẻ</span>-->
-<!--                                    </button>-->
-
-                                    <!-- Update -->
-                                    <a th:href="@{'/update-post/' + ${post.postId}}"
+                                    <!-- Chỉ hiện nếu là chủ bài viết -->
+                                    <a th:if="${session.loggedInUser != null}"
+                                            th:href="@{'/update-post/' + ${post.postId}}"
                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
                                         <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M12 20h9" />
@@ -279,8 +276,8 @@
                                         <span>Sửa</span>
                                     </a>
 
-                                    <!-- Delete -->
-                                    <a th:href="@{'/delete-post/' + ${post.postId}}"
+                                    <a th:if="${session.loggedInUser != null}"
+                                       th:href="@{'/delete-post/' + ${post.postId}}"
                                        onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
                                         <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -292,8 +289,9 @@
                                         </svg>
                                         <span>Xóa</span>
                                     </a>
-
                                 </div>
+
+
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.service.HotelBookingService;
 import org.springframework.data.domain.Page;
@@ -108,7 +109,9 @@ public class HotelBookingController {
     }
 
     @GetMapping("/booking-hotel")
-    public String showHotelBookingForm(Model model) {
+    public String showHotelBookingForm(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
         model.addAttribute("services", hotelBookingService.Service_findAll()); // list dịch vụ
         return "booking-hotel";
@@ -119,19 +122,21 @@ public class HotelBookingController {
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
             @RequestParam("serviceId") Long serviceId,
-            @RequestParam("ownerInfo") String ownerInfo, // chưa co login
             @RequestParam("petName") String petName,
             @RequestParam("petSpecies") String petSpecies,
             @RequestParam("petBreed") String petBreed,
-            @RequestParam("phoneNumber") String phoneNumber, // chưa co login
+            HttpSession session,
             Model model
     ) {
         try {
+            Account account = (Account) session.getAttribute("loggedInUser");
+            if (account == null) return "redirect:/login";
             // Tạo pet profile mới từ form
             PetProfile petProfile = new PetProfile();
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
+            petProfile.setProfile(account.getProfile());
             hotelBookingService.PetProfile_save(petProfile);
 
             // gán dữ liệu từ form
