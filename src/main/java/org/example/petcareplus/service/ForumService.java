@@ -15,4 +15,7 @@ public interface ForumService {
     Post savePost(PostDTO postDTO, Long accountId);
     void updatePost(PostDTO postDTO, Long accountId);
     void deletePostById(Long postId);
+    void saveCommentPost(Long postId, Long accountId, String comment);
+    void saveReplyComment(Long commentPostId, Long accountId, String content);
+    Optional<CommentPost> findCommentById(Long commentId);
 }

@@ -260,20 +260,29 @@
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-6">
         <div class="p-4">
           <div class="flex items-center space-x-2 mb-3">
-                <span class="text-sm text-muted-foreground">Bình luận với tư cách</span>
-            <span class="text-sm font-medium text-foreground">u/your_username</span>
+            <span th:if="${account != null}" class="text-sm text-muted-foreground">Bình luận với tư cách</span>
+            <span th:if="${account != null}" th:text="${account.name}" class="text-sm font-medium text-foreground"></span>
+            <span th:unless="${account != null and account.name != null}">bạn cần đăng nhập để bình luận</span>
+          </span>
           </div>
-          <textarea placeholder="Chia sẻ suy nghĩ của bạn..." class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"></textarea>
-          <div class="flex justify-end space-x-2 mt-3">
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-              Hủy
-            </button>
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
-              Bình luận
-            </button>
-          </div>
+
+          <form th:action="@{'/post-detail/' + ${post.postId} + '/comment'}" method="post">
+          <textarea name="content" placeholder="Chia sẻ suy nghĩ của bạn..."
+                class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"></textarea>
+            <div class="flex justify-end space-x-2 mt-3">
+              <button type="reset"
+                      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                Hủy
+              </button>
+              <button type="submit"
+                      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
+                Bình luận
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+
 
       <!-- Comments Section -->
       <div class="space-y-4">
@@ -293,7 +302,7 @@
               <!-- Comment Content -->
               <div class="flex-1">
                 <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-          <span class="font-medium text-foreground"
+                <span class="font-medium text-foreground"
                 th:text="'u/' + ${comment.account.name}">u/username</span>
                   <span>•</span>
                   <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
@@ -302,12 +311,19 @@
                   Nội dung bình luận...
                 </p>
                 <div class="flex items-center space-x-2">
-                  <button class="inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button type="button" class="reply-btn inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                     </svg>
                     <span>Trả lời</span>
                   </button>
+                </div>
+                <!-- Form Reply (hidden by default) -->
+                <div class="ml-11 mt-3 hidden reply-form">
+                  <form th:action="@{'/comment/' + ${comment.commentPostId} + '/reply'}" method="post">
+                    <textarea name="content" placeholder="Nhập phản hồi..." class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                    <button type="submit" class="bg-primary text-white px-3 py-1 rounded">Gửi</button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -336,11 +352,8 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
-
       </div>
     </div>
 
@@ -454,6 +467,15 @@
   // Simple JavaScript functionality
   document.addEventListener("DOMContentLoaded", function () {
     console.log("PetCare+ Post Detail loaded successfully");
+  });
+
+    document.querySelectorAll('.reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const replyForm = btn.closest('.flex-1').querySelector('.reply-form');
+      if (replyForm) {
+        replyForm.classList.toggle('hidden');
+      }
+    });
   });
 </script>
 </body>

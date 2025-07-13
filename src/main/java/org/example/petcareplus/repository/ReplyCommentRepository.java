@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ReplyCommentRepository extends JpaRepository<ReplyComment, Long> {
-    List<ReplyComment> findByCommentPost_CommentPostId(Long commentPostId);
 }

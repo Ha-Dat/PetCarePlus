@@ -4,6 +4,7 @@ import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
 import org.example.petcareplus.entity.Post;
+import org.example.petcareplus.entity.ReplyComment;
 import org.example.petcareplus.repository.AccountRepository;
 import org.example.petcareplus.repository.CommentPostRepository;
 import org.example.petcareplus.repository.PostRepository;
@@ -107,6 +108,41 @@ public class ForumServiceImpl implements ForumService {
     public void deletePostById(Long postId) {
         postRepository.deleteById(postId);
     }
+
+    @Override
+    public void saveCommentPost(Long postId, Long accountId, String comment) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        CommentPost commentPost = new CommentPost();
+        commentPost.setComment(comment);
+        commentPost.setAccount(account);
+        commentPost.setPost(post);
+
+        commentPostRepository.save(commentPost);
+    }
+
+    @Override
+    public void saveReplyComment(Long commentPostId, Long accountId, String content) {
+        CommentPost commentPost = commentPostRepository.findById(commentPostId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        ReplyComment reply = new ReplyComment();
+        reply.setComment(content);
+        reply.setCommentPost(commentPost);
+        reply.setAccount(account);
+        replyCommentRepository.save(reply);
+    }
+
+    @Override
+    public Optional<CommentPost> findCommentById(Long commentId) {
+        return commentPostRepository.findById(commentId);
+    }
+
 
 
     private String saveFile(MultipartFile file, String uploadDir) {

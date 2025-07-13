@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class ForumController {
@@ -61,6 +60,7 @@ public class ForumController {
 
         List<CommentPost> comments = forumService.findCommentByPostId(id);
 
+        model.addAttribute("account", account);
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
         model.addAttribute("commentCount", post.getComments().size());
@@ -107,6 +107,36 @@ public class ForumController {
     public String deletePost(@PathVariable Long postId) {
         forumService.deletePostById(postId);
         return "redirect:/forum"; // Về trang chủ hoặc danh sách
+    }
+
+    @PostMapping("/post-detail/{postId}/comment")
+    public String commentPost(
+            @PathVariable Long postId,
+            @RequestParam String content,
+            HttpSession session
+    ) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+        forumService.saveCommentPost(postId, account.getAccountId(), content);
+        return "redirect:/post-detail/" + postId;
+    }
+
+    @PostMapping("/comment/{commentId}/reply")
+    public String replyCommentPost(
+            @PathVariable Long commentId,
+            @RequestParam String content,
+            HttpSession session
+    ) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+        forumService.saveReplyComment(commentId, account.getAccountId(), content);
+
+        // Tìm postId để redirect về lại post detail
+        CommentPost commentPost = forumService.findCommentById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        Long postId = commentPost.getPost().getPostId();
+
+        return "redirect:/post-detail/" + postId;
     }
 
 }
