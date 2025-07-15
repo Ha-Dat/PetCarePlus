@@ -59,9 +59,4 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    @Override
-    public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
-    }
-
 }

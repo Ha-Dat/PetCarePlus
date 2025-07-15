@@ -123,72 +123,104 @@
         </div>
         <nav>
             <ul>
-                <li><a href="/dashboard"><i class="fas fa-chart-bar"></i> thống kê</a></li>
-                <li class="active"><a href="/customers"><i class="fas fa-users"></i> khách hàng</a></li>
-                <li><a href="/employees"><i class="fas fa-user-tie"></i> nhân viên</a></li>
-                <li><a href="/orders"><i class="fas fa-receipt"></i> Đơn hàng</a></li>
+                <li><a href="/dashboard"><i class="fas fa-chart-bar"></i>Thống kê</a></li>
+                <li class="active"><a href="/customers"><i class="fas fa-users"></i>Tài khoản</a></li>
             </ul>
         </nav>
-        <div class="user-info">
-            <img src="/images/avatar.png" alt="User" />
-            <div>
-                <span>Easin Arafat</span>
-                <small>Free Account</small>
-            </div>
-        </div>
     </aside>
 
     <!-- Main content -->
     <main class="main-content">
-        <header>
-            <h1>thống kê</h1>
-            <div class="date-filters">
-                <input type="date" name="fromDate" />
-                <input type="date" name="toDate" />
-            </div>
-        </header>
+        <button onclick="openModal()">Tạo tài khoản mới</button>
 
         <!-- Table -->
         <section class="table-container">
             <table>
                 <thead>
                 <tr>
-                    <th>Invoice Id</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Date</th>
-                    <th>Status</th>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>SĐT</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="customer : ${customers}">
-                    <td th:text="${customer.Id}">#872345</td>
+                <tr th:each="a : ${accounts}">
+                    <td th:text="${a.accountId}">#</td>
                     <td>
-                        <img th:src="@{${customer.avatarUrl}}" alt="Avatar" class="avatar"/>
-                        <span th:text="${customer.name}">Bethany Jackson</span>
+                        <span th:text="${a.name}"></span>
                     </td>
                     <td>
-                        <i class="fas fa-envelope"></i>
-                        <span th:text="${customer.phone}">0989123785</span>
+                        <i class="fas fa-phone"></i>
+                        <span th:text="${a.phone}"></span>
                     </td>
                     <td>
-                        <i class="fas fa-calendar-alt"></i>
-                        <span th:text="${#dates.format(customer.date, 'dd MMM, yyyy')}">10 Dec, 2020</span>
+                        <span th:text="${a.role}"></span>
                     </td>
                     <td>
-                            <span th:text="${customer.status}"
-                                  th:classappend="'status ' + ${customer.status.toLowerCase()}">Pending</span>
+                            <span th:text="${a.status}"></span>
                     </td>
                     <td>
-                        <i class="fas fa-star" th:if="${customer.favorite}"></i>
+                        <form th:action="@{'/admin/account/ban/' + ${a.accountId}}" method="post" style="display:inline;">
+                            <button type="submit"
+                                    th:text="${a.status == 'ACTIVE' ? 'Khóa' : 'Mở khóa'}"
+                                    th:class="${a.status == 'ACTIVE' ? 'ban-btn' : 'unban-btn'}">
+                            </button>
+                        </form>
                     </td>
+
                 </tr>
                 </tbody>
             </table>
         </section>
+
+        <!-- Popup Modal -->
+        <div id="createAccountModal" style="display:none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="background: white; margin: 100px auto; padding: 20px; width: 400px; border-radius: 8px; position: relative;">
+                <h3>Tạo tài khoản mới</h3>
+
+                <div th:if="${error}" style="color: red; margin-bottom: 10px;">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <form th:action="@{/admin/account/create}" method="post">
+                    <label>Tên:</label>
+                    <input type="text" name="name" required><br><br>
+
+                    <label>SĐT:</label>
+                    <input type="text" name="phone" required><br><br>
+
+                    <label>Mật khẩu:</label>
+                    <input type="password" name="password" required><br><br>
+
+                    <label>Vai trò:</label>
+                    <select name="role">
+                        <option value="SELLER">Seller</option>
+                        <option value="PET_GROOMER">Pet Groomer</option>
+                        <option value="DOCTOR">Doctor</option>
+                    </select><br><br>
+
+                    <button type="submit">Tạo</button>
+                    <button type="button" onclick="closeModal()">Hủy</button>
+                </form>
+            </div>
+        </div>
+
+
     </main>
 </div>
-
 </body>
+<script>
+    function openModal() {
+        document.getElementById('createAccountModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('createAccountModal').style.display = 'none';
+    }
+</script>
+
 </html>
