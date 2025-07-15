@@ -158,6 +158,58 @@
         </tr>
         </tbody>
     </table>
+
+    <!--    pagination    -->
+    <div class="pagination-container">
+        <div class="pagination">
+            <!-- Nút Previous -->
+            <span th:if="${currentPage > 0}">
+            <a th:href="@{'/líst-spa-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
+        </span>
+            <!-- Tính startPage và endPage -->
+            <th:block th:with="
+            startPage=${T(java.lang.Math).max(0, currentPage - 2)},
+            endPage=${T(java.lang.Math).min(startPage + 4, totalPages - 1)}">
+                <!-- Danh sách trang -->
+                <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                <a th:href="@{'/list-spa-booking'(page=${i}, size=8)}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == currentPage} ? 'active' : ''"></a>
+            </span>
+            </th:block>
+            <!-- Nút Next -->
+            <span th:if="${currentPage < totalPages - 1}">
+            <a th:href="@{'/list-spa-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
+        </span>
+        </div>
+    </div>
+
+    <!-- Popup hiển thị chi tiết booking -->
+    <div id="detail-popup" class="popup-menu" style="display: none; position: fixed; top: 5%; left: 50%; transform: translateX(-50%);
+    background: white; border: 1px solid #ccc; padding: 20px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 2000; width: 400px;
+    max-height: 80vh; overflow-y: auto;">
+        <h3>Chi tiết đơn booking</h3>
+        <p><strong>Booking ID:</strong> <span id="popup-id"></span></p>
+        <p><strong>Ngày đặt:</strong> <span id="popup-date"></span></p>
+        <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>
+        <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
+        <br>
+        <hr>
+        <p><img id="popup-image" src="" alt="Pet Image" style="max-width: 100%; height: auto; border-radius: 8px;"></p>
+        <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
+        <p><strong>Loài:</strong> <span id="popup-species"></span></p>
+        <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
+        <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+        <br>
+        <hr>
+        <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
+        <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+        <p><strong>Thành phố:</strong> <span id="popup-city"></span></p>
+        <p><strong>Huyện:</strong> <span id="popup-district"></span></p>
+        <p><strong>Xã:</strong> <span id="popup-ward"></span></p>
+        <p><strong>Ghi chú:</strong> <span id="popup-note"></span></p>
+        <button onclick="closeDetailPopup()">Đóng</button>
+    </div>
 </main>
 </body>
 <script>
@@ -193,6 +245,10 @@
                     alert("Có lỗi xảy ra khi duyệt.");
                 });
         }
+    }
+
+    function closeDetailPopup() {
+        document.getElementById('detail-popup').style.display = 'none';
     }
 </script>
 </html>

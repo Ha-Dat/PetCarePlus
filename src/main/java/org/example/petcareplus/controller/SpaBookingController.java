@@ -6,6 +6,7 @@ import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.service.PetProfileService;
 import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.service.SpaBookingService;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,13 @@ public class SpaBookingController {
     }
 
     @GetMapping("/list-spa-booking")
-    public String getAllSpaBookings(Model model) {
-        List<SpaBooking> spaBookings= spaBookingService.findAll();
-        model.addAttribute("spaBookings", spaBookings);
+    public String getAllSpaBookings(Model model,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "8") int size) {
+        Page<SpaBooking> spaBookings= spaBookingService.findAll(page, size, "bookDate");
+        model.addAttribute("spaBookings", spaBookings.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", spaBookings.getTotalPages());
         return "list-spa-booking";
     }
 
