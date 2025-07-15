@@ -1,6 +1,7 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.stereotype.Service;
 
@@ -9,25 +10,25 @@ import java.util.*;
 @Service
 public class PetProfileServiceImpl implements PetProfileService {
 
-    private final List<PetProfile> petProfiles = new ArrayList<>();
+    private final PetProfileRepository petProfileRepository;
     private Long nextId = 1L;
+
+    public PetProfileServiceImpl(PetProfileRepository petProfileRepository) {
+        this.petProfileRepository = petProfileRepository;
+    }
 
     @Override
     public List<PetProfile> findAll() {
-        return petProfiles;
+        return petProfileRepository.findAll();
     }
 
     @Override
-    public PetProfile findById(Integer id) {
-        return petProfiles.stream()
-                .filter(p -> p.getPetProfileId().equals(id))
-                .findFirst()
-                .orElse(null);
+    public PetProfile findById(Long id) {
+        return petProfileRepository.findById(Long.valueOf(id)).orElse(null);
     }
 
-
     @Override
-    public void updatePetProfile(Integer id, PetProfile updated) {
+    public void updatePetProfile(Long id, PetProfile updated) {
         PetProfile existing = findById(id);
         if (existing != null) {
             existing.setName(updated.getName());
@@ -35,20 +36,24 @@ public class PetProfileServiceImpl implements PetProfileService {
             existing.setSpecies(updated.getSpecies());
             existing.setBreeds(updated.getBreeds());
             existing.setWeight(updated.getWeight());
+            petProfileRepository.save(existing);
         }
     }
 
     @Override
     public PetProfile createEmptyPet() {
         PetProfile pet = new PetProfile();
-        pet.setPetProfileId(nextId++);
         pet.setName("Thú cưng mới");
         pet.setAge(0);
         pet.setSpecies("");
         pet.setBreeds("");
         pet.setWeight(0.0f);
-        petProfiles.add(pet);
-        return pet;
+        return petProfileRepository.save(pet);
+    }
+
+    @Override
+    public PetProfile save(PetProfile petProfile) {
+        return petProfileRepository.save(petProfile);
     }
 
 //    @Override

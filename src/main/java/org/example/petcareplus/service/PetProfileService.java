@@ -7,10 +7,12 @@ import java.util.List;
 public interface PetProfileService {
     List<PetProfile> findAll();
 
-    PetProfile findById(Integer id);
+    PetProfile findById(Long id);
 
-    void updatePetProfile(Integer id, PetProfile updated);
+    void updatePetProfile(Long id, PetProfile updated);
 
     PetProfile createEmptyPet();
+
+    PetProfile save(PetProfile petProfile);
 
 }

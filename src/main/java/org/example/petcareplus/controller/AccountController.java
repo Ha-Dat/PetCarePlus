@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.example.petcareplus.dto.LoginDTO;
 import org.example.petcareplus.dto.RegisterDTO;
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,13 @@ public class AccountController {
         account.setStatus("ACTIVE");
 
         accountService.save(account);
+
+        Profile existingProfile = accountService.getProfileByAccountAccountId(account.getAccountId());
+        if (existingProfile == null) {
+            existingProfile = new Profile();
+            existingProfile.setAccount(account);
+        }
+        accountService.profileSave(existingProfile);
 
         redirectAttributes.addFlashAttribute("message", "Đăng ký thành công! Hãy đăng nhập.");
         return "redirect:/login";
