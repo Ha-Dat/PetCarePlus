@@ -1,7 +1,9 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.repository.AccountRepository;
+import org.example.petcareplus.repository.ProfileRepository;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
 
     @Override
     public boolean isPhoneExists(String phone) {
@@ -43,4 +48,13 @@ public class AccountServiceImpl implements AccountService {
         return Optional.empty();
     }
 
+    @Override
+    public Profile getProfileByAccountAccountId(Long accountId) {
+        return profileRepository.findByAccountAccountId(accountId);
+    }
+
+    @Override
+    public Profile profileSave(Profile profile) {
+        return profileRepository.save(profile);
+    }
 }
