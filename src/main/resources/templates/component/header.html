@@ -319,7 +319,60 @@
         .cart:hover {
             transform: scale(1.2);
         }
+
+        /* Dropdown user menu */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn {
+            background: #4caf50;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 110%; /* đẩy dropdown xuống dưới nút (tùy chỉnh nếu cần) */
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            z-index: 2000; /* cao hơn nav-bar */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <header class="main_header" th:component="header">
@@ -333,7 +386,7 @@
             <form th:action="@{/view-product}" method="get" class="search-bar">
                 <input type="text" name="searchkeyword"
                        th:value="${searchkeyword}"
-                       placeholder="Tìm kiếm sản phẩm...">
+                       placeholder="Tìm kiếm sản phẩm..." class="search-bar input">
                 <button type="submit" class="search-btn">Tìm kiếm</button>
             </form>
         </div>
@@ -344,9 +397,23 @@
                 099.99.9999 <br><span>hotline</span>
             </div>
             <div class="auth">
-                <button class="login-btn">Đăng nhập</button>
-                <button class="register-btn">Đăng ký</button>
+                <div th:if="${session.loggedInUser == null}" class="auth">
+                    <button class="login-btn" onclick="location.href='/login'">Đăng nhập</button>
+                    <button class="register-btn" onclick="location.href='/register'">Đăng ký</button>
+                </div>
+
+                <div class="auth" th:if="${session.loggedInUser != null}">
+                    <div class="user-dropdown">
+                        <button class="user-btn" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
+                        <div class="dropdown-content">
+                            <a href="/profile">Trang cá nhân</a>
+                            <a href="/logout">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
             <div>
                 <a href="view-cart"><img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart" style="width: 50px"/></a>
             </div>
@@ -408,4 +475,5 @@
     </nav>
 </header>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>
