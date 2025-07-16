@@ -3,1086 +3,184 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý sản phẩm - Seller Dashboard</title>
-    <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
-    />
+    <title>Quản lý sản phẩm</title>
     <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
+            margin: 0;
             font-family: "Nunito", sans-serif;
-            background-color: #fafafb;
-            min-height: 100vh;
+            background-color: #f9fbfc;
         }
 
-        /* Dashboard Layout */
         .dashboard {
             display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 248px;
-            background-color: #ffffff;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
             height: 100vh;
-            z-index: 10;
         }
 
-        .sidebar-header {
-            padding: 24px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 94px;
-            height: 77px;
-            background-color: #4caf50;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .logo-icon::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 48px;
-            height: 48px;
-            background-color: #388e3c;
-            border-radius: 4px;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #030229;
-        }
-
-        /* Navigation */
-        .sidebar-nav {
-            flex: 1;
-            padding: 0 24px;
-        }
-
-        .nav-menu {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .nav-item {
-            margin-bottom: 8px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: rgba(3, 2, 41, 0.5);
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: rgba(3, 2, 41, 0.7);
-        }
-
-        .nav-item.active .nav-link {
-            background: linear-gradient(
-                    90deg,
-                    #aca9ff 0%,
-                    rgba(172, 169, 255, 0) 91.25%
-            );
-            color: #605bff;
-        }
-
-        .nav-item.active .nav-link::after {
-            content: "";
-            position: absolute;
-            right: 0;
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
             top: 0;
-            bottom: 0;
-            width: 4px;
-            background-color: #605bff;
-            border-radius: 2px 0 0 2px;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         }
 
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            opacity: 0.4;
-        }
-
-        .nav-item.active .nav-icon {
-            opacity: 1;
-        }
-
-        /* Sidebar Footer */
-        .sidebar-footer {
-            padding: 24px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 47px;
-            height: 37px;
-            background-color: #ffc7d4;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-size: 12px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .user-account {
-            font-size: 10px;
-            color: rgba(0, 0, 0, 0.5);
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 18px;
-            height: 17px;
-            color: rgba(3, 2, 41, 0.4);
-        }
-
-        .logout-btn svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 248px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: visible;
-            min-height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            padding: 24px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #030229;
-        }
-
-        .date-selectors {
-            display: flex;
-            gap: 15px;
-        }
-
-        .date-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 140px;
-        }
-
-        .date-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: rgba(3, 2, 41, 0.8);
-            font-family: "Nunito", sans-serif;
-        }
-
-        .date-input {
-            height: 40px;
-            background-color: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            padding: 0 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(3, 2, 41, 0.7);
-            font-family: "Nunito", sans-serif;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .date-input:focus {
-            outline: none;
-            border-color: #605bff;
-            box-shadow: 0 0 0 2px rgba(96, 91, 255, 0.1);
-        }
-
-        .date-input:hover {
-            border-color: #605bff;
-        }
-
-        /* Style the calendar picker icon */
-        .date-input::-webkit-calendar-picker-indicator {
-            color: #605bff;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23605bff' stroke-width='2'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3e%3cline x1='16' y1='2' x2='16' y2='6'/%3e%3cline x1='8' y1='2' x2='8' y2='6'/%3e%3cline x1='3' y1='10' x2='21' y2='10'/%3e%3c/svg%3e");
-            background-size: 16px 16px;
-            width: 16px;
-            height: 16px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background-color: #605bff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: rgba(96, 91, 255, 0.9);
-        }
-
-        .btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Content Area */
-        .content {
-            padding: 0 24px 24px;
-            flex: 1;
-            overflow: visible;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .table-container {
-            /* Fullscreen table without box styling */
-            overflow: visible;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        /* Table Header */
-        .table-header {
-            display: grid;
-            grid-template-columns: 80px 200px 250px 120px 80px 80px 100px 120px 150px 60px;
-            gap: 12px;
-            padding: 16px 0;
-            overflow-x: auto;
-            overflow-y: visible;
-            background-color: transparent;
-            border-bottom: 2px solid #e2e8f0;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .header-cell {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: rgba(3, 2, 41, 0.7);
-        }
-
-        .header-cell-actions {
-            justify-content: flex-end;
-        }
-
-        .header-cell svg {
-            width: 12px;
-            height: 12px;
-        }
-
-        /* Product List */
-        .product-list {
-            /* Fullscreen table layout */
-            overflow: visible;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            /* Prevent stacking context creation */
-            transform: none;
-            will-change: auto;
-        }
-
-        .product-row {
-            background-color: transparent;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background-color 0.2s;
-            /* Remove position relative to prevent stacking context */
-            z-index: auto;
-            /* Prevent creating new stacking contexts */
-            transform: none;
-            opacity: 1;
-            will-change: auto;
-        }
-
-        .product-row:hover {
-            background-color: #f9fafb;
-        }
-
-        .product-row:last-child {
-            border-bottom: none;
-        }
-
-        /* When dropdown is active, create temporary stacking context */
-        .product-row.dropdown-active {
-            position: relative;
-            z-index: 1000;
-        }
-
-        .product-row-desktop {
-            display: grid;
-            grid-template-columns: 80px 200px 250px 120px 80px 80px 100px 120px 150px 60px;
-            gap: 12px;
-            align-items: center;
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 16px 0;
-            min-height: 60px;
-        }
-
-        .product-row-mobile {
-            display: none;
-        }
-        /* Pagination Styles */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin: 24px 0;
-            padding: 16px 0;
-            font-family: "Nunito", sans-serif;
-            flex-wrap: wrap;
-        }
-
-        /* Previous/Next buttons */
-        .pagination > a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            background-color: #605bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            min-width: 80px;
-        }
-
-        .pagination > a:hover {
-            background-color: rgba(96, 91, 255, 0.9);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(96, 91, 255, 0.3);
-        }
-
-        /* Page number buttons */
-        .page-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            color: #605bff;
-            text-decoration: none;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            margin: 0 2px;
-        }
-
-        .page-number:hover {
-            background-color: #f8f9fa;
-            border-color: #605bff;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(96, 91, 255, 0.2);
-        }
-
-        /* Active page number */
-        .page-number.active-page {
-            background-color: gray;
-            color: white;
-            border-color: #605bff;
-            cursor: default;
-            box-shadow: 0 2px 8px rgba(96, 91, 255, 0.4);
-        }
-
-        .page-number.active-page:hover {
-            transform: none;
-        }
-
-        /* Remove default span styling */
-        .pagination span {
-            display: inline-block;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .pagination {
-                gap: 4px;
-                margin: 16px 0;
-            }
-
-            .page-number {
-                color: gray;
-                width: 36px;
-                height: 36px;
-                font-size: 12px;
-                margin: 0 1px;
-            }
-
-            .pagination > a {
-                min-width: 60px;
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-        }
-        .cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow: visible;
-            position: relative;
-        }
-
-        .cell-checkbox {
-            gap: 12px;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #b3b3bf;
-            border-radius: 2px;
-        }
-
-        .product-id {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .cell-name {
-            gap: 12px;
-        }
-
-        .product-avatar {
-            width: 36px;
-            height: 36px;
-            background-color: #e5e1fb;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .product-description {
-            font-size: 13px;
-            color: #666;
-            max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
-        .status-active {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-inactive {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .image-preview {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .category-tag {
-            font-size: 12px;
-            padding: 4px 8px;
-            background-color: #f3f4f6;
-            color: #374151;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-
-        .cell-id {
-            gap: 8px;
-        }
-
-        .cell-description {
-            overflow: hidden;
-        }
-
-        .product-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .cell-price {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .cell-date {
-            gap: 8px;
-        }
-
-        .calendar-icon {
-            width: 13px;
-            height: 14px;
-            color: #4285f4;
-        }
-
-        .cell-date span {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .cell-stock {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000;
-        }
-
-        .cell-rating {
-            justify-content: center;
-        }
-
-        .star-icon {
-            width: 17px;
-            height: 16px;
-            color: #ffd66b;
-        }
-
-        .cell-actions {
-            justify-content: flex-end;
-            position: relative;
-            overflow: visible;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            color: #605bff;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn:hover {
-            background-color: rgba(96, 91, 255, 0.1);
-        }
-
-        .menu-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .menu-btn .dots-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .menu-btn .dots-icon circle {
-            fill: #605bff;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .date-selectors {
-                align-self: stretch;
-            }
-
-            .header-actions {
-                flex-wrap: wrap;
-            }
-
-            .table-header {
-                display: none;
-            }
-
-            .product-row-desktop {
-                display: none;
-            }
-
-            .product-row-mobile {
-                display: block;
-            }
-
-            .mobile-row-header {
-                display: flex;
-                justify-content: between;
-                align-items: center;
-                margin-bottom: 12px;
-            }
-
-            .mobile-product-info {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                flex: 1;
-            }
-
-            .mobile-product-details {
-                flex: 1;
-            }
-
-            .mobile-product-details .product-name {
-                font-size: 14px;
-                font-weight: 600;
-                color: #000;
-            }
-
-            .mobile-product-details .product-id {
-                font-size: 12px;
-                color: rgba(3, 2, 41, 0.7);
-            }
-
-            .mobile-row-details {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 16px;
-            }
-
-            .mobile-detail-item {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-            }
-
-            .mobile-detail-full {
-                grid-column: 1 / -1;
-            }
-
-            .detail-label {
-                font-size: 12px;
-                color: rgba(3, 2, 41, 0.7);
-            }
-
-            .detail-value {
-                font-size: 14px;
-                font-weight: 600;
-                color: #000;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
-
-            .detail-value .star-icon {
-                width: 12px;
-                height: 12px;
-            }
-
-            .detail-value .calendar-icon {
-                width: 12px;
-                height: 12px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 16px;
-            }
-
-            .content {
-                padding: 0 16px 16px;
-            }
-
-            .page-title {
-                font-size: 20px;
-            }
-
-            .date-selectors {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .date-selector {
-                min-width: auto;
-                width: 100%;
-            }
-
-            .date-label {
-                font-size: 13px;
-            }
-
-            .product-row {
-                padding: 16px 0;
-                border-bottom: 1px solid #e5e7eb;
-            }
-        }
-
-        /* Loading States */
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-            position: relative;
-        }
-
-        .loading::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
-            border: 2px solid #605bff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Dropdown Menu */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-            z-index: 10;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: fixed;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 12px 24px 0px rgba(0, 0, 0, 0.4);
-            z-index: 2147483647 !important; /* Maximum z-index value */
-            border-radius: 8px;
-            overflow: visible;
-            border: 1px solid #e5e7eb;
-            pointer-events: auto;
-        }
-
-        /* Ensure dropdown is isolated from parent stacking contexts */
-        .dropdown-content.show {
-            display: block;
-            isolation: isolate;
-        }
-
-        .dropdown-content.show {
-            display: block;
-        }
-
-        .dropdown-content a {
-            color: #333;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: "Nunito", sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #f8f9fa;
-        }
-
-        .dropdown-content a.delete-option {
-            color: #dc3545;
-        }
-
-        .dropdown-content a.delete-option:hover {
-            background-color: #fdf2f2;
-        }
-
-        .dropdown-content svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2147483646; /* Just below dropdown but higher than everything else */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
+        .sidebar-menu {
+            list-style: none;
             padding: 0;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-            color: #030229;
-            font-family: "Nunito", sans-serif;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            color: #000;
-        }
-
-        /* Form Styles */
-        #productForm {
-            padding: 24px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .sidebar-menu li {
             margin-bottom: 20px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th,
+        .product-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Add Product Button */
+        .add-product-btn {
+            padding: 8px 14px;
+            background-color: #00b894;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-product-btn:hover {
+            background-color: #009e82;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
         }
 
         .form-group-full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #030229;
-            font-family: "Nunito", sans-serif;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 12px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: "Nunito", sans-serif;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #605bff;
-            box-shadow: 0 0 0 2px rgba(96, 91, 255, 0.1);
-        }
-
-        .form-group input:invalid:not(:focus),
-        .form-group select:invalid:not(:focus),
-        .form-group textarea:invalid:not(:focus) {
-            border-color: #ef4444;
-        }
-
-        .form-group input:valid:not(:placeholder-shown),
-        .form-group select:valid,
-        .form-group textarea:valid:not(:placeholder-shown) {
-            border-color: #10b981;
-        }
-
-        /* Success/Error States */
-        .form-group.success input,
-        .form-group.success select,
-        .form-group.success textarea {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-
-        .form-group.error input,
-        .form-group.error select,
-        .form-group.error textarea {
-            border-color: #ef4444;
-            background-color: #fef2f2;
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
+            width: 100%;
         }
 
         .image-input-group {
             display: flex;
+            align-items: center;
             gap: 8px;
         }
 
@@ -1091,129 +189,214 @@
         }
 
         .upload-btn {
-            padding: 12px;
-            border: 1px solid #e5e7eb;
+            padding: 8px;
+            background-color: #2ec4b6;
+            border: none;
             border-radius: 8px;
-            background: white;
+            color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-
-        .upload-btn:hover {
-            background-color: #f8f9fa;
         }
 
         .upload-btn svg {
-            width: 16px;
-            height: 16px;
-            color: #6b7280;
+            width: 20px;
+            height: 20px;
         }
 
-        .form-actions {
+        .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
+            gap: 10px;
             margin-top: 20px;
         }
 
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
         .btn-secondary {
-            background-color: #f8f9fa;
-            color: #6b7280;
-            border: 1px solid #e5e7eb;
+            background-color: #ccc;
+            color: black;
+        }
+
+        .btn-primary:hover {
+            background-color: #26b2a5;
         }
 
         .btn-secondary:hover {
-            background-color: #e9ecef;
+            background-color: #aaa;
         }
 
-        /* Accessibility Improvements */
-        .dropdown:focus-within .dropdown-content {
+        @media (max-width: 640px) {
+            .modal-box {
+                max-width: 90%;
+                padding: 20px;
+            }
+
+            .modal-box input,
+            .modal-box select,
+            .modal-box textarea {
+                font-size: 14px;
+            }
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Dropdown container */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border-radius: 8px;
+            padding: 4px 0;
+            overflow: hidden;
+        }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Riêng nút xoá */
+        .dropdown-item.delete-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.delete-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        /* Hover để hiện menu (hoặc dùng JS toggle nếu muốn click) */
+        .action-dropdown:hover .dropdown-menu {
             display: block;
         }
 
-        .modal-content:focus {
-            outline: 2px solid #605bff;
-            outline-offset: 2px;
+        /* Delete button style */
+        .delete-btn {
+            color: #dc3545;
+            font-weight: bold;
         }
 
-        /* Keyboard Navigation */
-        .dropdown-content a:focus,
-        .nav-link:focus,
-        .btn:focus {
-            outline: 2px solid #605bff;
-            outline-offset: 2px;
-            border-radius: 4px;
+        .delete-btn:hover {
+            background-color: #ffe5e5;
         }
 
-        /* Mobile Form Responsive */
-        @media (max-width: 768px) {
-            .modal-content {
-                margin: 0;
-                width: 100%;
-                height: 100vh;
-                border-radius: 0;
-                max-height: none;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .modal-header {
-                padding: 16px;
-                position: sticky;
-                top: 0;
-                background: white;
-                z-index: 10;
-            }
-
-            #productForm {
-                padding: 16px;
-            }
-
-            .form-actions {
-                position: sticky;
-                bottom: 0;
-                background: white;
-                margin: 0 -16px -16px;
-                padding: 16px;
-                border-top: 1px solid #e5e7eb;
-            }
-
-            .dropdown-content {
-                left: auto;
-                right: 0;
-                min-width: 140px;
-            }
+        /* Toast thông báo*/
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background-color: #28a745; /* success mặc định */
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1001;
         }
 
-        @media (max-width: 480px) {
-            .header-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn {
-                justify-content: center;
-            }
-
-            .date-selectors {
-                flex-direction: column;
-                gap: 8px;
-            }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* Show sidebar on larger screens */
-        @media (min-width: 1025px) {
-            .sidebar {
-                transform: translateX(0);
-            }
+        .toast.error {
+            background-color: #dc3545; /* màu đỏ */
+        }
+
+        .toast.hidden {
+            display: none;
+        }
+
+        @keyframes fadeInOut {
+            0%   { opacity: 0; transform: translateY(-20px); }
+            10%  { opacity: 1; transform: translateY(0); }
+            90%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
         }
     </style>
 </head>
@@ -1221,463 +404,89 @@
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <div class="logo-icon"></div>
-                <h1 class="logo-text">Seller</h1>
-            </div>
-        </div>
-
-        <nav class="sidebar-nav">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <svg
-                                class="nav-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12,6 12,12 16,14"></polyline>
-                        </svg>
-                        <span>ca làm việc</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <svg
-                                class="nav-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        </svg>
-                        <span>nhân viên</span>
-                    </a>
-                </li>
-                <li class="nav-item active">
-                    <a href="productDashboard" class="nav-link">
-                        <svg
-                                class="nav-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="m7.5 4.27 9 5.15"></path>
-                            <path
-                                    d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
-                            ></path>
-                            <path d="m3.3 7 8.7 5 8.7-5"></path>
-                            <path d="M12 22V12"></path>
-                        </svg>
-                        <span>sản phẩm</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <svg
-                                class="nav-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <circle cx="8" cy="21" r="1"></circle>
-                            <circle cx="19" cy="21" r="1"></circle>
-                            <path
-                                    d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-                            ></path>
-                        </svg>
-                        <span>Đơn hàng</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/category-dashboard" class="nav-link">
-                        <svg
-                                class="nav-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                            <line x1="3" y1="9" x2="21" y2="9"></line>
-                            <line x1="9" y1="21" x2="9" y2="9"></line>
-                        </svg>
-                        <span>Danh mục</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-profile">
-                <div class="user-avatar">EA</div>
-                <div class="user-info">
-                    <div class="user-name">Easin Arafat</div>
-                    <div class="user-account">Free Account</div>
-                </div>
-                <button class="logout-btn">
-                    <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                    >
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16,17 21,12 16,7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
+        <h2 class="sidebar-title">Seller Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li><a href="#">🛒 Orders</a></li>
+            <li><a href="category-dashboard">📂 Categories</a></li>
+            <li class="active"><a href="productDashboard">📦 Products</a></li>
+            <li><a href="#">🏷️ Promotions</a></li>
+        </ul>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
-        <header class="header">
-            <div class="header-top">
-                <h1 class="page-title">Quản lý sản phẩm</h1>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="openProductModal('add')">
-                    <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                    >
-                        <path d="M5 12h14"></path>
-                        <path d="M12 5v14"></path>
-                    </svg>
-                    Thêm sản phẩm mới
-                </button>
-            </div>
-        </header>
+        <h1 class="page-title">Quản lý danh mục</h1>
+        <button class="btn add-product-btn" onclick="openAddModal()">
+            + Thêm sản phẩm
+        </button>
 
         <div class="content">
             <!-- Table Container -->
             <div class="table-container">
-                <!-- Table Header (Desktop) -->
-                <div class="table-header">
-                    <div class="header-cell">
-                        <span>ID</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Tên sản phẩm</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Mô tả</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Giá</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Tồn kho</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Đã bán</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Trạng thái</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell">
-                        <span>Danh mục</span>
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                    </div>
-                    <div class="header-cell header-cell-actions">
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
-                            <path
-                                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-                            ></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Product Rows -->
-                <div class="product-list">
-                    <!-- Single Product Row - Royal Canin Dog Food -->
-                    <div th:each="product : ${products}" class="product-row">
-                        <div class="product-row-desktop">
-                            <div class="cell cell-id">
-                                <span th:text="${product?.productId}" class="product-id"></span>
-                            </div>
-                            <div class="cell cell-name">
-                                <span th:text="${product?.name}" class="product-name"></span>
-                            </div>
-                            <div class="cell cell-description">
-                    <span th:text="${product?.description}" class="product-description">
+                <table class="product-table">
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên</th>
+                        <th>Mô tả</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Đã bán</th>
+                        <th>Trạng thái</th>
+                        <th>Danh mục</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product, stat : ${products}">
+                        <td th:text="${currentPage * size + stat.index + 1}"></td>
+                        <td th:text="${product?.name}"></td>
+                        <td th:text="${product?.description}"></td>
+                        <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
+                        <td th:text="${product?.unitInStock}"></td>
+                        <td th:text="${product?.unitSold}"></td>
+                        <td>
+                    <span th:text="${product?.status}"
+                          th:classappend="${product?.status == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
                     </span>
-                            </div>
-                            <div th:text="${product?.price}" class="cell cell-price">đ</div>
-                            <div th:text="${product?.unitInStock}" class="cell cell-stock"></div>
-                            <div th:text="${product?.unitSold}" class="cell cell-sold"></div>
-                            <div class="cell cell-status">
-                                <span th:text="${product?.status}"
-                                      th:classappend="${product?.status == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
-                                </span>
-                            </div>
-                            <div class="cell cell-category">
-                                <span th:text="${product?.category.getName()}" class="category-tag"></span>
-                            </div>
-                            <div class="cell cell-actions">
-                                <div class="dropdown">
-                                    <button class="menu-btn" onclick="toggleDropdown(this)">
-                                        <svg
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                class="dots-icon"
-                                        >
-                                            <circle cx="12" cy="12" r="1.5"></circle>
-                                            <circle cx="19" cy="12" r="1.5"></circle>
-                                            <circle cx="5" cy="12" r="1.5"></circle>
-                                        </svg>
-                                    </button>
-                                    <div class="dropdown-content">
-                                        <a href="#" th:onclick="'openProductModal(\'edit\', ' + ${product.productId} + ')'">
-                                            <svg
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                            >
-                                                <path
-                                                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                                ></path>
-                                                <path
-                                                        d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                                ></path>
-                                            </svg>
-                                            Chỉnh sửa
-                                        </a>
-                                        <a
-                                                href="#"
-                                                th:onclick="'deleteProduct(' + ${product?.productId} + ')'"
-                                                class="delete-option"
-                                        >
-                                            <svg
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                            >
-                                                <path d="M3 6h18"></path>
-                                                <path
-                                                        d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
-                                                ></path>
-                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                            </svg>
-                                            Xóa
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </td>
+                        <td th:text="${product?.category?.name}"></td>
+                        <td>
+                            <div class="action-dropdown">
+                                <button type="button" class="dropdown-toggle">⋮</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" th:onclick="'openEditModal(' + ${product.productId} + ')'">
+                                        🖊️ Chỉnh sửa
+                                    </a>
 
-                        <div class="product-row-mobile">
-                            <div class="mobile-row-header">
-                                <div class="mobile-product-info">
-                                    <input type="checkbox" class="checkbox" />
-                                    <div class="image-preview">
-                                        <img
-                                                src="https://via.placeholder.com/40x40/E5E1FB/333?text=RC"
-                                                alt="Royal Canin"
-                                                class="product-image"
-                                        />
-                                    </div>
-                                    <div class="mobile-product-details">
-                                        <div class="product-name">
-                                            Thức ăn cho chó Royal Canin 15kg
-                                        </div>
-                                        <div class="product-id">ID: 876364</div>
-                                    </div>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="menu-btn" onclick="toggleDropdown(this)">
-                                        <svg
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                class="dots-icon"
-                                        >
-                                            <circle cx="12" cy="12" r="1.5"></circle>
-                                            <circle cx="19" cy="12" r="1.5"></circle>
-                                            <circle cx="5" cy="12" r="1.5"></circle>
-                                        </svg>
-                                    </button>
-                                    <div class="dropdown-content">
-                                        <a href="#" onclick="openProductModal('edit', 1)">
-                                            <svg
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                            >
-                                                <path
-                                                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                                ></path>
-                                                <path
-                                                        d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                                ></path>
-                                            </svg>
-                                            Chỉnh sửa
-                                        </a>
-                                        <a
-                                                href="#"
-                                                onclick="deleteProduct(1)"
-                                                class="delete-option"
-                                        >
-                                            <svg
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                            >
-                                                <path d="M3 6h18"></path>
-                                                <path
-                                                        d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
-                                                ></path>
-                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                            </svg>
-                                            Xóa
-                                        </a>
-                                    </div>
+                                    <form th:id="'deleteForm-' + ${product.productId}"
+                                          th:action="@{/productDashboard/delete/__${product.productId}__}" method="post"
+                                          th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
+                                        <button type="submit" class="dropdown-item delete-btn">
+                                            🗑️ Xóa
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="mobile-row-details">
-                                <div class="mobile-detail-item mobile-detail-full">
-                                    <span class="detail-label">Mô tả</span>
-                                    <span class="detail-value"
-                                    >Thức ăn dinh dưỡng cao cấp dành cho chó trưởng thành,
-                        giúp tăng cường sức khỏe và hệ miễn dịch.</span
-                                    >
-                                </div>
-                                <div class="mobile-detail-item">
-                                    <span class="detail-label">Giá</span>
-                                    <span class="detail-value">1.250.000 đ</span>
-                                </div>
-                                <div class="mobile-detail-item">
-                                    <span class="detail-label">Tồn kho</span>
-                                    <span class="detail-value">45</span>
-                                </div>
-                                <div class="mobile-detail-item">
-                                    <span class="detail-label">Đã bán</span>
-                                    <span class="detail-value">128</span>
-                                </div>
-                                <div class="mobile-detail-item">
-                                    <span class="detail-label">Trạng thái</span>
-                                    <span class="detail-value">
-                        <span class="status-badge status-active"
-                        >Hoạt động</span
-                        >
-                      </span>
-                                </div>
-                                <div class="mobile-detail-item mobile-detail-full">
-                                    <span class="detail-label">Danh mục</span>
-                                    <span class="detail-value">
-                        <span class="category-tag">Thức ăn cho thú cưng</span>
-                      </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pagination">
-                        <!-- Previous button -->
-                        <a th:if="${currentPage > 0}"
-                           th:href="@{'/productDashboard'(page=${currentPage - 1})}">
-                            Previous
-                        </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <ul>
+                        <li th:if="${currentPage > 0}">
+                            <a th:href="@{/productDashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                        </li>
 
-                        <!-- Numbered page buttons -->
-                        <span th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-        <a th:href="@{'/productDashboard'(page=${pageNum})}"
-           th:text="${pageNum + 1}"
-           th:classappend="${pageNum == currentPage} ? ' active-page' : ''"
-           class="page-number">
-        </a>
-    </span>
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active' : ''">
+                            <a th:href="@{/productDashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                        </li>
 
-                        <!-- Next button -->
-                        <a th:if="${currentPage + 1 < totalPages}"
-                           th:href="@{'/productDashboard'(page=${currentPage + 1})}">
-                            Next
-                        </a>
-                    </div>
+                        <li th:if="${currentPage < totalPages - 1}">
+                            <a th:href="@{/productDashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1685,32 +494,16 @@
 </div>
 
 <!-- Product Form Modal -->
-
-<!-- Product Form Modal -->
-<div id="productModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
+<div id="addProductModal" class="modal-overlay">
+    <div class="modal-box">
             <h2 id="modalTitle">Thêm sản phẩm mới</h2>
-            <button class="modal-close" onclick="closeProductModal()">
-                &times;
-            </button>
-        </div>
 
-        <form id="productForm" onsubmit="submitProductForm(event)">
+        <form id="createProductForm" onsubmit="submitCreateProduct(event)">
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
-            <div class="form-grid">
-                <div class="form-group">
+            <div>
                     <label for="productName">Tên sản phẩm *</label>
-                    <input
-                            type="text"
-                            id="productName"
-                            name="name"
-                            required
-                            placeholder="Nhập tên sản phẩm"
-                    />
-                </div>
+                    <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
 
-                <div class="form-group">
                     <label for="productCategory">Danh mục *</label>
                     <select id="productCategory" name="categoryId" required>
                         <option value="">Chọn danh mục</option>
@@ -1720,81 +513,37 @@
                                 th:selected="${product?.category?.categoryId} == ${cat.categoryId}">
                         </option>
                     </select>
-                </div>
 
-                <div class="form-group">
                     <label for="productPrice">Giá (VNĐ) *</label>
-                    <input
-                            type="number"
-                            id="productPrice"
-                            name="price"
-                            required
-                            min="0"
-                            step="1000"
-                            placeholder="0"
-                    />
-                </div>
+                    <input type="number" id="productPrice" name="price" required min="0" step="1000" placeholder="0"/>
 
-                <div class="form-group">
                     <label for="productStock">Số lượng tồn kho *</label>
-                    <input
-                            type="number"
-                            id="productStock"
-                            name="unitInStock"
-                            required
-                            min="1"
-                            placeholder="1"
-                    />
-                </div>
+                    <input type="number" id="productStock" name="unitInStock" required min="1" placeholder="1"/>
 
-                <div class="form-group">
                     <label for="productSold">Đã bán</label>
-                    <input
-                            type="number"
-                            id="productSold"
-                            name="unitSold"
-                            min="0"
-                            placeholder="0"
-                    />
-                </div>
+                    <input type="number" id="productSold" name="unitSold" min="0" placeholder="0"/>
 
-                <div class="form-group">
                     <label for="productStatus">Trạng thái *</label>
                     <select id="productStatus" name="status" required>
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="INACTIVE">INACTIVE</option>
                     </select>
-                </div>
             </div>
 
             <div class="form-group form-group-full">
                 <label for="productDescription">Mô tả sản phẩm *</label>
                 <textarea
-                        id="productDescription"
-                        name="description"
-                        required
-                        rows="4"
-                        placeholder="Nhập mô tả chi tiết về sản phẩm"
+                        id="productDescription" name="description" required rows="4" placeholder="Nhập mô tả chi tiết về sản phẩm"
                 ></textarea>
             </div>
 
             <div class="form-group form-group-full">
                 <label for="productImage">Hình ảnh *</label>
                 <div class="image-input-group">
-                    <input
-                            type="text"
-                            id="productImage"
-                            name="image"
-                            required
-                            placeholder="URL hình ảnh hoặc tên file"
-                    />
+                    <input type="text" id="productImage" name="image" required placeholder="URL hình ảnh hoặc tên file"/>
+
                     <button type="button" class="upload-btn">
-                        <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7,10 12,15 17,10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -1803,14 +552,9 @@
                 </div>
             </div>
 
-            <div class="form-actions">
-                <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="closeProductModal()"
-                >
-                    Hủy
-                </button>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Hủy</button>
+
                 <button type="submit" class="btn btn-primary">
                     <span id="submitButtonText">Thêm sản phẩm</span>
                 </button>
@@ -1819,338 +563,179 @@
     </div>
 </div>
 
+<!-- Edit Product Modal -->
+<div id="editProductModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2>Chỉnh sửa sản phẩm</h2>
+
+        <form id="editProductForm" onsubmit="submitEditProduct(event)">
+            <input type="hidden" id="editProductId" name="productId">
+
+            <div>
+                <label for="editProductName">Tên sản phẩm *</label>
+                <input type="text" id="editProductName" name="name" required>
+
+                <label for="editProductCategory">Danh mục *</label>
+                <select id="editProductCategory" name="categoryId" required>
+                    <option value="">Chọn danh mục</option>
+                    <option th:each="cat : ${categoryOptions}"
+                            th:value="${cat.categoryId}"
+                            th:text="${cat.name}">
+                    </option>
+                </select>
+
+                <label for="editProductPrice">Giá *</label>
+                <input type="number" id="editProductPrice" name="price" required min="0" step="1000">
+
+                <label for="editProductStock">Tồn kho *</label>
+                <input type="number" id="editProductStock" name="unitInStock" required min="1">
+
+                <label for="editProductSold">Đã bán</label>
+                <input type="number" id="editProductSold" name="unitSold" min="0">
+
+                <label for="editProductStatus">Trạng thái *</label>
+                <select id="editProductStatus" name="status" required>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editProductDescription">Mô tả *</label>
+                <textarea id="editProductDescription" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="editProductImage">Hình ảnh *</label>
+                <input type="text" id="editProductImage" name="image" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toast" class="toast hidden">
+    <span id="toastMessage"></span>
+</div>
 <script>
-    let currentProductId = null;
-    let currentMode = "add";
-
-    let activeDropdownIndex = 0;
-
-    function toggleDropdown(button) {
-        // Close all other dropdowns and reset classes
-        document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
-            if (dropdown !== button.nextElementSibling) {
-                dropdown.classList.remove("show");
-                // Reset parent row class
-                const parentRow = dropdown.closest(".product-row");
-                if (parentRow) {
-                    parentRow.classList.remove("dropdown-active");
-                    parentRow.style.zIndex = "";
-                }
-            }
-        });
-
-        // Toggle current dropdown
-        const dropdown = button.nextElementSibling;
-        const parentRow = dropdown.closest(".product-row");
-
-        if (dropdown.classList.contains("show")) {
-            dropdown.classList.remove("show");
-            if (parentRow) {
-                parentRow.classList.remove("dropdown-active");
-                parentRow.style.zIndex = "";
-            }
-        } else {
-            // Increment index to ensure unique high z-index
-            activeDropdownIndex++;
-            const uniqueZIndex = 2000000 + activeDropdownIndex;
-
-            // Set active class and high z-index for parent row
-            if (parentRow) {
-                parentRow.classList.add("dropdown-active");
-                parentRow.style.zIndex = uniqueZIndex.toString();
-            }
-
-            // Set even higher z-index for dropdown itself
-            dropdown.style.zIndex = (uniqueZIndex + 1000).toString();
-
-            // Position the dropdown relative to the button (viewport coordinates for fixed positioning)
-            const rect = button.getBoundingClientRect();
-            const dropdownWidth = 160; // min-width of dropdown
-            const dropdownHeight = 100; // estimated height
-            const margin = 10; // safety margin
-
-            // Calculate initial position (prefer bottom-right of button)
-            let top = rect.bottom + 4;
-            let left = rect.right - dropdownWidth;
-
-            // Adjust horizontal position if going off screen
-            if (left < margin) {
-                left = rect.left; // Align with left edge of button
-            }
-            if (left + dropdownWidth > window.innerWidth - margin) {
-                left = window.innerWidth - dropdownWidth - margin;
-            }
-
-            // Adjust vertical position if going off screen
-            if (top + dropdownHeight > window.innerHeight - margin) {
-                top = rect.top - dropdownHeight - 4; // Show above button
-                // If still doesn't fit above, show at top of viewport
-                if (top < margin) {
-                    top = margin;
-                }
-            }
-
-            dropdown.style.top = top + "px";
-            dropdown.style.left = left + "px";
-
-            dropdown.classList.add("show");
-        }
+    function openAddModal() {
+        document.getElementById("addProductModal").style.display = "flex";
     }
 
-    function openProductModal(mode, productId = null) {
-        // Close all dropdowns first
-        document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
-            dropdown.classList.remove("show");
-            const parentRow = dropdown.closest(".product-row");
-            if (parentRow) {
-                parentRow.classList.remove("dropdown-active");
-                parentRow.style.zIndex = "";
-            }
-        });
-
-        currentMode = mode;
-        currentProductId = productId;
-
-        const modal = document.getElementById("productModal");
-        const title = document.getElementById("modalTitle");
-        const submitButton = document.getElementById("submitButtonText");
-
-        if (mode === "add") {
-            title.textContent = "Thêm sản phẩm mới";
-            submitButton.textContent = "Thêm sản phẩm";
-            clearForm();
-        } else {
-            title.textContent = "Chỉnh sửa sản phẩm";
-            submitButton.textContent = "Cập nhật";
-            loadProductData(productId);
-        }
-
-        // Ensure modal has highest z-index
-        modal.style.zIndex = "2147483646";
-        modal.style.display = "block";
-        document.body.style.overflow = "hidden";
+    function closeAddModal() {
+        document.getElementById("addProductModal").style.display = "none";
+        document.getElementById("createProductForm").reset();
     }
 
-    function closeProductModal() {
-        const modal = document.getElementById("productModal");
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
-        clearForm();
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toastMessage.innerText = message;
+        toast.className = `toast show ${type}`;
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
     }
 
-    function clearForm() {
-        document.getElementById("productForm").reset();
-    }
-
-    function loadProductData(productId) {
-        // In a real application, you would fetch data from your backend
-        // For now, we'll use sample data
-
-        const form = document.getElementById("productForm");
-        fetch(`/productDashboard/edit/${productId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Không thể tải sản phẩm.");
-                }
-                return response.json(); // Parse the response as JSON
-            })
-            .then(product => {
-        form.elements.name.value = product.name;
-        form.elements.description.value = product.description;
-        form.elements.price.value = product.price;
-        form.elements.unitInStock.value = product.unitInStock;
-        form.elements.unitSold.value = product.unitSold;
-        form.elements.status.value = product.status;
-        form.elements.image.value = product.image;
-        form.elements.categoryId.value = product.categoryId;
-            })
-            .catch(error => {
-                alert("Lỗi khi tải sản phẩm: " + error.message);
-            });
-    }
-
-    // function submitProductForm(event) {
-    //     event.preventDefault();
-    //
-    //     const form = event.target;
-    //     const formData = new FormData(form);
-    //     const productData = Object.fromEntries(formData);
-    //
-    //     // Basic validation
-    //     if (
-    //         !productData.name ||
-    //         !productData.description ||
-    //         !productData.price ||
-    //         !productData.category
-    //     ) {
-    //         alert("Vui lòng điền đầy đủ thông tin bắt buộc (*)");
-    //         return;
-    //     }
-    //
-    //     if (parseFloat(productData.price) <= 0) {
-    //         alert("Giá sản phẩm phải lớn hơn 0");
-    //         return;
-    //     }
-    //
-    //     if (parseInt(productData.unitInStock) < 1) {
-    //         alert("Số lượng tồn kho phải ít nhất là 1");
-    //         return;
-    //     }
-    //
-    //     // Show loading state
-    //     const submitButton = form.querySelector('button[type="submit"]');
-    //     const originalText = submitButton.innerHTML;
-    //     submitButton.innerHTML = "<span>Đang xử lý...</span>";
-    //     submitButton.disabled = true;
-    //
-    //     // Simulate API call
-    //     setTimeout(() => {
-    //         console.log("Form submitted:", productData);
-    //         console.log("Mode:", currentMode);
-    //         console.log("Product ID:", currentProductId);
-    //
-    //         // Reset button
-    //         submitButton.innerHTML = originalText;
-    //         submitButton.disabled = false;
-    //
-    //         // Here you would typically send the data to your backend
-    //         alert(
-    //             currentMode === "add"
-    //                 ? "Sản phẩm đã được thêm thành công!"
-    //                 : "Sản phẩm đã được cập nhật thành công!",
-    //         );
-    //         closeProductModal();
-    //     }, 1000);
-    // }
-    function submitProductForm(event) {
+    function submitCreateProduct(event) {
         event.preventDefault();
 
-        const formData = new FormData(document.getElementById('productForm'));
-        const productId = document.getElementById('productId').value;
+        const form = document.getElementById('createProductForm');
 
-        const url = productId ? `/productDashboard/update/${productId}` : '/productDashboard/create';
-        const method = productId ? 'PUT' : 'POST';
+        const data = {
+            name: form.name.value.trim(),
+            description: form.description.value.trim(),
+            price: parseFloat(form.price.value),
+            unitInStock: parseInt(form.unitInStock.value),
+            unitSold: parseInt(form.unitSold.value) || 0,
+            status: form.status.value,
+            image: form.image.value.trim(),
+            categoryId: parseInt(form.categoryId.value)
+        };
 
-        fetch(url, {
-            method: method,
-            body: JSON.stringify(Object.fromEntries(formData)),
+        fetch('/productDashboard/create', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify(data)
         })
-            .then(response => response.json())
-            .then(data => {
-                // Handle success (refresh list, close modal, etc.)
-                closeProductModal();
-                // Refresh your product list here
-                refreshProductList();
+            .then(res => {
+                if (res.ok) {
+                    closeAddModal();
+                    showToast("Thêm sản phẩm thành công!", "success");
+                    setTimeout(() => window.location.href = "/productDashboard", 1000);
+                } else {
+                    showToast("Thêm sản phẩm thất bại!", "error");
+                }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
             });
     }
 
-    function deleteProduct(productId) {
-        if (
-            confirm(
-                `Bạn có chắc chắn muốn xóa không?`,
-            )
-        ) {
-            window.location.href = `/productDashboard/delete/${productId}`;
-        }
-    }
+    function submitEditProduct(event) {
+        event.preventDefault();
 
-    // Date range functionality
-    function updateDateRange() {
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
+        const form = document.getElementById('editProductForm');
+        const productId = document.getElementById('editProductId').value;
 
-        if (startDate && endDate) {
-            if (new Date(startDate) > new Date(endDate)) {
-                alert("Ngày bắt đầu không thể sau ngày kết thúc!");
-                return;
+        const data = {
+            name: form.name.value.trim(),
+            description: form.description.value.trim(),
+            price: parseFloat(form.price.value),
+            unitInStock: parseInt(form.unitInStock.value),
+            unitSold: parseInt(form.unitSold.value) || 0,
+            status: form.status.value,
+            image: form.image.value.trim(),
+            categoryId: parseInt(form.categoryId.value)
+        };
+
+        fetch(`/productDashboard/update/${productId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                closeEditModal();
+                showToast("Cập nhật sản phẩm thành công!", "success");
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast("Cập nhật sản phẩm thất bại!", "error");
             }
-
-            console.log("Date range updated:", { startDate, endDate });
-            // Here you would typically filter the product data based on date range
-
-            // Show user feedback
-            const startDateObj = new Date(startDate);
-            const endDateObj = new Date(endDate);
-            const options = { year: "numeric", month: "short", day: "numeric" };
-
-            console.log(
-                `Hiển thị dữ liệu từ ${startDateObj.toLocaleDateString("vi-VN", options)} đến ${endDateObj.toLocaleDateString("vi-VN", options)}`,
-            );
-        }
+        }).catch(error => {
+            console.error("Lỗi cập nhật:", error);
+            showToast("Có lỗi xảy ra khi cập nhật!", "error");
+        });
     }
 
-    // Initialize date inputs with proper format
-    document.addEventListener("DOMContentLoaded", function () {
-        const startDateInput = document.getElementById("startDate");
-        const endDateInput = document.getElementById("endDate");
+    function closeEditModal() {
+        document.getElementById('editProductModal').style.display = 'none';
+        document.getElementById('editProductForm').reset();
+    }
 
-        // Set max date to today
-        const today = new Date().toISOString().split("T")[0];
-        startDateInput.max = today;
-        endDateInput.max = today;
+    function confirmDeleteAndToast(event, productId) {
+        event.preventDefault(); // Ngăn form submit ngay
 
-        // Set min date for end date based on start date
-        startDateInput.addEventListener("change", function () {
-            endDateInput.min = this.value;
-        });
-    });
+        const confirmed = confirm("Bạn có chắc muốn xóa sản phẩm này?");
+        if (confirmed) {
+            showToast("Xóa sản phẩm thành công", "success");
 
-    // Close dropdowns when clicking outside
-    document.addEventListener("click", function (event) {
-        if (!event.target.closest(".dropdown")) {
-            document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
-                dropdown.classList.remove("show");
-                // Clean up parent row state
-                const parentRow = dropdown.closest(".product-row");
-                if (parentRow) {
-                    parentRow.classList.remove("dropdown-active");
-                    parentRow.style.zIndex = "";
-                }
-            });
+            // Submit form sau khi hiện toast (chờ 500ms)
+            setTimeout(() => {
+                document.getElementById(`deleteForm-${productId}`).submit();
+            }, 500);
         }
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener("click", function (event) {
-        const modal = document.getElementById("productModal");
-        if (event.target === modal) {
-            closeProductModal();
-        }
-    });
-
-    // Close dropdowns when scrolling for better UX
-    window.addEventListener("scroll", function () {
-        document
-            .querySelectorAll(".dropdown-content.show")
-            .forEach((dropdown) => {
-                dropdown.classList.remove("show");
-                const parentRow = dropdown.closest(".product-row");
-                if (parentRow) {
-                    parentRow.classList.remove("dropdown-active");
-                    parentRow.style.zIndex = "";
-                }
-            });
-    });
-
-    // Close dropdowns when window is resized
-    window.addEventListener("resize", function () {
-        document
-            .querySelectorAll(".dropdown-content.show")
-            .forEach((dropdown) => {
-                dropdown.classList.remove("show");
-                const parentRow = dropdown.closest(".product-row");
-                if (parentRow) {
-                    parentRow.classList.remove("dropdown-active");
-                    parentRow.style.zIndex = "";
-                }
-            });
-    });
+    }
 </script>
 </body>
 </html>

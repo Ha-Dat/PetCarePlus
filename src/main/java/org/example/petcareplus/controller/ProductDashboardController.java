@@ -30,11 +30,12 @@ public class ProductDashboardController {
         Page<Product> productPage = productService.findAll(PageRequest.of(page, size));
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
         model.addAttribute("totalPages", productPage.getTotalPages());
         return "product-dashboard.html";
     }
 
-    @GetMapping("/productDashboard/delete/{id}")
+    @PostMapping("/productDashboard/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
         productService.deleteById(id);
         return "redirect:/productDashboard";
