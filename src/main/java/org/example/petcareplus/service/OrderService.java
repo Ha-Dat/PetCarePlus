@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -17,5 +18,15 @@ public interface OrderService {
     void deleteById(Integer id);
 
     public Order get(Integer id);
+
+    Long saveTempOrder(Long accountId, Map<Long, Integer> cartItems,
+                       String receiverName, String receiverPhone,
+                       String deliveryAddress, String shippingMethod,
+                       String paymentMethod, String couponCode, String note);
+
+    Long processOrder(Long accountId, Map<Long, Integer> cartItems,
+                      String receiverName, String receiverPhone,
+                      String deliveryAddress, String shippingMethod,
+                      String paymentMethod, String couponCode, String note);
 
 }

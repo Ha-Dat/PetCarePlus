@@ -219,44 +219,8 @@
             }
         });
 
-        // Load districts when city is selected
-        $('#city').change(function() {
-            const cityId = $(this).val();
-            if(cityId) {
-                $.get('/api/districts?cityId=' + cityId, function(data) {
-                    $('#district').empty().append('<option value="">Chọn quận/huyện</option>');
-                    $.each(data, function(index, district) {
-                        $('#district').append(`<option value="${district.districtId}">${district.name}</option>`);
-                    });
-                    $('#district').prop('disabled', false);
-                    $('#ward').prop('disabled', true).empty().append('<option value="">Chọn phường/xã</option>');
-                    calculateShippingFee();
-                });
-            } else {
-                $('#district').prop('disabled', true).empty().append('<option value="">Chọn quận/huyện</option>');
-                $('#ward').prop('disabled', true).empty().append('<option value="">Chọn phường/xã</option>');
-            }
-        });
-
-        // Load wards when district is selected
-        $('#district').change(function() {
-            const districtId = $(this).val();
-            if(districtId) {
-                $.get('/api/wards?districtId=' + districtId, function(data) {
-                    $('#ward').empty().append('<option value="">Chọn phường/xã</option>');
-                    $.each(data, function(index, ward) {
-                        $('#ward').append(`<option value="${ward.wardId}">${ward.name}</option>`);
-                    });
-                    $('#ward').prop('disabled', false);
-                    calculateShippingFee();
-                });
-            } else {
-                $('#ward').prop('disabled', true).empty().append('<option value="">Chọn phường/xã</option>');
-            }
-        });
-
-        // Calculate shipping fee when ward or shipping method changes
-        $('#ward, input[name="shippingMethod"]').change(function() {
+        // Calculate shipping fee when shipping method changes
+        $('input[name="shippingMethod"]').change(function() {
             calculateShippingFee();
         });
 
@@ -264,7 +228,7 @@
         $('#applyCoupon').click(function() {
             const couponCode = $('#couponCode').val();
             if(couponCode) {
-                $.post('/api/apply-coupon', { couponCode: couponCode }, function(response) {
+                $.post('/checkout/apply-coupon', { couponCode: couponCode }, function(response) {
                     if(response.success) {
                         $('#couponMessage').html(`<span class="text-success">${response.message}</span>`);
                         $('#discountRow').show();
@@ -292,10 +256,6 @@
                 receiverName: $('#differentAddress').is(':checked') ? $('input[name="receiverName"]').val() : null,
                 receiverPhone: $('#differentAddress').is(':checked') ? $('input[name="receiverPhone"]').val() : null,
                 deliveryAddress: $('#differentAddress').is(':checked') ? $('textarea[name="deliveryAddress"]').val() : null,
-                cityId: $('#city').val(),
-                districtId: $('#district').val(),
-                wardId: $('#ward').val(),
-                address: $('textarea[name="address"]').val(),
                 shippingMethod: $('input[name="shippingMethod"]:checked').val(),
                 paymentMethod: $('input[name="paymentMethod"]:checked').val(),
                 couponCode: $('#couponCode').val(),
@@ -303,13 +263,12 @@
             };
 
             $.ajax({
-                url: '/api/place-order',
+                url: '/checkout/place-order',
                 type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(orderData),
+                data: orderData,
                 success: function(response) {
-                    if(response.paymentUrl) {
-                        window.location.href = response.paymentUrl;
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
                     } else {
                         window.location.href = '/order-confirmation/' + response.orderId;
                     }
@@ -322,19 +281,31 @@
 
         // Helper function to calculate shipping fee
         function calculateShippingFee() {
-            const wardId = $('#ward').val();
             const shippingMethod = $('input[name="shippingMethod"]:checked').val();
+            const profileCity = $('input[name="city"]').val();
+            const profileDistrict = $('input[name="district"]').val();
+            const profileWard = $('input[name="ward"]').val();
 
-            if(wardId && shippingMethod) {
-                $.post('/api/calculate-shipping', {
-                    wardId: wardId,
+            if (shippingMethod && profileCity && profileDistrict && profileWard) {
+                $.post('/checkout/calculate-shipping', {
+                    wardId: profileWard,
                     serviceType: shippingMethod
                 }, function(response) {
                     $('#shippingFee').text(formatCurrency(response.shippingFee));
-                    $('#expressFee').text(formatCurrency(response.expressFee));
-                    $('#standardFee').text(formatCurrency(response.standardFee));
-                    updateTotal($('#discountAmount').text().replace(/[^0-9]/g, '') || 0);
+                    $('#expressFee').text(formatCurrency(response.expressFee || 30000));
+                    $('#standardFee').text(formatCurrency(response.standardFee || 15000));
+                    updateTotal(parseInt($('#discountAmount').text().replace(/[^0-9]/g, '') || 0));
                 });
+            } else {
+                // Default shipping fees
+                const expressFee = 30000;
+                const standardFee = 15000;
+                const shippingFee = shippingMethod === 'EXPRESS' ? expressFee : standardFee;
+
+                $('#shippingFee').text(formatCurrency(shippingFee));
+                $('#expressFee').text(formatCurrency(expressFee));
+                $('#standardFee').text(formatCurrency(standardFee));
+                updateTotal(parseInt($('#discountAmount').text().replace(/[^0-9]/g, '') || 0));
             }
         }
 
@@ -356,8 +327,7 @@
         }
 
         // Initialize shipping fees
-        $('#expressFee').text('...');
-        $('#standardFee').text('...');
+        calculateShippingFee();
     });
 </script>
 </body>

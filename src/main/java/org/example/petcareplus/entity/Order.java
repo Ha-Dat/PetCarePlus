@@ -33,12 +33,18 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String deliverAddress;
 
+    private String receiverName;
+
+    private String receiverPhone;
+
     private BigDecimal shippingFee;
 
     private BigDecimal discountAmount;
 
     @Column(nullable = false)
     private String paymentMethod;
+
+    private String shippingMethod;
 
     @Column(columnDefinition = "TEXT")
     private String note;
@@ -48,6 +54,14 @@ public class Order {
 
     //method thêm trong trường hợp lombok không hoạt động
 
+
+    public String getShippingMethod() {
+        return shippingMethod;
+    }
+
+    public void setShippingMethod(String shippingMethod) {
+        this.shippingMethod = shippingMethod;
+    }
 
     public Long getOrderId() {
         return orderId;
@@ -103,6 +117,22 @@ public class Order {
 
     public void setDeliverAddress(String deliverAddress) {
         this.deliverAddress = deliverAddress;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getReceiverPhone() {
+        return receiverPhone;
+    }
+
+    public void setReceiverPhone(String receiverPhone) {
+        this.receiverPhone = receiverPhone;
     }
 
     public BigDecimal getShippingFee() {
