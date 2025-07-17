@@ -2,6 +2,7 @@ package org.example.petcareplus.dto;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class PostDTO {
@@ -11,6 +12,7 @@ public class PostDTO {
     private Integer rating;
     private String image;
     private String video;
+    private LocalDateTime createAt;
     private String accountName;
     private Long accountId;
 
@@ -24,6 +26,7 @@ public class PostDTO {
         this.rating = post.getRating();
         this.image = post.getImage();
         this.video = post.getVideo();
+        this.createAt = post.getCreatedAt();
         this.accountName = post.getAccount() != null ? post.getAccount().getName() : "Ẩn danh";
         this.accountId = post.getAccount() != null ? post.getAccount().getAccountId() : null;
     }
@@ -77,5 +80,12 @@ public class PostDTO {
     }
     public void setVideoFile(MultipartFile videoFile) {
         this.videoFile = videoFile;
+    }
+
+    public LocalDateTime getCreateAt() {
+        return createAt;
+    }
+    public void setCreateAt(LocalDateTime createAt) {
+        this.createAt = createAt;
     }
 }

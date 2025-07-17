@@ -31,7 +31,7 @@ public class CommentPost {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReplyComment> replies;
 
     @PrePersist

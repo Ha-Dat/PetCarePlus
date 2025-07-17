@@ -74,7 +74,7 @@
   <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
     <!-- Logo -->
     <div class="mr-4 flex">
-      <a class="mr-6 flex items-center space-x-2" href="/">
+      <a class="mr-6 flex items-center space-x-2" href="/home">
         <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <span class="text-primary-foreground font-bold text-lg">P</span>
         </div>
@@ -139,7 +139,7 @@
           <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="p-3">
               <nav class="space-y-1">
-                <a href="/" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
+                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22" />
@@ -212,16 +212,9 @@
         <div class="p-4">
           <!-- Post Meta -->
           <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
-            <span class="font-medium text-foreground">r/huanluyencho</span>
+            <span>Đăng bởi [[${post.account.name}]]</span>
             <span>•</span>
-            <span>Đăng bởi u/[[${post.account.name}]]</span>
-            <span>•</span>
-            <div class="flex items-center space-x-1">
-              <svg class="h-4 w-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="6" />
-                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-              </svg>
-            </div>
+            <span>[[${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}]]</span>
           </div>
 
           <!-- Post Title -->
@@ -306,10 +299,52 @@
                 th:text="'u/' + ${comment.account.name}">u/username</span>
                   <span>•</span>
                   <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
+
+                  <!-- nút sửa comment-->
+                  <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
+                          type="button"
+                          class="edit-btn inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    <span>Sửa</span>
+                  </button>
+
+                  <!-- Nút Xóa comment -->
+                  <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
+                     th:href="@{'/post-detail/' + ${post.postId} + '/comment/' + ${comment.commentPostId} + '/delete'}"
+                     onclick="return confirm('Bạn chắc chắn muốn xóa phản hồi này?')"
+                     class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6l-2 14H7L5 6"></path>
+                      <path d="M10 11v6"></path>
+                      <path d="M14 11v6"></path>
+                      <path d="M5 6l1-3h12l1 3"></path>
+                    </svg>
+                    <span>Xóa</span>
+                  </a>
+
                 </div>
                 <p class="text-sm mb-3" th:text="${comment.comment}">
                   Nội dung bình luận...
                 </p>
+
+                <!-- Form Sửa comment -->
+                <div class="edit-form hidden">
+                  <form th:action="@{'/post-detail/' + ${post.postId} + '/comment/' + ${comment.commentPostId} + '/edit'}" method="post">
+                    <textarea name="content"
+                          class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                    <div class="flex space-x-2">
+                      <button type="submit"
+                              class="bg-primary text-white px-3 py-1 rounded">Cập nhật</button>
+                      <button type="button"
+                              class="cancel-edit-btn bg-muted text-foreground px-3 py-1 rounded">Hủy</button>
+                    </div>
+                  </form>
+                </div>
+
                 <div class="flex items-center space-x-2">
                   <button type="button" class="reply-btn inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -320,7 +355,7 @@
                 </div>
                 <!-- Form Reply (hidden by default) -->
                 <div class="ml-11 mt-3 hidden reply-form">
-                  <form th:action="@{'/comment/' + ${comment.commentPostId} + '/reply'}" method="post">
+                  <form th:action="@{'/post-detail/' + ${post.postId} + '/reply/' + ${comment.commentPostId} + '/reply'}" method="post">
                     <textarea name="content" placeholder="Nhập phản hồi..." class="w-full border rounded p-2 text-sm mb-2"></textarea>
                     <button type="submit" class="bg-primary text-white px-3 py-1 rounded">Gửi</button>
                   </form>
@@ -334,21 +369,64 @@
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
                   <div class="h-7 w-7 rounded-full bg-secondary flex items-center justify-center">
-            <span class="text-secondary-foreground font-medium text-xs"
-                  th:text="${reply.account.name}">Y</span>
+        <span class="text-secondary-foreground font-medium text-xs"
+              th:text="${reply.account.name}">Y</span>
                   </div>
                 </div>
 
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-            <span class="font-medium text-foreground"
-                  th:text="'u/' + ${reply.account.name}">u/replier</span>
+                    <span class="font-medium text-foreground"
+                          th:text="'u/' + ${reply.account.name}">u/replier</span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
+
+                    <!-- Nút Sửa reply -->
+                    <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == reply.account.accountId}"
+                            type="button"
+                            class="edit-reply-btn inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                      <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                      </svg>
+                      <span>Sửa</span>
+                    </button>
+
+                    <!-- Nút Xóa reply -->
+                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == reply.account.accountId}"
+                       th:href="@{'/post-detail/' + ${post.postId} + '/reply/' + ${reply.replyCommentId} + '/delete'}"
+                       onclick="return confirm('Bạn chắc chắn muốn xóa phản hồi này?')"
+                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                      <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-2 14H7L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M5 6l1-3h12l1 3"></path>
+                      </svg>
+                      <span>Xóa</span>
+                    </a>
+
                   </div>
+
+                  <!-- Nội dung Reply -->
                   <p class="text-sm mb-3" th:text="${reply.comment}">
                     Nội dung trả lời...
                   </p>
+
+                  <!-- Form Sửa Reply -->
+                  <div class="edit-reply-form hidden">
+                    <form th:action="@{'/post-detail/' + ${post.postId} + '/reply/' + ${reply.replyCommentId} + '/edit'}" method="post">
+                    <textarea name="content"
+                    class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                      <div class="flex space-x-2">
+                        <button type="submit"
+                                class="bg-primary text-white px-3 py-1 rounded">Cập nhật</button>
+                        <button type="button"
+                                class="cancel-edit-reply-btn bg-muted text-foreground px-3 py-1 rounded">Hủy</button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -477,6 +555,51 @@
       }
     });
   });
+
+  // Script nút Sửa
+  document.querySelectorAll('.edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const commentBox = btn.closest('.flex-1');
+      const editForm = commentBox.querySelector('.edit-form');
+      const commentContent = commentBox.querySelector('p').innerText;
+
+      // Điền nội dung gốc vào textarea
+      editForm.querySelector('textarea').value = commentContent;
+
+      // Hiển thị form
+      editForm.classList.remove('hidden');
+    });
+  });
+
+  // Script nút Hủy sửa
+  document.querySelectorAll('.cancel-edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.closest('.edit-form').classList.add('hidden');
+    });
+  });
+
+  // Nút Sửa Reply
+  document.querySelectorAll('.edit-reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const replyBox = btn.closest('.flex-1');
+      const editForm = replyBox.querySelector('.edit-reply-form');
+      const replyContent = replyBox.querySelector('p').innerText;
+
+      // Điền nội dung gốc vào textarea
+      editForm.querySelector('textarea').value = replyContent;
+
+      // Hiển thị form
+      editForm.classList.remove('hidden');
+    });
+  });
+
+  // Nút Hủy Sửa Reply
+  document.querySelectorAll('.cancel-edit-reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.closest('.edit-reply-form').classList.add('hidden');
+    });
+  });
+
 </script>
 </body>
 </html>

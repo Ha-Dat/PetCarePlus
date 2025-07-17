@@ -76,7 +76,7 @@
     <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
         <!-- Logo -->
         <div class="mr-4 flex">
-            <a class="mr-6 flex items-center space-x-2" href="/">
+            <a class="mr-6 flex items-center space-x-2" href="/home">
                 <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                     <span class="text-primary-foreground font-bold text-lg">P</span>
                 </div>
@@ -142,7 +142,7 @@
                     <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
                         <div class="p-3">
                             <nav class="space-y-1">
-                                <a href="/" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
+                                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                                         <polyline points="9,22 9,12 15,12 15,22" />
@@ -227,11 +227,9 @@
                             <div class="flex-1 p-3">
                                 <!-- Post Meta -->
                                 <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
-                                <span class="font-medium text-foreground">r/diendan</span>
-                                    <span>•</span>
                                     <span>Đăng bởi <u><span th:text="${post.accountName}">Username</span></u></span>
                                     <span>•</span>
-<!--                                    <span th:text="${#dates.format(post.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày đăng</span>-->
+                                    <span th:text="${#temporals.format(post.createAt, 'HH:mm dd/MM/yyyy')}"></span>
                                 </div>
 
                                 <!-- Post Title -->
@@ -266,7 +264,7 @@
                                     </a>
 
                                     <!-- Chỉ hiện nếu là chủ bài viết -->
-                                    <a th:if="${session.loggedInUser != null}"
+                                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.accountId}"
                                             th:href="@{'/update-post/' + ${post.postId}}"
                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
                                         <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -276,7 +274,7 @@
                                         <span>Sửa</span>
                                     </a>
 
-                                    <a th:if="${session.loggedInUser != null}"
+                                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.accountId}"
                                        th:href="@{'/delete-post/' + ${post.postId}}"
                                        onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
@@ -304,7 +302,6 @@
                     Tải thêm bài viết
                 </button>
             </div>
-
         </div>
 
         <!-- Recent Posts -->
@@ -413,7 +410,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     // Simple JavaScript functionality
     document.addEventListener("DOMContentLoaded", function () {
         console.log("PetCare+ loaded successfully");
@@ -436,9 +433,10 @@
         });
     });
 
-    // Load more post
     let currentPage = 0;
     const pageSize = 5;
+
+    const loggedInUserId = /*[[${session.loggedInUser != null ? session.loggedInUser.accountId : 'null'}]]*/ null;
 
     document.getElementById("load-more-btn").addEventListener("click", function () {
         currentPage++;
@@ -454,73 +452,95 @@
                 const container = document.getElementById("posts-container");
 
                 data.forEach(post => {
-                    const postHtml = `
-        <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
-          <div class="flex">
-            <!-- Voting Section -->
-            <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
-              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m5 12 7-7 7 7" />
-                  <path d="M12 19V5" />
-                </svg>
-              </button>
-              <span class="text-xs font-medium text-muted-foreground">${post.rating}</span>
-              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 5v14" />
-                  <path d="m19 12-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
+                    const isOwner = loggedInUserId !== null && loggedInUserId === post.accountId;
 
-            <!-- Content Section -->
-            <div class="flex-1 p-3">
-              <!-- Post Meta -->
-              <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
-                <span class="font-medium text-foreground">r/diendan</span>
-                <span>•</span>
-                <span>Đăng bởi <u>${post.accountName || 'Ẩn danh'}</u></span>
-                <span>•</span>
+                    const createdAt = new Date(post.createAt);
+                    const formattedCreatedAt = createdAt.toLocaleString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    });
+
+                    const postHtml = `
+          <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+            <div class="flex">
+              <!-- Voting Section -->
+              <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m5 12 7-7 7 7" />
+                    <path d="M12 19V5" />
+                  </svg>
+                </button>
+                <span class="text-xs font-medium text-muted-foreground">${post.rating}</span>
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14" />
+                    <path d="m19 12-7 7-7-7" />
+                  </svg>
+                </button>
               </div>
 
-              <!-- Post Title -->
-              <a href="/post-detail/${post.postId}">
-                <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer">${post.title}</h3>
-              </a>
-
-              <!-- Media -->
-              ${post.image ? `
-                <div class="mb-3 rounded-md overflow-hidden max-h-96 relative">
-                  <img src="${post.image}" alt="" class="w-full h-auto object-cover"/>
+              <!-- Content Section -->
+              <div class="flex-1 p-3">
+                <!-- Post Meta -->
+                <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+                  <span>Đăng bởi <u>${post.accountName || 'Ẩn danh'}</u></span>
+                  <span>•</span>
+                  <span>${formattedCreatedAt}</span>
                 </div>
-              ` : ''}
 
-              <!-- Post Content -->
-              <p class="text-sm text-muted-foreground mb-3 line-clamp-3">${post.description}</p>
-
-              <!-- Post Actions -->
-              <div class="flex items-center space-x-2">
-                <a href="/post-detail/${post.postId}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
-                  <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>Bình luận</span>
+                <!-- Post Title -->
+                <a href="/post-detail/${post.postId}">
+                  <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer">${post.title}</h3>
                 </a>
 
-                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
-                  <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                    <polyline points="16,6 12,2 8,6" />
-                    <line x1="12" y1="2" x2="12" y2="15" />
-                  </svg>
-                  <span>Chia sẻ</span>
-                </button>
+                <!-- Media -->
+                ${post.image ? `
+                  <div class="mb-3 rounded-md overflow-hidden max-h-96 relative">
+                    <img src="${post.image}" alt="" class="w-full h-auto object-cover"/>
+                  </div>
+                ` : ''}
+
+                <!-- Post Content -->
+                <p class="text-sm text-muted-foreground mb-3 line-clamp-3">${post.description}</p>
+
+                <!-- Post Actions -->
+                <div class="flex items-center space-x-2">
+                  <a href="/post-detail/${post.postId}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                    </svg>
+                    <span>Bình luận</span>
+                  </a>
+
+                  ${isOwner ? `
+                  <a href="/update-post/${post.postId}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    <span>Sửa</span>
+                  </a>
+                  <a href="/delete-post/${post.postId}" onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6l-2 14H7L5 6"></path>
+                      <path d="M10 11v6"></path>
+                      <path d="M14 11v6"></path>
+                      <path d="M5 6l1-3h12l1 3"></path>
+                    </svg>
+                    <span>Xóa</span>
+                  </a>
+                  ` : ''}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        `;
+          `;
+
                     container.insertAdjacentHTML('beforeend', postHtml);
                 });
             });

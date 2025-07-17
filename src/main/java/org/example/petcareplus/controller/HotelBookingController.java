@@ -71,18 +71,18 @@ public class HotelBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
-            data.put("image", booking.getPetProfile().getImage());
+//            data.put("image", booking.getPetProfile().getImage());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());
             data.put("breed", booking.getPetProfile().getBreeds());
-            data.put("weight", booking.getPetProfile().getWeight());
+//            data.put("weight", booking.getPetProfile().getWeight());
             // data chủ nuôi
             data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
             data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
-            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
-            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
-            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
+//            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
+//            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
+//            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
 
             return ResponseEntity.ok(data);
         }

@@ -270,22 +270,22 @@
         <h3>Chi tiết đơn booking</h3>
         <p><strong>Booking ID:</strong> <span id="popup-id"></span></p>
         <p><strong>Ngày đặt:</strong> <span id="popup-date"></span></p>
-        <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>
+<!--        <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>-->
         <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
         <br>
         <hr>
-        <p><img id="popup-image" src="" alt="Pet Image" style="max-width: 100%; height: auto; border-radius: 8px;"></p>
+<!--        <p><img id="popup-image" src="" alt="Pet Image" style="max-width: 100%; height: auto; border-radius: 8px;"></p>-->
         <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
         <p><strong>Loài:</strong> <span id="popup-species"></span></p>
         <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
-        <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+<!--        <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>-->
         <br>
         <hr>
         <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
         <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
-        <p><strong>Thành phố:</strong> <span id="popup-city"></span></p>
-        <p><strong>Huyện:</strong> <span id="popup-district"></span></p>
-        <p><strong>Xã:</strong> <span id="popup-ward"></span></p>
+<!--        <p><strong>Thành phố:</strong> <span id="popup-city"></span></p>-->
+<!--        <p><strong>Huyện:</strong> <span id="popup-district"></span></p>-->
+<!--        <p><strong>Xã:</strong> <span id="popup-ward"></span></p>-->
         <p><strong>Ghi chú:</strong> <span id="popup-note"></span></p>
         <button onclick="closeDetailPopup()">Đóng</button>
     </div>
@@ -341,20 +341,20 @@
             .then(data => {
                 document.getElementById('popup-id').textContent = data.id;
                 document.getElementById('popup-date').textContent = data.bookDate;
-                document.getElementById('popup-status').textContent = data.status;
-                document.getElementById('popup-service').textContent = data.service;
+                // document.getElementById('popup-status').textContent = data.status;
+                // document.getElementById('popup-service').textContent = data.;
 
-                document.getElementById('popup-image').src = data.image;
+                // document.getElementById('popup-image').src = data.image;
                 document.getElementById('popup-petName').textContent = data.petName;
                 document.getElementById('popup-species').textContent = data.species;
                 document.getElementById('popup-breed').textContent = data.breed;
-                document.getElementById('popup-weight').textContent = data.weight;
+                // document.getElementById('popup-weight').textContent = data.weight;
 
                 document.getElementById('popup-owner').textContent = data.name;
                 document.getElementById('popup-phone').textContent = data.phone;
-                document.getElementById('popup-city').textContent = data.city;
-                document.getElementById('popup-district').textContent = data.district;
-                document.getElementById('popup-ward').textContent = data.ward;
+                // document.getElementById('popup-city').textContent = data.city;
+                // document.getElementById('popup-district').textContent = data.district;
+                // document.getElementById('popup-ward').textContent = data.ward;
                 document.getElementById('popup-note').textContent = data.note;
 
                 document.getElementById('detail-popup').style.display = 'block';

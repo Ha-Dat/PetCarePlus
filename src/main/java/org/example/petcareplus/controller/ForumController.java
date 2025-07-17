@@ -72,14 +72,14 @@ public class ForumController {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
         model.addAttribute("postDTO", new PostDTO());
-        return "create-post"; // Tên file HTML
+        return "create-post";
     }
 
     @PostMapping("/create-post")
     public String savePost(@ModelAttribute PostDTO postDTO, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         forumService.savePost(postDTO, account.getAccountId());
-        return "redirect:/forum"; // Redirect sau khi lưu
+        return "redirect:/forum";
     }
 
     // Hiển thị form update
@@ -97,8 +97,7 @@ public class ForumController {
     // Xử lý POST update
     @PostMapping(value = "/update-post", consumes = {"multipart/form-data"})
     public String updatePost(@ModelAttribute PostDTO postDTO) {
-        Long fakeAccountId = 1L; // Thay bằng user ID thực tế nếu có auth
-        forumService.updatePost(postDTO, fakeAccountId);
+        forumService.updatePost(postDTO);
         return "redirect:/forum";
     }
 
@@ -106,37 +105,71 @@ public class ForumController {
     @GetMapping("/delete-post/{postId}")
     public String deletePost(@PathVariable Long postId) {
         forumService.deletePostById(postId);
-        return "redirect:/forum"; // Về trang chủ hoặc danh sách
+        return "redirect:/forum";
     }
 
     @PostMapping("/post-detail/{postId}/comment")
-    public String commentPost(
-            @PathVariable Long postId,
-            @RequestParam String content,
-            HttpSession session
-    ) {
+    public String commentPost(@PathVariable Long postId, @RequestParam String content, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
         forumService.saveCommentPost(postId, account.getAccountId(), content);
         return "redirect:/post-detail/" + postId;
     }
 
-    @PostMapping("/comment/{commentId}/reply")
-    public String replyCommentPost(
-            @PathVariable Long commentId,
-            @RequestParam String content,
-            HttpSession session
-    ) {
+    // Reply comment
+    @PostMapping("/post-detail/{postId}/reply/{commentId}/reply")
+    public String replyComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam String content, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
         forumService.saveReplyComment(commentId, account.getAccountId(), content);
 
-        // Tìm postId để redirect về lại post detail
-        CommentPost commentPost = forumService.findCommentById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        Long postId = commentPost.getPost().getPostId();
+        return "redirect:/post-detail/" + postId;
+    }
+
+    // Edit comment
+    @PostMapping("/post-detail/{postId}/comment/{commentId}/edit")
+    public String editComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam String content, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.updateCommentPost(commentId, content, account);
+        return "redirect:/post-detail/" + postId;
+    }
+
+    // Edit Reply Comment
+    @PostMapping("/post-detail/{postId}/reply/{replyId}/edit")
+    public String editReplyComment(@PathVariable Long postId, @PathVariable Long replyId, @RequestParam String content, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.updateReplyComment(replyId, content, account);
 
         return "redirect:/post-detail/" + postId;
     }
 
+    // Delete comment
+    @GetMapping("/post-detail/{postId}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable Long postId ,@PathVariable Long commentId, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.deleteCommentPostById(commentId);
+
+        return "redirect:/post-detail/" + postId;
+    }
+
+    // Delete reply comment
+    @GetMapping("/post-detail/{postId}/reply/{replyId}/delete")
+    public String deleteReplyComment(@PathVariable Long postId ,@PathVariable Long replyId, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.deleteReplyCommentById(replyId);
+
+        return "redirect:/post-detail/" + postId;
+    }
 }

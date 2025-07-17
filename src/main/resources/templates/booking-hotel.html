@@ -643,18 +643,27 @@
 </div>
 <div th:replace="component/footer :: footer"></div>
 <script>
-  // Set minimum date to today
-  document.getElementById("appointmentDate").min = new Date()
-          .toISOString()
-          .split("T")[0];
+    // Set minimum date to today
+    document.getElementById("appointmentDate").min = new Date()
+        .toISOString()
+        .split("T")[0];
 
-  // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
-  const now = new Date();
-  const offset = now.getTimezoneOffset();
-  const local = new Date(now.getTime() - offset * 60000)
-          .toISOString()
-          .slice(0, 16);
-  document.getElementById("appointmentDate").min = local;
+    // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000)
+        .toISOString()
+        .slice(0, 16);
+    document.getElementById("appointmentDate").min = local;
+
+    function handleSubmit(event) {
+        event.preventDefault(); // Ngăn submit mặc định
+        // Gửi dữ liệu form
+        const form = document.getElementById('bookingHotelForm');
+        // Hoặc đơn giản chỉ alert:
+        alert('Đặt lịch thành công!');
+        form.submit();
+    }
 </script>
 </body>
 </html>

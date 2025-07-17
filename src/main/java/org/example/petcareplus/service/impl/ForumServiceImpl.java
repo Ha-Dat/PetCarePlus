@@ -69,13 +69,13 @@ public class ForumServiceImpl implements ForumService {
         post.setAccount(account);
 
         // Xử lý image
-        if (postDTO.getImage() != null && !postDTO.getImage().isEmpty()) {
+        if (postDTO.getImageFile() != null && !postDTO.getImageFile().isEmpty()) {
             String imageName = saveFile(postDTO.getImageFile(), "uploads/images/");
             post.setImage(imageName);
         }
 
         // Xử lý video
-        if (postDTO.getVideo() != null && !postDTO.getVideo().isEmpty()) {
+        if (postDTO.getVideoFile() != null && !postDTO.getVideo().isEmpty()) {
             String videoName = saveFile(postDTO.getVideoFile(), "uploads/videos/");
             post.setVideo(videoName);
         }
@@ -83,7 +83,7 @@ public class ForumServiceImpl implements ForumService {
         return postRepository.save(post);
     }
 
-    public void updatePost(PostDTO postDTO, Long accountId) {
+    public void updatePost(PostDTO postDTO) {
         Post existingPost = postRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -125,8 +125,8 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public void saveReplyComment(Long commentPostId, Long accountId, String content) {
-        CommentPost commentPost = commentPostRepository.findById(commentPostId)
+    public void saveReplyComment(Long commentId, Long accountId, String content) {
+        CommentPost commentPost = commentPostRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -138,12 +138,42 @@ public class ForumServiceImpl implements ForumService {
         replyCommentRepository.save(reply);
     }
 
+
     @Override
-    public Optional<CommentPost> findCommentById(Long commentId) {
-        return commentPostRepository.findById(commentId);
+    public void updateCommentPost(Long commentId, String newContent, Account currentUser) {
+        CommentPost comment = commentPostRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getAccount().getAccountId().equals(currentUser.getAccountId())) {
+            throw new RuntimeException("Bạn không có quyền sửa comment này!");
+        }
+
+        comment.setComment(newContent);
+        commentPostRepository.save(comment);
     }
 
+    @Override
+    public void updateReplyComment(Long replyId, String newContent, Account currentUser) {
+        ReplyComment reply = replyCommentRepository.findById(replyId)
+                .orElseThrow(() -> new RuntimeException("Reply not found"));
 
+        if (!reply.getAccount().getAccountId().equals(currentUser.getAccountId())) {
+            throw new RuntimeException("Bạn không có quyền sửa reply này!");
+        }
+
+        reply.setComment(newContent);
+        replyCommentRepository.save(reply);
+    }
+
+    @Override
+    public void deleteCommentPostById(Long commentId) {
+        commentPostRepository.deleteById(commentId);
+    }
+
+    @Override
+    public void deleteReplyCommentById(Long replyId) {
+        replyCommentRepository.deleteById(replyId);
+    }
 
     private String saveFile(MultipartFile file, String uploadDir) {
         String fileName = file.getOriginalFilename();
