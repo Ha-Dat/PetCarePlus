@@ -18,6 +18,7 @@ public class CommentPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentPostId;
 
+    @Column(nullable = false)
     private String comment;
 
     @Column(name = "created_at")

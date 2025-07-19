@@ -282,7 +282,6 @@
             <span th:unless="${account != null and account.name != null}">bạn cần đăng nhập để bình luận</span>
           </span>
           </div>
-
           <form th:action="@{'/post-detail/' + ${post.postId} + '/comment'}" method="post">
           <textarea name="content" placeholder="Chia sẻ suy nghĩ của bạn..."
                 class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"></textarea>
@@ -300,10 +299,8 @@
         </div>
       </div>
 
-
       <!-- Comments Section -->
       <div class="space-y-4">
-        <!-- Comment 1 -->
         <!-- Loop Comment -->
         <div th:each="comment : ${comments}" class="rounded-lg bg-card text-card-foreground">
           <div class="p-4">
@@ -558,7 +555,7 @@
     console.log("PetCare+ Post Detail loaded successfully");
   });
 
-    document.querySelectorAll('.reply-btn').forEach(function (btn) {
+  document.querySelectorAll('.reply-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const replyForm = btn.closest('.flex-1').querySelector('.reply-form');
       if (replyForm) {
@@ -611,6 +608,11 @@
     });
   });
 
+  // Hien thi thong bao loi
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'empty') {
+    alert('Bình luận không được để trống');
+  }
 </script>
 </body>
 </html>

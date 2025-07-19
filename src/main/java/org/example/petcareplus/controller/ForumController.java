@@ -136,7 +136,15 @@ public class ForumController {
     public String commentPost(@PathVariable Long postId, @RequestParam String content, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
+
+        // Kiểm tra nội dung
+        if (content == null || content.trim().isEmpty()) {
+            return "redirect:/post-detail/" + postId + "?error=empty";
+        }
+
+        // Gọi Service
         forumService.saveCommentPost(postId, account.getAccountId(), content);
+
         return "redirect:/post-detail/" + postId;
     }
 
@@ -145,6 +153,13 @@ public class ForumController {
     public String replyComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam String content, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
+
+        // Kiểm tra nội dung
+        if (content == null || content.trim().isEmpty()) {
+            return "redirect:/post-detail/" + postId + "?error=empty";
+        }
+
+        // Gọi Service
         forumService.saveReplyComment(commentId, account.getAccountId(), content);
 
         return "redirect:/post-detail/" + postId;
@@ -156,6 +171,11 @@ public class ForumController {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
 
+        // Kiểm tra nội dung
+        if (content == null || content.trim().isEmpty()) {
+            return "redirect:/post-detail/" + postId + "?error=empty";
+        }
+
         // Gọi Service
         forumService.updateCommentPost(commentId, content, account);
         return "redirect:/post-detail/" + postId;
@@ -166,6 +186,11 @@ public class ForumController {
     public String editReplyComment(@PathVariable Long postId, @PathVariable Long replyId, @RequestParam String content, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
+
+        // Kiểm tra nội dung
+        if (content == null || content.trim().isEmpty()) {
+            return "redirect:/post-detail/" + postId + "?error=empty";
+        }
 
         // Gọi Service
         forumService.updateReplyComment(replyId, content, account);
