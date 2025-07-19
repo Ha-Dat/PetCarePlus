@@ -3,7 +3,6 @@ package org.example.petcareplus.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;

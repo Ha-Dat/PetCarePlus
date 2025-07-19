@@ -23,24 +23,25 @@ public class ProductDashboardController {
         this.productService = productService;
     }
 
-    @GetMapping("/productDashboard")
+    @GetMapping("/product-dashboard")
     public String productDashboard(@RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "10") int size,
                                    Model model) {
         Page<Product> productPage = productService.findAll(PageRequest.of(page, size));
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
         model.addAttribute("totalPages", productPage.getTotalPages());
         return "product-dashboard.html";
     }
 
-    @GetMapping("/productDashboard/delete/{id}")
+    @PostMapping("/product-dashboard/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
         productService.deleteById(id);
-        return "redirect:/productDashboard";
+        return "redirect:/product-dashboard";
     }
 
-    @GetMapping(value="/productDashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/product-dashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ProductDTO getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.findById(id);
@@ -81,14 +82,14 @@ public class ProductDashboardController {
         return product;
     }
 
-    @PostMapping(value = "/productDashboard/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/product-dashboard/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createProduct(@RequestBody ProductDTO dto) {
         Product product = convertToProduct(dto);
         productService.save(product);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(value = "/productDashboard/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/product-dashboard/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDTO dto) {
         Product product = convertToProduct(dto);
         product.setProductId(id);

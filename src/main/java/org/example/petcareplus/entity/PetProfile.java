@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Entity
-@Table(name = "PetProfiles")
+@Table(name = "petprofiles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
