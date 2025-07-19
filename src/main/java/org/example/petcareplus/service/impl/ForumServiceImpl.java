@@ -1,20 +1,14 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.dto.PostDTO;
-import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.entity.CommentPost;
-import org.example.petcareplus.entity.Post;
-import org.example.petcareplus.entity.ReplyComment;
-import org.example.petcareplus.repository.AccountRepository;
-import org.example.petcareplus.repository.CommentPostRepository;
-import org.example.petcareplus.repository.PostRepository;
-import org.example.petcareplus.repository.ReplyCommentRepository;
+import org.example.petcareplus.entity.*;
+import org.example.petcareplus.entity.Enum.Rating;
+import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,21 +23,22 @@ public class ForumServiceImpl implements ForumService {
     private CommentPostRepository commentPostRepository;
     private ReplyCommentRepository replyCommentRepository;
     private AccountRepository accountRepository;
+    private PostRatingRepository postRatingRepository;
 
     @Autowired
-    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository) {
+    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository, PostRatingRepository postRatingRepository) {
         this.postRepository = postRepository;
         this.commentPostRepository = commentPostRepository;
         this.replyCommentRepository = replyCommentRepository;
         this.accountRepository = accountRepository;
+        this.postRatingRepository = postRatingRepository;
     }
 
     @Override
-    public Page<Post> findAll(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("rating").descending());
-        Page<Post> postsPage = postRepository.findAll(pageable);
-        return postsPage;
+    public List<Post> findAll() {
+        return postRepository.findAll();
     }
+
 
     @Override
     public Optional<Post> findById(Long id) {
@@ -56,11 +51,10 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Override
-    public Post savePost(PostDTO postDTO, Long accountId) {
+    public void savePost(PostDTO postDTO, Long accountId) {
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
-        post.setRating(postDTO.getRating());
         post.setChecked(false);
 
         // Gán account
@@ -75,12 +69,12 @@ public class ForumServiceImpl implements ForumService {
         }
 
         // Xử lý video
-        if (postDTO.getVideoFile() != null && !postDTO.getVideo().isEmpty()) {
+        if (postDTO.getVideoFile() != null && !postDTO.getVideoFile().isEmpty()) {
             String videoName = saveFile(postDTO.getVideoFile(), "uploads/videos/");
             post.setVideo(videoName);
         }
 
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 
     public void updatePost(PostDTO postDTO) {
@@ -89,7 +83,7 @@ public class ForumServiceImpl implements ForumService {
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
-        existingPost.setRating(postDTO.getRating());
+        postRatingRepository.deleteByPost_PostId(postDTO.getPostId());
 
         // Nếu có file mới, xử lý upload → set path mới
         if (postDTO.getImageFile() != null && !postDTO.getImageFile().isEmpty()) {
@@ -173,6 +167,27 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public void deleteReplyCommentById(Long replyId) {
         replyCommentRepository.deleteById(replyId);
+    }
+
+    @Override
+    public void saveRating(Long postId, Long accountId, Rating rating) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        PostRating checkPostRating = postRatingRepository.findByAccount_AccountIdAndPost_PostId(accountId, postId).orElse(null);
+        if (checkPostRating != null) {
+            postRatingRepository.delete(checkPostRating);
+            if (checkPostRating.getRating().equals(rating)){
+                postRatingRepository.delete(checkPostRating);
+            }
+        } else {
+        PostRating postRating = new PostRating();
+        postRating.setPost(post);
+        postRating.setAccount(account);
+        postRating.setRating(rating);
+        postRatingRepository.save(postRating);
+        }
     }
 
     private String saveFile(MultipartFile file, String uploadDir) {

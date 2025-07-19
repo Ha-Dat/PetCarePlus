@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
+import org.example.petcareplus.entity.Enum.Rating;
 import org.example.petcareplus.entity.Post;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -29,39 +31,61 @@ public class ForumController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             Model model, HttpSession session) {
+
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        Page<Post> postsPage = forumService.findAll(page,size,"rating");
-        List<PostDTO> postDTOs = postsPage.getContent().stream()
+        List<Post> allPosts = forumService.findAll();
+        List<PostDTO> sortedPosts = allPosts.stream()
                 .map(PostDTO::new)
+                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
 
-        model.addAttribute("posts", postDTOs);
-        model.addAttribute("hasNext", postsPage.hasNext());
+        // Tự tính chỉ số trang
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, sortedPosts.size());
+
+        List<PostDTO> pageContent = sortedPosts.subList(fromIndex, toIndex);
+
+        model.addAttribute("posts", pageContent);
+        model.addAttribute("hasNext", toIndex < sortedPosts.size());
         return "forum";
     }
+
 
     @GetMapping("/api/posts")
     @ResponseBody
     public List<PostDTO> getMorePosts(@RequestParam int page, @RequestParam int size) {
-        Page<Post> postsPage = forumService.findAll(page,size,"rating");
-
-        return postsPage.getContent().stream()
+        List<Post> allPosts = forumService.findAll();
+        List<PostDTO> sortedPosts = allPosts.stream()
                 .map(PostDTO::new)
+                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
+
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, sortedPosts.size());
+
+        if (fromIndex >= sortedPosts.size()) {
+            return List.of();
+        }
+
+        return sortedPosts.subList(fromIndex, toIndex);
     }
 
-    @GetMapping("/post-detail/{id}")
-    public String getPostDetail(@PathVariable Long id, Model model, HttpSession session) {
-        Post post = forumService.findById(id)
+
+
+    @GetMapping("/post-detail/{postId}")
+    public String getPostDetail(@PathVariable Long postId, Model model, HttpSession session) {
+        Post post = forumService.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        List<CommentPost> comments = forumService.findCommentByPostId(id);
+        List<CommentPost> comments = forumService.findCommentByPostId(postId);
+        PostDTO postDTO = new PostDTO(post);
 
         model.addAttribute("account", account);
         model.addAttribute("post", post);
+        model.addAttribute("postDTO", postDTO);
         model.addAttribute("comments", comments);
         model.addAttribute("commentCount", post.getComments().size());
         return "post-detail";
@@ -83,11 +107,11 @@ public class ForumController {
     }
 
     // Hiển thị form update
-    @GetMapping("/update-post/{id}")
-    public String updatePostForm(@PathVariable Long id, Model model, HttpSession session) {
+    @GetMapping("/update-post/{postId}")
+    public String updatePostForm(@PathVariable Long postId, Model model, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
-        Post post = forumService.findById(id)
+        Post post = forumService.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         PostDTO postDTO = new PostDTO(post);
         model.addAttribute("postDTO", postDTO);
@@ -170,6 +194,27 @@ public class ForumController {
         // Gọi Service
         forumService.deleteReplyCommentById(replyId);
 
+        return "redirect:/post-detail/" + postId;
+    }
+
+    // rate post
+    @GetMapping("/forum/{postId}/rating")
+    public String RatingOnPostList(@PathVariable Long postId, @RequestParam Rating rating, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.saveRating(postId, account.getAccountId(), rating);
+        return "redirect:/forum";
+    }
+
+    @GetMapping("/post-detail/{postId}/rating")
+    public String RatingOnPostDetail(@PathVariable Long postId, @RequestParam Rating rating, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.saveRating(postId, account.getAccountId(), rating);
         return "redirect:/post-detail/" + postId;
     }
 }

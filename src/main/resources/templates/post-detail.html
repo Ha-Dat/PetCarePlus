@@ -207,9 +207,11 @@
         </a>
       </div>
 
+
       <!-- Post Detail -->
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-6">
         <div class="p-4">
+
           <!-- Post Meta -->
           <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
             <span>Đăng bởi [[${post.account.name}]]</span>
@@ -217,32 +219,54 @@
             <span>[[${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}]]</span>
           </div>
 
-          <!-- Post Title -->
-          <h1 class="text-xl font-bold leading-tight mb-4">
-            [[${post.title}]]
-          </h1>
+            <!-- Post Title -->
+            <h1 class="text-xl font-bold leading-tight mb-4">
+              [[${post.title}]]
+            </h1>
 
-          <!-- Media -->
-          <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
-               th:if="${post.image != null}">
-            <img th:src="${post.image}" alt="" class="w-full h-auto object-cover"/>
-          </div>
+            <!-- Media -->
+            <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
+                 th:if="${post.image != null}">
+              <img th:src="${post.image}" alt="" class="w-full h-auto object-cover"/>
+            </div>
 
-          <!-- Post Content -->
-          <div class="prose prose-sm max-w-none mb-6">
-            <p class="text-foreground mb-4">
-              [[${post.description}]]
-            </p>
-          </div>
+            <!-- Post Content -->
+            <div class="prose prose-sm max-w-none mb-6">
+              <p class="text-foreground mb-4">
+                [[${post.description}]]
+              </p>
+            </div>
 
           <!-- Post Actions -->
           <div class="flex items-center space-x-4 pt-4 border-t">
+
+            <!-- Comment Section -->
             <div class="flex items-center space-x-2">
               <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
               </svg>
               <span class="text-sm font-medium" th:text="${#lists.size(post.comments)} + ' Bình luận'"></span>
+            </div>
 
+            <!-- Voting Section -->
+            <div class="flex flex-row items-center p-2 space-x-2 min-w-[40px]">
+              <!-- upvote -->
+              <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=UPVOTE'}"
+                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m5 12 7-7 7 7" />
+                  <path d="M12 19V5" />
+                </svg>
+              </a>
+              <span class="text-xs font-medium text-muted-foreground" th:text="${postDTO.getRating()}"></span>
+              <!-- downvote -->
+              <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=DOWNVOTE'}"
+                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14" />
+                  <path d="m19 12-7 7-7-7" />
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -284,19 +308,12 @@
         <div th:each="comment : ${comments}" class="rounded-lg bg-card text-card-foreground">
           <div class="p-4">
             <div class="flex items-start space-x-3">
-              <!-- Avatar -->
-              <div class="flex-shrink-0">
-                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="text-primary-foreground font-medium text-sm"
-                th:text="${comment.account.name}">A</span>
-                </div>
-              </div>
 
               <!-- Comment Content -->
               <div class="flex-1">
                 <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                 <span class="font-medium text-foreground"
-                th:text="'u/' + ${comment.account.name}">u/username</span>
+                th:text="'' + ${comment.account.name}">u/username</span>
                   <span>•</span>
                   <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
 
@@ -347,7 +364,7 @@
 
                 <div class="flex items-center space-x-2">
                   <button type="button" class="reply-btn inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                     </svg>
                     <span>Trả lời</span>
@@ -367,17 +384,11 @@
             <div th:each="reply : ${comment.replies}"
                  class="ml-11 mt-4 pl-4 border-l-2 border-border">
               <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0">
-                  <div class="h-7 w-7 rounded-full bg-secondary flex items-center justify-center">
-        <span class="text-secondary-foreground font-medium text-xs"
-              th:text="${reply.account.name}">Y</span>
-                  </div>
-                </div>
 
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                     <span class="font-medium text-foreground"
-                          th:text="'u/' + ${reply.account.name}">u/replier</span>
+                          th:text="'' + ${reply.account.name}">u/replier</span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
 

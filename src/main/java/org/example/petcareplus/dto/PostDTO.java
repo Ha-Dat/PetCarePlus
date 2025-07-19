@@ -1,4 +1,5 @@
 package org.example.petcareplus.dto;
+import org.example.petcareplus.entity.Enum.Rating;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,21 @@ public class PostDTO {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.description = post.getDescription();
-        this.rating = post.getRating();
+        // tính toàn lượng upvote và downvote
+        if (post.getPostRatings() != null) {
+            int upvoteCount = (int) post.getPostRatings().stream()
+                    .filter(r -> r.getRating() == Rating.UPVOTE)
+                    .count();
+
+            int downvoteCount = (int) post.getPostRatings().stream()
+                    .filter(r -> r.getRating() == Rating.DOWNVOTE)
+                    .count();
+
+            this.rating = upvoteCount - downvoteCount;
+        } else {
+            this.rating = null;
+        }
+
         this.image = post.getImage();
         this.video = post.getVideo();
         this.createAt = post.getCreatedAt();
