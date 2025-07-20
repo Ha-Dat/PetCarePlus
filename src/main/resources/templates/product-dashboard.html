@@ -81,6 +81,7 @@
             transition: background 0.3s;
         }
 
+        /* Product table */
         .table-container {
             width: 100%;
             border-collapse: collapse;
@@ -420,7 +421,7 @@
             + Thêm sản phẩm
         </button>
 
-        <div class="content">
+        <div>
             <!-- Table Container -->
             <div class="table-container">
                 <table class="product-table">
@@ -455,7 +456,19 @@
                             <div class="action-dropdown">
                                 <button type="button" class="dropdown-toggle">⋮</button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" th:onclick="'openEditModal(' + ${product.productId} + ')'">
+                                    <a class="dropdown-item"
+                                       th:attr="
+                                           data-id=${product.productId},
+                                           data-name=${product.name},
+                                           data-description=${product.description},
+                                           data-price=${product.price},
+                                           data-image=${product.image},
+                                           data-stock=${product.unitInStock},
+                                           data-sold=${product.unitSold},
+                                           data-status=${product.status},
+                                           data-category=${product.category.categoryId}
+                                       "
+                                       onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
                                     </a>
 
@@ -472,6 +485,8 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <!-- pagination -->
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
@@ -681,6 +696,32 @@
                 console.error("Lỗi khi gửi API:", error);
                 showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
             });
+    }
+
+    function openEditModal(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const description = button.getAttribute('data-description');
+        const price = button.getAttribute('data-price');
+        const image = button.getAttribute('data-image');
+        const stock = button.getAttribute('data-stock');
+        const sold = button.getAttribute('data-sold');
+        const status = button.getAttribute('data-status');
+        const category = button.getAttribute('data-category');
+
+        // Gán dữ liệu vào các trường trong form
+        document.getElementById('editProductId').value = id;
+        document.getElementById('editProductName').value = name;
+        document.getElementById('editProductDescription').value = description;
+        document.getElementById('editProductPrice').value = price;
+        document.getElementById('editProductImage').value = image;
+        document.getElementById('editProductStock').value = stock;
+        document.getElementById('editProductSold').value = sold;
+        document.getElementById('editProductStatus').value = status;
+        document.getElementById('editProductCategory').value = category;
+
+        // Hiển thị modal
+        document.getElementById('editProductModal').style.display = 'flex';
     }
 
     function submitEditProduct(event) {
