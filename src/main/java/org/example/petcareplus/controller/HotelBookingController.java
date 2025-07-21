@@ -1,7 +1,9 @@
 package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.HotelBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -12,16 +14,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/")
 public class HotelBookingController {
+    @Autowired
     private HotelBookingService hotelBookingService;
 
-    public HotelBookingController(HotelBookingService hotelBookingService) {
+    @Autowired
+    private CategoryService categoryService;
+
+    public HotelBookingController(HotelBookingService hotelBookingService, CategoryService categoryService) {
         this.hotelBookingService = hotelBookingService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/groomer-hotel-page")
@@ -109,8 +117,11 @@ public class HotelBookingController {
 
     @GetMapping("/booking-hotel")
     public String showHotelBookingForm(Model model) {
+        List<Category> parentCategories = categoryService.getParentCategory();
+
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
         model.addAttribute("services", hotelBookingService.Service_findAll()); // list dịch vụ
+        model.addAttribute("categories", parentCategories);
         return "booking-hotel";
     }
 

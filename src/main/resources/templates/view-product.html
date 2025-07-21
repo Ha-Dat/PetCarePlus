@@ -634,8 +634,7 @@
 
         .header_container {
             display: flex;
-            justify-content: space-around;
-            gap: 420px;
+            justify-content: space-between;
             width: 100%;
             align-items: center;
         }
@@ -748,10 +747,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -820,13 +823,14 @@
         }
 
         /* Dropdown user menu */
-        .user-dropdown {
+        .user-dropdown,
+        .calender-dropdown{
             position: relative;
             display: inline-block;
         }
 
-        .user-btn {
-            background: #4caf50;
+        .user-btn,
+        .calender-btn {
             color: white;
             padding: 8px 14px;
             border: none;
@@ -837,14 +841,15 @@
             transition: background 0.3s ease;
         }
 
-        .user-btn:hover {
+        .user-btn:hover,
+        .calender-btn:hover {
             background: #388e3c;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 110%; /* đẩy dropdown xuống dưới nút (tùy chỉnh nếu cần) */
+            top: 100%;
             right: 0;
             background-color: #ffffff;
             min-width: 160px;
@@ -865,9 +870,11 @@
 
         .dropdown-content a:hover {
             background-color: #f1f1f1;
+            color: #000000;
         }
 
-        .user-dropdown:hover .dropdown-content {
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
             display: block;
         }
     </style>

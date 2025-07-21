@@ -70,6 +70,10 @@
             gap: 30px;
         }
 
+        .nav-margin {
+            margin-right: 20px;
+        }
+
         #categoryBtn {
             background: #2e7d32;
             color: white;
@@ -86,6 +90,7 @@
             background: #1d5c0d;
         }
 
+        /* Popup Menu */
         .popup {
             position: absolute;
             background-color: white;
@@ -95,6 +100,97 @@
             z-index: 10;
             display: block;
             margin-top: 10px;
+        }
+
+        .popup-content {
+            display: flex;
+            gap: 32px;
+        }
+
+        .main-categories,
+        .sub-categories-list,
+        .child-sub-list-wrapper {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-right: 20px;
+        }
+
+        .child-sub-list-wrapper li {
+            list-style-type: none;
+        }
+
+        .category-item {
+            padding: 10px 18px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .category-item:hover {
+            background-color: #e0f0e9;
+            cursor: pointer;
+        }
+
+        .category-item.active {
+            background-color: #88df82;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .parent-item,
+        .child-item,
+        .child-sub-list span {
+            cursor: pointer;
+        }
+
+        .sub-list {
+            display: none;
+        }
+
+        .sub-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .child-item {
+            display: block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .child-item:hover {
+            background-color: #e0f0e9;
+        }
+
+        .child-item.active {
+            background-color: #88df82;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .sub-list.active {
+            display: block;
+        }
+
+        .sub-list.active ul li {
+            list-style-type: none;
+        }
+
+        .sub-list span,
+        .child-sub-list span {
+            display: block;
+            padding: 6px 12px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .child-sub-list {
+            display: none;
         }
 
         /* Header main */
@@ -223,10 +319,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -234,13 +334,14 @@
         }
 
         /* Dropdown user menu */
-        .user-dropdown {
+        .user-dropdown,
+        .calender-dropdown{
             position: relative;
             display: inline-block;
         }
 
-        .user-btn {
-            background: #4caf50;
+        .user-btn,
+        .calender-btn{
             color: white;
             padding: 8px 14px;
             border: none;
@@ -251,14 +352,15 @@
             transition: background 0.3s ease;
         }
 
-        .user-btn:hover {
+        .user-btn:hover,
+        .calender-btn:hover {
             background: #388e3c;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 110%; /* đẩy dropdown xuống dưới nút (tùy chỉnh nếu cần) */
+            top: 100%;
             right: 0;
             background-color: #ffffff;
             min-width: 160px;
@@ -279,9 +381,11 @@
 
         .dropdown-content a:hover {
             background-color: #f1f1f1;
+            color: #000000;
         }
 
-        .user-dropdown:hover .dropdown-content {
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
             display: block;
         }
 
@@ -302,6 +406,7 @@
 
         .sidebar ul {
             list-style: none;
+            padding: 0;
         }
 
         .sidebar a {
@@ -331,7 +436,6 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
             display: flex;
             align-items: center;
-            gap: 40px;
         }
 
         .avatar-preview {
@@ -608,6 +712,110 @@
                     console.error("Lỗi load phường/xã:", error);
                 });
         }
+    });
+
+    // pop_up
+    window.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("categoryBtn");
+        const popup = document.getElementById("categoryPopup");
+        const categoryItems = document.querySelectorAll(".category-item");
+        const subLists = document.querySelectorAll(".sub-list");
+        const childItems = document.querySelectorAll(".child-item");
+        const childSubLists = document.querySelectorAll(".child-sub-list");
+        const grandchildItems = document.querySelectorAll(".grandchild-item");
+
+        if (btn && popup) {
+            btn.addEventListener("click", () => {
+                popup.style.display = popup.style.display === "block" ? "none" : "block";
+            });
+        }
+
+        categoryItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const index = item.getAttribute("data-index");
+
+                categoryItems.forEach(i => i.classList.remove("active"));
+                subLists.forEach(s => s.classList.remove("active"));
+                childItems.forEach(c => c.classList.remove("active"));
+                childSubLists.forEach(c => c.style.display = "none");
+
+                item.classList.add("active");
+                document.querySelector(`.sub-list[data-index="${index}"]`)?.classList.add("active");
+            });
+        });
+
+        childItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const subIndex = item.getAttribute("data-sub-index");
+
+                childItems.forEach(c => c.classList.remove("active"));
+                childSubLists.forEach(list => list.style.display = "none");
+
+                item.classList.add("active");
+                const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+                if (targetList) {
+                    targetList.style.display = "block";
+                }
+            });
+        });
+
+        if (categoryItems.length > 0) {
+            categoryItems[0].click();
+        }
+
+        document.querySelectorAll(".parent-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const li = item.closest("li.category-item");
+                const index = li.dataset.index;
+                const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
+                const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
+
+                if (!hasChild) {
+                    const categoryName = item.textContent.trim();
+                    window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
+                }
+            });
+        });
+
+        document.querySelectorAll(".child-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const subIndex = item.dataset.subIndex;
+                const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+                const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
+
+                // Reset trạng thái
+                document.querySelectorAll(".child-item").forEach(c => c.classList.remove("active"));
+                document.querySelectorAll(".child-sub-list").forEach(list => list.style.display = "none");
+
+                item.classList.add("active");
+
+                if (hasGrandchild) {
+                    // Có cháu → chỉ hiện danh sách cháu
+                    childSubList.style.display = "block";
+                } else {
+                    // Không có cháu → chuyển trang
+                    const parentLi = item.closest(".sub-list");
+                    const parentIndex = parentLi.getAttribute("data-index");
+                    const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+                    const keyword = item.textContent.trim();
+                    window.location.href = `/view-product?&category=${encodeURIComponent(parentName)}`;
+                }
+            });
+        });
+
+        document.querySelectorAll(".grandchild-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const grandchildName = item.textContent.trim();
+                const subList = item.closest(".child-sub-list");
+                const subIndex = subList.getAttribute("data-sub-index");
+                const [parentIndex] = subIndex.split("-");
+                const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+                const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
+                const keyword = childItem ? childItem.textContent.trim() : "";
+
+                window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+            });
+        });
     });
 </script>
 

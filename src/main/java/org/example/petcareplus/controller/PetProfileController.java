@@ -1,8 +1,11 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.PetProfileService;
-import org.example.petcareplus.service.impl.PetProfileServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,10 +20,21 @@ public class PetProfileController {
     @Autowired
     private PetProfileService petProfileService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping
     public String showPetProfilePage(Model model,
+                                     HttpSession session,
                                      @RequestParam(value = "selectedId", required = false) Long selectedId) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         List<PetProfile> petProfiles = petProfileService.findAll();
+        List<Category> parentCategories = categoryService.getParentCategory();
 
         PetProfile selectedPet = null;
 
@@ -32,6 +46,7 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("editMode", false);
         return "pet-profile";
     }

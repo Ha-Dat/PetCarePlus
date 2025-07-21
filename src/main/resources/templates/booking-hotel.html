@@ -12,10 +12,9 @@
     }
 
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9fafb;
-      color: #374151;
-      line-height: 1.5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fdf9;
+      margin: 0;
     }
 
     .container {
@@ -195,15 +194,7 @@
       }
     }
 
-    /* Base Styles */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9fdf9;
-      margin: 0;
-    }
-
     /* Navigation Bar */
-
     .nav-bar {
       display: flex;
       justify-content: space-between;
@@ -491,6 +482,7 @@
     }
 
     .register-btn {
+      width: 91.19px;
       background: #388e3c;
       color: white;
     }
@@ -501,14 +493,117 @@
 
     /* Cart Icon */
     .cart {
+      margin-top: 8px;
+      margin-right: 13px;
+      margin-left: -20px;
       font-size: 24px;
       cursor: pointer;
       color: #2e7d32;
       transition: transform 0.2s ease;
+      width: 50px
     }
 
     .cart:hover {
       transform: scale(1.2);
+    }
+
+    /* Dropdown user menu */
+    .user-dropdown,
+    .calender-dropdown{
+      position: relative;
+      display: inline-block;
+    }
+
+    .user-btn,
+    .calender-btn{
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .user-btn:hover,
+    .calender-btn:hover {
+      background: #388e3c;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #ffffff;
+      min-width: 160px;
+      z-index: 2000; /* cao hơn nav-bar */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dropdown-content a {
+      color: #333;
+      padding: 10px 16px;
+      text-decoration: none;
+      font-weight: normal;
+      display: block;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+      color: #000000;
+    }
+
+    .user-dropdown:hover .dropdown-content,
+    .calender-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #e8f5e9;
+      padding: 30px 40px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-top: 40px;
+      color: #333;
+      border-top: 2px solid #c8e6c9;
+    }
+
+    footer section {
+      margin-bottom: 20px;
+      min-width: 200px;
+    }
+
+    footer h4 {
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: #1b5e20;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    footer a {
+      color: #333;
+      text-decoration: none;
+      display: block;
+      padding: 4px 0;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: #2e7d32;
     }
   </style>
 </head>
@@ -643,6 +738,110 @@
 </div>
 <div th:replace="component/footer :: footer"></div>
 <script>
+  // pop_up
+  window.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("categoryBtn");
+    const popup = document.getElementById("categoryPopup");
+    const categoryItems = document.querySelectorAll(".category-item");
+    const subLists = document.querySelectorAll(".sub-list");
+    const childItems = document.querySelectorAll(".child-item");
+    const childSubLists = document.querySelectorAll(".child-sub-list");
+    const grandchildItems = document.querySelectorAll(".grandchild-item");
+
+    if (btn && popup) {
+      btn.addEventListener("click", () => {
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+      });
+    }
+
+    categoryItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const index = item.getAttribute("data-index");
+
+        categoryItems.forEach(i => i.classList.remove("active"));
+        subLists.forEach(s => s.classList.remove("active"));
+        childItems.forEach(c => c.classList.remove("active"));
+        childSubLists.forEach(c => c.style.display = "none");
+
+        item.classList.add("active");
+        document.querySelector(`.sub-list[data-index="${index}"]`)?.classList.add("active");
+      });
+    });
+
+    childItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const subIndex = item.getAttribute("data-sub-index");
+
+        childItems.forEach(c => c.classList.remove("active"));
+        childSubLists.forEach(list => list.style.display = "none");
+
+        item.classList.add("active");
+        const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+        if (targetList) {
+          targetList.style.display = "block";
+        }
+      });
+    });
+
+    if (categoryItems.length > 0) {
+      categoryItems[0].click();
+    }
+
+    document.querySelectorAll(".parent-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const li = item.closest("li.category-item");
+        const index = li.dataset.index;
+        const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
+        const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
+
+        if (!hasChild) {
+          const categoryName = item.textContent.trim();
+          window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
+        }
+      });
+    });
+
+    document.querySelectorAll(".child-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const subIndex = item.dataset.subIndex;
+        const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+        const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
+
+        // Reset trạng thái
+        document.querySelectorAll(".child-item").forEach(c => c.classList.remove("active"));
+        document.querySelectorAll(".child-sub-list").forEach(list => list.style.display = "none");
+
+        item.classList.add("active");
+
+        if (hasGrandchild) {
+          // Có cháu → chỉ hiện danh sách cháu
+          childSubList.style.display = "block";
+        } else {
+          // Không có cháu → chuyển trang
+          const parentLi = item.closest(".sub-list");
+          const parentIndex = parentLi.getAttribute("data-index");
+          const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+          const keyword = item.textContent.trim();
+          window.location.href = `/view-product?&category=${encodeURIComponent(parentName)}`;
+        }
+      });
+    });
+
+    document.querySelectorAll(".grandchild-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const grandchildName = item.textContent.trim();
+        const subList = item.closest(".child-sub-list");
+        const subIndex = subList.getAttribute("data-sub-index");
+        const [parentIndex] = subIndex.split("-");
+        const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+        const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
+        const keyword = childItem ? childItem.textContent.trim() : "";
+
+        window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+      });
+    });
+  });
+
   // Set minimum date to today
   document.getElementById("appointmentDate").min = new Date()
           .toISOString()

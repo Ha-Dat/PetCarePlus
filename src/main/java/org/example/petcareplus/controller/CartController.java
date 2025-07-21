@@ -1,11 +1,13 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,11 @@ public class CartController {
                             HttpSession session,
                             @RequestHeader(value = "Referer", required = false) String referer) {
 
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
@@ -47,6 +54,11 @@ public class CartController {
                          HttpSession session,
                          @RequestHeader(value = "Referer", required = false) String referer) {
 
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bạn chưa đăng nhập");
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
@@ -60,6 +72,11 @@ public class CartController {
 
     @GetMapping("/view-cart")
     public String viewCart(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) cart = new HashMap<>();
 
