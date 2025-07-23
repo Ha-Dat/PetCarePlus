@@ -1,15 +1,15 @@
 package org.example.petcareplus.dto;
 
-import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.entity.Order;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class CheckoutDTO {
 
-    private Account account;
-    private LocalDateTime orderDate;
-    private String status;
+    private boolean differentAddress;
     private String receiverName;
     private String receiverPhone;
     private String deliveryAddress;
@@ -17,47 +17,15 @@ public class CheckoutDTO {
     private String paymentMethod;
     private String couponCode;
     private String note;
-    private Order order;
+    private BigDecimal totalPrice;
+    private BigDecimal discountAmount;
 
-    public CheckoutDTO() {
+    public boolean isDifferentAddress() {
+        return differentAddress;
     }
 
-    public CheckoutDTO(Account account, LocalDateTime orderDate, String status, String receiverName, String receiverPhone, String deliveryAddress, String shippingMethod, String paymentMethod, String couponCode, String note, Order order) {
-        this.account = account;
-        this.orderDate = orderDate;
-        this.status = status;
-        this.receiverName = receiverName;
-        this.receiverPhone = receiverPhone;
-        this.deliveryAddress = deliveryAddress;
-        this.shippingMethod = shippingMethod;
-        this.paymentMethod = paymentMethod;
-        this.couponCode = couponCode;
-        this.note = note;
-        this.order = order;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDifferentAddress(boolean differentAddress) {
+        this.differentAddress = differentAddress;
     }
 
     public String getReceiverName() {
@@ -116,11 +84,19 @@ public class CheckoutDTO {
         this.note = note;
     }
 
-    public Order getOrder() {
-        return order;
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

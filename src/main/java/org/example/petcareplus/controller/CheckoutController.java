@@ -1,38 +1,35 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.petcareplus.entity.Profile;
-import org.example.petcareplus.service.OrderService;
-import org.example.petcareplus.service.ProductService;
-import org.example.petcareplus.service.ProfileService;
-import org.example.petcareplus.service.impl.PaymentServiceImpl;
+import org.example.petcareplus.dto.CheckoutDTO;
+import org.example.petcareplus.entity.*;
+import org.example.petcareplus.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/checkout")
 public class CheckoutController {
 
+    private final AccountService accountService;
     private final ProfileService profileService;
     private final ProductService productService;
     private final OrderService orderService;
-    private final PaymentServiceImpl paymentService;
+    private final PromotionService promotionService;
 
-    public CheckoutController(ProfileService profileService, ProductService productService, OrderService orderService, PaymentServiceImpl paymentService) {
+    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService) {
+        this.accountService = accountService;
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
-        this.paymentService = paymentService;
+        this.promotionService = promotionService;
     }
-
 
     @GetMapping
     public String showCheckoutPage(Model model, HttpSession session) {
@@ -67,85 +64,89 @@ public class CheckoutController {
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        model.addAttribute("cartItems", cartItems);
+        Map<Product, Integer> cartProductItems = new HashMap<>();
+        for (Map.Entry<Long, Integer> entry : cartItems.entrySet()) {
+            productService.getProductById(entry.getKey()).ifPresent(product -> {
+                cartProductItems.put(product, entry.getValue());
+            });
+        }
+
+        model.addAttribute("cartItems", cartProductItems);
         model.addAttribute("subtotal", subtotal);
 
         return "checkout";
     }
 
-    @PostMapping("/place-order")
-    public String placeOrder(
-            @RequestParam(required = false) String receiverName,
-            @RequestParam(required = false) String receiverPhone,
-            @RequestParam(required = false) String deliveryAddress,
-            @RequestParam String shippingMethod,
-            @RequestParam String paymentMethod,
-            @RequestParam(required = false) String couponCode,
-            @RequestParam(required = false) String note,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+    @PostMapping("/create")
+    public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request) {
 
-        Long userId = (Long) session.getAttribute("loggedInUser");
-        if (userId == null) {
+        // Check session
+        Long id = (Long) session.getAttribute("loggedInUser");
+        if (id == null) {
             return "redirect:/login";
         }
 
-        Map<Long, Integer> cartItems = (Map<Long, Integer>) session.getAttribute("cart");
-        if (cartItems == null || cartItems.isEmpty()) {
+        // Get cart
+        Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
+        if (cart == null || cart.isEmpty()) {
             return "redirect:/cart";
         }
 
-        try {
-            // Xử lý đơn hàng
-            if ("VNPAY".equals(paymentMethod)) {
-                // Tạo URL thanh toán VNPay
-                BigDecimal totalAmount = calculateTotalAmount(cartItems, shippingMethod, couponCode);
-                String paymentUrl = paymentService.createPaymentUrl(totalAmount, "Thanh toán đơn hàng PetCare+");
+        // Get profile
+        Profile profile = profileService.getProfileByAccountAccountId(id);
 
-                // Lưu thông tin đơn hàng tạm thời trước khi thanh toán
-                Long tempOrderId = orderService.saveTempOrder(userId, cartItems, receiverName, receiverPhone,
-                        deliveryAddress, shippingMethod, paymentMethod, couponCode, note);
+        // Get account
+        Account account = accountService.getById(id).get();
 
-                redirectAttributes.addAttribute("paymentUrl", paymentUrl);
-                redirectAttributes.addAttribute("orderId", tempOrderId);
-                return "redirect:/checkout/vnpay-redirect";
-            } else {
-                // Xử lý đơn hàng COD hoặc chuyển khoản
-                Long orderId = orderService.processOrder(userId, cartItems, receiverName, receiverPhone,
-                        deliveryAddress, shippingMethod, paymentMethod, couponCode, note);
-
-                // Xóa giỏ hàng sau khi đặt hàng thành công
-                session.removeAttribute("cart");
-                return "redirect:/order-confirmation/" + orderId;
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đặt hàng: " + e.getMessage());
-            return "redirect:/checkout";
+        // Handle promotion
+        Promotion promotion;
+        if (request.getCouponCode() != null) {
+            promotion = promotionService.findByTitle(request.getCouponCode());
+        } else {
+            promotion = null;
         }
+
+        Order order = new Order();
+
+        order.setAccount(account);
+        order.setPaymentMethod(request.getPaymentMethod());
+        order.setNote(request.getNote());
+        order.setTotalPrice(request.getTotalPrice());
+
+        System.out.println(" Check Total Price: " + request.getTotalPrice());
+
+        order.setStatus("PENDING");
+        order.setDiscountAmount(request.getDiscountAmount());
+        order.setPromotion(promotion);
+        order.setOrderDate(LocalDateTime.now());
+        order.setShippingMethod(request.getShippingMethod());
+        order.setShippingFee(null);
+
+        // Handle Address & Name & Phone
+        if (request.isDifferentAddress()) {
+            order.setDeliverAddress(request.getDeliveryAddress());
+            order.setReceiverName(request.getReceiverName());
+            order.setReceiverPhone(request.getReceiverPhone());
+        } else {
+            order.setDeliverAddress(profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
+            order.setReceiverName(profile.getAccount().getName());
+            order.setReceiverPhone(account.getPhone());
+        }
+
+        // Create order
+        Long orderId =orderService.createOrder(order, cart);
+
+        // Clear cart
+        session.removeAttribute("cart");
+
+        // Redirect to order success page
+
+        return "redirect:/checkout/success/" + orderId;
     }
 
-    private BigDecimal calculateTotalAmount(Map<Long, Integer> cartItems, String shippingMethod, String couponCode) {
-        // Tính toán tổng số tiền (bao gồm phí vận chuyển và giảm giá nếu có)
-        BigDecimal subtotal = cartItems.entrySet().stream()
-                .map(entry -> {
-                    Long productId = entry.getKey();
-                    Integer quantity = entry.getValue();
-                    return productService.getProductById(productId)
-                            .map(product -> product.getPrice().multiply(BigDecimal.valueOf(quantity)))
-                            .orElse(BigDecimal.ZERO);
-                })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Tính phí vận chuyển (giả sử phí cố định cho ví dụ)
-        BigDecimal shippingFee = "EXPRESS".equals(shippingMethod)
-                ? new BigDecimal("30000")
-                : new BigDecimal("15000");
-
-        // Tính giảm giá (nếu có)
-//        BigDecimal discount = orderService.calculateDiscount(couponCode, subtotal);
-
-//        return subtotal.add(shippingFee).subtract(discount);
-        return subtotal.add(shippingFee);
+    @GetMapping("/success/{id}")
+    public String showOrderSuccessPage(Model model, Long id) {
+        model.addAttribute("orderId", id);
+        return "order-success";
     }
-
 }
