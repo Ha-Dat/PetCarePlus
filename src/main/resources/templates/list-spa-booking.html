@@ -268,8 +268,17 @@
                         <div class="action-dropdown">
                             <button type="button" class="dropdown-toggle">•••</button>
                             <div class="dropdown-menu">
-                                <button class="dropdown-item confirm-btn" th:onClick="'approveSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Duyệt</button>
-                                <button class="dropdown-item reject-btn" th:onClick="'rejectSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Từ chối</button>
+
+                                <button class="dropdown-item confirm-btn"
+                                        th:data-id="${spaBookings.spaBookingId}"
+                                        onclick="approveSpaBooking(this)">
+                                    Duyệt
+                                </button>
+                                <button class="dropdown-item reject-btn"
+                                        th:data-id="${spaBookings.spaBookingId}"
+                                        onclick="rejectSpaBooking(this)">
+                                    Từ chối
+                                </button>
                             </div>
                         </div>
                     </td>
@@ -300,7 +309,15 @@
 </div>
 </body>
 <script>
-    function approveSpaBooking(id) {
+    function approveSpaBooking(button) {
+
+        const spaBookingId = button.dataset.id;
+
+        if (!spaBookingId) {
+            alert("Không tìm thấy booking ID.");
+            return;
+        }
+
         if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
             fetch(`/list-spa-booking/approve-spa/${id}`, {
                 method: 'POST'
@@ -317,7 +334,14 @@
         }
     }
 
-    function rejectSpaBooking(id) {
+    function rejectSpaBooking(button) {
+        const spaBookingId = button.dataset.id;
+
+        if (!spaBookingId) {
+            alert("Không tìm thấy booking ID.");
+            return;
+        }
+
         if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
             fetch(`/list-spa-booking/reject-spa/${id}`, {
                 method: 'POST'

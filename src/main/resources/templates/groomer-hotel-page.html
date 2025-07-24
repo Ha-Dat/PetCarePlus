@@ -409,12 +409,12 @@
                                     </button>
 
                                     <button class="dropdown-item confirm-btn"
-                                            data-id="[[${hotelBookings.hotelBookingId}]]"
+                                            th:data-id="${hotelBookings.hotelBookingId}"
                                             onclick="acceptBooking(this)">
                                         Duyệt
                                     </button>
                                     <button class="dropdown-item reject-btn"
-                                            data-id="[[${hotelBookings.hotelBookingId}]]"
+                                            th:data-id="${hotelBookings.hotelBookingId}"
                                             onclick="rejectBooking(this)">
                                         Từ chối
                                     </button>

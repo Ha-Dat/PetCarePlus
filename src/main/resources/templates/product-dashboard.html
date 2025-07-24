@@ -416,7 +416,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <h1 class="page-title">Quản lý danh mục</h1>
+        <h1 class="page-title">Quản lý sản phẩm</h1>
         <button class="btn add-product-btn" onclick="openAddModal()">
             + Thêm sản phẩm
         </button>
@@ -429,6 +429,7 @@
                     <tr>
                         <th>STT</th>
                         <th>Tên</th>
+                        <th>Ảnh</th>
                         <th>Mô tả</th>
                         <th>Giá</th>
                         <th>Tồn kho</th>
@@ -442,6 +443,7 @@
                     <tr th:each="product, stat : ${products}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
                         <td th:text="${product?.name}"></td>
+                        <td th:src="${product?.image}"></td>
                         <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
