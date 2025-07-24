@@ -34,7 +34,7 @@ public class HotelBookingController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/groomer-hotel-page")
+    @GetMapping("/list-hotel-booking")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size) {
@@ -43,10 +43,10 @@ public class HotelBookingController {
         model.addAttribute("hotelBookings", hotelBookings.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", hotelBookings.getTotalPages());
-        return "groomer-hotel-page";
+        return "list-hotel-booking";
     }
 
-    @PostMapping("/approve-booking/{id}")
+    @PostMapping("/list-hotel-booking/approve-hotel/{id}")
     @ResponseBody
     public String approveBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -65,7 +65,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/booking-detail/{id}")
+    @GetMapping("/list-hotel-booking/hotel-detail/{id}")
     @ResponseBody
     public ResponseEntity<?> getBookingDetail(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -80,25 +80,20 @@ public class HotelBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
-//            data.put("image", booking.getPetProfile().getImage());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());
             data.put("breed", booking.getPetProfile().getBreeds());
-//            data.put("weight", booking.getPetProfile().getWeight());
             // data chủ nuôi
             data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
             data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
-//            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
-//            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
-//            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
 
             return ResponseEntity.ok(data);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
-    @PostMapping("/reject-booking/{id}")
+    @PostMapping("/list-hotel-booking/reject-hotel/{id}")
     @ResponseBody
     public String rejectBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -117,7 +112,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/booking-hotel")
+    @GetMapping("/hotel-booking/form")
     public String showHotelBookingForm(HttpSession session, Model model) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -130,10 +125,10 @@ public class HotelBookingController {
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
         model.addAttribute("services", hotelBookingService.Service_findAll()); // list dịch vụ
         model.addAttribute("categories", parentCategories);
-        return "booking-hotel";
+        return "hotel-booking";
     }
 
-    @PostMapping("/booking-hotel/add")
+    @PostMapping("/hotel-booking/book")
     public String addHotelBooking(
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
@@ -172,7 +167,7 @@ public class HotelBookingController {
             booking.setService(service.get());
 
             hotelBookingService.save(booking);
-            return "redirect:/booking-hotel";
+            return "redirect:/hotel-booking/form";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
