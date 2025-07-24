@@ -9,6 +9,7 @@ import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,5 +57,20 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Profile profileSave(Profile profile) {
         return profileRepository.save(profile);
+    }
+
+    @Override
+    public List<Account> getAllAccount() {
+        return accountRepository.findAll();
+    }
+
+    @Override
+    public Optional<Account> getById(Long id) {
+        return accountRepository.findById(id);
+    }
+
+    @Override
+    public void updateAccount(Account account) {
+        accountRepository.save(account);
     }
 }

@@ -11,7 +11,6 @@ import java.util.*;
 public class PetProfileServiceImpl implements PetProfileService {
 
     private final PetProfileRepository petProfileRepository;
-    private Long nextId = 1L;
 
     public PetProfileServiceImpl(PetProfileRepository petProfileRepository) {
         this.petProfileRepository = petProfileRepository;

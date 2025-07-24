@@ -61,7 +61,7 @@ public class AccountController {
         account.setName(registerDTO.getName());
         account.setPhone(registerDTO.getPhone());
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
-        account.setRole("ROLE_CUSTOMER");
+        account.setRole("CUSTOMER");
         account.setStatus("ACTIVE");
 
         accountService.save(account);
@@ -96,12 +96,14 @@ public class AccountController {
 
         Account account = accountOpt.get();
 
-        if (!"ACTIVE".equals(account.getStatus())) {
+        if (!"ACTIVE".equalsIgnoreCase(account.getStatus())) {
             model.addAttribute("error", "Tài khoản bị khóa!");
             return "login";
         }
 
-        session.setAttribute("loggedInUser", account);
+        Long id = account.getAccountId();
+
+        session.setAttribute("loggedInUser", id);
         return "redirect:/home";
     }
 

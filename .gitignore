@@ -34,4 +34,4 @@ build/
 
 ### Ignore Spring Boot config file ###
 src/main/resources/application.properties
-src/main/resources/application.properties
+**/application.properties

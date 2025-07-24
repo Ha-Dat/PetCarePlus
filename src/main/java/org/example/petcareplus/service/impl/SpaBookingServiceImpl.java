@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SpaBookingServiceImpl implements SpaBookingService {
 
@@ -25,6 +27,16 @@ public class SpaBookingServiceImpl implements SpaBookingService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("bookDate").descending());
         Page<SpaBooking> spaBookings = spaBookingRepository.findAll(pageable);
         return spaBookings;
+    }
+
+    @Override
+    public Optional<SpaBooking> findById(Long id) {
+        return spaBookingRepository.findById(id);
+    }
+
+    @Override
+    public SpaBooking save(SpaBooking spaBooking) {
+        return spaBookingRepository.save(spaBooking);
     }
 
 }

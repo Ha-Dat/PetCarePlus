@@ -1,10 +1,9 @@
 package org.example.petcareplus.repository;
 
-import org.example.petcareplus.entity.SpaBooking;
+import org.example.petcareplus.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 }
