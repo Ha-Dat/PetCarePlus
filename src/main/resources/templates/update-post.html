@@ -235,16 +235,18 @@
                             <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
 
                                 <!-- ⚡️ Hiển thị ảnh cũ -->
-                                <div th:if="${postDTO.image}">
+                                <div th:if="${postDTO.image != null}">
                                     <p class="text-sm text-muted-foreground mb-2">Hình ảnh hiện tại:</p>
-                                    <img th:src="@{${postDTO.image}}" alt="Ảnh hiện tại" class="max-w-xs rounded-lg border mb-2"/>
+                                    <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${postDTO.image}}" alt="Ảnh hiện tại" class="max-w-xs rounded-lg border mb-2"/>
                                 </div>
 
                                 <!-- Biểu tượng + Upload -->
                                 <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
                                 <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
                                 <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
-                                <label for="image-upload" class="inline-flex ...">Chọn tệp hình ảnh</label>
+                                <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                    Chọn tệp hình ảnh
+                                </label>
 
                             </div>
                         </div>
@@ -258,17 +260,19 @@
                             <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
 
                                 <!-- ⚡️ Hiển thị video cũ -->
-                                <div th:if="${postDTO.video}">
+                                <div th:if="${postDTO.video != null}">
                                     <p class="text-sm text-muted-foreground mb-2">Video hiện tại:</p>
                                     <video controls class="max-w-xs rounded-lg border mb-4"
-                                           th:src="@{${postDTO.video}}"></video>
+                                           th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${postDTO.video}}"></video>
                                 </div>
 
                                 <!-- Biểu tượng + Upload -->
                                 <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
                                 <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
                                 <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
-                                <label for="video-upload" class="inline-flex ...">Chọn tệp video</label>
+                                <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                    Chọn tệp video
+                                </label>
 
                             </div>
                         </div>
@@ -276,7 +280,7 @@
 
                         <!-- Submit Buttons -->
                         <div class="flex justify-end space-x-2 pt-4 border-t">
-                            <a href="/" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                            <a href="/forum" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                                 Hủy
                             </a>
                             <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">

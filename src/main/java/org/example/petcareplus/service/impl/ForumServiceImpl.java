@@ -10,12 +10,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ForumServiceImpl implements ForumService {
@@ -24,14 +30,16 @@ public class ForumServiceImpl implements ForumService {
     private ReplyCommentRepository replyCommentRepository;
     private AccountRepository accountRepository;
     private PostRatingRepository postRatingRepository;
+    private S3Client s3Client;
 
     @Autowired
-    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository, PostRatingRepository postRatingRepository) {
+    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository, PostRatingRepository postRatingRepository, S3Client s3Client) {
         this.postRepository = postRepository;
         this.commentPostRepository = commentPostRepository;
         this.replyCommentRepository = replyCommentRepository;
         this.accountRepository = accountRepository;
         this.postRatingRepository = postRatingRepository;
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -62,21 +70,21 @@ public class ForumServiceImpl implements ForumService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         post.setAccount(account);
 
-        // Xử lý image
-        if (postDTO.getImageFile() != null && !postDTO.getImageFile().isEmpty()) {
-            String imageName = saveFile(postDTO.getImageFile(), "uploads/images/");
-            post.setImage(imageName);
+
+        if (!postDTO.getImageFile().isEmpty()) {
+            String image = saveFileToS3(postDTO.getImageFile(), "uploads/images/");
+            post.setImage(image);
         }
 
-        // Xử lý video
-        if (postDTO.getVideoFile() != null && !postDTO.getVideoFile().isEmpty()) {
-            String videoName = saveFile(postDTO.getVideoFile(), "uploads/videos/");
-            post.setVideo(videoName);
+        if (!postDTO.getVideoFile().isEmpty()) {
+            String video = saveFileToS3(postDTO.getVideoFile(), "uploads/videos/");
+            post.setVideo(video);
         }
 
         postRepository.save(post);
     }
 
+    @Transactional
     public void updatePost(PostDTO postDTO) {
         Post existingPost = postRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -85,21 +93,30 @@ public class ForumServiceImpl implements ForumService {
         existingPost.setDescription(postDTO.getDescription());
         postRatingRepository.deleteByPost_PostId(postDTO.getPostId());
 
-        // Nếu có file mới, xử lý upload → set path mới
-        if (postDTO.getImageFile() != null && !postDTO.getImageFile().isEmpty()) {
-            String imageName = saveFile(postDTO.getImageFile(), "uploads/images/");
-            existingPost.setImage(imageName);
+        if (!postDTO.getImageFile().isEmpty()) {
+            if (existingPost.getImage() != null){deleteFileFromS3(existingPost.getImage());}
+            String image = saveFileToS3(postDTO.getImageFile(), "uploads/images/");
+            existingPost.setImage(image);
         }
 
-        if (postDTO.getVideoFile() != null && !postDTO.getVideoFile().isEmpty()) {
-            String videoName = saveFile(postDTO.getVideoFile(), "uploads/videos/");
-            existingPost.setVideo(videoName);
+        if (!postDTO.getVideoFile().isEmpty()) {
+            if (existingPost.getVideo() != null){deleteFileFromS3(existingPost.getVideo());}
+            String video = saveFileToS3(postDTO.getVideoFile(), "uploads/videos/");
+            existingPost.setVideo(video);
         }
 
         postRepository.save(existingPost);
     }
 
     public void deletePostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        if(post.getImage() != null){
+            deleteFileFromS3(post.getImage());
+        }
+        if(post.getVideo() != null){
+            deleteFileFromS3(post.getVideo());
+        }
         postRepository.deleteById(postId);
     }
 
@@ -190,17 +207,33 @@ public class ForumServiceImpl implements ForumService {
         }
     }
 
-    private String saveFile(MultipartFile file, String uploadDir) {
-        String fileName = file.getOriginalFilename();
-        File uploadPath = new File(uploadDir);
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
+    //lưu file lên S3
+    private String saveFileToS3(MultipartFile file, String folder) {
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String key = folder + fileName;
+
         try {
-            file.transferTo(new File(uploadDir + fileName));
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket("petcareplus")
+                            .key(key)
+                            .contentType(file.getContentType())
+                            .build(),
+                    software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
         } catch (IOException e) {
-            throw new RuntimeException("Could not save file: " + fileName, e);
+            throw new RuntimeException("Failed to upload to S3", e);
         }
-        return fileName;
+
+        return key; // Hoặc URL đầy đủ nếu bạn muốn lưu link luôn
+    }
+
+    public void deleteFileFromS3(String key) {
+        s3Client.deleteObject(
+                DeleteObjectRequest.builder()
+                        .bucket("petcareplus")
+                        .key(key)
+                        .build()
+        );
     }
 }

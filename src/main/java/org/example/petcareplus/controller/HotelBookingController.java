@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.entity.Enum.BookingStatus;
 import org.example.petcareplus.service.HotelBookingService;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,11 +44,11 @@ public class HotelBookingController {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
-            if ("chờ duyệt".equalsIgnoreCase(booking.getStatus())) {
-                booking.setStatus("đã duyệt");
+            if (BookingStatus.PENDING.equals(booking.getStatus())) {
+                booking.setStatus(BookingStatus.ACCEPTED);
                 hotelBookingService.save(booking);
                 return "lịch đặt đã được duyệt";
-            } else if("đã duyệt".equalsIgnoreCase(booking.getStatus())){
+            } else if(BookingStatus.ACCEPTED.equals(booking.getStatus())){
                 return "lịch đặt đã được duyệt rồi";
             }else{
                 return "lịch đặt chưa bị từ chối rồi";
@@ -95,11 +96,11 @@ public class HotelBookingController {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
-            if ("chờ duyệt".equalsIgnoreCase(booking.getStatus())) {
-                booking.setStatus("từ chối");
+            if (BookingStatus.PENDING.equals(booking.getStatus())) {
+                booking.setStatus(BookingStatus.REJECTED);
                 hotelBookingService.save(booking);
                 return "lịch đặt đã được từ chối";
-            } else if("từ chối".equalsIgnoreCase(booking.getStatus())){
+            } else if(BookingStatus.REJECTED.equals(booking.getStatus())){
                 return "lịch đặt đã bị từ chối rồi";
             } else {
                 return "lịch đặt được duyệt rồi";
@@ -143,7 +144,7 @@ public class HotelBookingController {
             HotelBooking booking = new HotelBooking();
             booking.setBookDate(bookDate);
             booking.setNote(note);
-            booking.setStatus("chờ duyệt");
+            booking.setStatus(BookingStatus.PENDING);
             booking.setCreatedAt(LocalDateTime.now());
 
             booking.setPetProfile(petProfile);

@@ -222,47 +222,43 @@
 
             <!-- Image Upload -->
             <div class="space-y-2">
-              <label class="text-sm font-medium leading-none">
-                Tải lên hình ảnh
-              </label>
-              <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors space-y-2">
+              <div id="image-placeholder">
                 <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
                   <circle cx="12" cy="13" r="3" />
                 </svg>
-                <p class="text-sm text-muted-foreground mb-2">
-                  Kéo thả hình ảnh vào đây hoặc
-                </p>
-                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
-                <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                  Chọn tệp hình ảnh
-                </label>
+                <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
               </div>
+              <div id="image-preview" class="mt-4 flex justify-center"></div>
+              <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
+              <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                Chọn tệp hình ảnh
+              </label>
+            </div>
             </div>
 
             <!-- Video Upload -->
             <div class="space-y-2">
-              <label class="text-sm font-medium leading-none">
-                Tải lên video
-              </label>
-              <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors margin-top space-y-2">
+              <div id="video-placeholder">
                 <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polygon points="23 7 16 12 23 17 23 7" />
                   <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                 </svg>
-                <p class="text-sm text-muted-foreground mb-2">
-                  Kéo thả video vào đây hoặc
-                </p>
-                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
-                <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                  Chọn tệp video
-                </label>
+                <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
               </div>
+              <div id="video-preview" class="mt-4 flex justify-center"></div>
+              <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
+              <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                Chọn tệp video
+              </label>
+            </div>
             </div>
 
             <!-- Submit Buttons -->
             <div class="flex justify-end space-x-2 pt-4 border-t">
-              <a href="/" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+              <a href="/forum" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                 Hủy
               </a>
               <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
@@ -376,6 +372,58 @@
       });
     }
   });
+
+  const imageUpload = document.getElementById("image-upload");
+  const videoUpload = document.getElementById("video-upload");
+
+  const imagePlaceholder = document.getElementById("image-placeholder");
+  const imagePreview = document.getElementById("image-preview");
+
+  const videoPlaceholder = document.getElementById("video-placeholder");
+  const videoPreview = document.getElementById("video-preview");
+
+  if (imageUpload) {
+    imageUpload.addEventListener("change", function () {
+      const files = this.files;
+      imagePreview.innerHTML = "";
+      if (files.length > 0) {
+        imagePlaceholder.style.display = "none";
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.style.maxWidth = "200px";
+          img.style.maxHeight = "200px";
+          img.style.marginRight = "10px";
+          img.onload = () => URL.revokeObjectURL(img.src);
+          imagePreview.appendChild(img);
+        }
+      } else {
+        imagePlaceholder.style.display = "block";
+      }
+    });
+  }
+
+  if (videoUpload) {
+    videoUpload.addEventListener("change", function () {
+      const file = this.files[0];
+      videoPreview.innerHTML = "";
+      if (file) {
+        videoPlaceholder.style.display = "none";
+        const video = document.createElement("video");
+        video.src = URL.createObjectURL(file);
+        video.controls = true;
+        video.style.maxWidth = "300px";
+        video.style.maxHeight = "200px";
+        videoPreview.appendChild(video);
+        video.onload = () => URL.revokeObjectURL(video.src);
+      } else {
+        videoPlaceholder.style.display = "block";
+      }
+    });
+  }
+
+
 
 </script>
 </body>
