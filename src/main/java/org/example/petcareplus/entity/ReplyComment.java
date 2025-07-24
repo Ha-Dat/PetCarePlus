@@ -17,6 +17,7 @@ public class ReplyComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long replyCommentId;
 
+    @Column(nullable = false)
     private String comment;
 
     @Column(name = "created_at")

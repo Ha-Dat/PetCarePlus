@@ -18,6 +18,7 @@ public class CommentPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentPostId;
 
+    @Column(nullable = false)
     private String comment;
 
     @Column(name = "created_at")
@@ -31,7 +32,7 @@ public class CommentPost {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReplyComment> replies;
 
     @PrePersist

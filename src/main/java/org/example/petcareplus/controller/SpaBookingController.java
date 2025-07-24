@@ -1,6 +1,7 @@
 package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.entity.Enum.BookingStatus;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
@@ -55,8 +56,8 @@ public class SpaBookingController {
         Optional<SpaBooking> booking = spaBookingRepository.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
-            if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
-                spaBooking.setStatus("Đã đặt");
+            if (BookingStatus.PENDING.equals(spaBooking.getStatus())){
+                spaBooking.setStatus(BookingStatus.ACCEPTED);
                 spaBookingRepository.save(spaBooking);
                 return "Duyệt lịch thành công";
             }else {
@@ -72,8 +73,8 @@ public class SpaBookingController {
         Optional<SpaBooking> booking = spaBookingRepository.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
-            if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
-                spaBooking.setStatus("Đã từ chối");
+            if (BookingStatus.PENDING.equals(spaBooking.getStatus())){
+                spaBooking.setStatus(BookingStatus.REJECTED);
                 spaBookingRepository.save(spaBooking);
                 return "Từ chối lịch thành công";
             }else {
@@ -119,7 +120,7 @@ public class SpaBookingController {
             SpaBooking booking = new SpaBooking();
             booking.setBookDate(bookDate);
             booking.setNote(note);
-            booking.setStatus("Chờ xác nhận");
+            booking.setStatus(BookingStatus.PENDING);
             booking.setCreatedAt(LocalDateTime.now());
 
             booking.setPetProfile(petProfile);
