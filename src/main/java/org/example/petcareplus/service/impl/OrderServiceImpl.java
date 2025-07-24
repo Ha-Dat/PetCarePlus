@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.repository.OrderRepository;
 import org.example.petcareplus.service.OrderService;
@@ -24,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findById(Integer id) {
+    public Optional<Order> findById(Long id) {
         return orderRepo.findById(id);
     }
 
@@ -34,13 +35,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         orderRepo.deleteById(id);
     }
 
     @Override
-    public Order get(Integer id){
+    public Order get(Long id) {
         Optional<Order> result = orderRepo.findById(id);
         return result.get();
     }
+
+    @Override
+    public Page<OrderDTO> findAllDTO(Pageable pageable) {
+        return orderRepo.findAll(pageable).map(order ->
+                new OrderDTO(
+                        order.getOrderId(),
+                        order.getAccount() != null ? order.getAccount().getName() : "Unknown",
+                        order.getStatus(),
+                        order.getTotalPrice(),
+                        order.getOrderDate(),
+                        order.getPaymentMethod(),
+                        order.getDeliverAddress()
+                )
+        );
+    }
 }
+

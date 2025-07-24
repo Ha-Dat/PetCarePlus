@@ -1,4 +1,5 @@
 package org.example.petcareplus.service;
+import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,12 +11,14 @@ import java.util.Optional;
 public interface OrderService {
     Page<Order> findAll(Pageable pageable);
 
-    Optional<Order> findById(Integer id);
+    Page<OrderDTO> findAllDTO(Pageable pageable);
+
+    Optional<Order> findById(Long id);
 
     Order save(Order order);
 
-    void deleteById(Integer id);
+    void deleteById(Long id);
 
-    public Order get(Integer id);
+    public Order get(Long id);
 
 }
