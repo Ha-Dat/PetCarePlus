@@ -5,163 +5,319 @@
     <title>Groomer Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+        body {
             margin: 0;
+            font-family: "Nunito", sans-serif;
+            background-color: #f9fbfc;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
             padding: 0;
         }
 
-        body {
-            background-color: #f9fafc;
-            display: flex;
-        }
-
-        aside {
-            width: 200px;
-            background-color: #fff;
-            padding: 20px;
-            border-right: 1px solid #eee;
-            height: 690px;
-        }
-
-        aside h2 {
-            font-size: 20px;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        aside ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        aside ul li {
-            margin: 15px 0;
-            color: #666;
-            cursor: pointer;
-        }
-
-        main {
-            flex: 1;
-            padding: 30px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar-menu li {
             margin-bottom: 20px;
         }
 
-        .header h1 {
-            font-size: 24px;
-            font-weight: bold;
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
         }
 
-        .filters input {
-            padding: 5px;
-            margin-left: 10px;
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
         }
 
-        table {
+        .main-content {
+            padding: 32px 40px;
+            background: #f8fafc;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .filters label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .filters input[type="date"] {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .table-container {
+            width: 200%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .spa-table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        th, td {
-            padding: 15px;
+        .spa-table th,
+        .spa-table td {
             text-align: left;
-            border-bottom: 1px solid #eee;
+            padding: 12px 7px;
+            border-bottom: 1px solid #ddd;
         }
 
-        th {
-            background-color: #f1f5f9;
-            font-weight: 600;
+        .spa-table th {
+            background-color: #e0f7f5;
+            color: #333;
         }
 
         tr:hover {
             background-color: #f9f9f9;
         }
 
-        .avatar {
+        /* Pagination css */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Dropdown container */
+        .action-dropdown {
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            border-radius: 8px;
+            padding: 4px 0;
+            overflow: hidden;
+        }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .avatar img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-        }
-
-        .role.staff { color: green; }
-        .role.Doctor { color: orange; }
-        .role.seller { color: blue; }
-
-        .actions {
-            text-align: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+            width: 100%;
+            border: none;
             cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.confirm-btn {
+            color: #3dba3a;
+            font-weight: 500;
+        }
+
+        .dropdown-item.confirm-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .dropdown-item.reject-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.reject-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
         }
     </style>
 </head>
 <body>
-<aside>
-    <h2>🟢 Groomer</h2>
-    <ul>
-        <li>ca làm việc</li>
-        <li><strong>đơn spa</strong></li>
-        <li>đơn hotel</li>
-    </ul>
-</aside>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Groomer Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="list-spa-booking">🧴Spa</a></li>
+            <li><a href="groomer-hotel-page">🏨 Pet Hotel</a></li>
+            <li><a href="#"> Ca làm việc</a></li>
+        </ul>
+    </aside>
 
-<main>
-    <div class="header">
-        <h1>quản lý đơn spa</h1>
-        <div class="filters">
-            <label>Từ: <input type="date" value="2021-06-10"></label>
-            <label>Đến: <input type="date" value="2021-10-10"></label>
+    <!-- Main content -->
+    <main class="main-content">
+            <h1 class="page-title">Quản lý đơn Spa</h1>
+            <div class="filters">
+                <label>Từ: <input type="date" value="2021-06-10"></label>
+                <label>Đến: <input type="date" value="2021-10-10"></label>
+            </div>
+
+        <div class="table-container">
+            <table class="spa-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ngày đặt</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Loài</th>
+                    <th>Tên dịch vụ</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="spaBookings : ${spaBookings}">
+                    <td th:text="${spaBookings.spaBookingId}"></td>
+                    <td th:text="${spaBookings.bookDate}"></td>
+                    <td th:text="${spaBookings.status}"></td>
+                    <td th:text="${spaBookings.note}"></td>
+                    <td th:text="${spaBookings.petProfile.species}"></td>
+                    <td th:text="${spaBookings.service.name}"></td>
+                    <td>
+                        <div class="action-dropdown">
+                            <button type="button" class="dropdown-toggle">•••</button>
+                            <div class="dropdown-menu">
+
+                                <button class="dropdown-item confirm-btn"
+                                        th:data-id="${spaBookings.spaBookingId}"
+                                        onclick="approveSpaBooking(this)">
+                                    Duyệt
+                                </button>
+                                <button class="dropdown-item reject-btn"
+                                        th:data-id="${spaBookings.spaBookingId}"
+                                        onclick="rejectSpaBooking(this)">
+                                    Từ chối
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 0}">
+                        <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active' : ''">
+                        <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Ngày đặt</th>
-            <th>Trạng thái</th>
-            <th>Ghi chú</th>
-            <th>Loài</th>
-            <th>Tên dịch vụ</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="spaBookings : ${spaBookings}">
-            <td th:text="${spaBookings.spaBookingId}"></td>
-            <td th:text="${spaBookings.bookDate}"></td>
-            <td th:text="${spaBookings.status}"></td>
-            <td th:text="${spaBookings.note}"></td>
-            <td th:text="${spaBookings.petProfile.species}"></td>
-            <td th:text="${spaBookings.service.name}"></td>
-            <td>
-                <button th:onClick="'approveSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Duyệt</button>
-                <button th:onClick="'rejectSpaBooking(' + ${spaBookings.spaBookingId} + ')'">Từ chối</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</main>
+    </main>
+</div>
 </body>
 <script>
-    function approveSpaBooking(id) {
+    function approveSpaBooking(button) {
+
+        const spaBookingId = button.dataset.id;
+
+        if (!spaBookingId) {
+            alert("Không tìm thấy booking ID.");
+            return;
+        }
+
         if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
             fetch(`/list-spa-booking/approve-spa/${id}`, {
                 method: 'POST'
@@ -178,7 +334,14 @@
         }
     }
 
-    function rejectSpaBooking(id) {
+    function rejectSpaBooking(button) {
+        const spaBookingId = button.dataset.id;
+
+        if (!spaBookingId) {
+            alert("Không tìm thấy booking ID.");
+            return;
+        }
+
         if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
             fetch(`/list-spa-booking/reject-spa/${id}`, {
                 method: 'POST'

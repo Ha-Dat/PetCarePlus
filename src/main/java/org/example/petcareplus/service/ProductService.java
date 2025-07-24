@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,11 +13,13 @@ import java.util.Optional;
 public interface ProductService {
     List<Product> getRandomProducts(int count);
 
-    List<Product> searchProducts(String keyword);
+    Page<Product> searchProducts(String keyword, String categoryName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
+    List<Product> findByNameContainingIgnoreCase(String keyword);
 
     Optional<Product> getProductById(Long id);
 
-    List<Product> getTop4Products();
+    List<Product> getTop5ByOrderByCreatedDateDesc();
 
     List<Product> getTop9Products();
 
@@ -28,5 +31,7 @@ public interface ProductService {
 
     void deleteById(Long id);
 
-    public Product get(Long id);
+    Product get(Long id);
+
+    List<Product> getAllProducts();
 }

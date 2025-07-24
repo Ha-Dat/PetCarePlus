@@ -4,8 +4,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.example.petcareplus.dto.ProfileDTO;
 import org.example.petcareplus.entity.City;
+import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -24,6 +27,9 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("profile")
     public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean editMode,
                               HttpSession session,
@@ -31,9 +37,12 @@ public class ProfileController {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
 
+        Profile profile = profileService.getProfileByAccountAccountId(account.getAccountId());
+        List<Category> parentCategories = categoryService.getParentCategory();
         ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
 
         model.addAttribute("profileDTO", profileDTO);
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("editMode", editMode);
         return "profile";
     }
@@ -41,7 +50,9 @@ public class ProfileController {
     @GetMapping("/profile/edit-mode")
     public String switchToEdit(HttpSession session, Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
+        if (account == null) {
+            return "redirect:/login";
+        }
 
         ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
 
@@ -49,7 +60,6 @@ public class ProfileController {
         model.addAttribute("editMode", true);
         return "profile";
     }
-
 
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO,

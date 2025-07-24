@@ -541,7 +541,6 @@
         /* Product Grid */
         .product-grid-item {
             display: grid;
-            justify-self: center;
             max-width: 940px;
             grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
             gap: 20px;
@@ -738,6 +737,7 @@
 
         .register-btn {
             background: #388e3c;
+            width: 91.19px;
             color: white;
         }
 
@@ -747,10 +747,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -819,13 +823,14 @@
         }
 
         /* Dropdown user menu */
-        .user-dropdown {
+        .user-dropdown,
+        .calender-dropdown{
             position: relative;
             display: inline-block;
         }
 
-        .user-btn {
-            background: #4caf50;
+        .user-btn,
+        .calender-btn {
             color: white;
             padding: 8px 14px;
             border: none;
@@ -836,14 +841,15 @@
             transition: background 0.3s ease;
         }
 
-        .user-btn:hover {
+        .user-btn:hover,
+        .calender-btn:hover {
             background: #388e3c;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 110%; /* đẩy dropdown xuống dưới nút (tùy chỉnh nếu cần) */
+            top: 100%;
             right: 0;
             background-color: #ffffff;
             min-width: 160px;
@@ -864,9 +870,11 @@
 
         .dropdown-content a:hover {
             background-color: #f1f1f1;
+            color: #000000;
         }
 
-        .user-dropdown:hover .dropdown-content {
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
             display: block;
         }
     </style>
@@ -965,7 +973,7 @@
             </div>
 
             <section th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
-                <h2 style="display: flow; justify-self: center;">Tất cả sản phẩm</h2>
+                <h2 style="display: flow; margin: 30px;">Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
@@ -1198,7 +1206,16 @@
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+
+        // Màu nền theo loại thông báo
+        if (type === 'error') {
+            toast.style.backgroundColor = '#e74c3c'; // đỏ
+        } else if (type === 'warning') {
+            toast.style.backgroundColor = '#f39c12'; // cam
+        } else {
+            toast.style.backgroundColor = '#4caf50'; // xanh lá
+        }
+
         toast.innerText = message;
         document.body.appendChild(toast);
 
@@ -1225,16 +1242,16 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok || res.redirected) {
-                            showToast("✅ Đã thêm vào giỏ hàng!");
-                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
+                            showToast("Đã thêm vào giỏ hàng!");
                         } else {
-                            showToast("❌ Lỗi khi thêm vào giỏ hàng", "error");
+                            showToast("Không thể thêm sản phẩm", "error");
                         }
                     })
-                    .catch(() => {
-                        showToast("❌ Không thể kết nối đến máy chủ", "error");
-                    });
+                    .catch(() => showToast("Lỗi kết nối", "error"));
             });
         });
     });

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findTop5ByOrderByProductIdAsc();
+    List<Product> findTop5ByOrderByCreatedDateDesc();
     List<Product> findByNameContainingIgnoreCase(String keyword);
     List<Product> findTop9ByOrderByProductIdAsc();
 
@@ -27,5 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                  @Param("minPrice") BigDecimal minPrice,
                                  @Param("maxPrice") BigDecimal maxPrice,
                                  Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.category.categoryId = :categoryId")
+    long countProductsByCategoryId(@Param("categoryId") Long categoryId);
+
     Page<Product> findAll(Pageable pageable);
 }

@@ -2,12 +2,14 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.repository.*;
+import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,9 @@ public class SpaBookingController {
     private final ServiceRepository serviceRepository;
     private final PetProfileRepository petProfileRepository;
 
+    @Autowired
+    private CategoryService categoryService;
+
     public SpaBookingController(SpaBookingRepository spaBookingRepository, SpaBookingService spaBookingService, ServiceRepository serviceRepository, PetProfileRepository petProfileRepository) {
         this.spaBookingRepository = spaBookingRepository;
         this.spaBookingService = spaBookingService;
@@ -30,9 +35,17 @@ public class SpaBookingController {
     }
 
     @GetMapping("/list-spa-booking")
-    public String getAllSpaBookings(Model model) {
-        List<SpaBooking> spaBookings= spaBookingService.findAll();
+    public String getAllSpaBookings(Model model,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "8") int size) {
+        Page<SpaBooking> spaBookings= spaBookingService.findAll(page, size, "bookDate");
+        if (page < 0) {
+            return "redirect:/list-spa-booking?page=0&size=" + size;
+        }
+
         model.addAttribute("spaBookings", spaBookings);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", spaBookings.getTotalPages());
         return "list-spa-booking";
     }
 
@@ -70,11 +83,14 @@ public class SpaBookingController {
         return "Không tìm thấy lịch";
     }
 
-    @GetMapping("/spa-booking/form")
+    @GetMapping("/spa-booking")
     public String showSpaBookingForm(Model model) {
+        List<Category> parentCategories = categoryService.getParentCategory();
+
         // TODO: Add Authen
         model.addAttribute("spaBooking", new SpaBooking());
         model.addAttribute("spaServices", serviceRepository.findByServiceCategory("SPA"));
+        model.addAttribute("categories", parentCategories);
         return "spa-booking";
     }
 

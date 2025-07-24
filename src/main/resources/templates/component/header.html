@@ -12,7 +12,6 @@
         }
 
         /* Navigation Bar */
-
         .nav-bar {
             display: flex;
             justify-content: space-between;
@@ -300,6 +299,7 @@
         }
 
         .register-btn {
+            width: 91.19px;
             background: #388e3c;
             color: white;
         }
@@ -310,10 +310,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -321,13 +325,14 @@
         }
 
         /* Dropdown user menu */
-        .user-dropdown {
+        .user-dropdown,
+        .calender-dropdown{
             position: relative;
             display: inline-block;
         }
 
-        .user-btn {
-            background: #4caf50;
+        .user-btn,
+        .calender-btn{
             color: white;
             padding: 8px 14px;
             border: none;
@@ -338,14 +343,15 @@
             transition: background 0.3s ease;
         }
 
-        .user-btn:hover {
+        .user-btn:hover,
+        .calender-btn:hover {
             background: #388e3c;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
-            top: 110%; /* đẩy dropdown xuống dưới nút (tùy chỉnh nếu cần) */
+            top: 100%;
             right: 0;
             background-color: #ffffff;
             min-width: 160px;
@@ -359,6 +365,7 @@
             color: #333;
             padding: 10px 16px;
             text-decoration: none;
+            font-weight: normal;
             display: block;
             font-size: 14px;
             transition: background-color 0.3s ease;
@@ -366,9 +373,11 @@
 
         .dropdown-content a:hover {
             background-color: #f1f1f1;
+            color: #000000;
         }
 
-        .user-dropdown:hover .dropdown-content {
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
             display: block;
         }
     </style>
@@ -404,7 +413,7 @@
 
                 <div class="auth" th:if="${session.loggedInUser != null}">
                     <div class="user-dropdown">
-                        <button class="user-btn" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
+                        <button class="user-btn" style="background: #4caf50;" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
                         <div class="dropdown-content">
                             <a href="/profile">Trang cá nhân</a>
                             <a href="/logout">Đăng xuất</a>
@@ -414,8 +423,8 @@
 
             </div>
 
-            <div>
-                <a href="view-cart"><img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart" style="width: 50px"/></a>
+            <div >
+                    <a href="view-cart"><img src="https://cdn-icons-png.flaticon.com/512/5166/5166615.png" alt="cart" class="cart"/></a>
             </div>
         </div>
     </div>
@@ -438,13 +447,12 @@
                                 th:attr="data-index=${iterStat.index}">
                                 <ul>
                                     <li th:each="subCategory, subStat : ${category.subCategories}">
-                                    <span th:text="${subCategory.name}" class="child-item"
-                                          th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
+                                        <span th:text="${subCategory.name}" class="child-item"
+                                              th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"></span>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
                         <ul class="child-sub-list-wrapper">
                             <li th:each="category, iterStat : ${categories}">
                                 <ul th:each="subCategory, subStat : ${category.subCategories}"
@@ -455,9 +463,9 @@
                                         <span th:text="${child.name}"
                                               class="grandchild-item"
                                               th:attr="data-sub-index=|${iterStat.index}-${subStat.index}|"
-                                              style="cursor:pointer;"></span>
+                                              style="cursor:pointer;">
+                                        </span>
                                     </li>
-
                                 </ul>
                             </li>
                         </ul>
@@ -469,8 +477,16 @@
 
         <nav class="nav-right">
             <div class="nav-margin"><a href="#">Tư vấn</a></div>
-            <div class="nav-margin"><a href="#">Đặt lịch</a></div>
-            <div><a href="#">Diễn đàn</a></div>
+            <div class="nav-margin calender-dropdown">
+                <a class="calender-btn" href="#">Đặt lịch</a>
+                <div class="dropdown-content">
+                    <a href="spa-booking">Spa</a>
+                    <a href="booking-hotel">Hotel</a>
+                    <a href="#">Khám</a>
+                </div>
+            </div>
+
+            <div><a href="forum">Diễn đàn</a></div>
         </nav>
     </nav>
 </header>

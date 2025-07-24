@@ -1,12 +1,13 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,10 +27,15 @@ public class CartController {
     private ProductService productService;
 
     @PostMapping("/buy-now")
-    public String buyNow(@RequestParam("productId") Long productId,
+    public ResponseEntity<String> buyNow(@RequestParam("productId") Long productId,
                             @RequestParam(value = "quantity", defaultValue = "1") int quantity,
                             HttpSession session,
                             @RequestHeader(value = "Referer", required = false) String referer) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để mua hàng");
+        }
 
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
@@ -39,11 +45,38 @@ public class CartController {
         cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
         session.setAttribute("cart", cart);
 
-        return "redirect:/view-cart";
+        return ResponseEntity.ok("Đã thêm vào giỏ hàng");
+    }
+
+    @PostMapping("/add-to-cart")
+    public ResponseEntity<?> addToCart(@RequestParam("productId") Long productId,
+                         @RequestParam(value = "quantity", defaultValue = "1") int quantity,
+                         HttpSession session,
+                         @RequestHeader(value = "Referer", required = false) String referer) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập");
+        }
+
+        Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new HashMap<>();
+        }
+
+        cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
+        session.setAttribute("cart", cart);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/view-cart")
     public String viewCart(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) cart = new HashMap<>();
 

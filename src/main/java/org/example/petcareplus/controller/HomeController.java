@@ -2,9 +2,8 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.CategoryRepository;
-import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,18 +15,19 @@ import java.util.List;
 @Controller
 public class HomeController {
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
+
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping("/home")
     public String Viewhome(Model model) {
-        List<Product> products = productRepository.findTop5ByOrderByProductIdAsc();
-        List<Product> product = productRepository.findAll();
+        List<Product> getTop5ProductByCreateDate = productService.getTop5ByOrderByCreatedDateDesc();
+        List<Product> product = productService.getAllProducts();
 
         List<Category> parentCategories = categoryService.getParentCategory();
 
-        model.addAttribute("products", products);
+        model.addAttribute("getTop5ProductByCreateDate", getTop5ProductByCreateDate);
         model.addAttribute("product", product);
         model.addAttribute("categories", parentCategories);
         return "home";
