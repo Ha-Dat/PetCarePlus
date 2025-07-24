@@ -2,6 +2,8 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.example.petcareplus.dto.ProfileDTO;
+import org.example.petcareplus.entity.City;
 import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.service.ProfileService;
@@ -23,58 +25,39 @@ public class ProfileController {
     private ProfileService profileService;
 
     @GetMapping("profile")
-    public String viewProfile(HttpSession session, Model model) {
+    public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean editMode,
+                              HttpSession session,
+                              Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) {
-            return "redirect:/login";
-        }
+        if (account == null) return "redirect:/login";
 
-        Profile profile = profileService.getProfileByAccountAccountId(account.getAccountId());
+        ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
 
-        if (profile == null) {
-            profile = new Profile();
-            profile.setAccount(account);
-        }
-
-        model.addAttribute("profile", profile);
-        model.addAttribute("cities", profileService.getAllProfiles());
-        return "profile"; // file profile.html trong thư mục templates
+        model.addAttribute("profileDTO", profileDTO);
+        model.addAttribute("editMode", editMode);
+        return "profile";
     }
+
+    @GetMapping("/profile/edit-mode")
+    public String switchToEdit(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
+
+        model.addAttribute("profileDTO", profileDTO);
+        model.addAttribute("editMode", true);
+        return "profile";
+    }
+
 
     @PostMapping("/update")
-    public String updateProfile(
-            @Valid @ModelAttribute("profile") Profile formProfile,
-            BindingResult result,
-            HttpSession session,
-            Model model
-    ) {
+    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO,
+                                HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) {
-            return "redirect:/login";
-        }
+        if (account == null) return "redirect:/login";
 
-        if (result.hasErrors()) {
-            model.addAttribute("cities", profileService.getAllCities());
-            return "profile";
-        }
-
-        // ✅ Lấy profile từ DB hoặc tạo mới nếu chưa có
-        Profile existingProfile = profileService.getProfileByAccountAccountId(account.getAccountId());
-        if (existingProfile == null) {
-            existingProfile = new Profile();
-            existingProfile.setAccount(account);
-        }
-
-        // ✅ Cập nhật thông tin từ form
-        existingProfile.getAccount().setName(formProfile.getAccount().getName());
-        existingProfile.getAccount().setPhone(formProfile.getAccount().getPhone());
-        existingProfile.setCity(formProfile.getCity());
-        existingProfile.setDistrict(formProfile.getDistrict());
-        existingProfile.setWard(formProfile.getWard());
-
-        profileService.save(existingProfile);
-
+        profileService.updateProfile(profileDTO, account.getAccountId());
         return "redirect:/profile";
     }
-
 }

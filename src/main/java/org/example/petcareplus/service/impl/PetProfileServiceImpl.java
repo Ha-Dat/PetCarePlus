@@ -55,27 +55,4 @@ public class PetProfileServiceImpl implements PetProfileService {
     public PetProfile save(PetProfile petProfile) {
         return petProfileRepository.save(petProfile);
     }
-
-//    @Override
-//    // ✅ KHỞI TẠO DỮ LIỆU MẪU KHÔNG DÙNG NULL
-//    public PetProfileServiceImpl() {
-//        PetProfile pet1 = new PetProfile();
-//        pet1.setPetProfileId(nextId++);
-//        pet1.setName("Bin");
-//        pet1.setSpecies("Chó");
-//        pet1.setBreeds("Bulldog");
-//        pet1.setAge(8);
-//        pet1.setWeight(10.0f);
-//
-//        PetProfile pet2 = new PetProfile();
-//        pet2.setPetProfileId(nextId++);
-//        pet2.setName("Milo");
-//        pet2.setSpecies("Mèo");
-//        pet2.setBreeds("Munchkin");
-//        pet2.setAge(3);
-//        pet2.setWeight(3.5f);
-//
-//        petProfiles.add(pet1);
-//        petProfiles.add(pet2);
-//    }
 }

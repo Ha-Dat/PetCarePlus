@@ -588,7 +588,7 @@
             <li><a href="/address">Địa chỉ</a></li>
             <li><a href="/change-password">Đổi mật khẩu</a></li>
             <li><a href="/pet-profile" class="active">Hồ Sơ thú cưng</a></li>
-            <li><a href="/orders">Đơn mua</a></li>
+            <li><a href="/list_order">Đơn mua</a></li>
             <li><a href="/schedule">Lịch</a></li>
         </ul>
     </div>
@@ -625,13 +625,13 @@
 
         <!-- Form hiển thị nếu có selectedPet -->
         <div th:if="${selectedPet != null}">
-            <form th:action="@{${formAction}}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/pet-profile/save}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="petId" th:value="${selectedPet.petProfileId}" />
 
                 <div class="form-section row">
                     <!-- Avatar -->
                     <div class="col-md-3 text-center">
-                        <img th:src="@{/images/default-avatar.png}" class="avatar-preview mb-2" alt="Avatar">
+                        <img th:src="${selectedPet.image}" class="avatar-preview mb-2" alt="Avatar">
                         <div>
                             <input type="file" name="imageFile" class="form-control">
                             <small class="text-muted">Chọn ảnh</small>
@@ -697,7 +697,7 @@
 <!-- Modal thêm thú cưng -->
 <div class="modal fade" id="addPetModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <form th:action="@{/pet-profile}" method="post" enctype="multipart/form-data" class="modal-content">
+        <form th:action="@{/pet-profile/add}" method="post" enctype="multipart/form-data" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Thêm thú cưng mới</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
