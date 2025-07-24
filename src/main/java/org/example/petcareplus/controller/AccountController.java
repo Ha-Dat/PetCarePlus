@@ -101,9 +101,7 @@ public class AccountController {
             return "login";
         }
 
-        Long id = account.getAccountId();
-
-        session.setAttribute("loggedInUser", id);
+        session.setAttribute("loggedInUser", account);
         return "redirect:/home";
     }
 

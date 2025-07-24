@@ -1,4 +1,4 @@
-package org.example.petcareplus.entity.Enum;
+package org.example.petcareplus.enums;
 
 public enum BookingStatus {
     PENDING("pending"), ACCEPTED("accepted"), REJECTED("rejected");
