@@ -802,7 +802,7 @@
         <section class="featured-products">
             <button class="carousel-btn prev" id="prevBtn">❮</button>
             <div class="carousel-track" id="carouselTrack">
-                <div class="carousel-item" th:each="product : ${products}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:src="${product.image}" alt="Product Image">
@@ -821,7 +821,7 @@
                                 th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
                     </form>
                 </div>
-                <div class="carousel-item" th:each="product : ${products}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:src="${product.image}" alt="Product Image">
@@ -1068,7 +1068,16 @@
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+
+        // Màu nền theo loại thông báo
+        if (type === 'error') {
+            toast.style.backgroundColor = '#e74c3c'; // đỏ
+        } else if (type === 'warning') {
+            toast.style.backgroundColor = '#f39c12'; // cam
+        } else {
+            toast.style.backgroundColor = '#4caf50'; // xanh lá
+        }
+
         toast.innerText = message;
         document.body.appendChild(toast);
 
@@ -1096,7 +1105,10 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                         } else {
                             showToast("Không thể thêm sản phẩm", "error");

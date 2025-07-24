@@ -767,7 +767,16 @@
         function showToast(message, type = "warning") {
             const toast = document.createElement("div");
             toast.className = "toast";
-            toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#f39c12";
+
+            // Màu nền theo loại thông báo
+            if (type === 'error') {
+                toast.style.backgroundColor = '#e74c3c'; // đỏ
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#f39c12'; // cam
+            } else {
+                toast.style.backgroundColor = '#4caf50'; // xanh lá
+            }
+
             toast.innerText = message;
             document.body.appendChild(toast);
 

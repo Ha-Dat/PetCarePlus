@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findTop5ByOrderByProductIdAsc();
+    List<Product> findTop5ByOrderByCreatedDateDesc();
     List<Product> findByNameContainingIgnoreCase(String keyword);
     List<Product> findTop9ByOrderByProductIdAsc();
 

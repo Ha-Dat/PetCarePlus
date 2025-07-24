@@ -1206,7 +1206,16 @@
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+
+        // Màu nền theo loại thông báo
+        if (type === 'error') {
+            toast.style.backgroundColor = '#e74c3c'; // đỏ
+        } else if (type === 'warning') {
+            toast.style.backgroundColor = '#f39c12'; // cam
+        } else {
+            toast.style.backgroundColor = '#4caf50'; // xanh lá
+        }
+
         toast.innerText = message;
         document.body.appendChild(toast);
 
@@ -1233,7 +1242,10 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                         } else {
                             showToast("Không thể thêm sản phẩm", "error");

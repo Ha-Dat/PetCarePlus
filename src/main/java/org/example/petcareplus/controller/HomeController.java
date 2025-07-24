@@ -22,12 +22,12 @@ public class HomeController {
 
     @GetMapping("/home")
     public String Viewhome(Model model) {
-        List<Product> products = productService.getTop5ByOrderByProductId();
+        List<Product> getTop5ProductByCreateDate = productService.getTop5ByOrderByCreatedDateDesc();
         List<Product> product = productService.getAllProducts();
 
         List<Category> parentCategories = categoryService.getParentCategory();
 
-        model.addAttribute("products", products);
+        model.addAttribute("getTop5ProductByCreateDate", getTop5ProductByCreateDate);
         model.addAttribute("product", product);
         model.addAttribute("categories", parentCategories);
         return "home";

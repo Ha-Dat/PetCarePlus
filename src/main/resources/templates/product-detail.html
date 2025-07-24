@@ -1061,7 +1061,10 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
+                        if (res.status === 401) {
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                             setTimeout(() => window.location.href = "/view-cart", 1500);
                         } else {
@@ -1088,7 +1091,10 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                         } else {
                             showToast("Không thể thêm sản phẩm", "error");

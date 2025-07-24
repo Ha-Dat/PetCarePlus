@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> getTop5ByOrderByProductId(){
-        return productRepository.findTop5ByOrderByProductIdAsc();
+    public List<Product> getTop5ByOrderByCreatedDateDesc() {
+        return productRepository.findTop5ByOrderByCreatedDateDesc();
     }
 }

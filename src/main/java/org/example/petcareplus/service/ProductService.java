@@ -19,7 +19,7 @@ public interface ProductService {
 
     Optional<Product> getProductById(Long id);
 
-    List<Product> getTop5ByOrderByProductId();
+    List<Product> getTop5ByOrderByCreatedDateDesc();
 
     List<Product> getTop9Products();
 

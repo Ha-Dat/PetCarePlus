@@ -27,14 +27,14 @@ public class CartController {
     private ProductService productService;
 
     @PostMapping("/buy-now")
-    public String buyNow(@RequestParam("productId") Long productId,
+    public ResponseEntity<String> buyNow(@RequestParam("productId") Long productId,
                             @RequestParam(value = "quantity", defaultValue = "1") int quantity,
                             HttpSession session,
                             @RequestHeader(value = "Referer", required = false) String referer) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
-            return "redirect:/login";
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập để mua hàng");
         }
 
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
@@ -45,7 +45,7 @@ public class CartController {
         cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
         session.setAttribute("cart", cart);
 
-        return "redirect:/view-cart";
+        return ResponseEntity.ok("Đã thêm vào giỏ hàng");
     }
 
     @PostMapping("/add-to-cart")
@@ -56,7 +56,7 @@ public class CartController {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bạn chưa đăng nhập");
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập");
         }
 
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
