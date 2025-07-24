@@ -1,14 +1,14 @@
 package org.example.petcareplus.controller;
 
+import org.example.petcareplus.dto.AccountDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +48,7 @@ public class AccountManagementController {
     @PostMapping("/create")
     public String createAccount(Account account, Model model) {
         if (accountService.isPhoneExists(account.getPhone())) {
-            model.addAttribute("error", "Số điện thoại có tài khoản!");
+            model.addAttribute("error", "Số điện thoại đã có tài khoản!");
             model.addAttribute("accounts", accountService.getAllAccount());
             return "account-list";
         }
@@ -56,7 +56,34 @@ public class AccountManagementController {
         account.setStatus("ACTIVE");
         accountService.save(account);
         return "redirect:/admin/account/list";
+    }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> accountDetail(@PathVariable("id") Long id) {
+        Optional<Account> account = accountService.getById(id);
+
+        if (account.isPresent()) {
+            AccountDTO dto = new AccountDTO(account.get());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tài khoản.");
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateAccount(@PathVariable("id") Long id, @RequestBody AccountDTO dto) {
+        Optional<Account> account = accountService.getById(id);
+        if (account.isPresent()) {
+            Account acc = account.get();
+            acc.setName(dto.getName());
+            acc.setPhone(dto.getPhone());
+            acc.setRole(dto.getRole());
+            acc.setStatus(dto.getStatus());
+            accountService.updateAccount(acc);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tài khoản.");
+        }
     }
 
 }
