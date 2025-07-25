@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.dto.AccountDTO;
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.enums.AccountStatus;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.http.HttpStatus;
@@ -30,19 +31,24 @@ public class AccountManagementController {
         return "account-list";
     }
 
-    @PostMapping("/ban/{id}")
-    public String banOrUnbanAccount(@PathVariable("id") Long id) {
+    @PostMapping("/change-status/{id}")
+    @ResponseBody
+    public ResponseEntity<?> changeAccountStatus(@PathVariable("id") Long id) {
         Optional<Account> account = accountService.getById(id);
-        if (account.isPresent()) {
-            Account acc = account.get();
-            if (acc.getStatus().equals("ACTIVE")) {
-                acc.setStatus("BANNED");
-            } else if (acc.getStatus().equals("BANNED")) {
-                acc.setStatus("ACTIVE");
-            }
-            accountService.updateAccount(acc);
+
+        if (!account.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tài khoản.");
         }
-        return "redirect:/admin/account/list";
+
+        AccountStatus currentStatus = account.get().getStatus();
+        AccountStatus newStatus = (currentStatus == AccountStatus.ACTIVE)
+                ? AccountStatus.BANNED
+                : AccountStatus.ACTIVE;
+
+        account.get().setStatus(newStatus);
+        accountService.updateAccount(account.get());
+
+        return ResponseEntity.ok("Thay đổi trạng thái thành công.");
     }
 
     @PostMapping("/create")
@@ -53,13 +59,13 @@ public class AccountManagementController {
             return "account-list";
         }
         account.setPassword(PasswordHasher.hash(account.getPassword()));
-        account.setStatus("ACTIVE");
+        account.setStatus(AccountStatus.ACTIVE);
         accountService.save(account);
         return "redirect:/admin/account/list";
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<?> accountDetail(@PathVariable("id") Long id) {
+    public ResponseEntity<?> accountDetails(@PathVariable("id") Long id) {
         Optional<Account> account = accountService.getById(id);
 
         if (account.isPresent()) {

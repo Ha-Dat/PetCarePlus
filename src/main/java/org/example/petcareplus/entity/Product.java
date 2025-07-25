@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.ProductStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -35,7 +36,8 @@ public class Product {
     private int unitSold;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @Column(nullable = false)
     private Date createdDate;
@@ -102,11 +104,11 @@ public class Product {
         this.unitSold = unitSold;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProductStatus status) {
         this.status = status;
     }
 

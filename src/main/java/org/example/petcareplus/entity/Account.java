@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.example.petcareplus.enums.AccountRole;
+import org.example.petcareplus.enums.AccountStatus;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
@@ -28,13 +30,15 @@ public class Account {
     private String phone;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private AccountRole role;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Profile profile;
@@ -80,11 +84,11 @@ public class Account {
         this.phone = phone;
     }
 
-    public String getRole() {
+    public AccountRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(AccountRole role) {
         this.role = role;
     }
 
@@ -96,11 +100,11 @@ public class Account {
         this.password = password;
     }
 
-    public String getStatus() {
+    public AccountStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AccountStatus status) {
         this.status = status;
     }
 
