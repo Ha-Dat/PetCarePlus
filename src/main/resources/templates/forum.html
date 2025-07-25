@@ -247,7 +247,7 @@
                                 <!-- Media -->
                                 <!-- Hiển thị video -->
                                 <th:block th:each="media : ${post.medias}">
-                                    <div th:if="${media.mediaType.name() == 'VIDEO'}"
+                                    <div th:if="${media.mediaCategory.name() == 'VIDEO'}"
                                          class="mb-3 rounded-md overflow-hidden relative">
                                         <video controls class="w-full h-auto object-cover">
                                             <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}" type="video/mp4" />
@@ -259,7 +259,7 @@
 
                                 <!-- Hiển thị ảnh -->
                                 <th:block th:each="media : ${post.medias}">
-                                    <div th:if="${media.mediaType.name() == 'IMAGE'}"
+                                    <div th:if="${media.mediaCategory.name() == 'IMAGE'}"
                                          class="mb-3 rounded-md overflow-hidden max-h-96 relative">
                                         <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
                                              alt="" class="w-full h-auto object-cover" />

@@ -52,7 +52,7 @@ public class ForumController {
         for (Post post : allPosts) {
             System.out.println("Post ID: " + post.getPostId());
             for (Media media : post.getMedias()) {
-                System.out.println("Media: " + media.getUrl() + " | " + media.getMediaType());
+                System.out.println("Media: " + media.getUrl() + " | " + media.getMediaCategory());
             }
         }
 

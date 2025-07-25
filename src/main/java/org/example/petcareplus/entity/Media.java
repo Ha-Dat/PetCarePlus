@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.petcareplus.enums.MediaType;
+import org.example.petcareplus.enums.MediaCategory;
 
 @Entity
 @Table(name = "Media")
@@ -17,7 +17,7 @@ public class Media {
     private Long mediaId;
 
     @Enumerated(EnumType.STRING)
-    private MediaType mediaType;
+    private MediaCategory mediaCategory;
 
     private String url;
 
@@ -47,12 +47,12 @@ public class Media {
         this.mediaId = mediaId;
     }
 
-    public MediaType getMediaType() {
-        return mediaType;
+    public MediaCategory getMediaCategory() {
+        return mediaCategory;
     }
 
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+    public void setMediaCategory(MediaCategory mediaCategory) {
+        this.mediaCategory = mediaCategory;
     }
 
     public String getUrl() {
