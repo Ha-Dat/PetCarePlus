@@ -1,12 +1,14 @@
 package org.example.petcareplus.dto;
 
+import org.example.petcareplus.enums.OrderStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class OrderDTO {
     private Long orderId;
     private String customerName;
-    private String status;
+    private OrderStatus status;
     private BigDecimal totalPrice;
     private LocalDateTime orderDate;
     private String paymentMethod;
@@ -15,7 +17,7 @@ public class OrderDTO {
 
     public OrderDTO() {}
 
-    public OrderDTO(Long orderId, String customerName, String status, BigDecimal totalPrice,
+    public OrderDTO(Long orderId, String customerName, OrderStatus status, BigDecimal totalPrice,
                     LocalDateTime orderDate, String paymentMethod, String address) {
         this.orderId = orderId;
         this.customerName = customerName;
@@ -48,11 +50,11 @@ public class OrderDTO {
         this.customerName = customerName;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 

@@ -3,6 +3,7 @@ package org.example.petcareplus.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.CheckoutDTO;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -115,7 +116,7 @@ public class CheckoutController {
 
         System.out.println(" Check Total Price: " + request.getTotalPrice());
 
-        order.setStatus("PENDING");
+        order.setStatus(OrderStatus.PENDING);
         order.setDiscountAmount(request.getDiscountAmount());
         order.setPromotion(promotion);
         order.setOrderDate(LocalDateTime.now());

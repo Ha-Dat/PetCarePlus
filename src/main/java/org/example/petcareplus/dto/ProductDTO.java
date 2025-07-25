@@ -1,5 +1,8 @@
 package org.example.petcareplus.dto;
 
+import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.ProductStatus;
+
 import java.math.BigDecimal;
 
 public class ProductDTO {
@@ -9,14 +12,14 @@ public class ProductDTO {
     private BigDecimal price;
     private int unitInStock;
     private int unitSold;
-    private String status;
+    private ProductStatus status;
     private String image;
     private Long categoryId;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(Long productId, String name, String description, BigDecimal price, int unitInStock, int unitSold, String status, String image, Long categoryId) {
+    public ProductDTO(Long productId, String name, String description, BigDecimal price, int unitInStock, int unitSold, ProductStatus status, String image, Long categoryId) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -76,11 +79,11 @@ public class ProductDTO {
         this.unitSold = unitSold;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProductStatus status) {
         this.status = status;
     }
 
