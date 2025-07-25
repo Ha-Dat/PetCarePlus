@@ -1,10 +1,9 @@
 package org.example.petcareplus.dto;
-import org.example.petcareplus.entity.Enum.Rating;
+import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class PostDTO {
     private Long postId;

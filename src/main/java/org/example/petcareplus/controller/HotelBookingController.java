@@ -1,10 +1,9 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.service.CategoryService;
-import org.example.petcareplus.entity.Enum.BookingStatus;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.HotelBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

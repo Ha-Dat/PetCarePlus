@@ -6,7 +6,7 @@ import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.service.PetProfileService;
 import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.entity.*;
-import org.example.petcareplus.entity.Enum.BookingStatus;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.data.domain.Page;

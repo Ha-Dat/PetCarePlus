@@ -3,7 +3,7 @@ package org.example.petcareplus.service;
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
-import org.example.petcareplus.entity.Enum.Rating;
+import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 
 import java.util.List;

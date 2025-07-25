@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -83,4 +84,50 @@ public class OrderServiceImpl implements OrderService {
                 )
         );
     }
+
+    @Override
+    public Page<OrderDTO> filterOrders(String orderId, String status, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Order> filtered = orderRepository.findAll((root, query, cb) -> {
+            var predicates = cb.conjunction();
+
+            if (orderId != null && !orderId.isBlank()) {
+                try {
+                    Long parsedId = Long.parseLong(orderId);
+                    predicates = cb.and(predicates, cb.equal(root.get("orderId"), parsedId));
+                } catch (NumberFormatException ignored) {
+
+                }
+            }
+
+            if (status != null && !status.isBlank()) {
+                predicates = cb.and(predicates,
+                        cb.equal(root.get("status"), status));
+            }
+
+            if (startDate != null) {
+                predicates = cb.and(predicates,
+                        cb.greaterThanOrEqualTo(root.get("orderDate"), startDate.atStartOfDay()));
+            }
+
+            if (endDate != null) {
+                predicates = cb.and(predicates,
+                        cb.lessThanOrEqualTo(root.get("orderDate"), endDate.atTime(23, 59, 59)));
+            }
+
+            return predicates;
+        }, pageable);
+
+        return filtered.map(order ->
+                new OrderDTO(
+                        order.getOrderId(),
+                        order.getAccount() != null ? order.getAccount().getName() : "Unknown",
+                        order.getStatus(),
+                        order.getTotalPrice(),
+                        order.getOrderDate(),
+                        order.getPaymentMethod(),
+                        order.getDeliverAddress()
+                )
+        );
+    }
+
 }
