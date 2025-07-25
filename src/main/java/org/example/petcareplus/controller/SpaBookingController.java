@@ -82,7 +82,7 @@ public class SpaBookingController {
                 spaBookingService.save(spaBooking);
                 return "Từ chối lịch thành công";
             }else {
-                return "Lịch đặt đã từ chối";
+                return "Lịch đã được duyệt!, Không thể từ chối";
             }
         }
         return "Không tìm thấy lịch";

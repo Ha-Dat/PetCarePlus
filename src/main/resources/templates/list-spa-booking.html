@@ -83,7 +83,7 @@
         }
 
         .table-container {
-            width: 200%;
+            width: 160%;
             border-collapse: collapse;
             margin-top: 25px;
             background-color: white;
@@ -318,8 +318,8 @@
             return;
         }
 
-        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
-            fetch(`/list-spa-booking/approve-spa/${id}`, {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + spaBookingId + " không?")) {
+            fetch(`/list-spa-booking/approve-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -342,8 +342,8 @@
             return;
         }
 
-        if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
-            fetch(`/list-spa-booking/reject-spa/${id}`, {
+        if (confirm("Bạn có chắc muốn từ chối booking ID " + spaBookingId + " không?")) {
+            fetch(`/list-spa-booking/reject-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())

@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 @Controller
-public class AccountController {
+public class    AccountController {
 
     @Autowired
     private AccountService accountService;

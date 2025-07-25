@@ -104,6 +104,12 @@
             border-bottom: 1px solid #ddd;
         }
 
+        .product-table td img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+
         .product-table th {
             background-color: #e0f7f5;
             color: #333;
@@ -443,7 +449,7 @@
                     <tr th:each="product, stat : ${products}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
                         <td th:text="${product?.name}"></td>
-                        <td th:src="${product?.image}"></td>
+                        <td><img th:src="${product?.image}" alt="Product image"></td>
                         <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
