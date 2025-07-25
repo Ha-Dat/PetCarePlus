@@ -185,8 +185,6 @@ public class ForumServiceImpl implements ForumService {
 
 
     public void deletePostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
         List<Media> media = mediaRepository.findByPost_postId(postId);
         for(Media me : media) {
             if(me.getUrl() != null && !me.getUrl().isBlank()) {
