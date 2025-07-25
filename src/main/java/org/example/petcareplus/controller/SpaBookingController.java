@@ -103,7 +103,7 @@ public class SpaBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
-            data.put("image", booking.getPetProfile().getImage());
+            data.put("image", booking.getPetProfile().getMedias().get(0).getUrl());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());

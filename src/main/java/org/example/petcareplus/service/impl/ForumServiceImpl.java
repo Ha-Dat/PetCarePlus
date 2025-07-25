@@ -2,6 +2,7 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.MediaType;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
@@ -14,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,15 +27,17 @@ public class ForumServiceImpl implements ForumService {
     private ReplyCommentRepository replyCommentRepository;
     private AccountRepository accountRepository;
     private PostRatingRepository postRatingRepository;
+    private MediaRepository mediaRepository;
     private S3Client s3Client;
 
     @Autowired
-    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository, PostRatingRepository postRatingRepository, S3Client s3Client) {
+    public ForumServiceImpl(PostRepository postRepository, CommentPostRepository commentPostRepository, ReplyCommentRepository replyCommentRepository, AccountRepository accountRepository, PostRatingRepository postRatingRepository, MediaRepository mediaRepository, S3Client s3Client) {
         this.postRepository = postRepository;
         this.commentPostRepository = commentPostRepository;
         this.replyCommentRepository = replyCommentRepository;
         this.accountRepository = accountRepository;
         this.postRatingRepository = postRatingRepository;
+        this.mediaRepository = mediaRepository;
         this.s3Client = s3Client;
     }
 
@@ -42,6 +46,10 @@ public class ForumServiceImpl implements ForumService {
         return postRepository.findAll();
     }
 
+    @Override
+    public List<Post> findAllWithMedias() {
+        return postRepository.findAllWithMedias();
+    }
 
     @Override
     public Optional<Post> findById(Long id) {
@@ -56,6 +64,7 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public void savePost(PostDTO postDTO, Long accountId) {
         Post post = new Post();
+        List<Media> medias = new ArrayList<>();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
         post.setChecked(false);
@@ -66,17 +75,36 @@ public class ForumServiceImpl implements ForumService {
         post.setAccount(account);
 
 
-        if (!postDTO.getImageFile().isEmpty()) {
-            String image = saveFileToS3(postDTO.getImageFile(), "uploads/images/");
-            post.setImage(image);
+        // Lưu ảnh
+        if (!postDTO.getImageFiles().isEmpty()) {
+            for (MultipartFile imageFile : postDTO.getImageFiles()) {
+                if(!imageFile.isEmpty()) {
+                    String imageUrl = saveFileToS3(imageFile, "uploads/images/");
+                    Media media = new Media();
+                    media.setMediaType(MediaType.IMAGE);
+                    media.setUrl(imageUrl);
+                    media.setPost(post);
+                    medias.add(media);
+                }
+            }
         }
 
-        if (!postDTO.getVideoFile().isEmpty()) {
-            String video = saveFileToS3(postDTO.getVideoFile(), "uploads/videos/");
-            post.setVideo(video);
+        // Lưu video
+        if (!postDTO.getVideoFiles().isEmpty()) {
+            for (MultipartFile videoFile : postDTO.getVideoFiles()) {
+                if(!videoFile.isEmpty()) {
+                    String videoUrl = saveFileToS3(videoFile, "uploads/videos/");
+                    Media media = new Media();
+                    media.setMediaType(MediaType.VIDEO);
+                    media.setUrl(videoUrl);
+                    media.setPost(post);
+                    medias.add(media);
+                }
+            }
         }
 
         postRepository.save(post);
+        mediaRepository.saveAll(medias);
     }
 
     @Transactional
@@ -86,31 +114,82 @@ public class ForumServiceImpl implements ForumService {
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
-        postRatingRepository.deleteByPost_PostId(postDTO.getPostId());
 
-        if (!postDTO.getImageFile().isEmpty()) {
-            if (existingPost.getImage() != null){deleteFileFromS3(existingPost.getImage());}
-            String image = saveFileToS3(postDTO.getImageFile(), "uploads/images/");
-            existingPost.setImage(image);
+        // Lấy media cũ trong DB
+        List<Media> existingMedias = mediaRepository.findByPost_postId(existingPost.getPostId());
+
+        // Xác định media cần xoá
+        List<Media> mediasToKeep = new ArrayList<>();
+        List<Media> mediasToDelete = new ArrayList<>();
+
+        for (Media media : existingMedias) {
+            String url = media.getUrl();
+            boolean keep = false;
+
+            if (media.getMediaType() == MediaType.IMAGE && postDTO.getOldImageUrls() != null) {
+                keep = postDTO.getOldImageUrls().contains(url);
+            } else if (media.getMediaType() == MediaType.VIDEO && postDTO.getOldVideoUrls() != null) {
+                keep = postDTO.getOldVideoUrls().contains(url);
+            }
+
+            if (keep) {
+                mediasToKeep.add(media);
+            } else {
+                mediasToDelete.add(media);
+            }
         }
 
-        if (!postDTO.getVideoFile().isEmpty()) {
-            if (existingPost.getVideo() != null){deleteFileFromS3(existingPost.getVideo());}
-            String video = saveFileToS3(postDTO.getVideoFile(), "uploads/videos/");
-            existingPost.setVideo(video);
+        // Xoá file & record
+        for (Media media : mediasToDelete) {
+            deleteFileFromS3(media.getUrl());
+        }
+        mediaRepository.deleteAll(mediasToDelete);
+
+        List<Media> newMedias = new ArrayList<>(mediasToKeep);
+
+        // Upload ảnh mới
+        if (postDTO.getImageFiles() != null) {
+            for (MultipartFile imageFile : postDTO.getImageFiles()) {
+                if (!imageFile.isEmpty()) {
+                    String imageUrl = saveFileToS3(imageFile, "uploads/images/");
+                    Media media = new Media();
+                    media.setMediaType(MediaType.IMAGE);
+                    media.setUrl(imageUrl);
+                    media.setPost(existingPost);
+                    newMedias.add(media);
+                }
+            }
         }
 
+        // Upload video mới
+        if (postDTO.getVideoFiles() != null) {
+            for (MultipartFile videoFile : postDTO.getVideoFiles()) {
+                if (!videoFile.isEmpty()) {
+                    String videoUrl = saveFileToS3(videoFile, "uploads/videos/");
+                    Media media = new Media();
+                    media.setMediaType(MediaType.VIDEO);
+                    media.setUrl(videoUrl);
+                    media.setPost(existingPost);
+                    newMedias.add(media);
+                }
+            }
+        }
+
+        // Lưu lại media (chỉ cần xoá hết cũ thì saveAll cái mới thôi)
+        mediaRepository.saveAll(newMedias);
+
+        // Cập nhật post
         postRepository.save(existingPost);
     }
 
+
+
     public void deletePostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-        if(post.getImage() != null){
-            deleteFileFromS3(post.getImage());
-        }
-        if(post.getVideo() != null){
-            deleteFileFromS3(post.getVideo());
+        List<Media> media = mediaRepository.findByPost_postId(postId);
+        for(Media me : media) {
+            if(me.getUrl() != null && !me.getUrl().isBlank()) {
+                deleteFileFromS3(me.getUrl());
+            }
         }
         postRepository.deleteById(postId);
     }

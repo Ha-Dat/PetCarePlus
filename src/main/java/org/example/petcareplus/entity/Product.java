@@ -38,9 +38,6 @@ public class Product {
     private String status;
 
     @Column(nullable = false)
-    private String image;
-
-    @Column(nullable = false)
     private Date createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,6 +49,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias;
 
     //method thêm trong trường hợp lombok không hoạt động
     public Long getProductId() {
@@ -110,14 +110,6 @@ public class Product {
         this.status = status;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public Category getCategory() {
         return category;
     }
@@ -148,5 +140,13 @@ public class Product {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

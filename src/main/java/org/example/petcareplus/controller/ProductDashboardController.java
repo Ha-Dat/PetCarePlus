@@ -47,15 +47,15 @@ public class ProductDashboardController {
         Optional<Product> product = productService.findById(id);
 
         return new ProductDTO(
-                product.get().getProductId(),
-                product.get().getName(),
-                product.get().getDescription(),
-                product.get().getPrice(),
-                product.get().getUnitInStock(),
-                product.get().getUnitSold(),
-                product.get().getStatus(),
-                product.get().getImage(),
-                product.get().getCategory().getCategoryId()
+//                product.get().getProductId(),
+//                product.get().getName(),
+//                product.get().getDescription(),
+//                product.get().getPrice(),
+//                product.get().getUnitInStock(),
+//                product.get().getUnitSold(),
+//                product.get().getStatus(),
+//                product.get().getImage(),
+//                product.get().getCategory().getCategoryId()
         );
     }
 
@@ -75,7 +75,7 @@ public class ProductDashboardController {
         product.setUnitInStock(dto.getUnitInStock());
         product.setUnitSold(dto.getUnitSold());
         product.setStatus(dto.getStatus());
-        product.setImage(dto.getImage());
+//        product.setImage(dto.getImage());
         Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
         product.setCategory(category);
 
