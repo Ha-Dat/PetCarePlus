@@ -35,7 +35,8 @@ public class Promotion {
 
     private String status;
 
-    private String image;
+    @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias;
 
     @OneToMany(mappedBy = "promotion")
     private List<Order> orders;
@@ -99,19 +100,19 @@ public class Promotion {
         this.status = status;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public List<Order> getOrders() {
         return orders;
     }
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

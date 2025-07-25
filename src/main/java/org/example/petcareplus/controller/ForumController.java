@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
+import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.example.petcareplus.service.ForumService;
@@ -33,7 +34,7 @@ public class ForumController {
 
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        List<Post> allPosts = forumService.findAll();
+        List<Post> allPosts = forumService.findAllWithMedias();
         List<PostDTO> sortedPosts = allPosts.stream()
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
@@ -47,9 +48,16 @@ public class ForumController {
 
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
+        //log
+        for (Post post : allPosts) {
+            System.out.println("Post ID: " + post.getPostId());
+            for (Media media : post.getMedias()) {
+                System.out.println("Media: " + media.getUrl() + " | " + media.getMediaType());
+            }
+        }
+
         return "forum";
     }
-
 
     @GetMapping("/api/posts")
     @ResponseBody
@@ -69,8 +77,6 @@ public class ForumController {
 
         return sortedPosts.subList(fromIndex, toIndex);
     }
-
-
 
     @GetMapping("/post-detail/{postId}")
     public String getPostDetail(@PathVariable Long postId, Model model, HttpSession session) {
@@ -110,10 +116,13 @@ public class ForumController {
     public String updatePostForm(@PathVariable Long postId, Model model, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
+
         Post post = forumService.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         PostDTO postDTO = new PostDTO(post);
+
         model.addAttribute("postDTO", postDTO);
+        model.addAttribute("medias", post.getMedias());
         return "update-post"; // Tên file HTML form update
     }
 
@@ -126,7 +135,9 @@ public class ForumController {
 
     // xử lý Post delete
     @GetMapping("/delete-post/{postId}")
-    public String deletePost(@PathVariable Long postId) {
+    public String deletePost(@PathVariable Long postId, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
         forumService.deletePostById(postId);
         return "redirect:/forum";
     }

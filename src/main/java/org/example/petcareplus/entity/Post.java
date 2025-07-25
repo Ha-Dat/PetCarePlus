@@ -25,10 +25,6 @@ public class Post {
     @Column(nullable = false)
     private String description;
 
-    private String image;
-
-    private String video;
-
     @Column(nullable = false)
     private Boolean isChecked;
 
@@ -42,8 +38,11 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<CommentPost> comments;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostRating> postRatings;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias;
 
     @PrePersist
     protected void onCreate() {
@@ -73,22 +72,6 @@ public class Post {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getVideo() {
-        return video;
-    }
-
-    public void setVideo(String video) {
-        this.video = video;
     }
 
     public Boolean getChecked() {
@@ -129,5 +112,13 @@ public class Post {
 
     public void setPostRatings(List<PostRating> postRatings) {
         this.postRatings = postRatings;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

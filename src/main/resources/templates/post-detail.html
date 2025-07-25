@@ -225,18 +225,26 @@
             </h1>
 
             <!-- Media -->
-          <div class="mb-3 rounded-md overflow-hidden relative"
-               th:if="${post.video != null}">
-            <video controls class="w-full h-auto object-cover">
-              <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${post.video}}" type="video/mp4">
-              Trình duyệt của bạn không hỗ trợ video.
-            </video>
-          </div>
+          <!-- Hiển thị video -->
+          <th:block th:each="media : ${post.medias}">
+            <div th:if="${media.mediaType.name() == 'VIDEO'}"
+                 class="mb-3 rounded-md overflow-hidden relative">
+              <video controls class="w-full h-auto object-cover">
+                <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}" type="video/mp4" />
+                Trình duyệt của bạn không hỗ trợ video.
+              </video>
+            </div>
+          </th:block>
 
-          <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
-               th:if="${post.image != null}">
-            <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${post.image}}" alt="" class="w-full h-auto object-cover"/>
-          </div>
+
+          <!-- Hiển thị ảnh -->
+          <th:block th:each="media : ${post.medias}">
+            <div th:if="${media.mediaType.name() == 'IMAGE'}"
+                 class="mb-3 rounded-md overflow-hidden max-h-96 relative">
+              <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+                   alt="" class="w-full h-auto object-cover" />
+            </div>
+          </th:block>
 
             <!-- Post Content -->
             <div class="prose prose-sm max-w-none mb-6">
