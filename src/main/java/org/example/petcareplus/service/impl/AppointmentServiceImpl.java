@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
@@ -32,4 +34,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Page<AppointmentBooking> getHistoryAppointments(Pageable pageable) {
         return appointmentRepository.findByStatusIgnoreCase("done", pageable);
     }
+
+    @Override
+    public AppointmentBooking save(AppointmentBooking appointment){
+        return appointmentRepository.save(appointment);
+    };
+
+    @Override
+    public Optional<AppointmentBooking> findById(Long id){
+      return appointmentRepository.findById(id);
+    };
 }

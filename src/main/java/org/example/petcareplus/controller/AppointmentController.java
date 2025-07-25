@@ -1,18 +1,21 @@
 package org.example.petcareplus.controller;
 
+import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.AppointmentBooking;
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.service.AppointmentService;
 import org.example.petcareplus.repository.PetProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -75,4 +78,29 @@ public class AppointmentController {
         return "appointment.html";
     }
 
+    @PostMapping("/appointment/approve/{id}")
+    @ResponseBody
+    public String approveAppointment(@PathVariable("id") Long id) {
+        Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
+        if (appointmentBooking.isPresent()) {
+            AppointmentBooking appointment = appointmentBooking.get();
+            appointment.setStatus("approved");
+            appointmentService.save(appointment);
+            return "Đã chấp nhận";
+        }
+        return "Thao tác không thành công";
+    }
+
+    @PostMapping("/appointment/disapprove/{id}")
+    @ResponseBody
+    public String disapproveAppointment(@PathVariable("id") Long id) {
+        Optional<AppointmentBooking> disappointmentBooking = appointmentService.findById(id);
+        if (disappointmentBooking.isPresent()) {
+            AppointmentBooking appointment = disappointmentBooking.get();
+            appointment.setStatus("disapproved");
+            appointmentService.save(appointment);
+            return "Đã từ chối";
+        }
+        return "Thao tác không thành công";
+    }
 }
