@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,8 +25,6 @@ public class Post {
     @Column(nullable = false)
     private String description;
 
-    private Integer rating;
-
     private String image;
 
     private String video;
@@ -42,6 +41,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private List<CommentPost> comments;
+
+    @OneToMany(mappedBy = "post")
+    private List<PostRating> postRatings;
 
     @PrePersist
     protected void onCreate() {
@@ -71,14 +73,6 @@ public class Post {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
     }
 
     public String getImage() {
@@ -127,5 +121,13 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<PostRating> getPostRatings() {
+        return postRatings;
+    }
+
+    public void setPostRatings(List<PostRating> postRatings) {
+        this.postRatings = postRatings;
     }
 }

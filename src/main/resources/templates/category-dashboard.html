@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý danh mục</title>
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f9f8;
+            color: #333;
+        }
+
+        /* Layout */
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        /* Main content */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        /* Table */
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .category-table th,
+        .category-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .category-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        /* Add Category Button */
+        .add-category-btn {
+            padding: 8px 14px;
+            background-color: #00b894;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-category-btn:hover {
+            background-color: #009e82;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .modal-box input, .modal-box select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-actions .btn.submit {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .modal-actions .btn.cancel {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination ul {
+            display: inline-flex;
+            list-style: none;
+            padding: 0;
+            gap: 5px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 12px;
+            text-decoration: none;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            transition: background 0.2s;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border-radius: 8px;
+            padding: 4px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.delete-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.delete-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /*Toast thông báo*/
+        #toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeInOut 3s ease forwards;
+        }
+
+        .toast-success {
+            background-color: #28a745; /* Xanh lá - thành công */
+        }
+
+        .toast-error {
+            background-color: #dc3545; /* Đỏ - thất bại */
+        }
+
+        @keyframes fadeInOut {
+            0%   { opacity: 0; transform: translateY(-20px); }
+            10%  { opacity: 1; transform: translateY(0); }
+            90%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Seller Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li><a href="#">🛒 Orders</a></li>
+            <li class="active"><a href="category-dashboard">📂 Categories</a></li>
+            <li><a href="productDashboard">📦 Products</a></li>
+            <li><a href="#">🏷️ Promotions</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <h1 class="page-title">Quản lý danh mục</h1>
+        <button class="btn add-category-btn" onclick="openAddModal()">
+            + Thêm danh mục
+        </button>
+
+        <div class="table-container">
+            <table class="category-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên danh mục</th>
+                        <th>Danh mục cha</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cat, categoryStat : ${categories}">
+                    <td th:text="${currentPage * size + categoryStat.index + 1}"></td>
+                    <td th:text="${cat.name}"></td>
+                    <td th:text="${cat.parent != null ? cat.parent.name : 'Không có'}"></td>
+                    <td>
+                        <div class="action-dropdown">
+                            <button type="button" class="dropdown-toggle">⋮</button>
+
+                            <div class="dropdown-menu">
+                                <button type="button"
+                                        class="dropdown-item"
+                                        th:attr="data-id=${cat.categoryId},
+                         data-name=${cat.name},
+                         data-parent=${cat.parent != null ? cat.parent.categoryId : 0}"
+                                        onclick="handleOpenEditModal(this)">
+                                    🖊️ Sửa
+                                </button>
+
+                                <form th:action="@{/category/delete}" method="post">
+                                    <input type="hidden" name="categoryId" th:value="${cat.categoryId}" />
+                                    <button type="submit"
+                                            class="dropdown-item delete-btn"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
+                                        🗑️ Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 0}">
+                        <a th:href="@{'/category-dashboard'(page=${currentPage - 1}, size=${size})}">«</a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${i == currentPage} ? 'active'">
+                        <a th:href="@{'/category-dashboard'(page=${i}, size=${size})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{'/category-dashboard'(page=${currentPage + 1}, size=${size})}">»</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm danh mục -->
+<div class="modal-overlay" id="addCategoryModal">
+    <div class="modal-box">
+        <h2>Thêm danh mục</h2>
+        <form action="/category/save" method="post">
+            <label>Tên danh mục:</label>
+            <input type="text" name="name" id="name" required>
+
+            <label>Danh mục cha:</label>
+            <select name="parentId" id="parentId">
+                <option value="">-- Không có --</option>
+                <!-- Duyệt các category cha từ backend -->
+                <option th:each="cat : ${allCategories}"
+                        th:value="${cat.categoryId}"
+                        th:text="${cat.name}"></option>
+            </select>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn submit">Lưu</button>
+                <button type="button" class="btn cancel" onclick="closeAddModal()">Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Sửa danh mục -->
+<div class="modal-overlay" id="editCategoryModal">
+    <div class="modal-box">
+        <h2>Sửa danh mục</h2>
+        <form action="/category/update" method="post">
+            <input type="hidden" name="categoryId" id="editCategoryId" />
+
+            <label>Tên danh mục:</label>
+            <input type="text" name="name" id="editCategoryName" required />
+
+            <label>Danh mục cha:</label>
+            <select name="parentId" id="editParentCategory">
+                <option value="">-- Không có --</option>
+                <option th:each="cat : ${allCategories}"
+                        th:value="${cat.categoryId}"
+                        th:text="${cat.name}">
+                </option>
+            </select>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn submit">Cập nhật</button>
+                <button type="button" class="btn cancel" onclick="closeEditModal()">Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"
+     th:if="${toastMessage != null}"
+     th:text="${toastMessage}"
+     th:class="'toast ' + (${toastType} == 'success' ? 'toast-success' : (${toastType} == 'error' ? 'toast-error' : ''))">
+</div>
+
+<!-- JS toast render -->
+<script>
+    function openAddModal() {
+        document.getElementById("addCategoryModal").style.display = "flex";
+    }
+
+    function closeAddModal() {
+        document.getElementById("addCategoryModal").style.display = "none";
+    }
+
+    function handleOpenEditModal(button) {
+        const id = button.getAttribute("data-id");
+        const name = button.getAttribute("data-name");
+        const parentId = button.getAttribute("data-parent");
+
+        document.getElementById("editCategoryId").value = id;
+        document.getElementById("editCategoryName").value = name;
+
+        // Nếu parentId là 0 (không có) thì đặt select về ""
+        document.getElementById("editParentCategory").value = (parentId === "0") ? "" : parentId;
+        document.getElementById("editCategoryModal").style.display = "flex";
+    }
+
+    function closeEditModal() {
+        document.getElementById("editCategoryModal").style.display = "none";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const toast = document.getElementById("toast");
+        if (toast) {
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+    });
+</script>
+</body>
+</html>

@@ -74,7 +74,7 @@
   <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
     <!-- Logo -->
     <div class="mr-4 flex">
-      <a class="mr-6 flex items-center space-x-2" href="/">
+      <a class="mr-6 flex items-center space-x-2" href="/home">
         <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
           <span class="text-primary-foreground font-bold text-lg">P</span>
         </div>
@@ -95,7 +95,10 @@
 
     <!-- Navigation -->
     <div class="flex flex-1 items-center justify-end space-x-2">
-      <a href="/submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex">
+      <!-- Nếu đã đăng nhập -->
+      <a th:if="${session.loggedInUser != null}"
+         href="/create-post"
+         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex">
         <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h14" />
           <path d="M12 5v14" />
@@ -103,25 +106,25 @@
         <span>Tạo bài</span>
       </a>
 
-      <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-        </svg>
-      </button>
-
-      <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-        </svg>
-      </button>
-
-      <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+      <!-- Avatar - Nếu đã đăng nhập thì về /profile -->
+      <a th:if="${session.loggedInUser != null}"
+         href="/profile"
+         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
-      </button>
+      </a>
+
+      <!-- Avatar - Nếu chưa đăng nhập thì về /login -->
+      <a th:if="${session.loggedInUser == null}"
+         href="/login"
+         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </a>
     </div>
   </div>
 </header>
@@ -136,7 +139,7 @@
           <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="p-3">
               <nav class="space-y-1">
-                <a href="/" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
+                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22" />
@@ -204,49 +207,74 @@
         </a>
       </div>
 
+
       <!-- Post Detail -->
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-6">
         <div class="p-4">
+
           <!-- Post Meta -->
           <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
-            <span class="font-medium text-foreground">r/huanluyencho</span>
+            <span>Đăng bởi [[${post.account.name}]]</span>
             <span>•</span>
-            <span>Đăng bởi u/[[${post.account.name}]]</span>
-            <span>•</span>
-            <div class="flex items-center space-x-1">
-              <svg class="h-4 w-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="6" />
-                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-              </svg>
-            </div>
+            <span>[[${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}]]</span>
           </div>
 
-          <!-- Post Title -->
-          <h1 class="text-xl font-bold leading-tight mb-4">
-            [[${post.title}]]
-          </h1>
+            <!-- Post Title -->
+            <h1 class="text-xl font-bold leading-tight mb-4">
+              [[${post.title}]]
+            </h1>
 
-          <!-- Media -->
+            <!-- Media -->
+          <div class="mb-3 rounded-md overflow-hidden relative"
+               th:if="${post.video != null}">
+            <video controls class="w-full h-auto object-cover">
+              <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${post.video}}" type="video/mp4">
+              Trình duyệt của bạn không hỗ trợ video.
+            </video>
+          </div>
+
           <div class="mb-3 rounded-md overflow-hidden max-h-96 relative"
                th:if="${post.image != null}">
-            <img th:src="${post.image}" alt="" class="w-full h-auto object-cover"/>
+            <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${post.image}}" alt="" class="w-full h-auto object-cover"/>
           </div>
 
-          <!-- Post Content -->
-          <div class="prose prose-sm max-w-none mb-6">
-            <p class="text-foreground mb-4">
-              [[${post.description}]]
-            </p>
-          </div>
+            <!-- Post Content -->
+            <div class="prose prose-sm max-w-none mb-6">
+              <p class="text-foreground mb-4">
+                [[${post.description}]]
+              </p>
+            </div>
 
           <!-- Post Actions -->
           <div class="flex items-center space-x-4 pt-4 border-t">
+
+            <!-- Comment Section -->
             <div class="flex items-center space-x-2">
               <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
               </svg>
               <span class="text-sm font-medium" th:text="${#lists.size(post.comments)} + ' Bình luận'"></span>
+            </div>
 
+            <!-- Voting Section -->
+            <div class="flex flex-row items-center p-2 space-x-2 min-w-[40px]">
+              <!-- upvote -->
+              <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=UPVOTE'}"
+                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m5 12 7-7 7 7" />
+                  <path d="M12 19V5" />
+                </svg>
+              </a>
+              <span class="text-xs font-medium text-muted-foreground" th:text="${postDTO.getRating()}"></span>
+              <!-- downvote -->
+              <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=DOWNVOTE'}"
+                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14" />
+                  <path d="m19 12-7 7-7-7" />
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -257,54 +285,102 @@
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-6">
         <div class="p-4">
           <div class="flex items-center space-x-2 mb-3">
-                <span class="text-sm text-muted-foreground">Bình luận với tư cách</span>
-            <span class="text-sm font-medium text-foreground">u/your_username</span>
+            <span th:if="${account != null}" class="text-sm text-muted-foreground">Bình luận với tư cách</span>
+            <span th:if="${account != null}" th:text="${account.name}" class="text-sm font-medium text-foreground"></span>
+            <span th:unless="${account != null and account.name != null}">bạn cần đăng nhập để bình luận</span>
+          </span>
           </div>
-          <textarea placeholder="Chia sẻ suy nghĩ của bạn..." class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"></textarea>
-          <div class="flex justify-end space-x-2 mt-3">
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-              Hủy
-            </button>
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
-              Bình luận
-            </button>
-          </div>
+          <form th:action="@{'/post-detail/' + ${post.postId} + '/comment'}" method="post">
+          <textarea name="content" placeholder="Chia sẻ suy nghĩ của bạn..."
+                class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"></textarea>
+            <div class="flex justify-end space-x-2 mt-3">
+              <button type="reset"
+                      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+                Hủy
+              </button>
+              <button type="submit"
+                      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
+                Bình luận
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 
       <!-- Comments Section -->
       <div class="space-y-4">
-        <!-- Comment 1 -->
         <!-- Loop Comment -->
         <div th:each="comment : ${comments}" class="rounded-lg bg-card text-card-foreground">
           <div class="p-4">
             <div class="flex items-start space-x-3">
-              <!-- Avatar -->
-              <div class="flex-shrink-0">
-                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="text-primary-foreground font-medium text-sm"
-                th:text="${comment.account.name}">A</span>
-                </div>
-              </div>
 
               <!-- Comment Content -->
               <div class="flex-1">
                 <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-          <span class="font-medium text-foreground"
-                th:text="'u/' + ${comment.account.name}">u/username</span>
+                <span class="font-medium text-foreground"
+                th:text="'' + ${comment.account.name}">u/username</span>
                   <span>•</span>
                   <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
+
+                  <!-- nút sửa comment-->
+                  <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
+                          type="button"
+                          class="edit-btn inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    <span>Sửa</span>
+                  </button>
+
+                  <!-- Nút Xóa comment -->
+                  <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
+                     th:href="@{'/post-detail/' + ${post.postId} + '/comment/' + ${comment.commentPostId} + '/delete'}"
+                     onclick="return confirm('Bạn chắc chắn muốn xóa phản hồi này?')"
+                     class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6l-2 14H7L5 6"></path>
+                      <path d="M10 11v6"></path>
+                      <path d="M14 11v6"></path>
+                      <path d="M5 6l1-3h12l1 3"></path>
+                    </svg>
+                    <span>Xóa</span>
+                  </a>
+
                 </div>
                 <p class="text-sm mb-3" th:text="${comment.comment}">
                   Nội dung bình luận...
                 </p>
+
+                <!-- Form Sửa comment -->
+                <div class="edit-form hidden">
+                  <form th:action="@{'/post-detail/' + ${post.postId} + '/comment/' + ${comment.commentPostId} + '/edit'}" method="post">
+                    <textarea name="content"
+                          class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                    <div class="flex space-x-2">
+                      <button type="submit"
+                              class="bg-primary text-white px-3 py-1 rounded">Cập nhật</button>
+                      <button type="button"
+                              class="cancel-edit-btn bg-muted text-foreground px-3 py-1 rounded">Hủy</button>
+                    </div>
+                  </form>
+                </div>
+
                 <div class="flex items-center space-x-2">
-                  <button class="inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <button type="button" class="reply-btn inline-flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                     </svg>
                     <span>Trả lời</span>
                   </button>
+                </div>
+                <!-- Form Reply (hidden by default) -->
+                <div class="ml-11 mt-3 hidden reply-form">
+                  <form th:action="@{'/post-detail/' + ${post.postId} + '/reply/' + ${comment.commentPostId} + '/reply'}" method="post">
+                    <textarea name="content" placeholder="Nhập phản hồi..." class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                    <button type="submit" class="bg-primary text-white px-3 py-1 rounded">Gửi</button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -313,31 +389,65 @@
             <div th:each="reply : ${comment.replies}"
                  class="ml-11 mt-4 pl-4 border-l-2 border-border">
               <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0">
-                  <div class="h-7 w-7 rounded-full bg-secondary flex items-center justify-center">
-            <span class="text-secondary-foreground font-medium text-xs"
-                  th:text="${reply.account.name}">Y</span>
-                  </div>
-                </div>
 
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-            <span class="font-medium text-foreground"
-                  th:text="'u/' + ${reply.account.name}">u/replier</span>
+                    <span class="font-medium text-foreground"
+                          th:text="'' + ${reply.account.name}">u/replier</span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
+
+                    <!-- Nút Sửa reply -->
+                    <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == reply.account.accountId}"
+                            type="button"
+                            class="edit-reply-btn inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                      <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                      </svg>
+                      <span>Sửa</span>
+                    </button>
+
+                    <!-- Nút Xóa reply -->
+                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == reply.account.accountId}"
+                       th:href="@{'/post-detail/' + ${post.postId} + '/reply/' + ${reply.replyCommentId} + '/delete'}"
+                       onclick="return confirm('Bạn chắc chắn muốn xóa phản hồi này?')"
+                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                      <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-2 14H7L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M5 6l1-3h12l1 3"></path>
+                      </svg>
+                      <span>Xóa</span>
+                    </a>
+
                   </div>
+
+                  <!-- Nội dung Reply -->
                   <p class="text-sm mb-3" th:text="${reply.comment}">
                     Nội dung trả lời...
                   </p>
+
+                  <!-- Form Sửa Reply -->
+                  <div class="edit-reply-form hidden">
+                    <form th:action="@{'/post-detail/' + ${post.postId} + '/reply/' + ${reply.replyCommentId} + '/edit'}" method="post">
+                    <textarea name="content"
+                    class="w-full border rounded p-2 text-sm mb-2"></textarea>
+                      <div class="flex space-x-2">
+                        <button type="submit"
+                                class="bg-primary text-white px-3 py-1 rounded">Cập nhật</button>
+                        <button type="button"
+                                class="cancel-edit-reply-btn bg-muted text-foreground px-3 py-1 rounded">Hủy</button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
-
       </div>
     </div>
 
@@ -452,6 +562,65 @@
   document.addEventListener("DOMContentLoaded", function () {
     console.log("PetCare+ Post Detail loaded successfully");
   });
+
+  document.querySelectorAll('.reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const replyForm = btn.closest('.flex-1').querySelector('.reply-form');
+      if (replyForm) {
+        replyForm.classList.toggle('hidden');
+      }
+    });
+  });
+
+  // Script nút Sửa
+  document.querySelectorAll('.edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const commentBox = btn.closest('.flex-1');
+      const editForm = commentBox.querySelector('.edit-form');
+      const commentContent = commentBox.querySelector('p').innerText;
+
+      // Điền nội dung gốc vào textarea
+      editForm.querySelector('textarea').value = commentContent;
+
+      // Hiển thị form
+      editForm.classList.remove('hidden');
+    });
+  });
+
+  // Script nút Hủy sửa
+  document.querySelectorAll('.cancel-edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.closest('.edit-form').classList.add('hidden');
+    });
+  });
+
+  // Nút Sửa Reply
+  document.querySelectorAll('.edit-reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const replyBox = btn.closest('.flex-1');
+      const editForm = replyBox.querySelector('.edit-reply-form');
+      const replyContent = replyBox.querySelector('p').innerText;
+
+      // Điền nội dung gốc vào textarea
+      editForm.querySelector('textarea').value = replyContent;
+
+      // Hiển thị form
+      editForm.classList.remove('hidden');
+    });
+  });
+
+  // Nút Hủy Sửa Reply
+  document.querySelectorAll('.cancel-edit-reply-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.closest('.edit-reply-form').classList.add('hidden');
+    });
+  });
+
+  // Hien thi thong bao loi
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'empty') {
+    alert('Bình luận không được để trống');
+  }
 </script>
 </body>
 </html>

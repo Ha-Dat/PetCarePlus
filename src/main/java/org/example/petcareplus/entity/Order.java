@@ -13,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
     @ManyToOne
@@ -33,12 +35,18 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String deliverAddress;
 
+    private String receiverName;
+
+    private String receiverPhone;
+
     private BigDecimal shippingFee;
 
     private BigDecimal discountAmount;
 
     @Column(nullable = false)
     private String paymentMethod;
+
+    private String shippingMethod;
 
     @Column(columnDefinition = "TEXT")
     private String note;
@@ -105,6 +113,22 @@ public class Order {
         this.deliverAddress = deliverAddress;
     }
 
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getReceiverPhone() {
+        return receiverPhone;
+    }
+
+    public void setReceiverPhone(String receiverPhone) {
+        this.receiverPhone = receiverPhone;
+    }
+
     public BigDecimal getShippingFee() {
         return shippingFee;
     }
@@ -127,6 +151,14 @@ public class Order {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getShippingMethod() {
+        return shippingMethod;
+    }
+
+    public void setShippingMethod(String shippingMethod) {
+        this.shippingMethod = shippingMethod;
     }
 
     public String getNote() {

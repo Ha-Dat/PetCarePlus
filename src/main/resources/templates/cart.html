@@ -301,6 +301,7 @@
 
         .register-btn {
             background: #388e3c;
+            width: 91.19px;
             color: white;
         }
 
@@ -310,10 +311,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -387,7 +392,6 @@
         .cart-table th {
             background-color: #f2f2f2;
             font-weight: bold;
-            text-transform: lowercase;
             padding: 15px 10px;
             text-align: center;
         }
@@ -538,6 +542,62 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Dropdown user menu */
+        .user-dropdown,
+        .calender-dropdown{
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn,
+        .calender-btn{
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .user-btn:hover,
+        .calender-btn:hover{
+            background: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            z-index: 2000; /* cao hơn nav-bar */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #000000;
+        }
+
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -550,11 +610,11 @@
     <table class="cart-table">
         <thead>
         <tr>
-            <th style="width: 30%;">sản phẩm</th>
-            <th style="width: 20%;">đơn giá</th>
-            <th style="width: 20%;">số lượng</th>
-            <th style="width: 20%;">số tiền</th>
-            <th style="width: 10%;">thao tác</th>
+            <th style="width: 30%;">Sản phẩm</th>
+            <th style="width: 20%;">Đơn giá</th>
+            <th style="width: 20%;">Số lượng</th>
+            <th style="width: 20%;">Số tiền</th>
+            <th style="width: 10%;">Thao tác</th>
         </tr>
         </thead>
         <tbody>
@@ -581,7 +641,7 @@
         <span>Tổng cộng: <span class="total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
         <div class="cart-actions">
             <button id="clearCartBtn" class="remove-selected">xóa khỏi giỏ hàng</button>
-            <button class="checkout-btn">Mua Hàng</button>
+            <button class="checkout-btn" onclick="window.location.href='/checkout'">Mua Hàng</button>
         </div>
     </div>
 </main>
@@ -707,7 +767,16 @@
         function showToast(message, type = "warning") {
             const toast = document.createElement("div");
             toast.className = "toast";
-            toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#f39c12";
+
+            // Màu nền theo loại thông báo
+            if (type === 'error') {
+                toast.style.backgroundColor = '#e74c3c'; // đỏ
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#f39c12'; // cam
+            } else {
+                toast.style.backgroundColor = '#4caf50'; // xanh lá
+            }
+
             toast.innerText = message;
             document.body.appendChild(toast);
 

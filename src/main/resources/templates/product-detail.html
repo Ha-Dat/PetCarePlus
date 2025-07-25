@@ -664,6 +664,7 @@
 
         .register-btn {
             background: #388e3c;
+            width: 91.19px;
             color: white;
         }
 
@@ -672,11 +673,16 @@
         }
 
         /* Cart Icon */
+        /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -743,6 +749,62 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Dropdown user menu */
+        .user-dropdown,
+        .calender-dropdown{
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn,
+        .calender-btn {
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .user-btn:hover,
+        .calender-btn:hover {
+            background: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            z-index: 2000; /* cao hơn nav-bar */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #000000;
+        }
+
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -784,10 +846,15 @@
                         <input type="hidden" name="productId" th:value="${product.productId}" />
                         <input type="hidden" name="quantity" id="formQuantity" value="1" />
                         <div id="unitInStock" style="display: none;" th:text="${product.unitInStock}"></div>
-                        <button type="button" class="add-to-cart" id="detailAddToCartBtn"
+                        <button type="button" class="buy-now" id="detailAddToCartBtn"
                                 th:attr="data-product-id=${product.productId}">Mua ngay</button>
                     </form>
-                    <button class="add-to-cart">Thêm vào giỏ hàng</button>
+                    <form th:action="@{/add-to-cart}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.productId}"/>
+                        <input type="hidden" name="quantity" value="1"/>
+                        <button type="button" class="add-to-cart js-add-to-cart"
+                                th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -965,7 +1032,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        // 1. Thêm từ trang product-detail
+        // --- 1. Mua ngay ---
         const detailBtn = document.getElementById("detailAddToCartBtn");
         if (detailBtn) {
             detailBtn.addEventListener("click", () => {
@@ -973,16 +1040,14 @@
                 const qtyInput = document.getElementById("qty");
                 const qty = parseInt(qtyInput?.value || 1);
 
-                // Kiểm tra số lượng hợp lệ
                 if (qty <= 0) {
-                    showToast("⚠️ Số lượng không hợp lệ", "warning");
+                    showToast("Số lượng không hợp lệ", "warning");
                     return;
                 }
 
-                // Kiểm tra vượt quá kho nếu có
                 const unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
                 if (!isNaN(unitInStock) && qty > unitInStock) {
-                    showToast("⚠️ Không đủ hàng trong kho", "warning");
+                    showToast("Không đủ hàng trong kho", "warning");
                     return;
                 }
 
@@ -990,24 +1055,27 @@
                 params.append("productId", productId);
                 params.append("quantity", qty);
 
-                fetch("/add-to-cart", {
+                fetch("/buy-now", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
-                            showToast("✅ Đã thêm vào giỏ hàng!");
+                        if (res.status === 401) {
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
+                            showToast("Đã thêm vào giỏ hàng!");
                             setTimeout(() => window.location.href = "/view-cart", 1500);
                         } else {
-                            showToast("❌ Thêm vào giỏ hàng thất bại", "error");
+                            showToast("Thêm vào giỏ hàng thất bại", "error");
                         }
                     })
-                    .catch(() => showToast("❌ Lỗi kết nối", "error"));
+                    .catch(() => showToast("Lỗi kết nối", "error"));
             });
         }
 
-        // 2. Thêm từ các nút nổi bật / view-product
+        // --- 2. Thêm vào giỏ hàng (add-to-cart không chuyển trang) ---
         const allAddToCartBtns = document.querySelectorAll(".js-add-to-cart");
         allAddToCartBtns.forEach(btn => {
             btn.addEventListener("click", () => {
@@ -1015,7 +1083,7 @@
 
                 const params = new URLSearchParams();
                 params.append("productId", productId);
-                params.append("quantity", 1); // mặc định là 1
+                params.append("quantity", 1);
 
                 fetch("/add-to-cart", {
                     method: "POST",
@@ -1023,14 +1091,16 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.ok) {
-                            showToast("✅ Đã thêm vào giỏ hàng!");
-                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
+                            showToast("Đã thêm vào giỏ hàng!");
                         } else {
-                            showToast("❌ Không thể thêm sản phẩm", "error");
+                            showToast("Không thể thêm sản phẩm", "error");
                         }
                     })
-                    .catch(() => showToast("❌ Lỗi kết nối", "error"));
+                    .catch(() => showToast("Lỗi kết nối", "error"));
             });
         });
     });

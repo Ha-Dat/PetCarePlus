@@ -1,7 +1,11 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.HotelBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -12,16 +16,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/")
 public class HotelBookingController {
+    @Autowired
     private HotelBookingService hotelBookingService;
 
-    public HotelBookingController(HotelBookingService hotelBookingService) {
+    @Autowired
+    private CategoryService categoryService;
+
+    public HotelBookingController(HotelBookingService hotelBookingService, CategoryService categoryService) {
         this.hotelBookingService = hotelBookingService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/groomer-hotel-page")
@@ -42,11 +52,11 @@ public class HotelBookingController {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
-            if ("chờ duyệt".equalsIgnoreCase(booking.getStatus())) {
-                booking.setStatus("đã duyệt");
+            if (BookingStatus.PENDING.equals(booking.getStatus())) {
+                booking.setStatus(BookingStatus.ACCEPTED);
                 hotelBookingService.save(booking);
                 return "lịch đặt đã được duyệt";
-            } else if("đã duyệt".equalsIgnoreCase(booking.getStatus())){
+            } else if(BookingStatus.ACCEPTED.equals(booking.getStatus())){
                 return "lịch đặt đã được duyệt rồi";
             }else{
                 return "lịch đặt chưa bị từ chối rồi";
@@ -70,18 +80,18 @@ public class HotelBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
-            data.put("image", booking.getPetProfile().getImage());
+//            data.put("image", booking.getPetProfile().getImage());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());
             data.put("breed", booking.getPetProfile().getBreeds());
-            data.put("weight", booking.getPetProfile().getWeight());
+//            data.put("weight", booking.getPetProfile().getWeight());
             // data chủ nuôi
             data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
             data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
-            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
-            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
-            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
+//            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
+//            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
+//            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
 
             return ResponseEntity.ok(data);
         }
@@ -94,11 +104,11 @@ public class HotelBookingController {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
-            if ("chờ duyệt".equalsIgnoreCase(booking.getStatus())) {
-                booking.setStatus("từ chối");
+            if (BookingStatus.PENDING.equals(booking.getStatus())) {
+                booking.setStatus(BookingStatus.REJECTED);
                 hotelBookingService.save(booking);
                 return "lịch đặt đã được từ chối";
-            } else if("từ chối".equalsIgnoreCase(booking.getStatus())){
+            } else if(BookingStatus.REJECTED.equals(booking.getStatus())){
                 return "lịch đặt đã bị từ chối rồi";
             } else {
                 return "lịch đặt được duyệt rồi";
@@ -108,9 +118,18 @@ public class HotelBookingController {
     }
 
     @GetMapping("/booking-hotel")
-    public String showHotelBookingForm(Model model) {
+    public String showHotelBookingForm(HttpSession session, Model model) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
+        List<Category> parentCategories = categoryService.getParentCategory();
+
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
         model.addAttribute("services", hotelBookingService.Service_findAll()); // list dịch vụ
+        model.addAttribute("categories", parentCategories);
         return "booking-hotel";
     }
 
@@ -119,26 +138,28 @@ public class HotelBookingController {
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
             @RequestParam("serviceId") Long serviceId,
-            @RequestParam("ownerInfo") String ownerInfo, // chưa co login
             @RequestParam("petName") String petName,
             @RequestParam("petSpecies") String petSpecies,
             @RequestParam("petBreed") String petBreed,
-            @RequestParam("phoneNumber") String phoneNumber, // chưa co login
+            HttpSession session,
             Model model
     ) {
         try {
+            Account account = (Account) session.getAttribute("loggedInUser");
+            if (account == null) return "redirect:/login";
             // Tạo pet profile mới từ form
             PetProfile petProfile = new PetProfile();
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
+            petProfile.setProfile(account.getProfile());
             hotelBookingService.PetProfile_save(petProfile);
 
             // gán dữ liệu từ form
             HotelBooking booking = new HotelBooking();
             booking.setBookDate(bookDate);
             booking.setNote(note);
-            booking.setStatus("chờ duyệt");
+            booking.setStatus(BookingStatus.PENDING);
             booking.setCreatedAt(LocalDateTime.now());
 
             booking.setPetProfile(petProfile);

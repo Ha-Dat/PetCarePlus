@@ -1,50 +1,68 @@
 package org.example.petcareplus.controller;
 
+import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.Service;
+import org.example.petcareplus.entity.SpaBooking;
+import org.example.petcareplus.service.PetProfileService;
+import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.entity.*;
-import org.example.petcareplus.repository.*;
+import org.example.petcareplus.enums.BookingStatus;
+import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequestMapping()
 public class SpaBookingController {
 
-    private final SpaBookingRepository spaBookingRepository;
     private final SpaBookingService spaBookingService;
-    private final ServiceRepository serviceRepository;
-    private final PetProfileRepository petProfileRepository;
+    private final PetProfileService petProfileService;
+    private final ServiceService serviceService;
+    private final CategoryService categoryService;
 
-    public SpaBookingController(SpaBookingRepository spaBookingRepository, SpaBookingService spaBookingService, ServiceRepository serviceRepository, PetProfileRepository petProfileRepository) {
-        this.spaBookingRepository = spaBookingRepository;
+    public SpaBookingController(SpaBookingService spaBookingService, PetProfileService petProfileService, ServiceService serviceService, CategoryService categoryService) {
         this.spaBookingService = spaBookingService;
-        this.serviceRepository = serviceRepository;
-        this.petProfileRepository = petProfileRepository;
+        this.petProfileService = petProfileService;
+        this.serviceService = serviceService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/list-spa-booking")
-    public String getAllSpaBookings(Model model) {
-        List<SpaBooking> spaBookings= spaBookingService.findAll();
+    public String getAllSpaBookings(Model model,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "8") int size) {
+        Page<SpaBooking> spaBookings= spaBookingService.findAll(page, size, "bookDate");
+        if (page < 0) {
+            return "redirect:/list-spa-booking?page=0&size=" + size;
+        }
+
         model.addAttribute("spaBookings", spaBookings);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", spaBookings.getTotalPages());
         return "list-spa-booking";
     }
 
     @PostMapping("/list-spa-booking/approve-spa/{id}")
     @ResponseBody
     public String approveSpaBooking(@PathVariable("id") Long id){
-        Optional<SpaBooking> booking = spaBookingRepository.findById(id);
+        Optional<SpaBooking> booking = spaBookingService.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
-            if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
-                spaBooking.setStatus("Đã đặt");
-                spaBookingRepository.save(spaBooking);
+            if (BookingStatus.PENDING.equals(spaBooking.getStatus())){
+                spaBooking.setStatus(BookingStatus.ACCEPTED);
+                spaBookingService.save(spaBooking);
                 return "Duyệt lịch thành công";
             }else {
                 return "Lịch đặt đã được duyệt";
@@ -56,12 +74,12 @@ public class SpaBookingController {
     @PostMapping("/list-spa-booking/reject-spa/{id}")
     @ResponseBody
     public String rejectSpaBooking(@PathVariable("id") Long id){
-        Optional<SpaBooking> booking = spaBookingRepository.findById(id);
+        Optional<SpaBooking> booking = spaBookingService.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
-            if ("Chờ xác nhận".equalsIgnoreCase(spaBooking.getStatus())){
-                spaBooking.setStatus("Đã từ chối");
-                spaBookingRepository.save(spaBooking);
+            if (BookingStatus.PENDING.equals(spaBooking.getStatus())){
+                spaBooking.setStatus(BookingStatus.REJECTED);
+                spaBookingService.save(spaBooking);
                 return "Từ chối lịch thành công";
             }else {
                 return "Lịch đặt đã từ chối";
@@ -70,11 +88,47 @@ public class SpaBookingController {
         return "Không tìm thấy lịch";
     }
 
+    @GetMapping("/list-spa-booking/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getSpaBookingDetail(@PathVariable("id") Long id) {
+        Optional<SpaBooking> bookingOpt = spaBookingService.findById(id);
+        if (bookingOpt.isPresent()) {
+            SpaBooking booking = bookingOpt.get();
+            Map<String, Object> data = new HashMap<>();
+
+            // data đơn book
+            data.put("id", booking.getSpaBookingId());
+            data.put("bookDate", booking.getBookDate().toString());
+            data.put("status", booking.getStatus());
+            data.put("service", booking.getService().getName());
+            data.put("note", booking.getNote());
+            // data của pet
+            data.put("image", booking.getPetProfile().getImage());
+            data.put("petId", booking.getPetProfile().getPetProfileId());
+            data.put("petName", booking.getPetProfile().getName());
+            data.put("species", booking.getPetProfile().getSpecies());
+            data.put("breed", booking.getPetProfile().getBreeds());
+            data.put("weight", booking.getPetProfile().getWeight());
+            // data chủ nuôi
+            data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
+            data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
+            data.put("city", booking.getPetProfile().getProfile().getCity().getName());
+            data.put("district", booking.getPetProfile().getProfile().getDistrict().getName());
+            data.put("ward", booking.getPetProfile().getProfile().getWard().getName());
+
+            return ResponseEntity.ok(data);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
+    }
+
     @GetMapping("/spa-booking/form")
     public String showSpaBookingForm(Model model) {
+        List<Category> parentCategories = categoryService.getParentCategory();
+
         // TODO: Add Authen
         model.addAttribute("spaBooking", new SpaBooking());
-        model.addAttribute("spaServices", serviceRepository.findByServiceCategory("SPA"));
+        model.addAttribute("spaServices", serviceService.findByServiceCategory("SPA"));
+        model.addAttribute("categories", parentCategories);
         return "spa-booking";
     }
 
@@ -97,25 +151,25 @@ public class SpaBookingController {
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
             petProfile.setAge(2);
-            petProfileRepository.save(petProfile);
+            petProfileService.save(petProfile);
 
             // gán dữ liệu từ form
             SpaBooking booking = new SpaBooking();
             booking.setBookDate(bookDate);
             booking.setNote(note);
-            booking.setStatus("Chờ xác nhận");
+            booking.setStatus(BookingStatus.PENDING);
             booking.setCreatedAt(LocalDateTime.now());
 
             booking.setPetProfile(petProfile);
 
-            Optional<Service> service = serviceRepository.findById(serviceId);
+            Optional<Service> service = serviceService.findById(serviceId);
             if (service.isEmpty()) {
                 model.addAttribute("error", "Dịch vụ không tồn tại");
                 return "error";
             }
             booking.setService(service.get());
 
-            spaBookingRepository.save(booking);
+            spaBookingService.save(booking);
             return "redirect:/spa-booking/form";
 
         } catch (Exception e) {

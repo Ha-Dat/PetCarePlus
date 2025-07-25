@@ -31,7 +31,6 @@ public class Account {
     private String role;
 
     @Column(nullable = false)
-    @Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") // At least 8 characters, 1 number, no whitespaces
     private String password;
 
     @Column(nullable = false)
@@ -51,6 +50,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<ReplyComment> replyComments;
+
+    @OneToMany(mappedBy = "account")
+    private List<PostRating> postRatings;
 
     //method thêm trong trường hợp lombok không hoạt động
 
@@ -86,11 +88,11 @@ public class Account {
         this.role = role;
     }
 
-    public @Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(@Pattern(regexp = "^(?=.*[0-9])(?=\\\\S+$).{8,}$") String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -140,5 +142,13 @@ public class Account {
 
     public void setReplyComments(List<ReplyComment> replyComments) {
         this.replyComments = replyComments;
+    }
+
+    public List<PostRating> getPostRatings() {
+        return postRatings;
+    }
+
+    public void setPostRatings(List<PostRating> postRatings) {
+        this.postRatings = postRatings;
     }
 }

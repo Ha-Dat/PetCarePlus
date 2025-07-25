@@ -648,6 +648,7 @@
         }
 
         .register-btn {
+            width: 91.19px;
             background: #388e3c;
             color: white;
         }
@@ -658,10 +659,14 @@
 
         /* Cart Icon */
         .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
             font-size: 24px;
             cursor: pointer;
             color: #2e7d32;
             transition: transform 0.2s ease;
+            width: 50px
         }
 
         .cart:hover {
@@ -728,6 +733,62 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Dropdown user menu */
+        .user-dropdown,
+        .calender-dropdown{
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn,
+        .calender-btn{
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .user-btn:hover,
+        .calender-btn:hover{
+            background: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            z-index: 2000; /* cao hơn nav-bar */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #000000;
+        }
+
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -741,7 +802,7 @@
         <section class="featured-products">
             <button class="carousel-btn prev" id="prevBtn">❮</button>
             <div class="carousel-track" id="carouselTrack">
-                <div class="carousel-item" th:each="product : ${products}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:src="${product.image}" alt="Product Image">
@@ -760,7 +821,7 @@
                                 th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
                     </form>
                 </div>
-                <div class="carousel-item" th:each="product : ${products}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:src="${product.image}" alt="Product Image">
@@ -837,7 +898,6 @@
         </div>
     </div>
 </main>
-
 <div th:replace="component/footer :: footer"></div>
 </body>
 <script>
@@ -1008,7 +1068,16 @@
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.style.backgroundColor = type === "error" ? "#e74c3c" : "#4caf50";
+
+        // Màu nền theo loại thông báo
+        if (type === 'error') {
+            toast.style.backgroundColor = '#e74c3c'; // đỏ
+        } else if (type === 'warning') {
+            toast.style.backgroundColor = '#f39c12'; // cam
+        } else {
+            toast.style.backgroundColor = '#4caf50'; // xanh lá
+        }
+
         toast.innerText = message;
         document.body.appendChild(toast);
 
@@ -1036,16 +1105,16 @@
                     body: params
                 })
                     .then(res => {
-                        if (res.redirected || res.ok) {
-                            showToast("✅ Đã thêm vào giỏ hàng!");
-                            setTimeout(() => window.location.href = "/view-cart", 1500);
+                        if(res.status === 401){
+                            showToast("Bạn phải đăng nhập tài khoản", "warning");
+                            setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.ok) {
+                            showToast("Đã thêm vào giỏ hàng!");
                         } else {
-                            showToast("❌ Lỗi khi thêm vào giỏ hàng!", "error");
+                            showToast("Không thể thêm sản phẩm", "error");
                         }
                     })
-                    .catch(() => {
-                        showToast("❌ Không thể kết nối đến máy chủ!", "error");
-                    });
+                    .catch(() => showToast("Lỗi kết nối", "error"));
             });
         });
     });

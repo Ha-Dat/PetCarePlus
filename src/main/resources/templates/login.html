@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Đăng nhập</title>
-    <link rel="stylesheet" href="/css/style.css">
     <style>
         .password-wrapper {
             position: relative;
@@ -15,24 +14,184 @@
             cursor: pointer;
             color: #666;
         }
+        body.bg {
+            background: url("https://i.ibb.co/q3p27MRN/507038009-1245302843643877-8250570055874749465-n.png") no-repeat center center;
+            background-size: cover;
+            font-family: sans-serif;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        .form-box input {
+            width: 92%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        .form-box button {
+            background-color: #8dbd5c;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-box .link {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #8dbd5c;
+            text-decoration: none;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin: 5px 0;
+            .container {
+                display: flex;
+                font-family: sans-serif;
+            }
+
+            .sidebar {
+                width: 200px;
+                background: #f0f0f0;
+                padding: 20px;
+            }
+
+            .sidebar ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .sidebar li {
+                margin: 10px 0;
+            }
+
+            .sidebar a {
+                text-decoration: none;
+                color: black;
+            }
+
+            .sidebar a.active {
+                color: red;
+                font-weight: bold;
+            }
+
+            .content {
+                flex: 1;
+                padding: 20px;
+            }
+
+            .profile-form {
+                display: flex;
+                gap: 40px;
+            }
+
+            .avatar img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
+            .form-fields label {
+                display: block;
+                margin-bottom: 10px;
+            }
+
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #e8f5e9;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            font-size: 14px;
+            margin-top: 40px;
+            color: #333;
+            border-top: 2px solid #c8e6c9;
+        }
+
+        footer section {
+            margin-bottom: 20px;
+            min-width: 200px;
+        }
+
+        footer h4 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #1b5e20;
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        footer a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body class="bg">
 <div class="login-container">
-    <form th:action="@{/login}" method="post" class="form-box">
-        <h2>Đăng nhập</h2>
-        <p th:if="${error}" th:text="${error}" class="error-message"></p>
-        <input type="text" name="phone" placeholder="Số điện thoại" required />
+    <form th:action="@{/login}" th:object="${loginDTO}" method="post" class="form-box">
+    <h2> Đăng nhập </h2>
+        <div th:if="${message}" class="success-message" th:text="${message}"></div>
+        <div class="form-group">
+            <input type="text" th:field="*{phone}" placeholder="Số điện thoại" class="form-control" />
+            <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Số điện thoại lỗi</div>
+        </div>
 
-        <div class="password-wrapper">
-            <input type="password" name="password" placeholder="Mật khẩu" id="password" required />
+        <div class="form-group password-wrapper">
+            <input type="password" th:field="*{password}" id="password" placeholder="Mật khẩu" />
             <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Mật khẩu lỗi</div>
         </div>
 
         <button type="submit">ĐĂNG NHẬP</button>
+
         <a th:href="@{/register}" class="link">Đăng ký</a>
+
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
     </form>
 </div>
+<div th:replace="component/footer :: footer"></div>
 <script>
     function togglePassword(id) {
         const input = document.getElementById(id);

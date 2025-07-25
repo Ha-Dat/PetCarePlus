@@ -1,77 +1,73 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.example.petcareplus.dto.ProfileDTO;
+import org.example.petcareplus.entity.City;
+import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.repository.CityRepository;
+import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/profile")
+@RequestMapping("/")
 public class ProfileController {
 
-    private Profile profile = new Profile();
+    @Autowired
+    private ProfileService profileService;
 
     @Autowired
-    private CityRepository cityRepository;
+    private CategoryService categoryService;
 
-    @GetMapping
-    public String viewProfile(Model model) {
-        if (profile.getAccount() == null) {
-            Account acc = new Account();
-            acc.setName("Nguyễn Văn A");
-            acc.setPhone("0912345678");
+    @GetMapping("profile")
+    public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean editMode,
+                              HttpSession session,
+                              Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
 
-            profile.setAccount(acc);
-            profile.setAvatarPath("/images/default-avatar.png");
+        Profile profile = profileService.getProfileByAccountAccountId(account.getAccountId());
+        List<Category> parentCategories = categoryService.getParentCategory();
+        ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
+
+        model.addAttribute("profileDTO", profileDTO);
+        model.addAttribute("categories", parentCategories);
+        model.addAttribute("editMode", editMode);
+        return "profile";
+    }
+
+    @GetMapping("/profile/edit-mode")
+    public String switchToEdit(HttpSession session, Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
         }
 
-        model.addAttribute("profile", profile);
-        model.addAttribute("cities", cityRepository.findAll());
+        ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
+
+        model.addAttribute("profileDTO", profileDTO);
+        model.addAttribute("editMode", true);
         return "profile";
     }
 
     @PostMapping("/update")
-    public String updateProfile(
-            @Valid @ModelAttribute("profile") Profile formProfile,
-            BindingResult result,
-            @RequestParam("imageFile") MultipartFile imageFile,
-            Model model) {
+    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO,
+                                HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
 
-        if (result.hasErrors()) {
-            model.addAttribute("cities", cityRepository.findAll());
-            return "profile";
-        }
-
-        if (!imageFile.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            File dest = new File("src/main/resources/static/images/" + fileName);
-            try {
-                imageFile.transferTo(dest);
-                formProfile.setAvatarPath("/images/" + fileName);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            formProfile.setAvatarPath(profile.getAvatarPath());
-        }
-
-        profile.setAccount(formProfile.getAccount());
-        profile.setAvatarPath(formProfile.getAvatarPath());
-
-        profile.setCity(formProfile.getCity());
-        profile.setDistrict(formProfile.getDistrict());
-        profile.setWard(formProfile.getWard());
-
+        profileService.updateProfile(profileDTO, account.getAccountId());
         return "redirect:/profile";
     }
 }

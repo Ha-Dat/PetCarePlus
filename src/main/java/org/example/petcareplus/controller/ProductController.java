@@ -2,28 +2,27 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@RequestMapping("/")
 @Controller
-public class ListProductController {
+@RequestMapping("/")
+public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @Autowired
     private CategoryService categoryService;
@@ -37,14 +36,10 @@ public class ListProductController {
             @RequestParam(required = false) String searchkeyword,
             Model model) {
 
-        // Đảm bảo page không âm
-        if (page < 0) {
-            page = 0;
-        }
+        if (page < 0) page = 0;
 
         Pageable pageable = PageRequest.of(page, 12);
-        BigDecimal minPrice = null;
-        BigDecimal maxPrice = null;
+        BigDecimal minPrice = null, maxPrice = null;
 
         if (priceRange != null) {
             switch (priceRange) {
@@ -54,13 +49,10 @@ public class ListProductController {
             }
         }
 
-        Page<Product> productPage = productRepository.searchProducts(
-                keyword, category, minPrice, maxPrice, pageable
-        );
-
+        Page<Product> productPage = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
         List<Product> resultSearch = new ArrayList<>();
         if (searchkeyword != null && !searchkeyword.trim().isEmpty()) {
-            resultSearch = productRepository.findByNameContainingIgnoreCase(searchkeyword.trim());
+            resultSearch = productService.findByNameContainingIgnoreCase(searchkeyword.trim());
         }
 
         model.addAttribute("products", productPage.getContent());
@@ -76,4 +68,19 @@ public class ListProductController {
         return "view-product";
     }
 
+    @GetMapping("/product-detail")
+    public String showProductDetail(@RequestParam("productId") Long productId, Model model) {
+        Optional<Product> productOptional = productService.findById(productId);
+        List<Category> parentCategories = categoryService.getParentCategory();
+        List<Product> top9Products = productService.getTop9Products();
+
+        if (productOptional.isPresent()) {
+            model.addAttribute("product", productOptional.get());
+            model.addAttribute("categories", parentCategories);
+            model.addAttribute("top9Products", top9Products);
+            return "product-detail";
+        } else {
+            return "error/404";
+        }
+    }
 }

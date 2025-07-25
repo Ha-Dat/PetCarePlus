@@ -12,10 +12,9 @@
         }
 
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9fafb;
-            color: #374151;
-            line-height: 1.5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9fdf9;
+            margin: 0;
         }
 
         .container {
@@ -194,9 +193,425 @@
                 font-size: 18px;
             }
         }
+
+        /* Header css*/
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #a8e063, #56ab2f); /* xanh gradient */
+            padding: 12px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 0 0 12px 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-margin {
+            margin-right: 20px;
+        }
+
+        .nav-bar a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-bar a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .sale-badge a {
+            color: #ffeb3b;
+            font-weight: bold;
+            background-color: #d32f2f;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .sale-badge a:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Category Button */
+        #categoryBtn {
+            color: white;
+            background: #2e7d32;
+            border-radius: 8px;
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        #categoryBtn:hover {
+            background: #1d5c0d;
+            color: #d3d0d0;
+        }
+        /* Popup Menu */
+        .popup {
+            position: absolute;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 16px 24px;
+            z-index: 10;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .popup-content {
+            display: flex;
+            gap: 32px;
+        }
+
+        .main-categories,
+        .sub-categories-list,
+        .child-sub-list-wrapper {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-right: 20px;
+        }
+
+        .child-sub-list-wrapper li {
+            list-style-type: none;
+        }
+
+        .category-item {
+            padding: 10px 18px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .category-item:hover {
+            background-color: #e0f0e9;
+            cursor: pointer;
+        }
+
+        .category-item.active {
+            background-color: #88df82;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .parent-item,
+        .child-item,
+        .child-sub-list span {
+            cursor: pointer;
+        }
+
+        .sub-list {
+            display: none;
+        }
+
+        .sub-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .child-item {
+            display: block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .child-item:hover {
+            background-color: #e0f0e9;
+        }
+
+        .child-item.active {
+            background-color: #88df82;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .sub-list.active {
+            display: block;
+        }
+
+        .sub-list.active ul li {
+            list-style-type: none;
+        }
+
+        .sub-list span,
+        .child-sub-list span {
+            display: block;
+            padding: 6px 12px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .child-sub-list {
+            display: none;
+        }
+
+        /* Header Styling */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: linear-gradient(to right, #e8f5e9, #ffffff);
+            border-bottom: 2px solid #b2dfdb;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .header_container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+        }
+
+        .left {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        .logo {
+            width: 60px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            border-radius: 8px;
+            width: 320px;
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        .search-btn {
+            border: none;
+            color: white;
+            background: #43a047;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        /* Right Header Area */
+        .right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .slogan {
+            color: #2e7d32;
+            font-style: italic;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .hotline {
+            color: #43a047;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .auth {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+        }
+
+        .login-btn,
+        .register-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .login-btn:hover {
+            background: #d5d5d5;
+        }
+
+        .register-btn {
+            width: 91.19px;
+            background: #388e3c;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #2e7d32;
+        }
+
+        /* Cart Icon */
+        .cart {
+            margin-top: 8px;
+            margin-right: 13px;
+            margin-left: -20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #2e7d32;
+            transition: transform 0.2s ease;
+            width: 50px
+        }
+
+        .cart:hover {
+            transform: scale(1.2);
+        }
+
+        /* Dropdown user menu */
+        .user-dropdown,
+        .calender-dropdown{
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-btn,
+        .calender-btn{
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .user-btn:hover,
+        .calender-btn:hover {
+            background: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            z-index: 2000; /* cao hơn nav-bar */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            font-weight: normal;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #000000;
+        }
+
+        .user-dropdown:hover .dropdown-content,
+        .calender-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Footer css */
+        /* Footer Styling */
+        footer {
+            background-color: #e8f5e9;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            font-size: 14px;
+            margin-top: 40px;
+            color: #333;
+            border-top: 2px solid #c8e6c9;
+        }
+
+        footer section {
+            margin-bottom: 20px;
+            min-width: 200px;
+        }
+
+        footer h4 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #1b5e20;
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        footer a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body>
+<div th:replace="component/header :: header"></div>
+
 <div class="container">
     <div class="form-wrapper">
         <!-- Header -->
@@ -323,7 +738,112 @@
     </div>
 </div>
 
+<div th:replace="component/footer :: footer"></div>
 <script>
+    // pop_up
+    window.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("categoryBtn");
+        const popup = document.getElementById("categoryPopup");
+        const categoryItems = document.querySelectorAll(".category-item");
+        const subLists = document.querySelectorAll(".sub-list");
+        const childItems = document.querySelectorAll(".child-item");
+        const childSubLists = document.querySelectorAll(".child-sub-list");
+        const grandchildItems = document.querySelectorAll(".grandchild-item");
+
+        if (btn && popup) {
+            btn.addEventListener("click", () => {
+                popup.style.display = popup.style.display === "block" ? "none" : "block";
+            });
+        }
+
+        categoryItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const index = item.getAttribute("data-index");
+
+                categoryItems.forEach(i => i.classList.remove("active"));
+                subLists.forEach(s => s.classList.remove("active"));
+                childItems.forEach(c => c.classList.remove("active"));
+                childSubLists.forEach(c => c.style.display = "none");
+
+                item.classList.add("active");
+                document.querySelector(`.sub-list[data-index="${index}"]`)?.classList.add("active");
+            });
+        });
+
+        childItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const subIndex = item.getAttribute("data-sub-index");
+
+                childItems.forEach(c => c.classList.remove("active"));
+                childSubLists.forEach(list => list.style.display = "none");
+
+                item.classList.add("active");
+                const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+                if (targetList) {
+                    targetList.style.display = "block";
+                }
+            });
+        });
+
+        if (categoryItems.length > 0) {
+            categoryItems[0].click();
+        }
+
+        document.querySelectorAll(".parent-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const li = item.closest("li.category-item");
+                const index = li.dataset.index;
+                const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
+                const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
+
+                if (!hasChild) {
+                    const categoryName = item.textContent.trim();
+                    window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
+                }
+            });
+        });
+
+        document.querySelectorAll(".child-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const subIndex = item.dataset.subIndex;
+                const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+                const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
+
+                // Reset trạng thái
+                document.querySelectorAll(".child-item").forEach(c => c.classList.remove("active"));
+                document.querySelectorAll(".child-sub-list").forEach(list => list.style.display = "none");
+
+                item.classList.add("active");
+
+                if (hasGrandchild) {
+                    // Có cháu → chỉ hiện danh sách cháu
+                    childSubList.style.display = "block";
+                } else {
+                    // Không có cháu → chuyển trang
+                    const parentLi = item.closest(".sub-list");
+                    const parentIndex = parentLi.getAttribute("data-index");
+                    const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+                    const keyword = item.textContent.trim();
+                    window.location.href = `/view-product?&category=${encodeURIComponent(parentName)}`;
+                }
+            });
+        });
+
+        document.querySelectorAll(".grandchild-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const grandchildName = item.textContent.trim();
+                const subList = item.closest(".child-sub-list");
+                const subIndex = subList.getAttribute("data-sub-index");
+                const [parentIndex] = subIndex.split("-");
+                const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+                const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
+                const keyword = childItem ? childItem.textContent.trim() : "";
+
+                window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+            });
+        });
+    });
+
     // Set minimum date to today
     document.getElementById("appointmentDate").min = new Date()
         .toISOString()

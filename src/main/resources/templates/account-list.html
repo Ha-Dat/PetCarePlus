@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f9f9fb;
+    }
+
+    .dashboard {
+        display: flex;
+    }
+
+    .sidebar {
+        width: 240px;
+        background-color: white;
+        border-right: 1px solid #e5e5e5;
+        padding: 20px;
+    }
+
+    .sidebar .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar nav ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar nav li {
+        margin: 20px 0;
+    }
+
+    .sidebar nav li.active a,
+    .sidebar nav a:hover {
+        color: #6366f1;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info {
+        position: absolute;
+        bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-container {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        background: white;
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .status.complete {
+        color: green;
+        background-color: #e6f4ea;
+        padding: 5px 10px;
+        border-radius: 10px;
+    }
+
+    .status.pending {
+        color: #e8a522;
+        background-color: #fff5e5;
+        padding: 5px 10px;
+        border-radius: 10px;
+    }
+
+    .status.cancel {
+        color: red;
+        background-color: #fde8e8;
+        padding: 5px 10px;
+        border-radius: 10px;
+    }
+
+</style>
+<body>
+
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="/images/logo.png" alt="Logo"/>
+            <h2>admin</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/dashboard"><i class="fas fa-chart-bar"></i>Thống kê</a></li>
+                <li class="active"><a href="/customers"><i class="fas fa-users"></i>Tài khoản</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <button onclick="openCreateModal()">Tạo tài khoản mới</button>
+
+        <!-- Table -->
+        <section class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>SĐT</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${accounts}">
+                    <td th:text="${a.accountId}">#</td>
+                    <td>
+                        <span th:text="${a.name}"></span>
+                    </td>
+                    <td>
+                        <i class="fas fa-phone"></i>
+                        <span th:text="${a.phone}"></span>
+                    </td>
+                    <td>
+                        <span th:text="${a.role}"></span>
+                    </td>
+                    <td>
+                        <span th:text="${a.status}"></span>
+                    </td>
+                    <td>
+                        <button th:onclick="'viewDetail(' + ${a.accountId} + ')'">Chi tiết</button>
+
+                        <form th:action="@{'/admin/account/ban/' + ${a.accountId}}" method="post"
+                              style="display:inline;">
+                            <button type="submit"
+                                    th:text="${a.status == 'ACTIVE' ? 'Khóa' : 'Mở khóa'}"
+                                    th:class="${a.status == 'ACTIVE' ? 'ban-btn' : 'unban-btn'}">
+                            </button>
+                        </form>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Popup Modal -->
+        <div id="createAccountModal" style="display:none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="background: white; margin: 100px auto; padding: 20px; width: 400px; border-radius: 8px; position: relative;">
+                <h3>Tạo tài khoản mới</h3>
+
+                <div th:if="${error}" style="color: red; margin-bottom: 10px;">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <form th:action="@{/admin/account/create}" method="post">
+                    <label>Tên:</label>
+                    <input type="text" name="name" required><br><br>
+
+                    <label>SĐT:</label>
+                    <input type="text" name="phone" required><br><br>
+
+                    <label>Mật khẩu:</label>
+                    <input type="password" name="password" required><br><br>
+
+                    <label>Vai trò:</label>
+                    <select name="role">
+                        <option value="SELLER">Seller</option>
+                        <option value="PET_GROOMER">Pet Groomer</option>
+                        <option value="DOCTOR">Doctor</option>
+                        <option value="MANAGER">Manager</option>
+                    </select><br><br>
+
+                    <button type="submit">Tạo</button>
+                    <button type="button" onclick="closeCreateModal()">Hủy</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Chi tiết tài khoản -->
+        <div id="accountDetailModal" style="display:none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="background: white; margin: 100px auto; padding: 20px; width: 400px; border-radius: 8px; position: relative;">
+                <h3>Chi tiết tài khoản</h3>
+                <form id="accountDetailForm">
+                    <input type="hidden" id="accountId">
+
+                    <label for="name">Tên:</label>
+                    <input type="text" id="name" required><br><br>
+
+                    <label for="phone">SĐT:</label>
+                    <input type="text" id="phone" required><br><br>
+
+                    <label for="role">Vai trò:</label>
+                    <select id="role">
+                        <option value="SELLER">Seller</option>
+                        <option value="PET_GROOMER">Pet Groomer</option>
+                        <option value="DOCTOR">Doctor</option>
+                        <option value="MANAGER">Manager</option>
+                    </select><br><br>
+
+                    <label for="status">Trạng thái:</label>
+                    <select id="status">
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select><br><br>
+
+                    <button type="button" id="updateBtn" onclick="submitUpdate()">Cập nhật</button>
+                    <button type="button" onclick="closeDetailModal()">Đóng</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+<script>
+    function openCreateModal() {
+        document.getElementById('createAccountModal').style.display = 'block';
+    }
+
+    function closeCreateModal() {
+        document.getElementById('createAccountModal').style.display = 'none';
+    }
+
+    function viewDetail(id) {
+        fetch('/admin/account/detail/' + id)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Không tìm thấy tài khoản.");
+                }
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById("accountId").value = data.accountId;
+                document.getElementById("name").value = data.name;
+                document.getElementById("phone").value = data.phone;
+                document.getElementById("role").value = data.role;
+                document.getElementById("status").value = data.status;
+                document.getElementById("accountDetailModal").style.display = 'block';
+
+                const updateBtn = document.getElementById("updateBtn");
+                if (data.role.toUpperCase() === "ADMIN" || data.role.toUpperCase() === "CUSTOMER") {
+                    updateBtn.style.display = 'none';
+                } else {
+                    updateBtn.style.display = 'inline-block';
+                }
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+
+    function closeDetailModal() {
+        document.getElementById("accountDetailModal").style.display = 'none';
+    }
+
+    function submitUpdate() {
+        const id = document.getElementById("accountId").value;
+        const data = {
+            name: document.getElementById("name").value,
+            phone: document.getElementById("phone").value,
+            role: document.getElementById("role").value,
+            status: document.getElementById("status").value
+        };
+
+        fetch('/admin/account/update/' + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Cập nhật thất bại.");
+                }
+                alert("Cập nhật thành công!");
+                closeDetailModal();
+                location.reload();
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+</script>
+
+</html>

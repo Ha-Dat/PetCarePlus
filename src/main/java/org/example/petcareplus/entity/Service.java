@@ -21,7 +21,7 @@ public class Service {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String serviceCategory;
 
     @Column(nullable = false)
