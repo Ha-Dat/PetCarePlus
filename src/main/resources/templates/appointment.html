@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Nunito", sans-serif;
+            background-color: #f9fbfc;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th,
+        .product-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+        }
+
+        .form-group-full {
+            width: 100%;
+        }
+
+        .image-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .image-input-group input {
+            flex: 1;
+        }
+
+        .upload-btn {
+            padding: 8px;
+            background-color: #2ec4b6;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .btn-primary:hover {
+            background-color: #26b2a5;
+        }
+
+        .btn-secondary:hover {
+            background-color: #aaa;
+        }
+
+        @media (max-width: 640px) {
+            .modal-box {
+                max-width: 90%;
+                padding: 20px;
+            }
+
+            .modal-box input,
+            .modal-box select,
+            .modal-box textarea {
+                font-size: 14px;
+            }
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Detail Button */
+        .detail-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .detail-btn:hover {
+            background-color: lightgreen;
+        }
+
+        .prescription-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .prescription-btn:hover {
+            background-color: lightgreen;
+        }
+
+        .approved-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .approved-btn:hover {
+            background-color: lightgreen;
+        }
+        .disapproved-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .disapproved-btn:hover {
+            background-color: lightgreen;
+        }
+
+        /* Toast thông báo*/
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background-color: #28a745; /* success mặc định */
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: #dc3545; /* màu đỏ */
+        }
+
+        .toast.hidden {
+            display: none;
+        }
+
+        @keyframes fadeInOut {
+            0%   { opacity: 0; transform: translateY(-20px); }
+            10%  { opacity: 1; transform: translateY(0); }
+            90%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Doctor Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li><a th:href="@{/appointment/approved}">Appointment sắp tới</a></li>
+            <li><a th:href="@{/appointment/pending}">Appointment chờ duyệt</a></li>
+            <li><a th:href="@{/appointment/history}">Lịch sử appointment</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title" th:if="${mode == 'approved'}">Appointment sắp tới</h1>
+        <h1 class="page-title" th:if="${mode == 'pending'}">Appointment chờ duyệt</h1>
+        <h1 class="page-title" th:if="${mode == 'history'}">Lịch sử appointment</h1>
+        <label th:if="${mode == 'history'}">Tra bằng tên thú cưng:</label>
+        <form th:action="@{/appointment/search}" method="post" th:if="${mode == 'history'}">
+            <input class="search-pet" type="text">
+            <button class="search-btn" type="submit">Tra</button>
+        </form>
+        <div class="content">
+            <!-- Table Container -->
+            <div class="table-container">
+                <table class="product-table">
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên thú cưng</th>
+                        <th>Thời điểm</th>
+                        <th>Thời gian</th>
+                        <th>Ghi chú</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="appointment, stat : ${appointments}">
+                        <td th:text="${currentPage * size + stat.index + 1}"></td>
+                        <td th:text="${appointment.petProfile.name}"></td>
+                        <td th:text="${appointment.bookDate}"></td>
+                        <td th:text="${appointment.service != null ? appointment.service.duration : 'N/A'}"> phút</td>
+                        <td th:text="${appointment.note}"></td>
+                        <td th:text="${appointment.status}"></td>
+                        <td>
+                            <a class="detail-btn"
+                               th:attr="data-name=${appointment.petProfile.name},
+                                           data-species=${appointment.petProfile.species},
+                                           data-breeds=${appointment.petProfile.breeds},
+                                           data-weight=${appointment.petProfile.weight},
+                                           data-age=${appointment.petProfile.age},
+                                           data-image=${appointment.petProfile.image}"
+                               href="javascript:void(0)"
+                               onclick="openPetProfileModal(this)">Chi tiết</a>
+
+                            <a class="prescription-btn" th:if="${mode == 'approved'}"
+                                    th:onclick="">
+                                Tạo đơn thuốc
+                            </a>
+
+                            <a class="approved-btn" th:if="${mode == 'pending'}"
+                               th:href="@{/appointment/approve/${appointment.appointment_booking_id}}"
+                               onclick="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
+                                Chấp nhận
+                            </a>
+
+                            <a class="disapproved-btn" th:if="${mode == 'pending'}"
+                               th:href="@{/appointment/disapprove/${appointment.appointment_booking_id}}"
+                               onclick="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                Không chấp nhận
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(appointments)}">
+                        <td colspan="6">Không có cuộc hẹn nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <ul>
+                        <li th:if="${currentPage > 0}">
+                            <a th:href="@{/appointment/approved(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                        </li>
+
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a th:href="@{/appointment/approved(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                        </li>
+
+                        <li th:if="${currentPage < totalPages - 1}">
+                            <a th:href="@{/appointment/approved(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<div id="petProfile" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="modalTitle">Thông tin thú cưng</h2>
+        <div class="modal-content">
+            <label>Tên:</label>
+            <input type="text" id="petName" readonly />
+
+            <label>Loài:</label>
+            <input type="text" id="petSpecies" readonly />
+
+            <label>Tuổi:</label>
+            <input type="text" id="petAge" readonly />
+
+            <label>Hình ảnh:</label>
+            <div style="margin: 10px 0;">
+                <img id="petImagePreview" src="" style="max-width: 100%; max-height: 200px;" />
+            </div>
+
+            <label>Giống:</label>
+            <input type="text" id="petBreeds" readonly />
+
+            <label>Cân nặng:</label>
+            <input type="text" id="petWeight" readonly />
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closePetProfileModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="toast" class="toast hidden">
+    <span id="toastMessage"></span>
+</div>
+<script>
+    function openPetProfileModal(element) {
+        const name = element.getAttribute('data-name');
+        const species = element.getAttribute('data-species');
+        const age = element.getAttribute('data-age');
+        const image = element.getAttribute('data-image');
+        const breeds = element.getAttribute('data-breeds');
+        const weight = element.getAttribute('data-weight');
+
+        document.getElementById("petName").value = name;
+        document.getElementById("petSpecies").value = species;
+        document.getElementById("petAge").value = age;
+        document.getElementById("petImagePreview").src = image;
+        document.getElementById("petBreeds").value = breeds;
+        document.getElementById("petWeight").value = weight;
+
+        document.getElementById("petProfile").style.display = "flex";
+    }
+
+    function closePetProfileModal() {
+        document.getElementById("petProfile").style.display = "none";
+    }
+
+</script>
+</body>
+</html>

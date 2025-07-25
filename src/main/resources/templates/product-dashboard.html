@@ -415,7 +415,7 @@
         <ul class="sidebar-menu">
             <li><a href="#">🛒 Orders</a></li>
             <li><a href="category-dashboard">📂 Categories</a></li>
-            <li class="active"><a href="productDashboard">📦 Products</a></li>
+            <li class="active"><a href="product-dashboard">📦 Products</a></li>
             <li><a href="#">🏷️ Promotions</a></li>
         </ul>
     </aside>
@@ -465,17 +465,16 @@
                                 <button type="button" class="dropdown-toggle">⋮</button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
-                                       th:attr="
-                                           data-id=${product.productId},
-                                           data-name=${product.name},
-                                           data-description=${product.description},
-                                           data-price=${product.price},
-                                           data-image=${product.image},
-                                           data-stock=${product.unitInStock},
-                                           data-sold=${product.unitSold},
-                                           data-status=${product.status},
-                                           data-category=${product.category.categoryId}
-                                       "
+                                       th:attr="data-product-id=${product.productId},
+            data-name=${product.name},
+            data-category-id=${product.category.categoryId},
+            data-price=${product.price},
+            data-stock=${product.unitInStock},
+            data-sold=${product.unitSold},
+            data-status=${product.status},
+            data-description=${product.description},
+            data-image=${product.image}"
+                                       href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
                                     </a>
@@ -493,21 +492,19 @@
                     </tr>
                     </tbody>
                 </table>
-
-                <!-- pagination -->
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/productDashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                            <a th:href="@{/product-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active' : ''">
-                            <a th:href="@{/productDashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/product-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                         </li>
 
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/productDashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                            <a th:href="@{/product-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -519,38 +516,38 @@
 <!-- Product Form Modal -->
 <div id="addProductModal" class="modal-overlay">
     <div class="modal-box">
-            <h2 id="modalTitle">Thêm sản phẩm mới</h2>
+        <h2 id="modalTitle">Thêm sản phẩm mới</h2>
 
         <form id="createProductForm" onsubmit="submitCreateProduct(event)">
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
             <div>
-                    <label for="productName">Tên sản phẩm *</label>
-                    <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
+                <label for="productName">Tên sản phẩm *</label>
+                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
 
-                    <label for="productCategory">Danh mục *</label>
-                    <select id="productCategory" name="categoryId" required>
-                        <option value="">Chọn danh mục</option>
-                        <option th:each="cat : ${categoryOptions}"
-                                th:value="${cat.categoryId}"
-                                th:text="${cat.name}"
-                                th:selected="${product?.category?.categoryId} == ${cat.categoryId}">
-                        </option>
-                    </select>
+                <label for="productCategory">Danh mục *</label>
+                <select id="productCategory" name="categoryId" required>
+                    <option value="">Chọn danh mục</option>
+                    <option th:each="cat : ${categoryOptions}"
+                            th:value="${cat.categoryId}"
+                            th:text="${cat.name}"
+                            th:selected="${product?.category?.categoryId} == ${cat.categoryId}">
+                    </option>
+                </select>
 
-                    <label for="productPrice">Giá (VNĐ) *</label>
-                    <input type="number" id="productPrice" name="price" required min="0" step="1000" placeholder="0"/>
+                <label for="productPrice">Giá (VNĐ) *</label>
+                <input type="number" id="productPrice" name="price" required min="0" step="1000" placeholder="0"/>
 
-                    <label for="productStock">Số lượng tồn kho *</label>
-                    <input type="number" id="productStock" name="unitInStock" required min="1" placeholder="1"/>
+                <label for="productStock">Số lượng tồn kho *</label>
+                <input type="number" id="productStock" name="unitInStock" required min="1" placeholder="1"/>
 
-                    <label for="productSold">Đã bán</label>
-                    <input type="number" id="productSold" name="unitSold" min="0" placeholder="0"/>
+                <label for="productSold">Đã bán</label>
+                <input type="number" id="productSold" name="unitSold" min="0" placeholder="0"/>
 
-                    <label for="productStatus">Trạng thái *</label>
-                    <select id="productStatus" name="status" required>
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="INACTIVE">INACTIVE</option>
-                    </select>
+                <label for="productStatus">Trạng thái *</label>
+                <select id="productStatus" name="status" required>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                </select>
             </div>
 
             <div class="form-group form-group-full">
@@ -684,7 +681,7 @@
             categoryId: parseInt(form.categoryId.value)
         };
 
-        fetch('/productDashboard/create', {
+        fetch('/product-dashboard/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -695,7 +692,7 @@
                 if (res.ok) {
                     closeAddModal();
                     showToast("Thêm sản phẩm thành công!", "success");
-                    setTimeout(() => window.location.href = "/productDashboard", 1000);
+                    setTimeout(() => window.location.href = "/product-dashboard", 1000);
                 } else {
                     showToast("Thêm sản phẩm thất bại!", "error");
                 }
@@ -706,30 +703,30 @@
             });
     }
 
-    function openEditModal(button) {
-        const id = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
-        const description = button.getAttribute('data-description');
-        const price = button.getAttribute('data-price');
-        const image = button.getAttribute('data-image');
-        const stock = button.getAttribute('data-stock');
-        const sold = button.getAttribute('data-sold');
-        const status = button.getAttribute('data-status');
-        const category = button.getAttribute('data-category');
+    function openEditModal(element) {
+        const productId = element.getAttribute('data-product-id');
+        const name = element.getAttribute('data-name');
+        const categoryId = element.getAttribute('data-category-id');
+        const price = element.getAttribute('data-price');
+        const stock = element.getAttribute('data-stock');
+        const sold = element.getAttribute('data-sold');
+        const status = element.getAttribute('data-status');
+        const description = element.getAttribute('data-description');
+        const image = element.getAttribute('data-image');
 
-        // Gán dữ liệu vào các trường trong form
-        document.getElementById('editProductId').value = id;
-        document.getElementById('editProductName').value = name;
-        document.getElementById('editProductDescription').value = description;
-        document.getElementById('editProductPrice').value = price;
-        document.getElementById('editProductImage').value = image;
-        document.getElementById('editProductStock').value = stock;
-        document.getElementById('editProductSold').value = sold;
-        document.getElementById('editProductStatus').value = status;
-        document.getElementById('editProductCategory').value = category;
+        // Gán vào form
+        document.getElementById("editProductId").value = productId;
+        document.getElementById("editProductName").value = name;
+        document.getElementById("editProductCategory").value = categoryId;
+        document.getElementById("editProductPrice").value = price;
+        document.getElementById("editProductStock").value = stock;
+        document.getElementById("editProductSold").value = sold;
+        document.getElementById("editProductStatus").value = status;
+        document.getElementById("editProductDescription").value = description;
+        document.getElementById("editProductImage").value = image;
 
         // Hiển thị modal
-        document.getElementById('editProductModal').style.display = 'flex';
+        document.getElementById("editProductModal").style.display = "flex";
     }
 
     function submitEditProduct(event) {
@@ -749,7 +746,7 @@
             categoryId: parseInt(form.categoryId.value)
         };
 
-        fetch(`/productDashboard/update/${productId}`, {
+        fetch(`/product-dashboard/update/${productId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

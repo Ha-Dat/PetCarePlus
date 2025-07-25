@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PetProfileRepository extends JpaRepository<PetProfile, Long> {
+
 }
