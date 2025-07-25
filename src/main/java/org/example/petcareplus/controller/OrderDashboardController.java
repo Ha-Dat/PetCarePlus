@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
+import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,7 +59,7 @@ public class OrderDashboardController {
     @GetMapping("/orders/reject/{id}")
     public String rejectOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
-        order.setStatus("Rejected");
+        order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
         return "redirect:/orderDashboard";
     }
@@ -66,7 +67,7 @@ public class OrderDashboardController {
     @GetMapping("/orders/approve/{id}")
     public String approveOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
-        order.setStatus("Approved");
+        order.setStatus(OrderStatus.APPROVED);
         orderService.save(order);
         return "redirect:/orderDashboard";
     }

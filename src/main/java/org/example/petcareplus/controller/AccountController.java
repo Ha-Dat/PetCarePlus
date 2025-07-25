@@ -70,7 +70,7 @@ public class AccountController {
         }
 
         // Nếu đúng thì ACTIVE và xóa OTP
-        account.setStatus("ACTIVE");
+        account.setStatus(AccountStatus.ACTIVE);
         account.setOtp(null);
         account.setOtpExpiry(null);
         accountService.save(account);
@@ -101,7 +101,7 @@ public class AccountController {
         String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
         account.setOtp(otp);
         account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
-        account.setStatus("PENDING"); // chưa active
+        account.setStatus(AccountStatus.ACTIVE);
         accountService.save(account);
 
         // Gửi OTP qua SMS hoặc log ra console (tạm thời)
