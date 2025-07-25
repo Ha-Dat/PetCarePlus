@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,4 +25,7 @@ public interface OrderService {
     public Order get(Long id);
 
     Long createOrder(Order order, Map<Long, Integer> orderItems);
+
+    Page<OrderDTO> filterOrders(String orderId, String status, LocalDate startDate, LocalDate endDate, Pageable pageable);
+
 }
