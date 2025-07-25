@@ -239,7 +239,7 @@ public class ForumController {
         if (account == null) return "redirect:/login";
 
         // Gọi Service
-        forumService.saveRating(postId, account.getAccountId(),rating);
+        forumService.saveRating(postId, account.getAccountId(), rating);
         return "redirect:/forum";
     }
 

@@ -81,7 +81,7 @@ public class ForumServiceImpl implements ForumService {
                 if(!imageFile.isEmpty()) {
                     String imageUrl = saveFileToS3(imageFile, "uploads/images/");
                     Media media = new Media();
-                    media.setMediaCategory(MediaCategory.IMAGE);
+                    media.setMediaCategory(MediaCategory.POST_IMAGE);
                     media.setUrl(imageUrl);
                     media.setPost(post);
                     medias.add(media);
@@ -95,7 +95,7 @@ public class ForumServiceImpl implements ForumService {
                 if(!videoFile.isEmpty()) {
                     String videoUrl = saveFileToS3(videoFile, "uploads/videos/");
                     Media media = new Media();
-                    media.setMediaCategory(MediaCategory.VIDEO);
+                    media.setMediaCategory(MediaCategory.POST_VIDEO);
                     media.setUrl(videoUrl);
                     media.setPost(post);
                     medias.add(media);
@@ -126,9 +126,9 @@ public class ForumServiceImpl implements ForumService {
             String url = media.getUrl();
             boolean keep = false;
 
-            if (media.getMediaCategory() == MediaCategory.IMAGE && postDTO.getOldImageUrls() != null) {
+            if (media.getMediaCategory() == MediaCategory.POST_IMAGE && postDTO.getOldImageUrls() != null) {
                 keep = postDTO.getOldImageUrls().contains(url);
-            } else if (media.getMediaCategory() == MediaCategory.VIDEO && postDTO.getOldVideoUrls() != null) {
+            } else if (media.getMediaCategory() == MediaCategory.POST_VIDEO && postDTO.getOldVideoUrls() != null) {
                 keep = postDTO.getOldVideoUrls().contains(url);
             }
 
@@ -153,7 +153,7 @@ public class ForumServiceImpl implements ForumService {
                 if (!imageFile.isEmpty()) {
                     String imageUrl = saveFileToS3(imageFile, "uploads/images/");
                     Media media = new Media();
-                    media.setMediaCategory(MediaCategory.IMAGE);
+                    media.setMediaCategory(MediaCategory.POST_IMAGE);
                     media.setUrl(imageUrl);
                     media.setPost(existingPost);
                     newMedias.add(media);
@@ -167,7 +167,7 @@ public class ForumServiceImpl implements ForumService {
                 if (!videoFile.isEmpty()) {
                     String videoUrl = saveFileToS3(videoFile, "uploads/videos/");
                     Media media = new Media();
-                    media.setMediaCategory(MediaCategory.VIDEO);
+                    media.setMediaCategory(MediaCategory.POST_VIDEO);
                     media.setUrl(videoUrl);
                     media.setPost(existingPost);
                     newMedias.add(media);
