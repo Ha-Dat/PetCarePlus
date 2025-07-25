@@ -6,6 +6,8 @@ import org.example.petcareplus.dto.LoginDTO;
 import org.example.petcareplus.dto.RegisterDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.enums.AccountRole;
+import org.example.petcareplus.enums.AccountStatus;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +63,8 @@ public class AccountController {
         account.setName(registerDTO.getName());
         account.setPhone(registerDTO.getPhone());
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
-        account.setRole("CUSTOMER");
-        account.setStatus("ACTIVE");
+        account.setRole(AccountRole.CUSTOMER);
+        account.setStatus(AccountStatus.ACTIVE);
 
         accountService.save(account);
 
@@ -96,7 +98,7 @@ public class AccountController {
 
         Account account = accountOpt.get();
 
-        if (!"ACTIVE".equalsIgnoreCase(account.getStatus())) {
+        if (account.getStatus() == AccountStatus.BANNED) {
             model.addAttribute("error", "Tài khoản bị khóa!");
             return "login";
         }
