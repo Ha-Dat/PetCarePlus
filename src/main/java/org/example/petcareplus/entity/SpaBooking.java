@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.petcareplus.entity.Enum.BookingStatus;
+import org.example.petcareplus.enums.BookingStatus;
 
 import java.time.LocalDateTime;
 

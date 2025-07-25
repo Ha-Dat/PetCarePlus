@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.PromotionStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,7 +34,8 @@ public class Promotion {
 
     private LocalDateTime endDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PromotionStatus status;
 
     private String image;
 
@@ -41,7 +43,6 @@ public class Promotion {
     private List<Order> orders;
 
     //method thêm trong trường hợp lombok không hoạt động
-
 
     public Long getPromotionId() {
         return promotionId;
@@ -91,11 +92,11 @@ public class Promotion {
         this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public PromotionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PromotionStatus status) {
         this.status = status;
     }
 

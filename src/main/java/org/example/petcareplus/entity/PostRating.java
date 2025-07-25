@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.petcareplus.entity.Enum.Rating;
+import org.example.petcareplus.enums.Rating;
 
 @Entity
 @Table(name = "post_ratings")

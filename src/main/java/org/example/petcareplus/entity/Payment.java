@@ -3,6 +3,7 @@ package org.example.petcareplus.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,15 +25,26 @@ public class Payment {
     private String paymentMethod;
 
     private String transactionCode;
+
     private BigDecimal amount;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+
     private LocalDateTime paymentDate;
+
     private String bankCode;
+
     private String cardType;
+
     private String vnpPayDate;
+
     private String vnpResponseCode;
+
     private String vnpTransactionType;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     public Long getPaymentId() {
@@ -75,11 +87,11 @@ public class Payment {
         this.amount = amount;
     }
 
-    public String getStatus() {
+    public PaymentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PaymentStatus status) {
         this.status = status;
     }
 

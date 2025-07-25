@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.ServiceCategory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +23,8 @@ public class Service {
     private String name;
 
     @Column(nullable = false)
-    private String serviceCategory;
+    @Enumerated(EnumType.STRING)
+    private ServiceCategory serviceCategory;
 
     @Column(nullable = false)
     private BigDecimal price;
@@ -40,6 +42,8 @@ public class Service {
     private List<SpaBooking> spaBookings;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+
     public Long getServiceId() {
         return serviceId;
     }
@@ -56,11 +60,11 @@ public class Service {
         this.name = name;
     }
 
-    public String getServiceCategory() {
+    public ServiceCategory getServiceCategory() {
         return serviceCategory;
     }
 
-    public void setServiceCategory(String serviceCategory) {
+    public void setServiceCategory(ServiceCategory serviceCategory) {
         this.serviceCategory = serviceCategory;
     }
 

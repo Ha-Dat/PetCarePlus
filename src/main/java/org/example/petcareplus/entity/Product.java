@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.ProductStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -35,7 +36,8 @@ public class Product {
     private int unitSold;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @Column(nullable = false)
     private String image;
@@ -54,6 +56,8 @@ public class Product {
     private List<OrderItem> orderItems;
 
     //method thêm trong trường hợp lombok không hoạt động
+
+
     public Long getProductId() {
         return productId;
     }
@@ -86,11 +90,12 @@ public class Product {
         this.price = price;
     }
 
+    @Min(value = 0)
     public int getUnitInStock() {
         return unitInStock;
     }
 
-    public void setUnitInStock(int unitInStock) {
+    public void setUnitInStock(@Min(value = 0) int unitInStock) {
         this.unitInStock = unitInStock;
     }
 
@@ -102,11 +107,11 @@ public class Product {
         this.unitSold = unitSold;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProductStatus status) {
         this.status = status;
     }
 
@@ -116,6 +121,14 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public Category getCategory() {
@@ -140,13 +153,5 @@ public class Product {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
     }
 }
