@@ -5,6 +5,8 @@ import org.example.petcareplus.entity.*;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.HotelBookingService;
+import org.example.petcareplus.service.PetProfileService;
+import org.example.petcareplus.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,15 +25,21 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/")
 public class HotelBookingController {
-    @Autowired
+
     private HotelBookingService hotelBookingService;
 
-    @Autowired
     private CategoryService categoryService;
 
-    public HotelBookingController(HotelBookingService hotelBookingService, CategoryService categoryService) {
+    private PetProfileService petProfileService;
+
+    private final ServiceService serviceService;
+
+    @Autowired
+    public HotelBookingController(HotelBookingService hotelBookingService, CategoryService categoryService, PetProfileService petProfileService, ServiceService serviceService) {
         this.hotelBookingService = hotelBookingService;
         this.categoryService = categoryService;
+        this.petProfileService = petProfileService;
+        this.serviceService = serviceService;
     }
 
     @GetMapping("/list-hotel-booking")
@@ -67,7 +75,7 @@ public class HotelBookingController {
 
     @GetMapping("/list-hotel-booking/hotel-detail/{id}")
     @ResponseBody
-    public ResponseEntity<?> getBookingDetail(@PathVariable("id") Long id) {
+    public ResponseEntity<?> getHotelBookingDetail(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
@@ -80,6 +88,7 @@ public class HotelBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
+            data.put("image", booking.getPetProfile().getMedias().get(0).getUrl());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());
@@ -123,7 +132,7 @@ public class HotelBookingController {
         List<Category> parentCategories = categoryService.getParentCategory();
 
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
-        model.addAttribute("services", hotelBookingService.Service_findAll()); // list dịch vụ
+        model.addAttribute("hotelServices", serviceService.findByServiceCategory("HOTEL")); // list dịch vụ
         model.addAttribute("categories", parentCategories);
         return "hotel-booking";
     }
@@ -148,7 +157,7 @@ public class HotelBookingController {
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
             petProfile.setProfile(account.getProfile());
-            hotelBookingService.PetProfile_save(petProfile);
+            petProfileService.save(petProfile);
 
             // gán dữ liệu từ form
             HotelBooking booking = new HotelBooking();

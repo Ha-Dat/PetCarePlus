@@ -56,8 +56,4 @@ public class HotelBookingServiceImpl implements HotelBookingService {
         return serviceRepository.findById(id);
     }
 
-    @Override
-    public void PetProfile_save(PetProfile petProfile) {
-        petProfileRepository.save(petProfile);
-    }
 }

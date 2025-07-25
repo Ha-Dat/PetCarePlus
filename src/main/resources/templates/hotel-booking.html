@@ -624,17 +624,6 @@
     <!-- Form -->
     <form id="hotelBookingForm" action="/hotel-booking/book" method="post" onsubmit="handleSubmit(event)">
       <div class="form-container">
-<!--        &lt;!&ndash; Owner Information &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="ownerInfo">Thông tin chủ nuôi</label>-->
-<!--          <input-->
-<!--                  type="text"-->
-<!--                  id="ownerInfo"-->
-<!--                  name="ownerInfo"-->
-<!--                  placeholder="Họ và tên..."-->
-<!--                  required-->
-<!--          />-->
-<!--        </div>-->
 
         <!-- Pet Name -->
         <div class="form-group">
@@ -672,33 +661,12 @@
           />
         </div>
 
-<!--        &lt;!&ndash; Phone Number &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="phoneNumber">Số điện thoại</label>-->
-<!--          <input-->
-<!--                  type="tel"-->
-<!--                  id="phoneNumber"-->
-<!--                  name="phoneNumber"-->
-<!--                  placeholder="Số điện thoại..."-->
-<!--                  required-->
-<!--          />-->
-<!--        </div>-->
-
         <!-- Chọn dịch vụ -->
-        <div class="form-group">
-          <label for="serviceId">Chọn dịch vụ</label>
-          <div class="select-wrapper">
-            <select id="serviceId" name="serviceId" required>
-              <option value="">Chọn loại dịch vụ cần đặt lịch</option>
-              <option value="1">Chuồng M</option>
-              <option value="2">Chuồng L</option>
-              <option value="3">Chuồng XL</option>
-              <option value="4">Phòng VIP 1</option>
-              <option value="5">Phòng VIP 2</option>
-              <option value="6">Phòng VIP 3</option>
-            </select>
-          </div>
-        </div>
+          <option value="">Chọn loại dịch vụ spa</option>
+          <option th:each="service : ${hotelServices}"
+                  th:value="${service.serviceId}"
+                  th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + ')'}">
+          </option>
 
         <!-- Chọn thời gian -->
         <div class="form-group">
