@@ -647,7 +647,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Tên:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="name" th:value="${selectedPet.name}" th:readonly="${!editMode}" class="form-control">
+                                <input type="text" name="name" th:value="${selectedPet.name}" th:readonly="${!edit}" class="form-control">
                             </div>
                         </div>
 
@@ -655,7 +655,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Tuổi:</label>
                             <div class="col-sm-9">
-                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!editMode}" class="form-control">
+                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!edit}" class="form-control">
                             </div>
                         </div>
 
@@ -663,7 +663,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Loài:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="species" th:value="${selectedPet.species}" th:readonly="${!editMode}" class="form-control">
+                                <input type="text" name="species" th:value="${selectedPet.species}" th:readonly="${!edit}" class="form-control">
                             </div>
                         </div>
 
@@ -671,7 +671,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Giống:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="breeds" th:value="${selectedPet.breeds}" th:readonly="${!editMode}" class="form-control">
+                                <input type="text" name="breeds" th:value="${selectedPet.breeds}" th:readonly="${!edit}" class="form-control">
                             </div>
                         </div>
 
@@ -679,9 +679,9 @@
                         <div class="text-end">
                             <a href="/" class="btn btn-secondary btn-custom">Quay lại</a>
 
-                            <button th:if="${editMode}" type="submit" class="btn btn-success btn-custom">Lưu</button>
+                            <button th:if="${edit}" type="submit" class="btn btn-success btn-custom">Lưu</button>
 
-                            <a th:if="${!editMode}" th:href="@{'/pet-profile/edit-mode?selectedId=' + ${selectedPet.petProfileId}}"
+                            <a th:if="${!edit}" th:href="@{'/pet-profile/edit?selectedId=' + ${selectedPet.petProfileId}}"
                                class="btn btn-primary btn-custom">Chỉnh sửa</a>
 
                             <!-- Nút mở modal -->

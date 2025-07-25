@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -53,6 +54,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<PostRating> postRatings;
+
+    private String otp;
+    private LocalDateTime otpExpiry;
 
     //method thêm trong trường hợp lombok không hoạt động
 
@@ -150,5 +154,21 @@ public class Account {
 
     public void setPostRatings(List<PostRating> postRatings) {
         this.postRatings = postRatings;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
     }
 }

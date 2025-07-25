@@ -50,7 +50,7 @@ public class PetProfileController {
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
         model.addAttribute("categories", parentCategories);
-        model.addAttribute("editMode", false);
+        model.addAttribute("edit", false);
         return "pet-profile";
     }
 
@@ -69,7 +69,7 @@ public class PetProfileController {
         if (result.hasErrors()) {
             model.addAttribute("petProfiles", petProfileService.findAll());
             model.addAttribute("selectedPet", null);
-            model.addAttribute("editMode", false);
+            model.addAttribute("edit", false);
             model.addAttribute("modalError", true);
             return "pet-profile";
         }
@@ -78,13 +78,13 @@ public class PetProfileController {
         return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
     }
 
-    @GetMapping("/edit-mode")
+    @GetMapping("/edit")
     public String switchToEdit(@RequestParam("selectedId") Long selectedId, Model model) {
         List<PetProfile> petProfiles = petProfileService.findAll();
         PetProfile selectedPet = petProfileService.findById(selectedId);
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("editMode", true);
+        model.addAttribute("edit", true);
         return "pet-profile";
     }
 
@@ -96,7 +96,7 @@ public class PetProfileController {
         if (result.hasErrors()) {
             model.addAttribute("selectedId", petId);
             model.addAttribute("petProfile", petProfile);
-            model.addAttribute("editMode", true);
+            model.addAttribute("edit", true);
             return "pet-profile";
         }
 
