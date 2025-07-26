@@ -1,5 +1,8 @@
 package org.example.petcareplus.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum AccountRole {
 
     ADMIN("Admin"), SELLER("Nhân viên bán hàng"),
@@ -11,4 +14,13 @@ public enum AccountRole {
     AccountRole(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static List<AccountRole> getRoles() {
+        return Arrays.asList(AccountRole.values());
+    }
+
 }

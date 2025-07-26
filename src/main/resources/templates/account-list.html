@@ -151,20 +151,20 @@
                     <td th:text="${a.accountId}"></td>
                     <td th:text="${a.name}"></td>
                     <td th:text="${a.phone}"></td>
-                    <td th:text="${a.role.value}"></td>
-                    <td th:id="'status-' + ${a.accountId}" th:text="${a.status.value}"></td>
-                    <td>
-                        <button th:onclick="'viewDetail(' + ${a.accountId} + ')'">Chi tiết</button>
+                <td th:text="${a.role.value}"></td>
+                <td th:id="'status-' + ${a.accountId}" th:text="${a.status.value}"></td>
+                <td>
+                    <button th:onclick="'viewDetail(' + ${a.accountId} + ')'">Chi tiết</button>
 
-                        <button
-                                type="button"
-                                th:attr="data-id=${a.accountId}"
-                                th:attrappend=" data-status=${a.status.value}"
-                                th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
-                                th:class="${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
-                                onclick="changeStatus(this)">
-                        </button>
-                    </td>
+                    <button
+                            type="button"
+                            th:attr="data-id=${a.accountId}"
+                            th:attrappend=" data-status=${a.status.value}"
+                            th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
+                            th:class="${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
+                            onclick="changeStatus(this)">
+                    </button>
+                </td>
 
                 </tr>
                 </tbody>
@@ -193,11 +193,12 @@
 
                     <label>Vai trò:</label>
                     <select name="role">
-                        <option value="SELLER">Seller</option>
-                        <option value="PET_GROOMER">Pet Groomer</option>
-                        <option value="DOCTOR">Doctor</option>
-                        <option value="MANAGER">Manager</option>
-                    </select><br><br>
+                        <option th:each="r : ${roles}"
+                                th:value="${r.name()}"
+                                th:text="${r.value}">
+                        </option>
+                    </select>
+                    <br>
 
                     <button type="submit">Tạo</button>
                     <button type="button" onclick="closeCreateModal()">Hủy</button>
@@ -220,18 +221,22 @@
                     <input type="text" id="phone" required><br><br>
 
                     <label for="role">Vai trò:</label>
-                    <select id="role">
-                        <option value="SELLER">Seller</option>
-                        <option value="PET_GROOMER">Pet Groomer</option>
-                        <option value="DOCTOR">Doctor</option>
-                        <option value="MANAGER">Manager</option>
-                    </select><br><br>
+                    <select id="role" name="role">
+                        <option th:each="r : ${roles}"
+                                th:value="${r.name()}"
+                                th:text="${r.value}">
+                        </option>
+                    </select>
+                    <br><br>
 
                     <label for="status">Trạng thái:</label>
-                    <select id="status">
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="INACTIVE">INACTIVE</option>
-                    </select><br><br>
+                    <select id="status" name="status">
+                        <option th:each="s : ${statuses}"
+                                th:value="${s.name()}"
+                                th:text="${s.value}">
+                        </option>
+                    </select>
+                    <br><br>
 
                     <button type="button" id="updateBtn" onclick="submitUpdate()">Cập nhật</button>
                     <button type="button" onclick="closeDetailModal()">Đóng</button>
@@ -260,19 +265,42 @@
                 return res.json();
             })
             .then(data => {
+                // Populate fields
                 document.getElementById("accountId").value = data.accountId;
                 document.getElementById("name").value = data.name;
                 document.getElementById("phone").value = data.phone;
                 document.getElementById("role").value = data.role;
                 document.getElementById("status").value = data.status;
-                document.getElementById("accountDetailModal").style.display = 'block';
 
+                const nameField = document.getElementById("name");
+                const phoneField = document.getElementById("phone");
+                const roleField = document.getElementById("role");
+                const statusField = document.getElementById("status");
                 const updateBtn = document.getElementById("updateBtn");
-                if (data.role.toUpperCase() === "ADMIN" || data.role.toUpperCase() === "CUSTOMER") {
+
+                // Reset disabled state
+                nameField.readOnly = false;
+                phoneField.readOnly = false;
+                roleField.disabled = false;
+                statusField.disabled = false;
+                updateBtn.style.display = 'inline-block';
+
+                const role = data.role.toUpperCase();
+
+                if (role === "ADMIN") {
+                    // Make all inputs readonly or disabled
+                    nameField.readOnly = true;
+                    phoneField.readOnly = true;
+                    roleField.disabled = true;
+                    statusField.disabled = true;
                     updateBtn.style.display = 'none';
-                } else {
-                    updateBtn.style.display = 'inline-block';
+                } else if (role === "CUSTOMER") {
+                    // Allow update but disable role selection
+                    roleField.disabled = true;
                 }
+
+                // Show modal
+                document.getElementById("accountDetailModal").style.display = 'block';
             })
             .catch(err => {
                 alert(err.message);

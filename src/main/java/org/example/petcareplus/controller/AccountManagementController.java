@@ -29,6 +29,8 @@ public class AccountManagementController {
     public String getAllAccount(Model model){
         List<Account> accounts = accountService.getAllAccount();
         model.addAttribute("accounts", accounts);
+        model.addAttribute("roles", AccountRole.getRoles());
+        model.addAttribute("statuses", AccountStatus.getAllValues());
         return "account-list";
     }
 
