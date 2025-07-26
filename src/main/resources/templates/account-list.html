@@ -148,30 +148,22 @@
                 </thead>
                 <tbody>
                 <tr th:each="a : ${accounts}">
-                    <td th:text="${a.accountId}">#</td>
-                    <td>
-                        <span th:text="${a.name}"></span>
-                    </td>
-                    <td>
-                        <i class="fas fa-phone"></i>
-                        <span th:text="${a.phone}"></span>
-                    </td>
-                    <td>
-                        <span th:text="${a.role}"></span>
-                    </td>
-                    <td>
-                        <span th:text="${a.status}"></span>
-                    </td>
+                    <td th:text="${a.accountId}"></td>
+                    <td th:text="${a.name}"></td>
+                    <td th:text="${a.phone}"></td>
+                    <td th:text="${a.role.value}"></td>
+                    <td th:id="'status-' + ${a.accountId}" th:text="${a.status.value}"></td>
                     <td>
                         <button th:onclick="'viewDetail(' + ${a.accountId} + ')'">Chi tiết</button>
 
-                        <form th:action="@{'/admin/account/ban/' + ${a.accountId}}" method="post"
-                              style="display:inline;">
-                            <button type="submit"
-                                    th:text="${a.status == 'ACTIVE' ? 'Khóa' : 'Mở khóa'}"
-                                    th:class="${a.status == 'ACTIVE' ? 'ban-btn' : 'unban-btn'}">
-                            </button>
-                        </form>
+                        <button
+                                type="button"
+                                th:attr="data-id=${a.accountId}"
+                                th:attrappend=" data-status=${a.status.value}"
+                                th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
+                                th:class="${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
+                                onclick="changeStatus(this)">
+                        </button>
                     </td>
 
                 </tr>
@@ -319,6 +311,46 @@
                 alert(err.message);
             });
     }
-</script>
 
+    function changeStatus(button) {
+        const id = button.getAttribute("data-id");
+
+        fetch('/admin/account/change-status/' + id, {
+            method: 'POST'
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Thay đổi trạng thái thất bại.");
+                }
+                return res.text();
+            })
+            .then(message => {
+                alert(message);
+
+                // Cập nhật trạng thái mới
+                const statusCell = document.getElementById("status-" + id);
+                const currentStatus = button.getAttribute("data-status");
+                let newStatus, newText, newClass;
+
+                if (currentStatus === "Hoạt động") {
+                    newStatus = "Khóa";
+                    newText = "Mở khóa";
+                    newClass = "unban-btn";
+                } else {
+                    newStatus = "Hoạt động";
+                    newText = "Khóa";
+                    newClass = "ban-btn";
+                }
+
+                // Cập nhật DOM
+                statusCell.innerText = newStatus;
+                button.innerText = newText;
+                button.setAttribute("data-status", newStatus);
+                button.className = newClass;
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+</script>
 </html>

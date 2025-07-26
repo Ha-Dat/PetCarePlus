@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.dto.AccountDTO;
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.AccountStatus;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
