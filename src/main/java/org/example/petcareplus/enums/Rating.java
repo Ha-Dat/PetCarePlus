@@ -8,4 +8,8 @@ public enum Rating {
     Rating(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }

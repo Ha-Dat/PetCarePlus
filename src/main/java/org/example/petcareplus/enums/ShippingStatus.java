@@ -8,4 +8,8 @@ public enum ShippingStatus {
     ShippingStatus(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }
