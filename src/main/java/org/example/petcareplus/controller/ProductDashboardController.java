@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.repository.CategoryRepository;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class ProductDashboardController {
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("productStatus", ProductStatus.values());
         return "product-dashboard.html";
     }
 
