@@ -3,6 +3,7 @@ package org.example.petcareplus.controller;
 import org.example.petcareplus.entity.PetProfile;
 import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.entity.SpaBooking;
+import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.PetProfileService;
 import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.entity.*;
@@ -127,7 +128,7 @@ public class SpaBookingController {
 
         // TODO: Add Authen
         model.addAttribute("spaBooking", new SpaBooking());
-        model.addAttribute("spaServices", serviceService.findByServiceCategory("SPA"));
+        model.addAttribute("spaServices", serviceService.findByServiceCategory(ServiceCategory.SPA));
         model.addAttribute("categories", parentCategories);
         return "spa-booking";
     }

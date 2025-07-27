@@ -369,7 +369,14 @@
                 <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
-                            <img th:src="${product.image}" alt="Product Image">
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
@@ -388,7 +395,14 @@
                 <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
-                            <img th:src="${product.image}" alt="Product Image">
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
@@ -431,7 +445,14 @@
                          class="product-item">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                             <div class="product-image-wrapper">
-                                <img th:src="${product.image}" alt="Product Image">
+                                <img th:if="${!#lists.isEmpty(product.medias)}"
+                                     th:src="@{${product.medias[0].url}}"
+                                     alt="Product Image">
+
+                                <!-- fallback nếu không có ảnh -->
+                                <img th:if="${#lists.isEmpty(product.medias)}"
+                                     src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                     alt="No Image">
                             </div>
                             <div class="product-details">
                                 <h3 th:text="${product.name}" class="product-name"></h3>

@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.HotelBookingService;
@@ -132,7 +133,7 @@ public class HotelBookingController {
         List<Category> parentCategories = categoryService.getParentCategory();
 
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
-        model.addAttribute("hotelServices", serviceService.findByServiceCategory("HOTEL")); // list dịch vụ
+        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL)); // list dịch vụ
         model.addAttribute("categories", parentCategories);
         return "hotel-booking";
     }
