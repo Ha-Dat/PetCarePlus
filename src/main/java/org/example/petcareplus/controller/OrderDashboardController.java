@@ -22,7 +22,7 @@ public class OrderDashboardController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/orderDashboard")
+    @GetMapping("/order-dashboard")
     public String orderDashboard(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

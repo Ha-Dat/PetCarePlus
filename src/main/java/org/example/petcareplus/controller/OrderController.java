@@ -38,7 +38,7 @@ public class OrderController {
         if (account == null) {
             return "redirect:/login";
         }
-        
+
         List<Category> parentCategories = categoryService.getParentCategory();
         Page<Order> orderPage = orderService.findAll(PageRequest.of(page, size));
         model.addAttribute("orders", orderPage.getContent());
