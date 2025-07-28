@@ -13,11 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.UUID;
+import java.util.ArrayList;
 
 @Service
 public class PetProfileServiceImpl implements PetProfileService {
@@ -37,14 +39,14 @@ public class PetProfileServiceImpl implements PetProfileService {
         this.s3Client = s3Client;
     }
 
-    @Override
-    public List<PetProfile> findAll() {
-        return petProfileRepository.findAll();
-    }
+
 
     @Override
     public List<PetProfile> findByAccount(Account account) {
-        return petProfileRepository.findByProfileAccount(account);
+        if (account == null || account.getProfile() == null) {
+            return new ArrayList<>();
+        }
+        return petProfileRepository.findByProfile(account.getProfile());
     }
 
     @Override
@@ -69,11 +71,11 @@ public class PetProfileServiceImpl implements PetProfileService {
     public PetProfile createEmptyPet() {
         PetProfile pet = new PetProfile();
         pet.setName("Thú cưng mới");
-        pet.setAge(0);
+        pet.setAge(1);
         pet.setSpecies("");
         pet.setBreeds("");
         pet.setWeight(0.0f);
-        return petProfileRepository.save(pet);
+        return pet;
     }
 
     @Override
@@ -86,14 +88,8 @@ public class PetProfileServiceImpl implements PetProfileService {
         try {
             // Validate file
             if (imageFile == null || imageFile.isEmpty()) {
-                System.out.println("No image file provided");
                 return;
             }
-            
-            System.out.println("Starting image upload for pet ID: " + petProfileId);
-            System.out.println("File name: " + imageFile.getOriginalFilename());
-            System.out.println("File size: " + imageFile.getSize());
-            System.out.println("Content type: " + imageFile.getContentType());
             
             // Validate file size (5MB max)
             if (imageFile.getSize() > 5 * 1024 * 1024) {
@@ -105,12 +101,17 @@ public class PetProfileServiceImpl implements PetProfileService {
             if (contentType == null || (!contentType.startsWith("image/"))) {
                 throw new RuntimeException("Invalid file type. Only images are allowed.");
             }
+
+            Media oldMedia = mediaRepository.findByPetProfile_petProfileId(petProfileId);
+            if (oldMedia != null) {
+                deleteFileFromS3(oldMedia.getUrl());
+                mediaRepository.delete(oldMedia);
+            }
+
+            // Upload to local storage
+            String fileUrl = saveFileToS3(imageFile, "uploads/images/");
             
-            // Try local storage first (simpler for testing)
-            String fileUrl = uploadToLocal(petProfileId, imageFile);
-            System.out.println("Image uploaded to local storage: " + fileUrl);
-            
-            // Lưu thông tin media vào database
+            // Save media info to database
             Media media = new Media();
             media.setMediaCategory(MediaCategory.PET_IMAGE);
             media.setUrl(fileUrl);
@@ -118,90 +119,43 @@ public class PetProfileServiceImpl implements PetProfileService {
             PetProfile petProfile = petProfileRepository.findById(petProfileId).orElse(null);
             if (petProfile != null) {
                 media.setPetProfile(petProfile);
-                Media savedMedia = mediaRepository.save(media);
-                System.out.println("Media saved to database with ID: " + savedMedia.getMediaId());
-                System.out.println("Media URL: " + savedMedia.getUrl());
+                mediaRepository.save(media);
             } else {
-                System.out.println("PetProfile not found with ID: " + petProfileId);
                 throw new RuntimeException("PetProfile not found with ID: " + petProfileId);
             }
             
         } catch (Exception e) {
-            System.err.println("Error uploading image: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Failed to upload image: " + e.getMessage(), e);
         }
     }
-    
-    private String uploadToS3(Long petProfileId, MultipartFile imageFile) throws IOException {
-        // Tạo unique key cho file
-        String originalFilename = imageFile.getOriginalFilename();
-        if (originalFilename == null) {
-            originalFilename = "image.jpg";
-        }
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String key = "pet-images/" + petProfileId + "/" + UUID.randomUUID().toString() + fileExtension;
-        
-        System.out.println("Uploading image to S3: " + key);
-        System.out.println("Bucket: " + bucketName);
-        
-        // Upload file lên S3
-        s3Client.putObject(PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(imageFile.getContentType())
-                .build(),
-                RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize()));
-        
-        // Tạo URL cho file
-        return "https://" + bucketName + ".s3.amazonaws.com/" + key;
-    }
-    
-    private String uploadToLocal(Long petProfileId, MultipartFile imageFile) throws IOException {
+
+    //lưu file lên S3
+    private String saveFileToS3(MultipartFile file, String folder) {
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String key = folder + fileName;
+
         try {
-            // Tạo thư mục uploads nếu chưa có
-            String uploadDir = "uploads/pet-images/" + petProfileId;
-            java.io.File dir = new java.io.File(uploadDir);
-            System.out.println("Creating directory: " + dir.getAbsolutePath());
-            
-            if (!dir.exists()) {
-                boolean created = dir.mkdirs();
-                System.out.println("Directory created: " + created);
-            }
-            
-            // Tạo tên file unique
-            String originalFilename = imageFile.getOriginalFilename();
-            if (originalFilename == null) {
-                originalFilename = "image.jpg";
-            }
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String fileName = UUID.randomUUID().toString() + fileExtension;
-            
-            System.out.println("File name: " + fileName);
-            System.out.println("File extension: " + fileExtension);
-            
-            // Lưu file
-            java.io.File file = new java.io.File(dir, fileName);
-            System.out.println("Saving file to: " + file.getAbsolutePath());
-            
-            imageFile.transferTo(file);
-            
-            // Kiểm tra file đã được lưu
-            if (file.exists()) {
-                System.out.println("File saved successfully. Size: " + file.length() + " bytes");
-            } else {
-                System.out.println("File was not saved!");
-            }
-            
-            // Trả về URL local
-            String url = "/uploads/pet-images/" + petProfileId + "/" + fileName;
-            System.out.println("Returning URL: " + url);
-            return url;
-            
-        } catch (Exception e) {
-            System.err.println("Error in uploadToLocal: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket("petcareplus")
+                            .key(key)
+                            .contentType(file.getContentType())
+                            .build(),
+                    software.amazon.awssdk.core.sync.RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload to S3", e);
         }
+
+        return key; // Hoặc URL đầy đủ nếu bạn muốn lưu link luôn
+    }
+
+    public void deleteFileFromS3(String key) {
+        s3Client.deleteObject(
+                DeleteObjectRequest.builder()
+                        .bucket("petcareplus")
+                        .key(key)
+                        .build()
+        );
     }
 }
