@@ -378,43 +378,46 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="hotelBookings : ${hotelBookings}">
-                        <td th:text="${hotelBookings.hotelBookingId}"></td>
-                        <td th:text="${hotelBookings.bookDate}"></td>
+                    <tr th:each="hotelBooking : ${hotelBookings}">
+                        <td th:text="${hotelBooking.hotelBookingId}"></td>
+                        <td th:text="${hotelBooking.bookDate}"></td>
 
-                        <td th:text="${hotelBookings.status}"></td>
+                        <td th:text="${hotelBooking.status.getValue()}"></td>
                         <!-- Dữ liệu từ khóa ngoại -->
-                        <td th:text="${hotelBookings.petProfile.species}"></td>
-                        <td th:text="${hotelBookings.service.name}"></td>
+                        <td th:text="${hotelBooking.petProfile.species}"></td>
+                        <td th:text="${hotelBooking.service.name}"></td>
                         <td>
                             <div class="action-dropdown">
                                 <button type="button" class="dropdown-toggle">•••</button>
                                 <div class="dropdown-menu">
                                     <button type="button"
                                             class="dropdown-item"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
-                                            th:data-date="${hotelBookings.bookDate}"
-                                            th:data-status="${hotelBookings.status}"
-                                            th:data-service="${hotelBookings.service.name}"
-                                            th:data-pet-image="${hotelBookings.petProfile.image}"
-                                            th:data-pet-name="${hotelBookings.petProfile.name}"
-                                            th:data-pet-species="${hotelBookings.petProfile.species}"
-                                            th:data-pet-breeds="${hotelBookings.petProfile.breeds}"
-                                            th:data-pet-weight="${hotelBookings.petProfile.weight}"
-                                            th:data-account-name="${hotelBookings.petProfile.account.name}"
-                                            th:data-account-phone="${hotelBookings.petProfile.profile.account.phone}"
-                                            th:data-pet-note="${hotelBookings.note}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
+                                            th:data-date="${hotelBooking.bookDate}"
+                                            th:data-status="${hotelBooking.status}"
+                                            th:data-service="${hotelBooking.service.name}"
+
+                                            th:data-pet-id="${hotelBooking.petProfile.medias.get(0).url}"
+                                            th:data-pet-name="${hotelBooking.petProfile.name}"
+                                            th:data-pet-species="${hotelBooking.petProfile.species}"
+                                            th:data-pet-breeds="${hotelBooking.petProfile.breeds}"
+                                            th:data-pet-weight="${hotelBooking.petProfile.weight}"
+                                            th:data-pet-age="${hotelBooking.petProfile.age}"
+
+                                            th:data-account-name="${hotelBooking.petProfile.profile.account.name}"
+                                            th:data-account-phone="${hotelBooking.petProfile.profile.account.phone}"
+                                            th:data-pet-note="${hotelBooking.note}"
                                             onclick="openBookingDetail(this)">
                                         Xem chi tiết
                                     </button>
 
                                     <button class="dropdown-item confirm-btn"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
                                             onclick="acceptBooking(this)">
                                         Duyệt
                                     </button>
                                     <button class="dropdown-item reject-btn"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
                                             onclick="rejectBooking(this)">
                                         Từ chối
                                     </button>
@@ -465,6 +468,7 @@
                             <p><strong>Loài:</strong> <span id="popup-species"></span></p>
                             <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
                             <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+                            <p><strong>Tuoi:</strong> <span id="popup-age"></span></p>
                         </div>
                         <hr>
                         <div class="owner-info">
@@ -534,6 +538,7 @@
         document.getElementById("popup-species").textContent = button.getAttribute("data-pet-species");
         document.getElementById("popup-breed").textContent = button.getAttribute("data-pet-breeds");
         document.getElementById("popup-weight").textContent = button.getAttribute("data-pet-weight");
+        document.getElementById("popup-age").textContent = button.getAttribute("data-pet-age");
 
         document.getElementById("popup-owner").textContent = button.getAttribute("data-account-name");
         document.getElementById("popup-phone").textContent = button.getAttribute("data-account-phone");

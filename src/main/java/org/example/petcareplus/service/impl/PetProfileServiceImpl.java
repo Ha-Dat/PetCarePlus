@@ -54,4 +54,9 @@ public class PetProfileServiceImpl implements PetProfileService {
     public PetProfile save(PetProfile petProfile) {
         return petProfileRepository.save(petProfile);
     }
+
+    @Override
+    public List<PetProfile> findByProfileId(Long profileId) {
+        return petProfileRepository.findAllByProfile_ProfileId(profileId);
+    }
 }

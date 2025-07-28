@@ -15,4 +15,5 @@ public interface PetProfileService {
 
     PetProfile save(PetProfile petProfile);
 
+    List<PetProfile> findByProfileId(Long profileId);
 }
