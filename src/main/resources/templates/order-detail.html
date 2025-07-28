@@ -8,6 +8,7 @@
         .badge {
             font-size: 0.75em;
             padding: 0.375em 0.75em;
+            color: black;
         }
         .badge-success {
             background-color: #28a745;
@@ -145,7 +146,8 @@
                             <td th:text="${payment.paymentId}">1</td>
                             <td th:text="${#temporals.format(payment.createdAt, 'MMM d, yyyy HH:mm:ss')}">---</td>
                             <td>
-                                <span th:class="${payment.status.name() == 'APPROVED' ? 'badge badge-success' : 
+                                <span style="color: #16bf16" th:class="${'badge ' +
+                                               payment.status.name() == 'APPROVED' ? 'badge badge-success' :
                                                payment.status.name() == 'PENDING' ? 'badge badge-warning' : 
                                                payment.status.name() == 'CANCELLED' ? 'badge badge-danger' : 'badge badge-secondary'}"
                                       th:text="${payment.status.name()}">---</span>
