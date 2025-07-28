@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.BookingStatus;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "appointmentbookings")
+@Table(name = "appointment_bookings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +23,9 @@ public class AppointmentBooking {
 
     private String note;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private BookingStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -67,11 +69,11 @@ public class AppointmentBooking {
         this.note = note;
     }
 
-    public String getStatus() {
+    public BookingStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(BookingStatus status) {
         this.status = status;
     }
 
