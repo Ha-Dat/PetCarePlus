@@ -217,15 +217,22 @@
     .dropdown-item:hover {
         background-color: #f8f9fa;
     }
-
+    
     .ban-btn {
-        color: #dc3545;
-        font-weight: 500;
-        display: inline;
+        background-color: #fff5f5;
+        color: #c62828;
     }
 
     .ban-btn:hover {
-        background-color: #ffe5e5;
+        background-color: #ffecec;
+    }
+
+    .unban-btn {
+        color: #2e7d32;
+    }
+
+    .unban-btn:hover {
+        background-color: #d9f5df;
     }
 
     .action-dropdown:hover .dropdown-menu {
@@ -334,9 +341,8 @@
 
                                 <form th:action="@{'/admin/account/change-status/' + ${a.accountId}}" method="post">
                                     <button type="submit"
-                                            class="dropdown-item ban-btn"
                                             th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
-                                            th:class="${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
+                                            th:class="'dropdown-item ' + ${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
                                             onclick="changeStatus(this)">
                                     </button>
                                 </form>
