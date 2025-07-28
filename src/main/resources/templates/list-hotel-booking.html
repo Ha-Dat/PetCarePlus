@@ -432,16 +432,16 @@
                     <div class="pagination">
                         <ul>
                             <li th:if="${currentPage > 0}">
-                                <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                                <a th:href="@{'/list-hotel-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
                             </li>
 
                             <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                 th:classappend="${i == currentPage} ? 'active' : ''">
-                                <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                                <a th:href="@{'/list-hotel-booking'(page=${i}, size=8)}" th:text="${i + 1}"></a>
                             </li>
 
                             <li th:if="${currentPage < totalPages - 1}">
-                                <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                                <a th:href="@{'/list-hotel-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
                             </li>
                         </ul>
                     </div>
