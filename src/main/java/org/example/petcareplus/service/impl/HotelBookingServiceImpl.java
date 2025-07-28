@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,11 @@ public class HotelBookingServiceImpl implements HotelBookingService {
     @Override
     public Optional<org.example.petcareplus.entity.Service> Service_findById(Long id) {
         return serviceRepository.findById(id);
+    }
+
+    @Override
+    public Page<HotelBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable) {
+        return hotelBookingRepository.findByBookDateBetween(startOfDay, endOfDay, pageable);
     }
 
 }
