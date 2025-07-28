@@ -25,7 +25,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentBooking,
         JOIN p.profile pf
         JOIN pf.account acc
         JOIN a.service s
-        WHERE acc.accountId = :accountId
+        WHERE s.serviceCategory = 'APPOINTMENT' AND acc.accountId = :accountId
     """)
     List<MyServiceDTO> findAppointmentBookingsByAccountId(@Param("accountId") Long accountId);
 

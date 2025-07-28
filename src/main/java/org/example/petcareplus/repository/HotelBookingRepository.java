@@ -24,7 +24,7 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
         JOIN p.profile pf
         JOIN pf.account acc
         JOIN h.service s
-        WHERE acc.accountId = :accountId
+        WHERE s.serviceCategory = 'HOTEL' AND acc.accountId = :accountId
     """)
     List<MyServiceDTO> findHotelBookingsByAccountId(@Param("accountId") Long accountId);
 }

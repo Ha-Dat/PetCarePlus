@@ -22,7 +22,7 @@ public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
         JOIN p.profile pf
         JOIN pf.account acc
         JOIN sp.service s
-        WHERE acc.accountId = :accountId
+        WHERE s.serviceCategory = 'SPA' AND acc.accountId = :accountId
     """)
     List<MyServiceDTO> findSpaBookingsByAccountId(@Param("accountId") Long accountId);
 
