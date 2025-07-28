@@ -17,7 +17,7 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
 
     @Query("""
         SELECT new org.example.petcareplus.dto.MyServiceDTO(
-            p.name, s.name, s.serviceCategory, h.bookDate, h.status
+            h.hotelBookingId ,p.name, s.name, s.serviceCategory, h.bookDate, h.status
         )
         FROM HotelBooking h
         JOIN h.petProfile p

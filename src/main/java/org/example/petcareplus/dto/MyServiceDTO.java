@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public class MyServiceDTO {
 
+    private Long bookingId;
     private String petName;
     private String serviceName;
     private ServiceCategory serviceCategory;
@@ -16,12 +17,21 @@ public class MyServiceDTO {
     public MyServiceDTO() {
     }
 
-    public MyServiceDTO(String petName, String serviceName, ServiceCategory serviceCategory, LocalDateTime bookDate, BookingStatus status) {
+    public MyServiceDTO(Long bookingId, String petName, String serviceName, ServiceCategory serviceCategory, LocalDateTime bookDate, BookingStatus status) {
+        this.bookingId = bookingId;
         this.petName = petName;
         this.serviceName = serviceName;
         this.serviceCategory = serviceCategory;
         this.bookDate = bookDate;
         this.status = status;
+    }
+
+    public Long getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Long bookingId) {
+        this.bookingId = bookingId;
     }
 
     public String getPetName() {
