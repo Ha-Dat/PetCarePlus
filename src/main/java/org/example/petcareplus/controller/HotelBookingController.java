@@ -122,7 +122,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/hotel-booking/form")
+    @GetMapping("/hotel-booking-form")
     public String showHotelBookingForm(HttpSession session, Model model) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -141,7 +141,7 @@ public class HotelBookingController {
         return "hotel-booking";
     }
 
-    @GetMapping("/hotel-booking/form/{id}")
+    @GetMapping("/hotel-booking-form/{id}")
     public String showUpdateHotelBookingForm(@PathVariable("id") Long petProfileId, Model model) {
         PetProfile petProfile = petProfileService.findById(petProfileId);
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -196,7 +196,7 @@ public class HotelBookingController {
             booking.setService(service.get());
 
             hotelBookingService.save(booking);
-            return "redirect:/hotel-booking/form";
+            return "redirect:/hotel-booking";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
