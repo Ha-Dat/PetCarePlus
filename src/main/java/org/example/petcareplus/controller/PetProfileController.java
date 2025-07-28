@@ -79,11 +79,20 @@ public class PetProfileController {
     }
 
     @GetMapping("/edit")
-    public String switchToEdit(@RequestParam("selectedId") Long selectedId, Model model) {
+    public String switchToEdit(@RequestParam("selectedId") Long selectedId, Model model, HttpSession session) {
         List<PetProfile> petProfiles = petProfileService.findAll();
         PetProfile selectedPet = petProfileService.findById(selectedId);
+        List<Category> parentCategories = categoryService.getParentCategory();
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", true);
         return "pet-profile";
     }
