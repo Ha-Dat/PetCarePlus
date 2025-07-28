@@ -253,7 +253,7 @@
                                     <div th:if="${media.mediaCategory.name() == 'POST_VIDEO'}"
                                          class="mb-3 rounded-md overflow-hidden relative">
                                         <video controls class="w-full h-auto object-cover">
-                                            <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}" type="video/mp4" />
+                                            <source th:src="${media.url}" type="video/mp4" />
                                             Trình duyệt của bạn không hỗ trợ video.
                                         </video>
                                     </div>
@@ -264,7 +264,7 @@
                                 <th:block th:each="media : ${post.medias}">
                                     <div th:if="${media.mediaCategory.name() == 'POST_IMAGE'}"
                                          class="mb-3 rounded-md overflow-hidden max-h-96 relative">
-                                        <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+                                        <img th:src="${media.url}"
                                              alt="" class="w-full h-auto object-cover" />
                                     </div>
                                 </th:block>

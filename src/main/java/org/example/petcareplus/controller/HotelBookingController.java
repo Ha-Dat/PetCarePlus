@@ -85,7 +85,7 @@ public class HotelBookingController {
             // data đơn book
             data.put("id", booking.getHotelBookingId());
             data.put("bookDate", booking.getBookDate().toString());
-            data.put("status", booking.getStatus());
+            data.put("status", booking.getStatus().getValue());
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
@@ -132,13 +132,27 @@ public class HotelBookingController {
 
         List<Category> parentCategories = categoryService.getParentCategory();
 
+        List<PetProfile> petProfiles = petProfileService.findByProfileId(account.getProfile().getProfileId());
+
+        model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
-        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL)); // list dịch vụ
+        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL));
         model.addAttribute("categories", parentCategories);
         return "hotel-booking";
     }
 
-    @PostMapping("/hotel-booking/book")
+    @GetMapping("/hotel-booking/form/{id}")
+    public String showUpdateHotelBookingForm(@PathVariable("id") Long petProfileId, Model model) {
+        PetProfile petProfile = petProfileService.findById(petProfileId);
+        List<Category> parentCategories = categoryService.getParentCategory();
+
+        model.addAttribute("hotelBooking", new HotelBooking()); // model binding
+        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL));
+        model.addAttribute("categories", parentCategories);
+        return "hotel-booking";
+    }
+
+    @PostMapping("/hotel-booking/book/{id}")
     public String addHotelBooking(
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
@@ -146,6 +160,9 @@ public class HotelBookingController {
             @RequestParam("petName") String petName,
             @RequestParam("petSpecies") String petSpecies,
             @RequestParam("petBreed") String petBreed,
+            @RequestParam("petWeight") float petWeight,
+            @RequestParam("petAge") Integer petAge,
+            @PathVariable("id") Long petProfileId,
             HttpSession session,
             Model model
     ) {
@@ -153,12 +170,14 @@ public class HotelBookingController {
             Account account = (Account) session.getAttribute("loggedInUser");
             if (account == null) return "redirect:/login";
             // Tạo pet profile mới từ form
-            PetProfile petProfile = new PetProfile();
+            PetProfile petProfile = petProfileService.findById(petProfileId);
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);
             petProfile.setBreeds(petBreed);
+            petProfile.setWeight(petWeight);
+            petProfile.setAge(petAge);
             petProfile.setProfile(account.getProfile());
-            petProfileService.save(petProfile);
+            petProfileService.updatePetProfile(petProfileId, petProfile);
 
             // gán dữ liệu từ form
             HotelBooking booking = new HotelBooking();
