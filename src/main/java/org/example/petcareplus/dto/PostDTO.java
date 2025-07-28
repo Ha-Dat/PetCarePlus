@@ -1,5 +1,6 @@
 package org.example.petcareplus.dto;
 import org.example.petcareplus.entity.Media;
+import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,8 +13,6 @@ public class PostDTO {
     private String title;
     private String description;
     private Integer rating;
-    private List<String> image;
-    private List<String> video;
     private LocalDateTime createAt;
     private String accountName;
     private Long accountId;
@@ -44,8 +43,6 @@ public class PostDTO {
             this.rating = null;
         }
 
-//        this.image = post.getMedias().stream().map(Media::getUrl).toList();
-//        this.video = post.getMedias().stream().map(Media::getUrl).toList();
         this.createAt = post.getCreatedAt();
         this.accountName = post.getAccount() != null ? post.getAccount().getName() : "Ẩn danh";
         this.accountId = post.getAccount() != null ? post.getAccount().getAccountId() : null;
@@ -74,20 +71,6 @@ public class PostDTO {
 
     public Long getAccountId() { return accountId; }
     public void setAccountId(Long accountId) { this.accountId = accountId; }
-
-    public List<String> getImage() {
-        return image;
-    }
-    public void setImage(List<String> image) {
-        this.image = image;
-    }
-
-    public List<String> getVideo() {
-        return video;
-    }
-    public void setVideo(List<String> video) {
-        this.video = video;
-    }
 
     public List<MultipartFile> getImageFiles() {
         return imageFiles;
