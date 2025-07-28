@@ -19,7 +19,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentBooking,
 
     @Query("""
         SELECT new org.example.petcareplus.dto.MyServiceDTO(
-            p.name, s.name, s.serviceCategory, a.bookDate, a.status
+            a.appointmentBookingId, p.name, s.name, s.serviceCategory, a.bookDate, a.status
         )
         FROM AppointmentBooking a
         JOIN a.petProfile p

@@ -109,7 +109,7 @@
         <!-- Tabs dịch vụ -->
         <div class="tabs">
             <a th:href="@{/my-schedule(type='all')}"
-               th:classappend="${selectedType}=='all' ? 'active' : ''">Tất cả</a>
+               th:classappend="${selectedType}=='Tất cả' ? 'active' : ''">Tất cả</a>
             <a th:href="@{/my-schedule(type='Spa')}"
                th:classappend="${selectedType}=='Spa' ? 'active' : ''">Spa</a>
             <a th:href="@{/my-schedule(type='Khám bệnh')}"
@@ -122,8 +122,8 @@
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
                 <a class="nav-link"
-                   th:href="@{'/my-schedule'(type=${selectedType}, status='Đang xử lý')}"
-                   th:classappend="${selectedStatus}=='Đang xử lý' ? 'active' : ''">Chờ duyệt</a>
+                   th:href="@{'/my-schedule'(type=${selectedType}, status='Chờ duyệt')}"
+                   th:classappend="${selectedStatus}=='Chờ duyệt' ? 'active' : ''">Chờ duyệt</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link"
@@ -160,11 +160,14 @@
                 <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
                 <td th:text="${s.status.value}"></td>
                 <td>
-                <span th:if="${s.status.value == 'Đang xử lý'}">
-                    <a href="#" class="text-primary me-2"><i class="fas fa-pen"></i></a>
-                    <a href="#" class="text-danger"><i class="fas fa-trash"></i></a>
-                </span>
-                    <span th:if="${s.status.value != 'Đang xử lý'}">—</span>
+                    <span th:if="${s.status.value == 'Chờ duyệt'}">
+                        <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
+                           class="text-danger"
+                           onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
+                            <i class="fas fa-times-circle"></i> Hủy
+                        </a>
+                    </span>
+                    <span th:if="${s.status.value != 'Chờ duyệt'}">—</span>
                 </td>
             </tr>
             </tbody>

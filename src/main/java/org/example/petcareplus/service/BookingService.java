@@ -7,4 +7,6 @@ import java.util.List;
 public interface BookingService {
 
     List<MyServiceDTO> getMyServices(Long accountId);
+
+    void cancelBookingByTypeAndId(String category, Long bookingId);
 }
