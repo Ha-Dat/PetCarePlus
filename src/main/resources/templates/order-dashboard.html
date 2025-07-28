@@ -175,10 +175,28 @@
         .order-table th {
             background-color: #e0f7f5;
             color: #333;
+            font-weight: 600;
         }
 
         tr:hover {
             background-color: #f9f9f9;
+        }
+
+        .price-column {
+            text-align: right;
+        }
+
+        .discount-amount {
+            color: #dc3545;
+        }
+
+        .shipping-fee {
+            color: #6c757d;
+        }
+
+        .total-price {
+            font-weight: bold;
+            color: #198754;
         }
     </style>
 </head>
@@ -197,18 +215,54 @@
 
     <div class="main-content">
         <h1 class="page-title">Quản lý đơn hàng</h1>
+        
+        <!-- Thống kê tổng quan -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng đơn hàng</h5>
+                        <h3 class="card-text" th:text="${totalOrders}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn đã hoàn thành</h5>
+                        <h3 class="card-text" th:text="${completedOrders}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn đang chờ</h5>
+                        <h3 class="card-text" th:text="${pendingOrders}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng doanh thu</h5>
+                        <h3 class="card-text" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
         <form class="order-filter-form">
-            <input type="text" class="form-control" placeholder="Order ID" name="orderId">
-
-            <input type="date" class="form-control" name="fromDate">
-
-            <input type="date" class="form-control" name="toDate">
+            <input type="text" class="form-control" placeholder="Order ID" name="orderId" th:value="${orderId}">
 
             <select class="form-select" name="status">
                 <option value="">Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Complete">Complete</option>
-                <option value="Canceled">Canceled</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
+                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
+                <option value="PROCESSING" th:selected="${status == 'PROCESSING'}">Processing</option>
+                <option value="DELIVERING" th:selected="${status == 'DELIVERING'}">Delivering</option>
+                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                <option value="REJECTED" th:selected="${status == 'REJECTED'}">Rejected</option>
+                <option value="APPROVED" th:selected="${status == 'APPROVED'}">Approved</option>
             </select>
 
             <button type="submit" class="btn btn-primary">Filter</button>
@@ -231,15 +285,15 @@
                     <td th:text="${order.orderId}">#876364</td>
                     <td th:text="${order.customerName}">Tên khách</td>
                     <td th:text="${order.status}">Pending</td>
-                    <td th:text="${order.formattedTotalPrice}">xxx.xxx đ</td>
+                    <td class="price-column total-price" th:text="${order.formattedTotalPrice}">xxx.xxx đ</td>
                     <td>
                         <button class="btn btn-sm btn-primary" th:attr="data-id=${order.orderId}" onclick="loadOrderDetail(this)">
                             View
                         </button>
-                        <a th:if="${order.status == 'Pending'}"
+                        <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/orders/approve/' + ${order.orderId}}"
                            class="btn btn-sm btn-approve ms-2">Approve</a>
-                        <a th:if="${order.status == 'Pending'}"
+                        <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/orders/reject/' + ${order.orderId}}"
                            class="btn btn-sm btn-danger ms-2">Reject</a>
 
