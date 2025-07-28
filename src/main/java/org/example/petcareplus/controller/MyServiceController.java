@@ -1,0 +1,51 @@
+package org.example.petcareplus.controller;
+
+import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.dto.MyServiceDTO;
+import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.service.BookingService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/my-schedule")
+public class MyServiceController {
+
+    private final BookingService bookingService;
+
+    public MyServiceController(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
+
+    @GetMapping
+    public String viewMyService(@RequestParam(value = "type", required = false) String type, Model model, HttpSession session) {
+
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        Long id = account.getAccountId();
+
+        List<MyServiceDTO> schedules = bookingService.getMyServices(id);
+
+        if (type != null && !type.isEmpty()) {
+            if (!type.equals("all")) {
+                schedules = schedules.stream()
+                        .filter(e -> e.getServiceCategory().getValue().equalsIgnoreCase(type))
+                        .toList();
+            }
+        }
+
+        model.addAttribute("schedules", schedules);
+        model.addAttribute("selectedType", type == null ? "all" : type);
+
+        return "my-service-schedule";
+    }
+
+}

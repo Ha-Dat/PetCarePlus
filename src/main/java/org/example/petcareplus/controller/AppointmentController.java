@@ -5,6 +5,7 @@ import org.example.petcareplus.entity.AppointmentBooking;
 import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.service.AppointmentService;
 import org.example.petcareplus.repository.PetProfileRepository;
@@ -21,8 +22,6 @@ import java.util.Optional;
 
 @Controller
 public class AppointmentController {
-    @Autowired
-    private AppointmentRepository appointmentRepository;
 
     private final AppointmentService appointmentService;
 
@@ -84,7 +83,7 @@ public class AppointmentController {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
         if (appointmentBooking.isPresent()) {
             AppointmentBooking appointment = appointmentBooking.get();
-            appointment.setStatus("approved");
+            appointment.setStatus(BookingStatus.ACCEPTED);
             appointmentService.save(appointment);
             return "Đã chấp nhận";
         }
@@ -97,7 +96,7 @@ public class AppointmentController {
         Optional<AppointmentBooking> disappointmentBooking = appointmentService.findById(id);
         if (disappointmentBooking.isPresent()) {
             AppointmentBooking appointment = disappointmentBooking.get();
-            appointment.setStatus("disapproved");
+            appointment.setStatus(BookingStatus.REJECTED);
             appointmentService.save(appointment);
             return "Đã từ chối";
         }

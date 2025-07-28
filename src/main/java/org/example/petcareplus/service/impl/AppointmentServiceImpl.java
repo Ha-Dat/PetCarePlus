@@ -43,5 +43,5 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Optional<AppointmentBooking> findById(Long id){
       return appointmentRepository.findById(id);
-    };
+    }
 }
