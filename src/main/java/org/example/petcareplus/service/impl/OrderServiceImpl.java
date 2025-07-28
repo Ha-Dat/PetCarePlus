@@ -79,6 +79,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()
@@ -129,6 +131,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()
