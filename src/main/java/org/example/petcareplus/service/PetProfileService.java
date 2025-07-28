@@ -16,6 +16,8 @@ public interface PetProfileService {
     PetProfile createEmptyPet();
 
     PetProfile save(PetProfile petProfile);
-    
+
+    List<PetProfile> findByProfileId(Long profileId);
+
     void uploadPetImage(Long petProfileId, MultipartFile imageFile);
 }

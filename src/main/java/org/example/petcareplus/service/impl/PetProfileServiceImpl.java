@@ -7,11 +7,9 @@ import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.repository.MediaRepository;
 import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.service.PetProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -31,7 +29,7 @@ public class PetProfileServiceImpl implements PetProfileService {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    public PetProfileServiceImpl(PetProfileRepository petProfileRepository, 
+    public PetProfileServiceImpl(PetProfileRepository petProfileRepository,
                                MediaRepository mediaRepository,
                                S3Client s3Client) {
         this.petProfileRepository = petProfileRepository;
@@ -84,18 +82,23 @@ public class PetProfileServiceImpl implements PetProfileService {
     }
 
     @Override
+    public List<PetProfile> findByProfileId(Long profileId) {
+        return petProfileRepository.findAllByProfile_ProfileId(profileId);
+    }
+
+    @Override
     public void uploadPetImage(Long petProfileId, MultipartFile imageFile) {
         try {
             // Validate file
             if (imageFile == null || imageFile.isEmpty()) {
                 return;
             }
-            
+
             // Validate file size (5MB max)
             if (imageFile.getSize() > 5 * 1024 * 1024) {
                 throw new RuntimeException("File size too large. Maximum 5MB allowed.");
             }
-            
+
             // Validate file type
             String contentType = imageFile.getContentType();
             if (contentType == null || (!contentType.startsWith("image/"))) {
@@ -110,12 +113,12 @@ public class PetProfileServiceImpl implements PetProfileService {
 
             // Upload to local storage
             String fileUrl = saveFileToS3(imageFile, "uploads/images/");
-            
+
             // Save media info to database
             Media media = new Media();
             media.setMediaCategory(MediaCategory.PET_IMAGE);
             media.setUrl(fileUrl);
-            
+
             PetProfile petProfile = petProfileRepository.findById(petProfileId).orElse(null);
             if (petProfile != null) {
                 media.setPetProfile(petProfile);
@@ -123,7 +126,7 @@ public class PetProfileServiceImpl implements PetProfileService {
             } else {
                 throw new RuntimeException("PetProfile not found with ID: " + petProfileId);
             }
-            
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload image: " + e.getMessage(), e);
         }

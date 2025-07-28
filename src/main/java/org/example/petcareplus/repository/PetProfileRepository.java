@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PetProfileRepository extends JpaRepository<PetProfile, Long> {
+    List<PetProfile> findAllByProfile_ProfileId(Long profileId);
     List<PetProfile> findByProfileAccount(Account account);
     List<PetProfile> findByProfile(Profile profile);
 }

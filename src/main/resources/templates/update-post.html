@@ -221,7 +221,7 @@
                                 <div th:if="${medias != null}">
                                     <div id="image-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
                                         <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_IMAGE'}">
-                                            <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+                                            <img th:src="${media.url}"
                                                  alt="Ảnh hiện tại"
                                                  class="max-w-xs rounded-lg border mb-2"/>
                                             <!-- Thêm input hidden -->
@@ -256,7 +256,7 @@
                                     <div id="video-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
                                         <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_VIDEO'}">
                                             <video controls class="max-w-xs rounded-lg border mb-4"
-                                                   th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"></video>
+                                                   th:src="${media.url}"></video>
                                             <!-- Thêm input hidden -->
                                             <input type="hidden" name="oldVideoUrls" th:value="${media.url}" />
                                         </div>
