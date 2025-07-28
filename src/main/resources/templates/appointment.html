@@ -451,7 +451,7 @@
                         <td th:text="${appointment.bookDate}"></td>
                         <td th:text="${appointment.service != null ? appointment.service.duration : 'N/A'}"> phút</td>
                         <td th:text="${appointment.note}"></td>
-                        <td th:text="${appointment.status.value}"></td>
+                        <td th:text="${appointment.status}"></td>
                         <td>
                             <a class="detail-btn"
                                th:attr="data-name=${appointment.petProfile.name},
