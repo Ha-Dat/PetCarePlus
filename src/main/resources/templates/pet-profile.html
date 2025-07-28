@@ -239,6 +239,8 @@
                 <span th:if="${selectedPet.age != null}">, <span th:text="${selectedPet.age}">Tuổi</span> tuổi</span>
                 <span th:if="${selectedPet.weight != null}">, <span th:text="${selectedPet.weight}">Cân nặng</span> kg</span>
             </div>
+
+            
             <!-- Nếu có thú cưng -->
             <div th:if="${#lists.size(petProfiles) > 0}">
                 <!-- Dropdown chọn thú cưng -->

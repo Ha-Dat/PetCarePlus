@@ -7,8 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface PetProfileService {
-    List<PetProfile> findAll();
-    
     List<PetProfile> findByAccount(Account account);
 
     PetProfile findById(Long id);
@@ -20,5 +18,4 @@ public interface PetProfileService {
     PetProfile save(PetProfile petProfile);
     
     void uploadPetImage(Long petProfileId, MultipartFile imageFile);
-
 }

@@ -85,10 +85,6 @@
                         <div class="col-md-6 offset-md-6">
                             <table class="table table-sm">
                                 <tr>
-                                    <td><strong>Subtotal:</strong></td>
-                                    <td class="text-right price-column" th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}"></td>
-                                </tr>
-                                <tr>
                                     <td><strong>Shipping Fee:</strong></td>
                                     <td class="text-right price-column" th:text="${order.shippingFee != null ? #numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
                                 </tr>
@@ -174,17 +170,6 @@
                 <div class="card-body">
                     <form method="post" th:action="@{'/orders/update-status/' + ${order.orderId}}">
                         <div class="form-group">
-                            <label>Current Status:</label>
-                            <p class="mb-2">
-                                <span th:class="${order.status.name() == 'APPROVED' ? 'badge badge-success' : 
-                                               order.status.name() == 'COMPLETED' ? 'badge badge-success' : 
-                                               order.status.name() == 'PROCESSING' ? 'badge badge-info' : 
-                                               order.status.name() == 'DELIVERING' ? 'badge badge-primary' : 
-                                               order.status.name() == 'PENDING' ? 'badge badge-warning' : 
-                                               order.status.name() == 'REJECTED' ? 'badge badge-danger' : 
-                                               order.status.name() == 'CANCELLED' ? 'badge badge-danger' : 'badge badge-secondary'}"
-                                      th:text="${order.status.name()}">Status</span>
-                            </p>
                             <label>Change Orders Status:</label>
                             <div class="input-group">
                                 <select class="form-control" name="status">
