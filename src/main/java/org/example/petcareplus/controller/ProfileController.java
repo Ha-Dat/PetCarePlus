@@ -55,7 +55,9 @@ public class ProfileController {
         }
 
         ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
+        List<Category> parentCategories = categoryService.getParentCategory();
 
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("profileDTO", profileDTO);
         model.addAttribute("editMode", true);
         return "profile";

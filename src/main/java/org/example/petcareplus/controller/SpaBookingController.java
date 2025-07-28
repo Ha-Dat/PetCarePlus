@@ -123,7 +123,7 @@ public class SpaBookingController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
-    @GetMapping("/spa-booking")
+    @GetMapping("/spa-booking-form")
     public String showSpaBookingForm(HttpSession session, Model model) {
         List<Category> parentCategories = categoryService.getParentCategory();
 
