@@ -494,11 +494,12 @@
                     updateBtn.style.display = 'none';
                 } else if (role === "CUSTOMER") {
                     // Allow update but disable role selection
+                    phoneField.disabled = true;
                     roleField.disabled = true;
                 }
 
                 // Show modal
-                document.getElementById("accountDetailModal").style.display = 'block';
+                document.getElementById("accountDetailModal").style.display = 'flex';
             })
             .catch(err => {
                 alert(err.message);
