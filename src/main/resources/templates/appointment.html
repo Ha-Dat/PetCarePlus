@@ -163,12 +163,6 @@
             width: 100%;
         }
 
-        .image-input-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .image-input-group input {
             flex: 1;
         }
@@ -204,18 +198,9 @@
             cursor: pointer;
         }
 
-        .btn-primary {
-            background-color: #2ec4b6;
-            color: white;
-        }
-
         .btn-secondary {
             background-color: #ccc;
             color: black;
-        }
-
-        .btn-primary:hover {
-            background-color: #26b2a5;
         }
 
         .btn-secondary:hover {
@@ -266,60 +251,65 @@
             color: white;
         }
 
-        /* Detail Button */
-        .detail-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
+        /* Dropdown container */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
             border: none;
-            border-radius: 6px;
+            font-size: 20px;
             cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border-radius: 8px;
+            padding: 4px 0;
+            overflow: hidden;
+        }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
             font-size: 14px;
-        }
-
-        .detail-btn:hover {
-            background-color: lightgreen;
-        }
-
-        .prescription-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
+            width: 100%;
             border: none;
-            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            text-align: left;
+            transition: background-color 0.2s;
         }
 
-        .prescription-btn:hover {
-            background-color: lightgreen;
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
 
-        .approved-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .approved-btn:hover {
-            background-color: lightgreen;
-        }
-        .disapproved-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .disapproved-btn:hover {
-            background-color: lightgreen;
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
         }
 
         /* Toast thông báo*/
@@ -453,32 +443,37 @@
                         <td th:text="${appointment.note}"></td>
                         <td th:text="${appointment.status}"></td>
                         <td>
-                            <a class="detail-btn"
-                               th:attr="data-name=${appointment.petProfile.name},
+                            <div class="action-dropdown">
+                                <button type="button" class="dropdown-toggle">⋮</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item"
+                                       th:attr="data-name=${appointment.petProfile.name},
                                            data-species=${appointment.petProfile.species},
                                            data-breeds=${appointment.petProfile.breeds},
                                            data-weight=${appointment.petProfile.weight},
                                            data-age=${appointment.petProfile.age},
-                                           data-image=${appointment.petProfile.image}"
-                               href="javascript:void(0)"
-                               onclick="openPetProfileModal(this)">Chi tiết</a>
+                                           data-image=${appointment.petProfile.medias[0].url}"
+                                       href="javascript:void(0)"
+                                       onclick="openPetProfileModal(this)">Chi tiết</a>
 
-                            <a class="prescription-btn" th:if="${mode == 'approved'}"
-                                    th:onclick="">
-                                Tạo đơn thuốc
-                            </a>
+                                    <a class="dropdown-item" th:if="${mode == 'approved'}"
+                                       th:onclick="">
+                                        Tạo đơn thuốc
+                                    </a>
 
-                            <a class="approved-btn" th:if="${mode == 'pending'}"
-                               th:href="@{/appointment/approve/${appointment.appointment_booking_id}}"
-                               onclick="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
-                                Chấp nhận
-                            </a>
+                                    <a class="dropdown-item" th:if="${mode == 'pending'}"
+                                       th:href="@{/appointment/approve/${appointment.appointment_booking_id}}"
+                                       onclick="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
+                                        Chấp nhận
+                                    </a>
 
-                            <a class="disapproved-btn" th:if="${mode == 'pending'}"
-                               th:href="@{/appointment/disapprove/${appointment.appointment_booking_id}}"
-                               onclick="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
-                                Không chấp nhận
-                            </a>
+                                    <a class="dropdown-item" th:if="${mode == 'pending'}"
+                                       th:href="@{/appointment/disapprove/${appointment.appointment_booking_id}}"
+                                       onclick="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                        Không chấp nhận
+                                    </a>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(appointments)}">
