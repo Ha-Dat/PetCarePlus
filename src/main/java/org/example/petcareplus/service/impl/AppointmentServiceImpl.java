@@ -1,6 +1,7 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.AppointmentBooking;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.service.AppointmentService;
 import org.springframework.data.domain.Page;
@@ -24,15 +25,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Page<AppointmentBooking> getApprovedAppointments(Pageable pageable) {
-        return appointmentRepository.findByStatusIgnoreCase("approved", pageable);
+        return appointmentRepository.findByStatus(BookingStatus.ACCEPTED, pageable);
     }
     @Override
     public Page<AppointmentBooking> getPendingAppointments(Pageable pageable) {
-        return appointmentRepository.findByStatusIgnoreCase("pending", pageable);
+        return appointmentRepository.findByStatus(BookingStatus.PENDING, pageable);
     }
     @Override
     public Page<AppointmentBooking> getHistoryAppointments(Pageable pageable) {
-        return appointmentRepository.findByStatusIgnoreCase("done", pageable);
+        return appointmentRepository.findByStatus(BookingStatus.REJECTED, pageable);
     }
 
     @Override

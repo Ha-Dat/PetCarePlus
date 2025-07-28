@@ -69,11 +69,11 @@ public class PetProfileController {
                             HttpSession session,
                             Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        
+
         System.out.println("=== Create New Pet ===");
         System.out.println("ImageFile: " + (imageFile != null ? imageFile.getOriginalFilename() : "null"));
         System.out.println("ImageFile empty: " + (imageFile != null ? imageFile.isEmpty() : "null"));
-        
+
         if (result.hasErrors()) {
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
             model.addAttribute("selectedPet", null);
@@ -85,7 +85,7 @@ public class PetProfileController {
         // Gán pet profile cho account hiện tại
         petProfile.setProfile(account.getProfile());
         PetProfile newPet = petProfileService.save(petProfile);
-        
+
         // Xử lý upload ảnh nếu có
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
@@ -96,17 +96,23 @@ public class PetProfileController {
                 e.printStackTrace();
             }
         }
-        
+
         return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
     }
 
     @GetMapping("/edit")
-    public String switchToEdit(@RequestParam("selectedId") Long selectedId, 
+    public String switchToEdit(@RequestParam("selectedId") Long selectedId,
                               HttpSession session,
                               Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
+        List<Category> parentCategories = categoryService.getParentCategory();
+
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
         model.addAttribute("edit", true);
@@ -121,14 +127,14 @@ public class PetProfileController {
                                  HttpSession session,
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        
+
         System.out.println("=== Save Pet Profile ===");
         System.out.println("PetId: " + petId);
         System.out.println("ImageFile: " + (imageFile != null ? imageFile.getOriginalFilename() : "null"));
         System.out.println("ImageFile empty: " + (imageFile != null ? imageFile.isEmpty() : "null"));
         System.out.println("ImageFile size: " + (imageFile != null ? imageFile.getSize() : "null"));
         System.out.println("ImageFile content type: " + (imageFile != null ? imageFile.getContentType() : "null"));
-        
+
         // Test: In ra tất cả request parameters
         System.out.println("=== Request Parameters ===");
         System.out.println("Request contains multipart: " + (imageFile != null));
@@ -138,7 +144,7 @@ public class PetProfileController {
             System.out.println("Content type: " + imageFile.getContentType());
             System.out.println("Is empty: " + imageFile.isEmpty());
         }
-        
+
         if (result.hasErrors()) {
             System.out.println("Validation errors: " + result.getAllErrors());
             model.addAttribute("selectedId", petId);
@@ -151,7 +157,7 @@ public class PetProfileController {
             if (petId != null) {
                 System.out.println("Updating existing pet with ID: " + petId);
                 petProfileService.updatePetProfile(petId, petProfile);
-                
+
                 // Xử lý upload ảnh nếu có
                 if (imageFile != null && !imageFile.isEmpty()) {
                     System.out.println("Uploading image for existing pet");
@@ -166,7 +172,7 @@ public class PetProfileController {
                 } else {
                     System.out.println("No image file provided for upload");
                 }
-                
+
                 return "redirect:/pet-profile?selectedId=" + petId;
             } else {
                 System.out.println("Creating new pet");
@@ -174,9 +180,9 @@ public class PetProfileController {
                 // Gán pet profile cho account hiện tại
                 newPet.setProfile(account.getProfile());
                 PetProfile savedPet = petProfileService.save(newPet);
-                
+
                 System.out.println("New pet created with ID: " + savedPet.getPetProfileId());
-                
+
                 // Xử lý upload ảnh nếu có
                 if (imageFile != null && !imageFile.isEmpty()) {
                     System.out.println("Uploading image for new pet");
@@ -191,7 +197,7 @@ public class PetProfileController {
                 } else {
                     System.out.println("No image file provided for upload");
                 }
-                
+
                 return "redirect:/pet-profile?selectedId=" + savedPet.getPetProfileId();
             }
         } catch (Exception e) {
@@ -204,7 +210,7 @@ public class PetProfileController {
             return "pet-profile";
         }
     }
-    
+
     // Test endpoint để kiểm tra file upload
     @PostMapping("/test-upload")
     @ResponseBody
@@ -214,7 +220,7 @@ public class PetProfileController {
         System.out.println("File size: " + imageFile.getSize());
         System.out.println("Content type: " + imageFile.getContentType());
         System.out.println("Is empty: " + imageFile.isEmpty());
-        
+
         return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
     }
 }
