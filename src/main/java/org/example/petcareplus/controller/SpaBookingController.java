@@ -1,5 +1,6 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.PetProfile;
 import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.entity.SpaBooking;
@@ -122,9 +123,14 @@ public class SpaBookingController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
-    @GetMapping("/spa-booking/form")
-    public String showSpaBookingForm(Model model) {
+    @GetMapping("/spa-booking")
+    public String showSpaBookingForm(HttpSession session, Model model) {
         List<Category> parentCategories = categoryService.getParentCategory();
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
 
         // TODO: Add Authen
         model.addAttribute("spaBooking", new SpaBooking());
@@ -171,7 +177,7 @@ public class SpaBookingController {
             booking.setService(service.get());
 
             spaBookingService.save(booking);
-            return "redirect:/spa-booking/form";
+            return "redirect:/spa-booking";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
