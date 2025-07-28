@@ -1,4 +1,5 @@
 package org.example.petcareplus.repository;
+import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.AppointmentBooking;
 import org.example.petcareplus.enums.BookingStatus;
 import org.springframework.data.domain.Page;
