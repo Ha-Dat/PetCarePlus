@@ -11,4 +11,8 @@ public enum AccountRole {
     AccountRole(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }

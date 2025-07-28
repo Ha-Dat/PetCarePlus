@@ -259,7 +259,16 @@
         <tbody>
         <tr class="cart-item" th:each="entry : ${cartItems}" th:attr="data-product-id=${entry.key.productId}">
             <td class="product-info">
-                <img th:src="${entry.key.image}" alt="Product" class="product-image">
+                    <img class="product-image"
+                         th:if="${!#lists.isEmpty(entry.key.medias)}"
+                         th:src="@{${entry.key.medias[0].url}}"
+                         alt="Product Image">
+
+                    <!-- fallback nếu không có ảnh -->
+                    <img class="product-image"
+                         th:if="${#lists.isEmpty(entry.key.medias)}"
+                         src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                         alt="No Image">
                 <span th:text="${entry.key.name}">Tên sản phẩm</span>
             </td>
             <td th:text="${#numbers.formatDecimal(entry.key.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">xxx.xxx đ</td>

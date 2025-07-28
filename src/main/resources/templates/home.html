@@ -353,6 +353,25 @@
             color: #333;
             margin: 5px 0;
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f39c12;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 9999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -369,7 +388,14 @@
                 <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
-                            <img th:src="${product.image}" alt="Product Image">
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
@@ -388,7 +414,14 @@
                 <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
-                            <img th:src="${product.image}" alt="Product Image">
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
@@ -431,7 +464,14 @@
                          class="product-item">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                             <div class="product-image-wrapper">
-                                <img th:src="${product.image}" alt="Product Image">
+                                <img th:if="${!#lists.isEmpty(product.medias)}"
+                                     th:src="@{${product.medias[0].url}}"
+                                     alt="Product Image">
+
+                                <!-- fallback nếu không có ảnh -->
+                                <img th:if="${#lists.isEmpty(product.medias)}"
+                                     src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                     alt="No Image">
                             </div>
                             <div class="product-details">
                                 <h3 th:text="${product.name}" class="product-name"></h3>

@@ -8,4 +8,8 @@ public enum BookingStatus {
     BookingStatus(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }

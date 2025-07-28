@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý nhân viên</title>
+    <title>Quản lý hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <style>
         body {
@@ -83,7 +83,7 @@
         }
 
         .table-container {
-            width: 180%;
+            width: 190%;
             border-collapse: collapse;
             margin-top: 25px;
             background-color: white;
@@ -396,12 +396,12 @@
                                             th:data-date="${hotelBookings.bookDate}"
                                             th:data-status="${hotelBookings.status}"
                                             th:data-service="${hotelBookings.service.name}"
-                                            th:data-pet-image="${hotelBookings.petProfile.image}"
+                                            th:data-pet-image="${hotelBookings.petProfile.medias[0].url}"
                                             th:data-pet-name="${hotelBookings.petProfile.name}"
                                             th:data-pet-species="${hotelBookings.petProfile.species}"
                                             th:data-pet-breeds="${hotelBookings.petProfile.breeds}"
                                             th:data-pet-weight="${hotelBookings.petProfile.weight}"
-                                            th:data-account-name="${hotelBookings.petProfile.account.name}"
+                                            th:data-account-name="${hotelBookings.petProfile.profile.account.name}"
                                             th:data-account-phone="${hotelBookings.petProfile.profile.account.phone}"
                                             th:data-pet-note="${hotelBookings.note}"
                                             onclick="openBookingDetail(this)">

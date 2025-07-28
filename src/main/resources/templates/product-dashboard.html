@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: "Nunito", sans-serif;
-            background-color: #f9fbfc;
+            background-color: white;
         }
 
         .dashboard {
@@ -413,7 +413,7 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Seller Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="#">🛒 Orders</a></li>
+            <li><a href="order-dashboard">🛒 Orders</a></li>
             <li><a href="category-dashboard">📂 Categories</a></li>
             <li class="active"><a href="product-dashboard">📦 Products</a></li>
             <li><a href="#">🏷️ Promotions</a></li>
@@ -449,7 +449,16 @@
                     <tr th:each="product, stat : ${products}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
                         <td th:text="${product?.name}"></td>
-                        <td><img th:src="${product?.image}" alt="Product image"></td>
+                        <td>
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
+                        </td>
                         <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
@@ -466,14 +475,13 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
                                        th:attr="data-product-id=${product.productId},
-            data-name=${product.name},
-            data-category-id=${product.category.categoryId},
-            data-price=${product.price},
-            data-stock=${product.unitInStock},
-            data-sold=${product.unitSold},
-            data-status=${product.status},
-            data-description=${product.description},
-            data-image=${product.image}"
+                                            data-name=${product.name},
+                                            data-category-id=${product.category.categoryId},
+                                            data-price=${product.price},
+                                            data-stock=${product.unitInStock},
+                                            data-sold=${product.unitSold},
+                                            data-status=${product.status},
+                                            data-description=${product.description}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
@@ -545,8 +553,10 @@
 
                 <label for="productStatus">Trạng thái *</label>
                 <select id="productStatus" name="status" required>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="ACTIVE">Chọn trạng thái</option>
+                    <option th:each="status : ${productStatus}"
+                            th:value="${status.name()}"
+                            th:text="${status.value}"></option>
                 </select>
             </div>
 
@@ -615,8 +625,10 @@
 
                 <label for="editProductStatus">Trạng thái *</label>
                 <select id="editProductStatus" name="status" required>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="ACTIVE">Chọn trạng thái</option>
+                    <option th:each="status : ${productStatus}"
+                            th:value="${status.name()}"
+                            th:text="${status.value}"></option>
                 </select>
             </div>
 
@@ -677,7 +689,6 @@
             unitInStock: parseInt(form.unitInStock.value),
             unitSold: parseInt(form.unitSold.value) || 0,
             status: form.status.value,
-            image: form.image.value.trim(),
             categoryId: parseInt(form.categoryId.value)
         };
 

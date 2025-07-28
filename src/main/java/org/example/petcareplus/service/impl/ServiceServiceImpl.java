@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.repository.ServiceRepository;
 import org.example.petcareplus.service.ServiceService;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public List<org.example.petcareplus.entity.Service> findByServiceCategory(String serviceCategory) {
+    public List<org.example.petcareplus.entity.Service> findByServiceCategory(ServiceCategory serviceCategory) {
         return serviceRepository.findByServiceCategory(serviceCategory);
     }
 }
