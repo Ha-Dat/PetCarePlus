@@ -198,17 +198,17 @@
     <div class="main-content">
         <h1 class="page-title">Quản lý đơn hàng</h1>
         <form class="order-filter-form">
-            <input type="text" class="form-control" placeholder="Order ID" name="orderId">
-
-            <input type="date" class="form-control" name="fromDate">
-
-            <input type="date" class="form-control" name="toDate">
+            <input type="text" class="form-control" placeholder="Order ID" name="orderId" th:value="${orderId}">
 
             <select class="form-select" name="status">
                 <option value="">Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Complete">Complete</option>
-                <option value="Canceled">Canceled</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
+                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
+                <option value="PROCESSING" th:selected="${status == 'PROCESSING'}">Processing</option>
+                <option value="DELIVERING" th:selected="${status == 'DELIVERING'}">Delivering</option>
+                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                <option value="REJECTED" th:selected="${status == 'REJECTED'}">Rejected</option>
+                <option value="APPROVED" th:selected="${status == 'APPROVED'}">Approved</option>
             </select>
 
             <button type="submit" class="btn btn-primary">Filter</button>
@@ -236,10 +236,10 @@
                         <button class="btn btn-sm btn-primary" th:attr="data-id=${order.orderId}" onclick="loadOrderDetail(this)">
                             View
                         </button>
-                        <a th:if="${order.status == 'Pending'}"
+                        <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/orders/approve/' + ${order.orderId}}"
                            class="btn btn-sm btn-approve ms-2">Approve</a>
-                        <a th:if="${order.status == 'Pending'}"
+                        <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/orders/reject/' + ${order.orderId}}"
                            class="btn btn-sm btn-danger ms-2">Reject</a>
 

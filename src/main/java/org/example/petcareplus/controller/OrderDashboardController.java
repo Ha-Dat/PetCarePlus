@@ -61,7 +61,7 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
-        return "redirect:/orderDashboard";
+        return "redirect:/order-dashboard";
     }
 
     @GetMapping("/orders/approve/{id}")
@@ -69,6 +69,6 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.APPROVED);
         orderService.save(order);
-        return "redirect:/orderDashboard";
+        return "redirect:/order-dashboard";
     }
 }
