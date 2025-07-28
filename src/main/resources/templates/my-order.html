@@ -46,6 +46,139 @@
       padding: 40px;
       background-color: #f8f9fa;
     }
+
+    .order-tabs {
+      background-color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+
+    .tab-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      background-color: #f9fafb;
+      color: #374151;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover {
+      background-color: #e5e7eb;
+    }
+
+    .tab.active {
+      background-color: #3b82f6;
+      color: #fff;
+      border-color: #3b82f6;
+      font-weight: 600;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .order-table-container {
+      margin-top: 24px;
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 16px;
+    }
+
+    /* --- Outer Order Table --- */
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+
+    .order-table th {
+      background-color: #f8f9fa;
+      color: #333;
+      font-weight: 600;
+      padding: 12px 10px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .order-table td {
+      padding: 10px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* --- Inner Table (sản phẩm trong đơn hàng) --- */
+    .inner-table {
+      margin-left: 24px;
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fcfcfc;
+    }
+
+    .inner-table td {
+      border: none;
+      padding: 8px 6px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* --- Ảnh sản phẩm --- */
+    .product-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* --- Responsive & Aesthetic --- */
+    @media (max-width: 768px) {
+      .order-table,
+      .inner-table {
+        font-size: 14px;
+      }
+
+      .product-thumb {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .pagination a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .pagination a.active-page {
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -77,199 +210,67 @@
     </div>
 
     <!-- Orders Table -->
-    <div class="table-container">
+    <div class="order-table-container">
       <table class="order-table">
         <thead>
         <tr>
-          <th>Ảnh sản phẩm</th>
-          <th>Tên sản phẩm</th>
-          <th>Số lượng</th>
-          <th>Giá</th>
-          <th>Trạng thái</th>
-          <th>Thành tiền</th>
+          <th style="width: 5%">#</th>
+          <th style="width: 10%">Trạng thái</th>
+          <th style="width: 10%">Ảnh</th>
+          <th style="width: 35%">Tên sản phẩm</th>
+          <th style="width: 10%">Số lượng</th>
+          <th style="width: 15%">Giá</th>
+          <th style="width: 15%">Thành tiền</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order : ${orders}">
+        <tr th:each="order, iStat : ${orders}">
+          <td th:text="${currentPage * size + iStat.index + 1}"></td>
           <td>
-            
+            <span th:text="${order.status}"></span>
           </td>
-
+          <td colspan="4">
+            <table class="inner-table">
+              <tbody>
+              <tr th:each="item : ${order.orderItems}">
+                <td style="width: 50px">
+                  <img th:src="${item.product.medias[0]?.url}" alt="Ảnh" class="product-thumb">
+                </td>
+                <td th:text="${item.product.name}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+          <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
         </tr>
         </tbody>
       </table>
-    </div>
 
-      <!-- Orders List -->
-      <div class="space-y-4">
-        <!-- Order 1 - Completed -->
-        <div th:each="order : ${orders}" class="order-card" >
-          <div class="order-header">
-            <div>
-                  <span class="order-status text-pet-success"
-                  >Sản phẩm</span
-                  >
-            </div>
-            <div class="flex items-center gap-4">
-              <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/03fdd0ca3181947826b3bcf29ab945af52fd8126"
-                      alt="Truck"
-                      style="width: 48px; height: 28px"
-              />
-              <span class="order-status text-pet-red" th:text="${order?.status}"></span>
-            </div>
-          </div>
-          <div class="product-item">
-            <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/8cfdcf533d76c89ee694aedf64d974f99e2e051a"
-                    alt="Sản phẩm A"
-                    class="product-image"
-            />
-            <div th:each="orderItems : ${order.orderItems}">
-              <div class="product-info">
-                <div class="product-name" th:text="${orderItems.product.name}"></div>
-                <div class="product-quantity" th:text="'Số:'+${orderItems.quantity}"></div>
-              </div>
-              <div class="product-price" th:text="'Product price:'+${orderItems.product.price}">đ</div>
-            </div>
-          </div>
-          <div class="order-total">
-            <span class="total-label">Thành tiền:</span>
-            <span class="total-amount" th:text="${order?.totalPrice}">đ</span>
-          </div>
-        </div>
-
-        <div class="pagination">
-          <!-- Previous button -->
-          <a th:if="${currentPage > 0}"
-             th:href="@{'/list_order'(page=${currentPage - 1})}">
-            Previous
-          </a>
-
-          <!-- Numbered page buttons -->
-          <span th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-        <a th:href="@{'/list_order'(page=${pageNum})}"
-           th:text="${pageNum + 1}"
-           th:classappend="${pageNum == currentPage} ? ' active-page' : ''"
-           class="page-number">
-        </a>
+      <!-- Pagination -->
+      <div class="pagination">
+        <a th:if="${currentPage > 0}" th:href="@{'/list_order'(page=${currentPage - 1})}">Previous</a>
+        <span th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+      <a th:href="@{'/list_order'(page=${pageNum})}"
+         th:text="${pageNum + 1}"
+         th:classappend="${pageNum == currentPage} ? ' active-page' : ''"
+         class="page-number">
+      </a>
     </span>
-
-          <!-- Next button -->
-          <a th:if="${currentPage + 1 < totalPages}"
-             th:href="@{'/list_order'(page=${currentPage + 1})}">
-            Next
-          </a>
-        </div>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{'/list_order'(page=${currentPage + 1})}">Next</a>
       </div>
+    </div>
+    </div>
   </div>
 </div>
 <div th:insert="component/footer :: footer"></div>
-<script>
-  // pop_up
-  window.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("categoryBtn");
-    const popup = document.getElementById("categoryPopup");
-    const categoryItems = document.querySelectorAll(".category-item");
-    const subLists = document.querySelectorAll(".sub-list");
-    const childItems = document.querySelectorAll(".child-item");
-    const childSubLists = document.querySelectorAll(".child-sub-list");
-    const grandchildItems = document.querySelectorAll(".grandchild-item");
-
-    if (btn && popup) {
-      btn.addEventListener("click", () => {
-        popup.style.display = popup.style.display === "block" ? "none" : "block";
-      });
-    }
-
-    categoryItems.forEach(item => {
-      item.addEventListener("click", () => {
-        const index = item.getAttribute("data-index");
-
-        categoryItems.forEach(i => i.classList.remove("active"));
-        subLists.forEach(s => s.classList.remove("active"));
-        childItems.forEach(c => c.classList.remove("active"));
-        childSubLists.forEach(c => c.style.display = "none");
-
-        item.classList.add("active");
-        document.querySelector(`.sub-list[data-index="${index}"]`)?.classList.add("active");
-      });
-    });
-
-    childItems.forEach(item => {
-      item.addEventListener("click", () => {
-        const subIndex = item.getAttribute("data-sub-index");
-
-        childItems.forEach(c => c.classList.remove("active"));
-        childSubLists.forEach(list => list.style.display = "none");
-
-        item.classList.add("active");
-        const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
-        if (targetList) {
-          targetList.style.display = "block";
-        }
-      });
-    });
-
-    if (categoryItems.length > 0) {
-      categoryItems[0].click();
-    }
-
-    document.querySelectorAll(".parent-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const li = item.closest("li.category-item");
-        const index = li.dataset.index;
-        const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
-        const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
-
-        if (!hasChild) {
-          const categoryName = item.textContent.trim();
-          window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
-        }
-      });
-    });
-
-    document.querySelectorAll(".child-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const subIndex = item.dataset.subIndex;
-        const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
-        const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
-
-        // Reset trạng thái
-        document.querySelectorAll(".child-item").forEach(c => c.classList.remove("active"));
-        document.querySelectorAll(".child-sub-list").forEach(list => list.style.display = "none");
-
-        item.classList.add("active");
-
-        if (hasGrandchild) {
-          // Có cháu → chỉ hiện danh sách cháu
-          childSubList.style.display = "block";
-        } else {
-          // Không có cháu → chuyển trang
-          const parentLi = item.closest(".sub-list");
-          const parentIndex = parentLi.getAttribute("data-index");
-          const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
-          const keyword = item.textContent.trim();
-          window.location.href = `/view-product?&category=${encodeURIComponent(parentName)}`;
-        }
-      });
-    });
-
-    document.querySelectorAll(".grandchild-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const grandchildName = item.textContent.trim();
-        const subList = item.closest(".child-sub-list");
-        const subIndex = subList.getAttribute("data-sub-index");
-        const [parentIndex] = subIndex.split("-");
-        const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
-        const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
-        const keyword = childItem ? childItem.textContent.trim() : "";
-
-        window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
-      });
-    });
-  });
-</script>
 </body>
 <script th:src="@{js/header.js}"></script>
+<script>
+  function setActiveTab(button, status) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    button.classList.add('active');
+  }
+</script>
 </html>

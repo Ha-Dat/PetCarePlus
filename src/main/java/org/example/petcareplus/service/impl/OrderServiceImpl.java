@@ -3,6 +3,7 @@ package org.example.petcareplus.service.impl;
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.entity.OrderItem;
+import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.repository.OrderItemRepository;
 import org.example.petcareplus.repository.OrderRepository;
 import org.example.petcareplus.repository.ProductRepository;
@@ -78,6 +79,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()
@@ -100,8 +103,13 @@ public class OrderServiceImpl implements OrderService {
             }
 
             if (status != null && !status.isBlank()) {
-                predicates = cb.and(predicates,
-                        cb.equal(root.get("status"), status));
+                try {
+                    OrderStatus orderStatus = OrderStatus.valueOf(status);
+                    predicates = cb.and(predicates,
+                            cb.equal(root.get("status"), orderStatus));
+                } catch (IllegalArgumentException ignored) {
+                    // Invalid status value, ignore this filter
+                }
             }
 
             if (startDate != null) {
@@ -123,6 +131,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()

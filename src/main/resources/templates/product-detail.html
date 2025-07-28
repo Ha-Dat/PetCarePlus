@@ -346,6 +346,25 @@
             color: #444;
             line-height: 1.6;
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f39c12;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 9999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -359,7 +378,16 @@
     <div class="product-detail-container">
         <section class="product-main">
             <div class="image-gallery">
-                <img class="main-image" th:src="${product.image}" alt="Product Image">
+                <img class="main-image"
+                     th:if="${!#lists.isEmpty(product.medias)}"
+                     th:src="@{${product.medias[0].url}}"
+                     alt="Product Image">
+
+                <!-- fallback nếu không có ảnh -->
+                <img class="main-image"
+                     th:if="${#lists.isEmpty(product.medias)}"
+                     src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                     alt="No Image">
             </div>
 
             <div class="product-info">
@@ -412,7 +440,14 @@
                 <div class="product-item" th:each="item : ${top9Products}">
                     <a th:href="@{/product-detail(productId=${item.productId})}" class="product-card">
                         <div class="product-image-wrapper">
-                            <img th:src="${item.image}" alt="Product Image">
+                            <img th:if="${!#lists.isEmpty(item.medias)}"
+                                 th:src="@{${item.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(item.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </div>
                         <div class="product-details">
                             <h3 th:text="${item.name}" class="product-name"></h3>

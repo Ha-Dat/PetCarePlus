@@ -7,13 +7,15 @@ import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.AccountStatus;
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class AccountDTO {
     public Long accountId;
     public String name;
     public String phone;
     public AccountRole role;
     public AccountStatus status;
+
+    public AccountDTO() {
+    }
 
     public AccountDTO(Account account) {
         this.accountId = account.getAccountId();

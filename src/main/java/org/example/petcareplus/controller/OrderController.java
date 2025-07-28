@@ -1,6 +1,7 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.service.CategoryService;
@@ -28,16 +29,22 @@ public class OrderController {
     }
 
     @GetMapping("/list_order")
-    public String listOrder(HttpSession httpSession,
+    public String listOrder(HttpSession session,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
                             Model model) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
 
         List<Category> parentCategories = categoryService.getParentCategory();
         Page<Order> orderPage = orderService.findAll(PageRequest.of(page, size));
         model.addAttribute("orders", orderPage.getContent());
         model.addAttribute("categories", parentCategories);
         model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
         model.addAttribute("totalPages", orderPage.getTotalPages());
         return "my-order.html";
     }

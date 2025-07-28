@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class PetProfileController {
             return "redirect:/login";
         }
 
-        List<PetProfile> petProfiles = petProfileService.findAll();
+        List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         List<Category> parentCategories = categoryService.getParentCategory();
 
         PetProfile selectedPet = null;
@@ -65,34 +66,70 @@ public class PetProfileController {
     public String createNewPet(@Valid @ModelAttribute PetProfile petProfile,
                             BindingResult result,
                             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                            HttpSession session,
                             Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+
         if (result.hasErrors()) {
-            model.addAttribute("petProfiles", petProfileService.findAll());
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
             model.addAttribute("selectedPet", null);
             model.addAttribute("edit", false);
             model.addAttribute("modalError", true);
             return "pet-profile";
         }
 
-        PetProfile newPet = petProfileService.save(petProfile);
-        return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
+        try {
+            // Assign pet profile to current account
+            petProfile.setProfile(account.getProfile());
+            PetProfile newPet = petProfileService.save(petProfile);
+
+            // Handle image upload if provided
+            if (imageFile != null && !imageFile.isEmpty()) {
+                try {
+                    petProfileService.uploadPetImage(newPet.getPetProfileId(), imageFile);
+                } catch (Exception e) {
+                    // Log error but don't fail the entire operation
+                }
+            }
+
+            return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra khi tạo thú cưng: " + e.getMessage());
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            return "pet-profile";
+        }
     }
 
     @GetMapping("/edit")
-    public String switchToEdit(@RequestParam("selectedId") Long selectedId, Model model) {
-        List<PetProfile> petProfiles = petProfileService.findAll();
+    public String switchToEdit(@RequestParam("selectedId") Long selectedId,
+                              HttpSession session,
+                              Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
+        List<Category> parentCategories = categoryService.getParentCategory();
+
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
         model.addAttribute("edit", true);
         return "pet-profile";
     }
 
-    @PostMapping("/save")
+        @PostMapping("/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
                                  @Valid @ModelAttribute PetProfile petProfile,
                                  BindingResult result,
+                                 @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                                 HttpSession session,
                                  Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        
         if (result.hasErrors()) {
             model.addAttribute("selectedId", petId);
             model.addAttribute("petProfile", petProfile);
@@ -100,12 +137,58 @@ public class PetProfileController {
             return "pet-profile";
         }
 
-        if (petId != null) {
-            petProfileService.updatePetProfile(petId, petProfile);
-            return "redirect:/pet-profile?selectedId=" + petId;
-        } else {
-            PetProfile newPet = petProfileService.createEmptyPet();
-            return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
+        try {
+            if (petId != null) {
+                petProfileService.updatePetProfile(petId, petProfile);
+                
+                // Handle image upload if provided
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    try {
+                        petProfileService.uploadPetImage(petId, imageFile);
+                    } catch (Exception uploadError) {
+                        model.addAttribute("error", "Lưu thông tin thành công nhưng upload ảnh thất bại: " + uploadError.getMessage());
+                    }
+                }
+                
+                return "redirect:/pet-profile?selectedId=" + petId;
+            } else {
+                PetProfile newPet = petProfileService.createEmptyPet();
+                newPet.setProfile(account.getProfile());
+                PetProfile savedPet = petProfileService.save(newPet);
+                
+                // Handle image upload if provided
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    try {
+                        petProfileService.uploadPetImage(savedPet.getPetProfileId(), imageFile);
+                    } catch (Exception uploadError) {
+                        model.addAttribute("error", "Tạo thú cưng thành công nhưng upload ảnh thất bại: " + uploadError.getMessage());
+                    }
+                }
+                
+                return "redirect:/pet-profile?selectedId=" + savedPet.getPetProfileId();
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra khi lưu thông tin thú cưng: " + e.getMessage());
+            model.addAttribute("selectedId", petId);
+            model.addAttribute("petProfile", petProfile);
+            model.addAttribute("edit", true);
+            return "pet-profile";
         }
     }
+
+        // Test endpoint để kiểm tra file upload
+    @PostMapping("/test-upload")
+    @ResponseBody
+    public String testUpload(@RequestParam("imageFile") MultipartFile imageFile) {
+        System.out.println("=== Test Upload ===");
+        System.out.println("File name: " + imageFile.getOriginalFilename());
+        System.out.println("File size: " + imageFile.getSize());
+        System.out.println("Content type: " + imageFile.getContentType());
+        System.out.println("Is empty: " + imageFile.isEmpty());
+        
+        return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
+    }
+    
+    // Test endpoint để kiểm tra database
+
 }
