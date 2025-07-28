@@ -221,6 +221,22 @@
         .action-dropdown:hover .dropdown-menu {
             display: block;
         }
+        .filter-button {
+            padding: 6px 12px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -238,10 +254,15 @@
     <!-- Main content -->
     <main class="main-content">
             <h1 class="page-title">Quản lý đơn Spa</h1>
+        <div class="header">
             <div class="filters">
-                <label>Từ: <input type="date" value="2021-06-10"></label>
-                <label>Đến: <input type="date" value="2021-10-10"></label>
+                <form method="get" th:action="@{/list-hotel-booking}" style="display: flex; align-items: center;">
+                    <input type="date" name="date" th:value="${selectedDate}">
+                    <button type="submit" class="filter-button">Lọc</button>
+                    <a th:href="@{/list-hotel-booking}" class="filter-button">Hủy lọc</a>
+                </form>
             </div>
+        </div>
 
         <div class="table-container">
             <table class="spa-table">

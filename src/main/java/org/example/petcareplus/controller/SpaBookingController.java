@@ -11,6 +11,9 @@ import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -43,12 +47,21 @@ public class SpaBookingController {
     @GetMapping("/list-spa-booking")
     public String getAllSpaBookings(Model model,
                                     @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "8") int size) {
-        Page<SpaBooking> spaBookings= spaBookingService.findAll(page, size, "bookDate");
+                                    @RequestParam(defaultValue = "8") int size,
+                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bookDate").descending());
+        Page<SpaBooking> spaBookings;
         if (page < 0) {
             return "redirect:/list-spa-booking?page=0&size=" + size;
         }
-
+        if (date != null) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+            spaBookings = spaBookingService.findByBookDateBetween(startOfDay, endOfDay, pageable);
+            model.addAttribute("selectedDate", date);
+        } else {
+            spaBookings = spaBookingService.findAll(page, size, "bookDate");
+        }
         model.addAttribute("spaBookings", spaBookings);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", spaBookings.getTotalPages());
