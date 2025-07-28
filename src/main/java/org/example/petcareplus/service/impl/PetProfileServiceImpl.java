@@ -147,7 +147,7 @@ public class PetProfileServiceImpl implements PetProfileService {
             throw new RuntimeException("Failed to upload to S3", e);
         }
 
-        return key; // Hoặc URL đầy đủ nếu bạn muốn lưu link luôn
+        return "https://petcareplus.s3.ap-southeast-2.amazonaws.com/" + key;
     }
 
     public void deleteFileFromS3(String key) {

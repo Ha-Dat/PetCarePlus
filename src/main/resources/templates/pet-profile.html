@@ -278,7 +278,7 @@
                             <div class="pet-avatar-container">
                                 <img class="avatar-preview mb-3"
                                      th:if="${!#lists.isEmpty(selectedPet.medias)}"
-                                     th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${selectedPet.medias[0].url}}"
+                                     th:src="${selectedPet.medias[0].url}"
                                      alt="Pet Image">
 
                                 <img class="avatar-preview mb-3"
