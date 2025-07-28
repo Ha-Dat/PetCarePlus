@@ -23,7 +23,9 @@ public class MyServiceController {
     }
 
     @GetMapping
-    public String viewMyService(@RequestParam(value = "type", required = false) String type, Model model, HttpSession session) {
+    public String viewMyService(@RequestParam(value = "type", required = false) String type,
+                                @RequestParam(value = "status", required = false) String status,
+                                Model model, HttpSession session) {
 
         if (session.getAttribute("loggedInUser") == null) {
             return "redirect:/login";
@@ -34,16 +36,23 @@ public class MyServiceController {
 
         List<MyServiceDTO> schedules = bookingService.getMyServices(id);
 
-        if (type != null && !type.isEmpty()) {
-            if (!type.equals("all")) {
-                schedules = schedules.stream()
-                        .filter(e -> e.getServiceCategory().getValue().equalsIgnoreCase(type))
-                        .toList();
-            }
+        // Filter theo service
+        if (type != null && !type.equals("all")) {
+            schedules = schedules.stream()
+                    .filter(e -> e.getServiceCategory().getValue().equalsIgnoreCase(type))
+                    .toList();
+        }
+
+        // Filter theo status
+        if (status != null && !status.isEmpty()) {
+            schedules = schedules.stream()
+                    .filter(e -> e.getStatus().getValue().equalsIgnoreCase(status))
+                    .toList();
         }
 
         model.addAttribute("schedules", schedules);
         model.addAttribute("selectedType", type == null ? "all" : type);
+        model.addAttribute("selectedStatus", status);
 
         return "my-service-schedule";
     }

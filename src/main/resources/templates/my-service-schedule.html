@@ -121,19 +121,24 @@
         <!-- Tabs trạng thái -->
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
-                <a class="nav-link active" href="#">Tất cả</a>
+                <a class="nav-link"
+                   th:href="@{'/my-schedule'(type=${selectedType}, status='Đang xử lý')}"
+                   th:classappend="${selectedStatus}=='Đang xử lý' ? 'active' : ''">Chờ duyệt</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Đang xử lý</a>
+                <a class="nav-link"
+                   th:href="@{'/my-schedule'(type=${selectedType}, status='Đã duyệt')}"
+                   th:classappend="${selectedStatus}=='Đã duyệt' ? 'active' : ''">Đã duyệt</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Đã chấp nhận</a>
+                <a class="nav-link"
+                   th:href="@{'/my-schedule'(type=${selectedType}, status='Từ chối')}"
+                   th:classappend="${selectedStatus}=='Từ chối' ? 'active' : ''">Từ chối</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Hoàn thành</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Đã hủy</a>
+                <a class="nav-link"
+                   th:href="@{'/my-schedule'(type=${selectedType}, status='Hủy')}"
+                   th:classappend="${selectedStatus}=='Hủy' ? 'active' : ''">Hủy</a>
             </li>
         </ul>
 
