@@ -241,7 +241,7 @@
                                 <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
                                     <span>Đăng bởi <u><span th:text="${post.accountName}">Username</span></u></span>
                                     <span>•</span>
-                                    <span th:text="${#temporals.format(post.createAt, 'HH:mm dd/MM/yyyy')}"></span>
+                                    <span th:text="${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}"></span>
                                 </div>
 
                                 <!-- Post Title -->
@@ -341,92 +341,18 @@
                         </h3>
                     </div>
                     <div class="p-6 pt-0 space-y-3">
-                        <a href="/post-detail/r1" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Cách chăm sóc chó con tốt nhất năm 2024
-                            </h4>
-                            <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>2 giờ trước</span>
-                                <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none"stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>45</span>
-                                </div>
-                            </div>
-                        </a>
+                        <a th:each="latestPost : ${latestPosts}"
+                           th:href="@{'/post-detail/' + ${latestPost.postId}}"
+                           class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
 
-                        <a href="/post-detail/r2" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Làm thế nào để tối ưu hóa chế độ ăn cho mèo
-                            </h4>
-                            <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>3 giờ trước</span>
-                                <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>23</span>
-                                </div>
-                            </div>
-                        </a>
+                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2"
+                                th:text="${latestPost.title}">Tiêu đề</h4>
 
-                        <a href="/post-detail/r3" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Xây dựng kế hoạch chăm sóc thú cưng toàn diện
-                            </h4>
                             <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>5 giờ trước</span>
-                                <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>67</span>
-                                </div>
-                            </div>
-                        </a>
+                                <span th:text="${#temporals.format(latestPost.createdAt, 'HH:mm dd/MM/yyyy')}">Ngày đăng</span>
 
-                        <a href="/post-detail//r4" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Hướng dẫn huấn luyện thú cưng cho người mới bắt đầu
-                            </h4>
-                            <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>8 giờ trước</span>
                                 <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>34</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <a href="/post-detail/r5" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Thức ăn khô vs thức ăn ướt: Khi nào dùng loại nào
-                            </h4>
-                            <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>12 giờ trước</span>
-                                <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>89</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <a href="/post-detail/r6" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                                Kinh nghiệm tốt nhất trong việc tắm rửa cho thú cưng
-                            </h4>
-                            <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>1 ngày trước</span>
-                                <div class="flex items-center gap-1">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    <span>56</span>
+                                    <span th:text="'Đăng bởi ' + ${latestPost.accountName}">Đăng bởi ...</span>
                                 </div>
                             </div>
                         </a>
@@ -434,6 +360,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -482,7 +409,7 @@
                 data.forEach(post => {
                     const isOwner = loggedInUserId !== null && loggedInUserId === post.accountId;
 
-                    const createdAt = new Date(post.createAt);
+                    const createdAt = new Date(post.createdAt);
                     const formattedCreatedAt = createdAt.toLocaleString('vi-VN', {
                         hour: '2-digit',
                         minute: '2-digit',

@@ -13,7 +13,7 @@ public class PostDTO {
     private String title;
     private String description;
     private Integer rating;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     private String accountName;
     private Long accountId;
     private List<Media> medias;
@@ -43,7 +43,7 @@ public class PostDTO {
             this.rating = null;
         }
 
-        this.createAt = post.getCreatedAt();
+        this.createdAt = post.getCreatedAt();
         this.accountName = post.getAccount() != null ? post.getAccount().getName() : "Ẩn danh";
         this.accountId = post.getAccount() != null ? post.getAccount().getAccountId() : null;
         this.medias = post.getMedias();
@@ -86,11 +86,11 @@ public class PostDTO {
         this.videoFiles = videoFiles;
     }
 
-    public LocalDateTime getCreateAt() {
-        return createAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public List<Media> getMedias() {

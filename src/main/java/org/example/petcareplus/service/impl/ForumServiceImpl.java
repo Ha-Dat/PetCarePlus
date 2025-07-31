@@ -7,6 +7,9 @@ import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -280,6 +283,13 @@ public class ForumServiceImpl implements ForumService {
         postRatingRepository.save(postRating);
         }
     }
+
+    @Override
+    public List<Post> findTop6NewestPosts() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAll(pageable).getContent();
+    }
+
 
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {

@@ -37,4 +37,6 @@ public interface ForumService {
     void deleteReplyCommentById(Long replyId);
 
     void saveRating(Long postId, Long accountId, Rating rating);
+
+    List<Post> findTop6NewestPosts();
 }

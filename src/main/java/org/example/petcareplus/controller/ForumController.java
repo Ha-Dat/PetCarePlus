@@ -55,9 +55,14 @@ public class ForumController {
 
         List<PostDTO> pageContent = sortedPosts.subList(fromIndex, toIndex);
 
+        // Lấy 6 bài post mới nhất
+        List<Post> latestPosts = forumService.findTop6NewestPosts();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
         model.addAttribute("keyword", keyword);
+        model.addAttribute("latestPosts", latestPostDTOs);
         return "forum";
     }
 
@@ -99,11 +104,16 @@ public class ForumController {
         List<CommentPost> comments = forumService.findCommentByPostId(postId);
         PostDTO postDTO = new PostDTO(post);
 
+        // Lấy 6 bài post mới nhất
+        List<Post> latestPosts = forumService.findTop6NewestPosts();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+
         model.addAttribute("account", account);
         model.addAttribute("post", post);
         model.addAttribute("postDTO", postDTO);
         model.addAttribute("comments", comments);
         model.addAttribute("commentCount", post.getComments().size());
+        model.addAttribute("latestPosts", latestPostDTOs);
         return "post-detail";
     }
 
