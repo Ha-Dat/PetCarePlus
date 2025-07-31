@@ -85,15 +85,23 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="flex flex-1 items-center space-x-2 max-w-md">
+        <form method="get" action="/forum" class="flex flex-1 items-center space-x-2 max-w-md">
             <div class="relative w-full">
                 <svg class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.3-4.3" />
                 </svg>
-                <input placeholder="Tìm kiếm và bài viết" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-8 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"/>
+                <input
+                        type="text"
+                        id="searchInput"
+                        name="keyword"
+                        placeholder="Tìm kiếm bài viết"
+                        th:value="${keyword}"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-8 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
             </div>
-        </div>
+        </form>
+
 
         <!-- Navigation -->
         <div class="flex flex-1 items-center justify-end space-x-2">
@@ -460,7 +468,8 @@
     document.getElementById("load-more-btn").addEventListener("click", function () {
         currentPage++;
 
-        fetch(`/api/posts?page=${currentPage}&size=${pageSize}`)
+        const keyword = document.getElementById("searchInput").value;
+        fetch(`/api/posts?page=${currentPage}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`)
             .then(res => res.json())
             .then(data => {
                 if (data.length === 0) {

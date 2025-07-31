@@ -27,14 +27,23 @@ public class ForumController {
     }
 
     @GetMapping("/forum")
-    public String getForumPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            Model model, HttpSession session) {
+    public String getForumPage(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size,
+                               @RequestParam(required = false) String keyword,
+                               Model model, HttpSession session) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
 
         List<Post> allPosts = forumService.findAllWithMedias();
+
+        // Lọc theo từ khóa nếu có
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
+
         List<PostDTO> sortedPosts = allPosts.stream()
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
@@ -48,21 +57,23 @@ public class ForumController {
 
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
-        //log
-        for (Post post : allPosts) {
-            System.out.println("Post ID: " + post.getPostId());
-            for (Media media : post.getMedias()) {
-                System.out.println("Media: " + media.getUrl() + " | " + media.getMediaCategory());
-            }
-        }
-
+        model.addAttribute("keyword", keyword);
         return "forum";
     }
 
     @GetMapping("/api/posts")
     @ResponseBody
-    public List<PostDTO> getMorePosts(@RequestParam int page, @RequestParam int size) {
+    public List<PostDTO> getMorePosts(@RequestParam int page,
+                                      @RequestParam int size,
+                                      @RequestParam(required = false) String keyword) {
         List<Post> allPosts = forumService.findAll();
+        // Lọc nếu có keyword
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
         List<PostDTO> sortedPosts = allPosts.stream()
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
