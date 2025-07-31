@@ -2,9 +2,653 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Quản lý bài viết</title>
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: white;
+            color: #333;
+        }
+
+        /* Layout */
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        /* Main content */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+        
+        /* Product table */
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .post-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .post-table th,
+        .post-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .post-table td img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+
+        .post-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Dropdown container */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Toggle button (⋮) */
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #555;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            position: fixed;
+            top: 165px;
+            right: 65px;
+            min-width: 140px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 16px;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        /* Show dropdown on hover */
+        .action-dropdown:hover .dropdown-menu {
+            display: flex;
+        }
+
+        /* Dropdown item base style */
+        .dropdown-item {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* Individual actions */
+        .dropdown-item.approve {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-item.approve::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .dropdown-item.approve:hover::before {
+            left: 100%;
+        }
+
+        .dropdown-item.approve:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .dropdown-item.reject {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-item.reject::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .dropdown-item.reject:hover::before {
+            left: 100%;
+        }
+
+        .dropdown-item.reject:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.4);
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        /* Chi tiết */
+        .dropdown-item:not(.approve):not(.reject) {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-item:not(.approve):not(.reject)::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .dropdown-item:not(.approve):not(.reject):hover::before {
+            left: 100%;
+        }
+
+        .dropdown-item:not(.approve):not(.reject):hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.4);
+        }
+
+        /* Status text (Đã duyệt) */
+        .dropdown-status {
+            padding: 6px 12px;
+            font-size: 13px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .post-detail-row {
+            margin-bottom: 15px;
+        }
+
+        .post-detail-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .post-detail-value {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .post-media {
+            margin-top: 15px;
+        }
+
+        .post-media img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .post-media video {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .toast.success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0.95;
+            transition: 0.3s ease-in-out;
+        }
+
+        .toast.error {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0.95;
+            transition: 0.3s ease-in-out;
+        }
+
+        .text-success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .text-warning {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        /* Disabled button styles */
+        .dropdown-item:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .dropdown-item:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Focus styles for accessibility */
+        .dropdown-item:focus {
+            outline: 2px solid #2196F3;
+            outline-offset: 2px;
+        }
+
+        .dropdown-toggle:focus {
+            outline: 2px solid #2196F3;
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Manager Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li><a href="#">Lịch làm việc</a></li>
+            <li><a href="#">Tài khoản nhân viên</a></li>
+            <li class="active"><a href="#">Bài viết</a></li>
+        </ul>
+    </aside>
 
+    <div class="main-content">
+        <h1 class="page-title">Quản lý bài viết</h1>
+
+        <!-- Alert messages -->
+        <div th:if="${successMessage}" class="toast success" id="successToast">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="toast error" id="errorToast">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="table-container">
+            <table class="post-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tiêu đề</th>
+                        <th>Người đăng</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr th:each="post : ${posts}">
+                    <td th:text="${post.postId}"></td>
+                    <td th:text="${post.title}">Bài viết A</td>
+                    <td th:text="${post.accountName}">Username</td>
+                    <td th:text="${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}"></td>
+                    <td th:text="${post.checked} ? 'Đã duyệt' : 'Chờ duyệt'"
+                        th:classappend="${post.checked} ? 'text-success' : 'text-warning'">
+                    </td>
+                    <td>
+                        <div class="action-dropdown">
+                            <button type="button" class="dropdown-toggle">⋮</button>
+                            <div class="dropdown-menu">
+                                <button type="button" class="dropdown-item" th:onclick="'showPostDetail(' + ${post.postId} + ')'">
+                                    Chi tiết
+                                </button>
+
+                                <form th:action="@{'/post-dashboard/approve/' + ${post.postId}}" method="post" style="display: contents;">
+                                    <button type="submit" class="dropdown-item approve" 
+                                            th:disabled="${post.checked}"
+                                            th:if="${!post.checked}">Duyệt</button>
+                                </form>
+
+                                <form th:action="@{'/post-dashboard/reject/' + ${post.postId}}" method="post" style="display: contents;">
+                                    <button type="submit" class="dropdown-item reject"
+                                            th:disabled="${post.checked}"
+                                            th:if="${!post.checked}"
+                                            onclick="return confirm('Bạn có chắc chắn muốn từ chối bài viết này? Bài viết sẽ bị xóa khỏi hệ thống.')">Từ chối</button>
+                                </form>
+
+                                <span th:if="${post.checked}" class="dropdown-status">Đã duyệt</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 0}">
+                        <a th:href="@{/post-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active' : ''">
+                        <a th:href="@{/post-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{/post-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Post Detail Modal -->
+<div id="postDetailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title" id="modalTitle">Chi tiết bài viết</h2>
+        </div>
+        <div class="modal-body" id="modalBody">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal functions
+    function showPostDetail(postId) {
+        // Fetch post details via AJAX
+        fetch('/post-dashboard/post/' + postId)
+            .then(response => response.json())
+            .then(post => {
+                document.getElementById('modalTitle').textContent = post.title;
+                
+                let modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Tiêu đề:</div>
+                        <div class="post-detail-value">${post.title}</div>
+                    </div>
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Mô tả:</div>
+                        <div class="post-detail-value">${post.description}</div>
+                    </div>
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Người đăng:</div>
+                        <div class="post-detail-value">${post.accountName}</div>
+                    </div>
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Ngày tạo:</div>
+                                                 <div class="post-detail-value">${new Date(post.createdAt).toLocaleString('vi-VN')}</div>
+                    </div>
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Trạng thái:</div>
+                        <div class="post-detail-value">${post.isChecked ? 'Đã duyệt' : 'Chờ duyệt'}</div>
+                    </div>
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Rating:</div>
+                        <div class="post-detail-value">${post.rating || 0}</div>
+                    </div>
+                    ${post.medias && post.medias.length > 0 ? `
+                        <div class="post-detail-row">
+                            <div class="post-detail-label">Media:</div>
+                            <div class="post-media">
+                                                                 ${post.medias.map(media => {
+                                     if (media.mediaCategory === 'POST_IMAGE') {
+                                         return `<img src="${media.url}" alt="Post image" />`;
+                                     } else if (media.mediaCategory === 'POST_VIDEO') {
+                                         return `<video controls><source src="${media.url}" type="video/mp4">Your browser does not support the video tag.</video>`;
+                                     }
+                                     return '';
+                                 }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('postDetailModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching post details:', error);
+                alert('Có lỗi xảy ra khi tải chi tiết bài viết');
+            });
+    }
+
+    function closeModal() {
+        document.getElementById('postDetailModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('postDetailModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Auto-hide toast messages
+    setTimeout(() => {
+        const successToast = document.getElementById("successToast");
+        const errorToast = document.getElementById("errorToast");
+        if (successToast) successToast.style.display = 'none';
+        if (errorToast) errorToast.style.display = 'none';
+    }, 3000);
+</script>
 </body>
 </html>

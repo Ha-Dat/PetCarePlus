@@ -11,4 +11,11 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.medias")
     List<Post> findAllWithMedias();
+    
+    List<Post> findByIsCheckedTrue();
+    
+    List<Post> findByIsCheckedFalse();
+    
+    @Query("SELECT p FROM Post p WHERE p.isChecked = true ORDER BY p.createdAt DESC")
+    List<Post> findApprovedPostsOrderByCreatedAtDesc();
 }
