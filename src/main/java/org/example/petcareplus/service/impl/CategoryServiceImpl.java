@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Page<Category> getCategoriesPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("categoryId").ascending());
-        return categoryRepository.findAll(pageable);
+        return categoryRepository.findByParentIsNull(pageable);
     }
 
     @Override
@@ -91,6 +91,15 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.save(category);
         return true;
+    }
+
+    @Override
+    public List<Category> getCategoriesByParentId(Long parentId) {
+        if (parentId == null) {
+            return categoryRepository.findByParentIsNull();
+        } else {
+            return categoryRepository.findByParentCategoryId(parentId);
+        }
     }
 
     private boolean isChildOf(Category child, Category potentialParent) {

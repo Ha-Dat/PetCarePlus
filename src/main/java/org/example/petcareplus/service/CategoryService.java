@@ -19,4 +19,6 @@ public interface CategoryService {
     Page<Category> getCategoriesPaginated(int page, int size);
 
     boolean updateCategory(Long id, String name, Long parentId);
+
+    List<Category> getCategoriesByParentId(Long parentId);
 }
