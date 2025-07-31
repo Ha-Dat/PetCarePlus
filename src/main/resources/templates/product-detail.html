@@ -552,10 +552,23 @@
         allAddToCartBtns.forEach(btn => {
             btn.addEventListener("click", () => {
                 const productId = btn.getAttribute("data-product-id");
+                const qtyInput = document.getElementById("qty");
+                const qty = parseInt(qtyInput?.value || 1);
+
+                if (qty <= 0) {
+                    showToast("Số lượng không hợp lệ", "warning");
+                    return;
+                }
+
+                const unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
+                if (!isNaN(unitInStock) && qty > unitInStock) {
+                    showToast("Không đủ hàng trong kho", "warning");
+                    return;
+                }
 
                 const params = new URLSearchParams();
                 params.append("productId", productId);
-                params.append("quantity", 1);
+                params.append("quantity", qty);
 
                 fetch("/add-to-cart", {
                     method: "POST",
