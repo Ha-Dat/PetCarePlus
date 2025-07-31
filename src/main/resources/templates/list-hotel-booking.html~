@@ -367,8 +367,9 @@
         <h2 class="sidebar-title">Groomer Dashboard</h2>
         <ul class="sidebar-menu">
             <li><a href="list-spa-booking">🧴Spa</a></li>
-            <li class="active"><a href="list-hotel-booking">🏨 Pet Hotel</a></li>
-            <li><a href="#"> Ca làm việc</a></li>
+            <li class="active"><a href="list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>\
+            <li><a href="#">📅 Ca làm việc</a></li>
+            <li><a href="list-pet-profile?from=list-hotel-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
     </aside>
 
@@ -377,10 +378,10 @@
             <h1 class="page-title">Quản lý đơn Pet Hotel</h1>
                 <div class="header">
                     <div class="filters">
-                        <form method="get" th:action="@{/groomer_hotel_page}" style="display: flex; align-items: center;">
+                        <form method="get" th:action="@{/list-hotel-booking}" style="display: flex; align-items: center;">
                             <input type="date" name="date" th:value="${selectedDate}">
                                 <button type="submit" class="filter-button">Lọc</button>
-                            <a th:href="@{/groomer_hotel_page}" class="filter-button">Hủy lọc</a>
+                            <a th:href="@{/list-hotel-booking}" class="filter-button">Hủy lọc</a>
                         </form>
                     </div>
                 </div>
@@ -417,7 +418,7 @@
                                             th:data-status="${hotelBooking.status}"
                                             th:data-service="${hotelBooking.service.name}"
 
-                                            th:data-pet-id="${hotelBooking.petProfile.medias.get(0).url}"
+                                            th:data-pet-image="${hotelBooking.petProfile.medias.get(0).url}"
                                             th:data-pet-name="${hotelBooking.petProfile.name}"
                                             th:data-pet-species="${hotelBooking.petProfile.species}"
                                             th:data-pet-breeds="${hotelBooking.petProfile.breeds}"

@@ -8,6 +8,10 @@ import org.example.petcareplus.repository.MediaRepository;
 import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -130,6 +134,18 @@ public class PetProfileServiceImpl implements PetProfileService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload image: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Page<PetProfile> findAll(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        Page<PetProfile> petProfiles = petProfileRepository.findAll(pageable);
+        return petProfiles;
+    }
+
+    public Page<PetProfile> searchByName(String name, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        return petProfileRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     //lưu file lên S3

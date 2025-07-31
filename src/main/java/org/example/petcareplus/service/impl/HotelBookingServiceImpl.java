@@ -32,7 +32,7 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 
     @Override
     public Page<HotelBooking> findAll(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("bookDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<HotelBooking> hotelBookings = hotelBookingRepository.findAll(pageable);
         return hotelBookings;
     }
