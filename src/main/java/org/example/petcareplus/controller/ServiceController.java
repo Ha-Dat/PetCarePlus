@@ -1,0 +1,141 @@
+package org.example.petcareplus.controller;
+
+import org.example.petcareplus.entity.Service;
+import org.example.petcareplus.enums.ServiceCategory;
+import org.example.petcareplus.service.ServiceService;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/service-dashboard")
+public class ServiceController {
+
+    private final ServiceService serviceService;
+
+    public ServiceController(ServiceService serviceService) {
+        this.serviceService = serviceService;
+    }
+
+    @GetMapping
+    public String serviceDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Model model) {
+        
+        Page<Service> servicesPage = serviceService.getServicesPaginated(page, size);
+        
+        model.addAttribute("services", servicesPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", servicesPage.getTotalPages());
+        model.addAttribute("size", size);
+        model.addAttribute("serviceCategories", Arrays.asList(ServiceCategory.values()));
+        
+        return "service-dashboard";
+    }
+
+    @PostMapping("/create")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createService(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String name = (String) request.get("name");
+            String serviceCategoryStr = (String) request.get("serviceCategory");
+            BigDecimal price = new BigDecimal(request.get("price").toString());
+            Integer duration = Integer.valueOf(request.get("duration").toString());
+            
+            ServiceCategory serviceCategory = ServiceCategory.valueOf(serviceCategoryStr);
+            
+            Service service = new Service();
+            service.setName(name);
+            service.setServiceCategory(serviceCategory);
+            service.setPrice(price);
+            service.setDuration(duration);
+            
+            Service savedService = serviceService.saveService(service);
+            
+            response.put("success", true);
+            response.put("message", "Dịch vụ đã được tạo thành công");
+            response.put("serviceId", savedService.getServiceId());
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi tạo dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateService(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> request) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String name = (String) request.get("name");
+            String serviceCategoryStr = (String) request.get("serviceCategory");
+            BigDecimal price = new BigDecimal(request.get("price").toString());
+            Integer duration = Integer.valueOf(request.get("duration").toString());
+
+            ServiceCategory serviceCategory = ServiceCategory.valueOf(serviceCategoryStr);
+            
+            Service service = serviceService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với ID: " + id));
+            
+            service.setName(name);
+            service.setServiceCategory(serviceCategory);
+            service.setPrice(price);
+            service.setDuration(duration);
+            
+            Service updatedService = serviceService.saveService(service);
+            
+            response.put("success", true);
+            response.put("message", "Dịch vụ đã được cập nhật thành công");
+            response.put("serviceId", updatedService.getServiceId());
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi cập nhật dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteService(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            serviceService.deleteService(id);
+            
+            response.put("success", true);
+            response.put("message", "Dịch vụ đã được xóa thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi xóa dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/service/{id}")
+    @ResponseBody
+    public ResponseEntity<Service> getServiceById(@PathVariable Long id) {
+        return serviceService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
