@@ -470,9 +470,9 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Manager Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="#">Lịch làm việc</a></li>
-            <li><a href="#">Tài khoản nhân viên</a></li>
-            <li class="active"><a href="#">Bài viết</a></li>
+            <li><a href="#">📅 Lịch làm việc</a></li>
+            <li><a href="#">👥 Tài khoản nhân viên</a></li>
+            <li class="active"><a href="post-dashboard">📝 Bài viết</a></li>
         </ul>
     </aside>
 
@@ -500,8 +500,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="post : ${posts}">
-                    <td th:text="${post.postId}"></td>
+                <tr th:each="post, stat : ${posts}">
+                    <td th:text="${currentPage * size + stat.index + 1}"></td>
                     <td th:text="${post.title}">Bài viết A</td>
                     <td th:text="${post.accountName}">Username</td>
                     <td th:text="${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}"></td>
