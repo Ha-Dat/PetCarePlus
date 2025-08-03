@@ -5,10 +5,6 @@ import org.example.petcareplus.repository.CategoryRepository;
 import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,13 +58,6 @@ public class CategoryServiceImpl implements CategoryService {
         return true; // Xóa thành công
     }
 
-
-    @Override
-    public Page<Category> getCategoriesPaginated(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("categoryId").ascending());
-        return categoryRepository.findByParentIsNull(pageable);
-    }
-
     @Override
     public boolean updateCategory(Long id, String name, Long parentId) {
         Category category = categoryRepository.findById(id).orElse(null);
@@ -91,15 +80,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.save(category);
         return true;
-    }
-
-    @Override
-    public List<Category> getCategoriesByParentId(Long parentId) {
-        if (parentId == null) {
-            return categoryRepository.findByParentIsNull();
-        } else {
-            return categoryRepository.findByParentCategoryId(parentId);
-        }
     }
 
     private boolean isChildOf(Category child, Category potentialParent) {
