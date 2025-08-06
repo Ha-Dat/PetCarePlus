@@ -1,6 +1,7 @@
 package org.example.petcareplus.dto;
 
 import org.example.petcareplus.entity.Media;
+import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
