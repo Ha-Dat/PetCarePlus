@@ -28,10 +28,10 @@ public class ForumController {
     }
 
     @GetMapping("/forum")
-    public String getForumPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            Model model, HttpSession session) {
+    public String getForumPage(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size,
+                               @RequestParam(required = false) String keyword,
+                               Model model, HttpSession session) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
 
@@ -41,6 +41,15 @@ public class ForumController {
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
+        List<Post> allPosts = forumService.findAllWithMedias();
+
+        // Lọc theo từ khóa nếu có
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
 
         // Tự tính chỉ số trang
         int fromIndex = page * size;
@@ -48,9 +57,13 @@ public class ForumController {
 
         List<PostDTO> pageContent = sortedPosts.subList(fromIndex, toIndex);
 
+        // Lấy 6 bài post mới nhất
+        List<Post> latestPosts = forumService.findTop6NewestPosts();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
-        
+
         // Kiểm tra nếu user đã đăng nhập và có bài viết chờ duyệt
         if (account != null) {
             List<Post> userPendingPosts = forumService.findPendingPosts().stream()
@@ -61,13 +74,25 @@ public class ForumController {
             }
         }
 
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("latestPosts", latestPostDTOs);
         return "forum";
     }
 
     @GetMapping("/api/posts")
     @ResponseBody
-    public List<PostDTO> getMorePosts(@RequestParam int page, @RequestParam int size) {
+    public List<PostDTO> getMorePosts(@RequestParam int page,
+                                      @RequestParam int size,
+                                      @RequestParam(required = false) String keyword) {
         List<Post> approvedPosts = forumService.findApprovedPosts();
+        List<Post> allPosts = forumService.findAll();
+        // Lọc nếu có keyword
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
         List<PostDTO> sortedPosts = approvedPosts.stream()
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
@@ -98,11 +123,16 @@ public class ForumController {
         List<CommentPost> comments = forumService.findCommentByPostId(postId);
         PostDTO postDTO = new PostDTO(post);
 
+        // Lấy 6 bài post mới nhất
+        List<Post> latestPosts = forumService.findTop6NewestPosts();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+
         model.addAttribute("account", account);
         model.addAttribute("post", post);
         model.addAttribute("postDTO", postDTO);
         model.addAttribute("comments", comments);
         model.addAttribute("commentCount", post.getComments().size());
+        model.addAttribute("latestPosts", latestPostDTOs);
         return "post-detail";
     }
 

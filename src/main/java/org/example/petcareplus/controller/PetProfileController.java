@@ -4,10 +4,16 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import jakarta.validation.Valid;
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,10 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
-@RequestMapping("/pet-profile")
+@RequestMapping()
 public class PetProfileController {
 
     @Autowired
@@ -27,7 +35,7 @@ public class PetProfileController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping
+    @GetMapping("/pet-profile")
     public String showPetProfilePage(Model model,
                                      HttpSession session,
                                      @RequestParam(value = "selectedId", required = false) Long selectedId) {
@@ -55,14 +63,14 @@ public class PetProfileController {
         return "pet-profile";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("/pet-profile/edit")
     public String editPetProfile(@RequestParam("petId") Long petId,
                                  @ModelAttribute PetProfile petProfile) {
         petProfileService.updatePetProfile(petId, petProfile);
         return "redirect:/pet-profile?selectedId=" + petId;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/pet-profile/add")
     public String createNewPet(@Valid @ModelAttribute PetProfile petProfile,
                             BindingResult result,
                             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
@@ -102,7 +110,7 @@ public class PetProfileController {
         }
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/pet-profile/edit")
     public String switchToEdit(@RequestParam("selectedId") Long selectedId,
                               HttpSession session,
                               Model model) {
@@ -122,7 +130,7 @@ public class PetProfileController {
         return "pet-profile";
     }
 
-        @PostMapping("/save")
+        @PostMapping("/pet-profile/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
                                  @Valid @ModelAttribute PetProfile petProfile,
                                  BindingResult result,
@@ -178,7 +186,7 @@ public class PetProfileController {
     }
 
         // Test endpoint để kiểm tra file upload
-    @PostMapping("/test-upload")
+    @PostMapping("/pet-profile/test-upload")
     @ResponseBody
     public String testUpload(@RequestParam("imageFile") MultipartFile imageFile) {
         System.out.println("=== Test Upload ===");
@@ -189,7 +197,27 @@ public class PetProfileController {
         
         return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
     }
-    
-    // Test endpoint để kiểm tra database
 
+    @GetMapping("/list-pet-profile")
+    public String GetHotelBookings(Model model,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "8") int size,
+                                   @RequestParam(required = false) String from,
+                                   @RequestParam(required = false) String keyword) {
+        Page<PetProfile> petProfiles;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            petProfiles = petProfileService.searchByName(keyword, page, size, "petProfileId");
+        } else {
+            petProfiles = petProfileService.findAll(page, size, "petProfileId");
+        }
+
+        model.addAttribute("petProfiles", petProfiles.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", petProfiles.getTotalPages());
+        model.addAttribute("from", from);
+        model.addAttribute("keyword", keyword); // giữ lại từ khóa trên view
+
+        return "list-pet-profile";
+    }
 }

@@ -313,6 +313,13 @@ public class ForumServiceImpl implements ForumService {
         return postRepository.findByIsCheckedFalse();
     }
 
+    @Override
+    public List<Post> findTop6NewestPosts() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAll(pageable).getContent();
+    }
+
+
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();

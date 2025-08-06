@@ -46,4 +46,6 @@ public interface ForumService {
     List<Post> findApprovedPosts();
     
     List<Post> findPendingPosts();
+
+    List<Post> findTop6NewestPosts();
 }

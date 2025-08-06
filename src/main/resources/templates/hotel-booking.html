@@ -647,7 +647,7 @@
 
         <!-- Pet Name -->
         <div class="form-group">
-          <label for="petName">Tên vật nuôi</label>
+          <label for="petName">Tên vật nuôi<span style="color: red">*</span></label>
           <input
                   type="text"
                   id="petName"
@@ -660,7 +660,7 @@
 
         <!-- Pet Species -->
         <div class="form-group">
-          <label for="petSpecies">Loài vật nuôi</label>
+          <label for="petSpecies">Loài vật nuôi<span style="color: red">*</span></label>
           <input
                   type="text"
                   id="petSpecies"
@@ -673,7 +673,7 @@
 
         <!-- Pet Breed -->
         <div class="form-group">
-          <label for="petBreed">Giống vật nuôi</label>
+          <label for="petBreed">Giống vật nuôi<span style="color: red">*</span></label>
           <input
                   type="text"
                   id="petBreed"
@@ -686,7 +686,7 @@
 
         <!-- Pet weight -->
         <div class="form-group">
-          <label for="petBreed">Cân nặng (kg)</label>
+          <label for="petBreed">Cân nặng (kg)<span style="color: red">*</span></label>
           <input
                   type="text"
                   id="petWeight"
@@ -699,7 +699,7 @@
 
         <!-- Pet Age -->
         <div class="form-group">
-          <label for="petBreed">Tuổi thọ (năm)</label>
+          <label for="petBreed">Tuổi thọ (năm)<span style="color: red">*</span></label>
           <input
                   type="text"
                   id="petAge"
@@ -712,7 +712,7 @@
 
         <!-- Chọn dịch vụ -->
         <div class="form-group">
-          <label for="serviceId">Chọn dịch vụ</label>
+          <label for="serviceId">Chọn dịch vụ<span style="color: red">*</span></label>
           <div class="select-wrapper">
             <select id="serviceId" name="serviceId" required>
               <option value="">Chọn loại dịch vụ hotel</option>
@@ -726,7 +726,7 @@
 
         <!-- Chọn thời gian -->
         <div class="form-group">
-          <label for="bookDate">Thời gian</label>
+          <label for="bookDate">Thời gian<span style="color: red">*</span></label>
           <div class="date-input">
             <input
                     type="datetime-local"
@@ -867,17 +867,18 @@
   });
 
   // Set minimum date to today
-  document.getElementById("appointmentDate").min = new Date()
-          .toISOString()
-          .split("T")[0];
+  document.addEventListener("DOMContentLoaded", () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const localDatetime = new Date(now.getTime() - offset * 60000)
+            .toISOString()
+            .slice(0, 16);
 
-  // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
-  const now = new Date();
-  const offset = now.getTimezoneOffset();
-  const local = new Date(now.getTime() - offset * 60000)
-          .toISOString()
-          .slice(0, 16);
-  document.getElementById("appointmentDate").min = local;
+    const bookDateInput = document.getElementById("bookDate");
+    if (bookDateInput) {
+      bookDateInput.min = localDatetime;
+    }
+  });
 
   //handle submit
   function handleSubmit(event) {
@@ -889,6 +890,15 @@
 
     if (!petProfileId) {
       alert('Vui lòng chọn vật nuôi!');
+      return;
+    }
+
+    const bookDateInput = document.getElementById('bookDate');
+    const selectedDate = new Date(bookDateInput.value);
+    const now = new Date();
+
+    if (selectedDate < now) {
+      alert('Không được chọn thời gian trong quá khứ!');
       return;
     }
 

@@ -627,6 +627,7 @@
             <li class="active"><a href="category-dashboard">📂 Danh mục</a></li>
             <li><a href="product-dashboard">📦 Sản phẩm</a></li>
             <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="list-pet-profile?from=category-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
     </aside>
 
@@ -643,7 +644,7 @@
                     <span>Danh mục gốc</span>
                     <span class="level-count" th:text="${topCategories.size()}">0</span>
                 </div>
-                
+
                 <div class="table-container" th:if="${!topCategories.isEmpty()}">
                     <table class="category-table">
                         <thead>
@@ -655,7 +656,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="parentCat, stat : ${topCategories}" 
+                            <tr th:each="parentCat, stat : ${topCategories}"
                                 th:class="${parentCat.subCategories != null and !parentCat.subCategories.isEmpty()} ? 'category-row has-children' : 'category-row no-children'"
                                 th:attr="data-category-id=${parentCat.categoryId}, data-has-children=${parentCat.subCategories != null and !parentCat.subCategories.isEmpty()}"
                                 th:onclick="${parentCat.subCategories != null and !parentCat.subCategories.isEmpty()} ? 'toggleSubCategories(this)' : 'handleCategoryClick(this)'">
@@ -683,14 +684,14 @@
                 </div>
 
                 <!-- Nested Level 2: Category Cha -->
-                <div th:each="parentCat : ${topCategories}" th:if="${parentCat.subCategories != null and !parentCat.subCategories.isEmpty()}" 
+                <div th:each="parentCat : ${topCategories}" th:if="${parentCat.subCategories != null and !parentCat.subCategories.isEmpty()}"
                      th:attr="data-parent-id=${parentCat.categoryId}" class="collapsible-content">
                     <div class="nested-table-container">
                         <div class="level-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); font-size: 16px; padding: 12px 16px;">
                             <span th:text="'Danh mục con của: ' + ${parentCat.name}"></span>
                             <span class="level-count" th:text="${parentCat.subCategories.size()}">0</span>
                         </div>
-                        
+
                         <table class="nested-table">
                             <thead>
                                 <tr>
@@ -702,7 +703,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="childCat, childStat : ${parentCat.subCategories}" 
+                                <tr th:each="childCat, childStat : ${parentCat.subCategories}"
                                     th:class="${childCat.subCategories != null and !childCat.subCategories.isEmpty()} ? 'category-row has-children' : 'category-row no-children'"
                                     th:attr="data-category-id=${childCat.categoryId}, data-has-children=${childCat.subCategories != null and !childCat.subCategories.isEmpty()}"
                                     th:onclick="${childCat.subCategories != null and !childCat.subCategories.isEmpty()} ? 'toggleChildCategories(this)' : 'handleCategoryClick(this)'">
@@ -737,7 +738,7 @@
                                     <span th:text="'Danh mục cháu của: ' + ${childCat.name}"></span>
                                     <span class="level-count" th:text="${childCat.subCategories.size()}">0</span>
                                 </div>
-                                
+
                                 <table class="sub-nested-table">
                                     <thead>
                                         <tr>
@@ -748,7 +749,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="grandCat, grandStat : ${childCat.subCategories}" 
+                                        <tr th:each="grandCat, grandStat : ${childCat.subCategories}"
                                             class="category-row no-children"
                                             th:attr="data-category-id=${grandCat.categoryId}, data-has-children=false"
                                             onclick="handleCategoryClick(this)">
@@ -894,21 +895,21 @@
     function toggleSubCategories(row) {
         const categoryId = row.getAttribute("data-category-id");
         const hasChildren = row.getAttribute("data-has-children") === "true";
-        
+
         if (!hasChildren) return; // Không có con thì không làm gì
-        
+
         // Tìm tất cả các phần tử con có thể ẩn/hiện
         const collapsibleContents = document.querySelectorAll(`.collapsible-content[data-parent-id="${categoryId}"]`);
-        
+
         if (collapsibleContents.length > 0) {
             // Toggle hiển thị cho tất cả các phần tử con
             collapsibleContents.forEach(content => {
                 content.classList.toggle("show");
             });
-            
+
             // Toggle class expanded cho row
             row.classList.toggle("expanded");
-            
+
             // Toggle active state
             toggleActiveState(row);
         }
@@ -918,18 +919,18 @@
     function toggleChildCategories(row) {
         const childId = row.getAttribute("data-category-id");
         const hasChildren = row.getAttribute("data-has-children") === "true";
-        
+
         if (!hasChildren) return;
-        
+
         const collapsibleContents = document.querySelectorAll(`.collapsible-content[data-child-id="${childId}"]`);
-        
+
         if (collapsibleContents.length > 0) {
             collapsibleContents.forEach(content => {
                 content.classList.toggle("show");
             });
-            
+
             row.classList.toggle("expanded");
-            
+
             // Toggle active state
             toggleActiveState(row);
         }
@@ -942,7 +943,7 @@
         allCategoryRows.forEach(row => {
             row.classList.remove('active');
         });
-        
+
         // Add active class to clicked row
         clickedRow.classList.add('active');
     }
@@ -950,7 +951,7 @@
     // Function to handle row click for categories without children
     function handleCategoryClick(row) {
         const hasChildren = row.getAttribute("data-has-children") === "true";
-        
+
         if (!hasChildren) {
             // For categories without children, just toggle active state
             toggleActiveState(row);

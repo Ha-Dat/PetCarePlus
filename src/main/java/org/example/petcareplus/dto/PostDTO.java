@@ -1,5 +1,4 @@
 package org.example.petcareplus.dto;
-
 import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.Rating;
