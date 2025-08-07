@@ -322,17 +322,30 @@
     if (imageUpload) {
       imageUpload.addEventListener("change", function () {
         const files = this.files;
-        if (files.length > 0) {
+        if ((files.length > 0) && (files.length <= 3)) {
           console.log(`Selected ${files.length} image(s)`);
+        } else {
+          alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
+          this.value = "";
+          imagePreview.innerHTML = "";
+          imagePlaceholder.style.display = "block";
+          return;
         }
+
       });
     }
 
     if (videoUpload) {
       videoUpload.addEventListener("change", function () {
-        const file = this.files[0];
-        if (file) {
-          console.log("Selected video:", file.name);
+        const files = this.files[0];
+        if ((files.length > 0) && (files.length <= 3)) {
+          console.log(`Selected ${files.length} video(s)`);
+        } else {
+          alert("Bạn chỉ có thể đăng tối đa 3 video.");
+          this.value = "";
+          videoPreview.innerHTML = "";
+          videoPlaceholder.style.display = "block";
+          return;
         }
       });
     }

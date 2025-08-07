@@ -356,7 +356,7 @@
                 const files = this.files;
                 imagePreview.innerHTML = "";
 
-                if (files.length > 0) {
+                if (files.length > 0 && files.length <= 3) {
                     imagePlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
@@ -369,7 +369,11 @@
                         imagePreview.appendChild(img);
                     }
                 } else {
-                    imagePlaceholder.style.display = "block"; // Không có file thì hiện lại
+                    alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
+                    this.value = "";
+                    imagePreview.innerHTML = "";
+                    imagePlaceholder.style.display = "block";
+                    return;
                 }
             });
         }
@@ -379,7 +383,7 @@
                 const files = this.files;
                 videoPreview.innerHTML = "";
 
-                if (files.length > 0) {
+                if (files.length > 0 && files.length <= 3) {
                     videoPlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
@@ -393,7 +397,11 @@
                         videoPreview.appendChild(video);
                     }
                 } else {
-                    videoPlaceholder.style.display = "block"; // Không có file thì hiện lại
+                    alert("Bạn chỉ có thể đăng tối đa 3 video.");
+                    this.value = "";
+                    videoPreview.innerHTML = "";
+                    videoPlaceholder.style.display = "block";
+                    return;
                 }
             });
         }
