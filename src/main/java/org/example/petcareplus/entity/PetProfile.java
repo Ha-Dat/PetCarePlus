@@ -36,7 +36,8 @@ public class PetProfile {
     @Max(50)
     private Integer age;
 
-    private String image;
+    @OneToMany(mappedBy = "petProfile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
@@ -100,14 +101,6 @@ public class PetProfile {
         this.age = age;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public Profile getProfile() {
         return profile;
     }
@@ -138,5 +131,13 @@ public class PetProfile {
 
     public void setSpaBookings(List<SpaBooking> spaBookings) {
         this.spaBookings = spaBookings;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

@@ -83,7 +83,7 @@
         }
 
         .table-container {
-            width: 200%;
+            width: 160%;
             border-collapse: collapse;
             margin-top: 25px;
             background-color: white;
@@ -230,7 +230,7 @@
         <h2 class="sidebar-title">Groomer Dashboard</h2>
         <ul class="sidebar-menu">
             <li class="active"><a href="list-spa-booking">🧴Spa</a></li>
-            <li><a href="groomer-hotel-page">🏨 Pet Hotel</a></li>
+            <li><a href="list-hotel-booking">🏨 Pet Hotel</a></li>
             <li><a href="#"> Ca làm việc</a></li>
         </ul>
     </aside>
@@ -318,8 +318,8 @@
             return;
         }
 
-        if (confirm("Bạn có chắc muốn duyệt booking ID " + id + " không?")) {
-            fetch(`/list-spa-booking/approve-spa/${id}`, {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + spaBookingId + " không?")) {
+            fetch(`/list-spa-booking/approve-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -342,8 +342,8 @@
             return;
         }
 
-        if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
-            fetch(`/list-spa-booking/reject-spa/${id}`, {
+        if (confirm("Bạn có chắc muốn từ chối booking ID " + spaBookingId + " không?")) {
+            fetch(`/list-spa-booking/reject-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())

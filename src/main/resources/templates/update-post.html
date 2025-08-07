@@ -95,26 +95,13 @@
 
         <!-- Navigation -->
         <div class="flex flex-1 items-center justify-end space-x-2">
-            <a href="/submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex bg-accent text-accent-foreground">
+            <a href="/create-post" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex bg-accent text-accent-foreground">
                 <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14" />
                     <path d="M12 5v14" />
                 </svg>
                 <span>Tạo bài</span>
             </a>
-
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                </svg>
-            </button>
-
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-            </button>
 
             <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -229,51 +216,68 @@
 
                         <!-- Image Upload -->
                         <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">
-                                Tải lên hình ảnh
-                            </label>
-                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-
-                                <!-- ⚡️ Hiển thị ảnh cũ -->
-                                <div th:if="${postDTO.image != null}">
-                                    <p class="text-sm text-muted-foreground mb-2">Hình ảnh hiện tại:</p>
-                                    <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${postDTO.image}}" alt="Ảnh hiện tại" class="max-w-xs rounded-lg border mb-2"/>
+                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors space-y-2">
+                                <!-- Hiển thị ảnh cũ nếu có -->
+                                <div th:if="${medias != null}">
+                                    <div id="image-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
+                                        <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_IMAGE'}">
+                                            <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+                                                 alt="Ảnh hiện tại"
+                                                 class="max-w-xs rounded-lg border mb-2"/>
+                                            <!-- Thêm input hidden -->
+                                            <input type="hidden" name="oldImageUrls" th:value="${media.url}" />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Biểu tượng + Upload -->
-                                <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
-                                <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
-                                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
-                                <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                <!-- Placeholder -->
+                                <div id="image-placeholder">
+                                    <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh mới vào đây</p>
+                                    <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                                        <circle cx="12" cy="13" r="3" />
+                                    </svg>
+                                </div>
+
+                                <!-- Input & Label -->
+                                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
+                                <label for="image-upload"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
                                     Chọn tệp hình ảnh
                                 </label>
-
                             </div>
                         </div>
 
-
                         <!-- Video Upload -->
                         <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">
-                                Tải lên video
-                            </label>
-                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-
-                                <!-- ⚡️ Hiển thị video cũ -->
-                                <div th:if="${postDTO.video != null}">
-                                    <p class="text-sm text-muted-foreground mb-2">Video hiện tại:</p>
-                                    <video controls class="max-w-xs rounded-lg border mb-4"
-                                           th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${postDTO.video}}"></video>
+                            <div class="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors space-y-2">
+                                <!-- Hiển thị video cũ nếu có -->
+                                <div th:if="${medias != null}">
+                                    <div id="video-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
+                                        <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_VIDEO'}">
+                                            <video controls class="max-w-xs rounded-lg border mb-4"
+                                                   th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"></video>
+                                            <!-- Thêm input hidden -->
+                                            <input type="hidden" name="oldVideoUrls" th:value="${media.url}" />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Biểu tượng + Upload -->
-                                <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" ...>...</svg>
-                                <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
-                                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
-                                <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                <!-- Placeholder -->
+                                <div id="video-placeholder">
+                                    <p class="text-sm text-muted-foreground mb-2">Kéo thả video mới vào đây</p>
+                                    <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7" />
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                                    </svg>
+                                </div>
+
+                                <!-- Input & Label -->
+                                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
+                                <label for="video-upload"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
                                     Chọn tệp video
                                 </label>
-
                             </div>
                         </div>
 
@@ -354,47 +358,61 @@
         const imageUpload = document.getElementById("image-upload");
         const videoUpload = document.getElementById("video-upload");
 
+        const imagePlaceholder = document.getElementById("image-placeholder");
+        const imagePreview = document.getElementById("image-preview");
+
+        const videoPlaceholder = document.getElementById("video-placeholder");
+        const videoPreview = document.getElementById("video-preview");
+
         if (imageUpload) {
             imageUpload.addEventListener("change", function () {
                 const files = this.files;
+                imagePreview.innerHTML = "";
+
                 if (files.length > 0) {
-                    console.log(`Selected ${files.length} image(s)`);
+                    imagePlaceholder.style.display = "none";
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const img = document.createElement("img");
+                        img.src = URL.createObjectURL(file);
+                        img.style.maxWidth = "200px";
+                        img.style.maxHeight = "200px";
+                        img.style.marginRight = "10px";
+                        img.onload = () => URL.revokeObjectURL(img.src);
+                        imagePreview.appendChild(img);
+                    }
+                } else {
+                    imagePlaceholder.style.display = "block"; // Không có file thì hiện lại
                 }
             });
         }
 
         if (videoUpload) {
             videoUpload.addEventListener("change", function () {
-                const file = this.files[0];
-                if (file) {
-                    console.log("Selected video:", file.name);
+                const files = this.files;
+                videoPreview.innerHTML = "";
+
+                if (files.length > 0) {
+                    videoPlaceholder.style.display = "none";
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const video = document.createElement("video");
+                        video.src = URL.createObjectURL(file);
+                        video.controls = true;
+                        video.style.maxWidth = "300px";
+                        video.style.maxHeight = "200px";
+                        video.style.marginRight = "10px";
+                        video.onloadeddata = () => URL.revokeObjectURL(video.src);
+                        videoPreview.appendChild(video);
+                    }
+                } else {
+                    videoPlaceholder.style.display = "block"; // Không có file thì hiện lại
                 }
             });
         }
 
-        const form = document.querySelector("form");
-        if (form) {
-            form.addEventListener("submit", function (e) {
-                const title = document.getElementById("title").value.trim();
-                if (!title) {
-                    e.preventDefault();
-                    alert("Vui lòng nhập tiêu đề");
-                    return;
-                }
-
-                console.log("Submitting post:", {
-                    title: title,
-                    description: document.getElementById("description").value.trim(),
-                });
-
-                // ❌ Không được redirect thủ công
-                // 👉 Xoá dòng này:
-                // window.location.href = "/";
-                // Để form SUBMIT bình thường
-            });
-        }
     });
-
 </script>
+
 </body>
 </html>

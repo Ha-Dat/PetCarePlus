@@ -19,6 +19,4 @@ public interface HotelBookingService {
     List<Service> Service_findAll();
 
     Optional<Service> Service_findById(Long id);
-
-    void PetProfile_save(PetProfile petProfile);
 }

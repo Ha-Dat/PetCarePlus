@@ -37,6 +37,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Optional<Account> findById(Long id) {
+        return accountRepository.findById(id);
+    }
+
+    @Override
     public Optional<Account> login(String phone, String rawPassword) {
         Optional<Account> optionalAccount = accountRepository.findByPhone(phone);
         if (optionalAccount.isPresent()) {

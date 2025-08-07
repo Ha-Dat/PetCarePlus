@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.example.petcareplus.enums.ProductStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -35,10 +36,8 @@ public class Product {
     private int unitSold;
 
     @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false)
-    private String image;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @Column(nullable = false)
     private Date createdDate;
@@ -52,6 +51,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias;
 
     //method thêm trong trường hợp lombok không hoạt động
     public Long getProductId() {
@@ -102,20 +104,12 @@ public class Product {
         this.unitSold = unitSold;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProductStatus status) {
         this.status = status;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public Category getCategory() {
@@ -148,5 +142,13 @@ public class Product {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

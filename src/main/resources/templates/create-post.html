@@ -206,7 +206,7 @@
           </h3>
         </div>
         <div class="p-6 pt-0 space-y-6">
-          <!-- ⚠️ Form cần `th:action` + `method` + `enctype` -->
+          <!--  Form  -->
           <form action="/create-post" method="post" enctype="multipart/form-data">
             <!-- Title Input -->
             <div class="space-y-2">
@@ -230,8 +230,8 @@
                 </svg>
                 <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
               </div>
-              <div id="image-preview" class="mt-4 flex justify-center"></div>
-              <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFile"/>
+              <div id="image-preview" class="mt-4 flex-col justify-center items-center gap-4 w-fit mx-auto"></div>
+              <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
               <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
                 Chọn tệp hình ảnh
               </label>
@@ -248,8 +248,8 @@
                 </svg>
                 <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
               </div>
-              <div id="video-preview" class="mt-4 flex justify-center"></div>
-              <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFile"/>
+              <div id="video-preview" class="mt-4 flex-col justify-center items-center gap-4 w-fit mx-auto"></div>
+              <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
               <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
                 Chọn tệp video
               </label>
@@ -406,24 +406,26 @@
 
   if (videoUpload) {
     videoUpload.addEventListener("change", function () {
-      const file = this.files[0];
+      const files = this.files;
       videoPreview.innerHTML = "";
-      if (file) {
+      if (files.length > 0) {
         videoPlaceholder.style.display = "none";
-        const video = document.createElement("video");
-        video.src = URL.createObjectURL(file);
-        video.controls = true;
-        video.style.maxWidth = "300px";
-        video.style.maxHeight = "200px";
-        videoPreview.appendChild(video);
-        video.onload = () => URL.revokeObjectURL(video.src);
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const video = document.createElement("video");
+          video.src = URL.createObjectURL(file);
+          video.controls = true;
+          video.style.maxWidth = "300px";
+          video.style.maxHeight = "200px";
+          video.style.marginRight = "10px";
+          videoPreview.appendChild(video);
+          video.onloadeddata = () => URL.revokeObjectURL(video.src);
+        }
       } else {
         videoPlaceholder.style.display = "block";
       }
     });
   }
-
-
 
 </script>
 </body>

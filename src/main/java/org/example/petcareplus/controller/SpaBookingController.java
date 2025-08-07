@@ -82,7 +82,7 @@ public class SpaBookingController {
                 spaBookingService.save(spaBooking);
                 return "Từ chối lịch thành công";
             }else {
-                return "Lịch đặt đã từ chối";
+                return "Lịch đã được duyệt!, Không thể từ chối";
             }
         }
         return "Không tìm thấy lịch";
@@ -103,7 +103,7 @@ public class SpaBookingController {
             data.put("service", booking.getService().getName());
             data.put("note", booking.getNote());
             // data của pet
-            data.put("image", booking.getPetProfile().getImage());
+            data.put("image", booking.getPetProfile().getMedias().get(0).getUrl());
             data.put("petId", booking.getPetProfile().getPetProfileId());
             data.put("petName", booking.getPetProfile().getName());
             data.put("species", booking.getPetProfile().getSpecies());

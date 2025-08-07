@@ -1,23 +1,29 @@
 package org.example.petcareplus.dto;
+import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostDTO {
     private Long postId;
     private String title;
     private String description;
     private Integer rating;
-    private String image;
-    private String video;
+    private List<String> image;
+    private List<String> video;
     private LocalDateTime createAt;
     private String accountName;
     private Long accountId;
+    private List<Media> medias;
 
-    private MultipartFile imageFile;
-    private MultipartFile videoFile;
+    private List<MultipartFile> imageFiles;
+    private List<MultipartFile> videoFiles;
+
+    private List<String> oldImageUrls;
+    private List<String> oldVideoUrls;
 
     public PostDTO(Post post) {
         this.postId = post.getPostId();
@@ -38,11 +44,12 @@ public class PostDTO {
             this.rating = null;
         }
 
-        this.image = post.getImage();
-        this.video = post.getVideo();
+//        this.image = post.getMedias().stream().map(Media::getUrl).toList();
+//        this.video = post.getMedias().stream().map(Media::getUrl).toList();
         this.createAt = post.getCreatedAt();
         this.accountName = post.getAccount() != null ? post.getAccount().getName() : "Ẩn danh";
         this.accountId = post.getAccount() != null ? post.getAccount().getAccountId() : null;
+        this.medias = post.getMedias();
     }
 
     public PostDTO() {
@@ -68,32 +75,32 @@ public class PostDTO {
     public Long getAccountId() { return accountId; }
     public void setAccountId(Long accountId) { this.accountId = accountId; }
 
-    public String getImage() {
+    public List<String> getImage() {
         return image;
     }
-    public void setImage(String image) {
+    public void setImage(List<String> image) {
         this.image = image;
     }
 
-    public String getVideo() {
+    public List<String> getVideo() {
         return video;
     }
-    public void setVideo(String video) {
+    public void setVideo(List<String> video) {
         this.video = video;
     }
 
-    public MultipartFile getImageFile() {
-        return imageFile;
+    public List<MultipartFile> getImageFiles() {
+        return imageFiles;
     }
-    public void setImageFile(MultipartFile imageFile) {
-        this.imageFile = imageFile;
+    public void setImageFiles(List<MultipartFile> imageFiles) {
+        this.imageFiles = imageFiles;
     }
 
-    public MultipartFile getVideoFile() {
-        return videoFile;
+    public List<MultipartFile> getVideoFiles() {
+        return videoFiles;
     }
-    public void setVideoFile(MultipartFile videoFile) {
-        this.videoFile = videoFile;
+    public void setVideoFiles(List<MultipartFile> videoFiles) {
+        this.videoFiles = videoFiles;
     }
 
     public LocalDateTime getCreateAt() {
@@ -101,5 +108,26 @@ public class PostDTO {
     }
     public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
+    }
+
+    public List<String> getOldImageUrls() {
+        return oldImageUrls;
+    }
+    public void setOldImageUrls(List<String> oldImageUrls) {
+        this.oldImageUrls = oldImageUrls;
+    }
+
+    public List<String> getOldVideoUrls() {
+        return oldVideoUrls;
+    }
+    public void setOldVideoUrls(List<String> oldVideoUrls) {
+        this.oldVideoUrls = oldVideoUrls;
     }
 }

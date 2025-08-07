@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.example.petcareplus.enums.AccountRole;
+import org.example.petcareplus.enums.AccountStatus;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,13 +31,15 @@ public class Account {
     private String phone;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private AccountRole role;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Profile profile;
@@ -53,6 +58,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<PostRating> postRatings;
+
+    private String otp;
+    private LocalDateTime otpExpiry;
 
     //method thêm trong trường hợp lombok không hoạt động
 
@@ -80,11 +88,11 @@ public class Account {
         this.phone = phone;
     }
 
-    public String getRole() {
+    public AccountRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(AccountRole role) {
         this.role = role;
     }
 
@@ -96,11 +104,11 @@ public class Account {
         this.password = password;
     }
 
-    public String getStatus() {
+    public AccountStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AccountStatus status) {
         this.status = status;
     }
 
@@ -150,5 +158,21 @@ public class Account {
 
     public void setPostRatings(List<PostRating> postRatings) {
         this.postRatings = postRatings;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
     }
 }

@@ -1,8 +1,11 @@
 package org.example.petcareplus.enums;
 
 public enum Rating {
-    UPVOTE("upvote"), DOWNVOTE("downvote");
+    UPVOTE("Upvote"), DOWNVOTE("Downvote");
 
-    Rating(String i) {
+    private final String value;
+
+    Rating(String value) {
+        this.value = value;
     }
 }

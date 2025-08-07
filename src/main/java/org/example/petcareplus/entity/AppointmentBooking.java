@@ -9,7 +9,7 @@ import org.example.petcareplus.enums.BookingStatus;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "appointment_bookings")
+@Table(name = "AppointmentBookings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +23,8 @@ public class AppointmentBooking {
 
     private String note;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     @Column(name = "created_at")
@@ -44,6 +44,7 @@ public class AppointmentBooking {
     }
 
     //method thêm trong trường hợp lombok không hoạt động
+
 
     public Long getAppointmentBookingId() {
         return appointmentBookingId;

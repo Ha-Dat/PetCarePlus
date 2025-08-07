@@ -2,7 +2,10 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.ProductDTO;
-import org.example.petcareplus.entity.*;
+import org.example.petcareplus.entity.AppointmentBooking;
+import org.example.petcareplus.entity.HotelBooking;
+import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.repository.CategoryRepository;
