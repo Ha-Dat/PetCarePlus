@@ -1,17 +1,15 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.repository.CategoryRepository;
-import org.example.petcareplus.service.AppointmentService;
+import org.example.petcareplus.service.*;
 import org.example.petcareplus.repository.PetProfileRepository;
-import org.example.petcareplus.service.HotelBookingService;
-import org.example.petcareplus.service.PetProfileService;
-import org.example.petcareplus.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +25,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+    private final PrescriptionService prescriptionService;
 
-    public AppointmentController(AppointmentService appointmentService) {
+    public AppointmentController(AppointmentService appointmentService, PrescriptionService prescriptionService) {
         this.appointmentService = appointmentService;
+        this.prescriptionService = prescriptionService;
     }
 
     @GetMapping("/appointment-booking")
@@ -109,13 +110,23 @@ public class AppointmentController {
 
         Page<AppointmentBooking> approvedPage = appointmentService.getApprovedAppointments(PageRequest.of(page, size));
 
+        // ✅ This must return a List
+        List<Prescription> prescriptions = prescriptionService.findAll();
+
+        // ✅ Build a map of appointmentId -> prescription
+        Map<Long, Prescription> prescriptionMap = prescriptions.stream()
+                .collect(Collectors.toMap(p -> p.getAppointment().getAppointmentBookingId(), Function.identity()));
+
         model.addAttribute("appointments", approvedPage.getContent());
+        model.addAttribute("prescriptionMap", prescriptionMap);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
         model.addAttribute("mode", "approved");
+
         return "appointment.html";
     }
+
 
     @GetMapping("/appointment/pending")
     public String pendingPage(@RequestParam(defaultValue = "0") int page,
@@ -171,5 +182,40 @@ public class AppointmentController {
             return "redirect:/appointment/pending";
         }
         return "redirect:/appointment/pending?error=true";
+    }
+
+    @PostMapping("/appointment/createPrescription")
+    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
+        Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
+
+        if (optionalAppointment.isEmpty()) {
+            return ResponseEntity.badRequest().body("Appointment not found.");
+        }
+
+        AppointmentBooking appointment = optionalAppointment.get();
+
+        // Chỉ cho phép tạo đơn thuốc nếu service category là APPOINTMENT
+        if (appointment.getService() == null ||
+                appointment.getService().getServiceCategory() != ServiceCategory.APPOINTMENT) {
+            return ResponseEntity.badRequest().body("Không thể tạo đơn thuốc cho dịch vụ không phải loại 'appointment'.");
+        }
+
+        // Check if prescription already exists
+        Optional<Prescription> optionalPrescription = Optional.ofNullable(prescriptionService.findByAppointmentId(dto.getAppointmentId()));
+
+        Prescription prescription;
+        if (optionalPrescription.isPresent()) {
+            // Update existing prescription
+            prescription = optionalPrescription.get();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+        } else {
+            // Create new prescription
+            prescription = new Prescription();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+            prescription.setAppointment(appointment);
+        }
+
+        prescriptionService.save(prescription);
+        return ResponseEntity.ok("Thêm đơn thuốc thành công.");
     }
 }

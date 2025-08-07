@@ -455,17 +455,28 @@
                         <td>
                             <a class="detail-btn"
                                th:attr="data-name=${appointment.petProfile.name},
-                                           data-species=${appointment.petProfile.species},
-                                           data-breeds=${appointment.petProfile.breeds},
-                                           data-weight=${appointment.petProfile.weight},
-                                           data-age=${appointment.petProfile.age},
-                                           data-image=${appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias) ? appointment.petProfile.medias[0].url: ''}"
+            data-species=${appointment.petProfile.species},
+            data-breeds=${appointment.petProfile.breeds},
+            data-weight=${appointment.petProfile.weight},
+            data-age=${appointment.petProfile.age},
+            data-image=${(appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias))
+                          ? appointment.petProfile.medias[0].url
+                          : ''}"
                                href="javascript:void(0)"
-                               onclick="openPetProfileModal(this)">Chi tiết</a>
+                               onclick="openPetProfileModal(this)">
+                                Chi tiết
+                            </a>
 
-                            <a class="prescription-btn" th:if="${mode == 'approved'}"
-                                    th:onclick="">
-                                Tạo đơn thuốc
+
+                            <a class="prescription-btn"
+                               th:if="${mode == 'approved'}"
+                               th:attr="data-appointment-id=${appointment.appointmentBookingId},
+data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
+                                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
+                                : 'Chưa có đơn thuốc'}"
+                               href="javascript:void(0)"
+                               onclick="openPrescriptionModal(this)">
+                                Đơn thuốc
                             </a>
 
                             <!-- Chấp nhận -->
@@ -512,6 +523,7 @@
         </div>
     </main>
 </div>
+<!-- Pet Profile Modal -->
 <div id="petProfile" class="modal-overlay" style="display: none;">
     <div class="modal-box">
         <h2 id="modalTitle">Thông tin thú cưng</h2>
@@ -543,11 +555,48 @@
     </div>
 </div>
 
+<!-- Prescription Modal -->
+<div id="prescription_modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>
+        <div class="modal-content">
+            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">
+                <input id="appointmentId" type="hidden" />
 
+                <div class="form-group">
+                    <textarea id="prescriptionNote" rows="4" required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
 </div>
+
+<!-- Script -->
 <script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toastMessage.innerText = message;
+        toast.className = `toast show ${type}`;
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
+    }
+
     function openPetProfileModal(element) {
         const name = element.getAttribute('data-name');
         const species = element.getAttribute('data-species');
@@ -559,10 +608,9 @@
         document.getElementById("petName").value = name;
         document.getElementById("petSpecies").value = species;
         document.getElementById("petAge").value = age;
-        document.getElementById("petImagePreview").src = image;
+        document.getElementById("petImagePreview").src = image || "";
         document.getElementById("petBreeds").value = breeds;
         document.getElementById("petWeight").value = weight;
-
         document.getElementById("petProfile").style.display = "flex";
     }
 
@@ -570,6 +618,48 @@
         document.getElementById("petProfile").style.display = "none";
     }
 
+    function openPrescriptionModal(element) {
+        document.getElementById("prescription_modal").style.display = "flex";
+        document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
+        document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
+    }
+
+    function closePrescriptionModal() {
+        document.getElementById("prescription_modal").style.display = "none";
+    }
+
+    function submitPrescriptionModal(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('createPrescriptionForm');
+        const data = {
+            appointmentId: parseInt(form.appointmentId.value),
+            prescriptionNote: form.prescriptionNote.value
+        };
+
+        fetch('/appointment/createPrescription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
+                    closePrescriptionModal();
+                    showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
+                    setTimeout(() => window.location.href = "/appointment/approved", 1000);
+                } else {
+                    return res.text().then(message => {
+                        showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+            });
+    }
 </script>
 </body>
 </html>
