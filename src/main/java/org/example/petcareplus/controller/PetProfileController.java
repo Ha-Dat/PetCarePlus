@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 
 @Controller
-@RequestMapping("/pet-profile")
+@RequestMapping("/customer/pet-profile")
 public class PetProfileController {
 
     @Autowired
@@ -92,7 +92,7 @@ public class PetProfileController {
                 }
             }
 
-            return "redirect:/pet-profile?selectedId=" + newPet.getPetProfileId();
+            return "redirect:/customer/pet-profile?selectedId=" + newPet.getPetProfileId();
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi tạo thú cưng: " + e.getMessage());
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
@@ -151,7 +151,7 @@ public class PetProfileController {
                     }
                 }
                 
-                return "redirect:/pet-profile?selectedId=" + petId;
+                return "redirect:/customer/pet-profile?selectedId=" + petId;
             } else {
                 PetProfile newPet = petProfileService.createEmptyPet();
                 newPet.setProfile(account.getProfile());
@@ -166,7 +166,7 @@ public class PetProfileController {
                     }
                 }
                 
-                return "redirect:/pet-profile?selectedId=" + savedPet.getPetProfileId();
+                return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
             }
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi lưu thông tin thú cưng: " + e.getMessage());
@@ -177,7 +177,6 @@ public class PetProfileController {
         }
     }
 
-        // Test endpoint để kiểm tra file upload
     @PostMapping("/test-upload")
     @ResponseBody
     public String testUpload(@RequestParam("imageFile") MultipartFile imageFile) {

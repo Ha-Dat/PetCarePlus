@@ -92,12 +92,12 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <li><a href="/profile" class="active">Hồ Sơ</a></li>
-            <li><a href="/address">Địa chỉ</a></li>
-            <li><a href="/change-password">Đổi mật khẩu</a></li>
-            <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
-            <li><a href="/list_order">Đơn mua</a></li>
-            <li><a href="/my-schedule">Lịch</a></li>
+            <a th:href="@{/customer/profile}" class="active">Hồ Sơ</a>
+            <a th:href="@{/customer/address}">Địa chỉ</a>
+            <a th:href="@{/customer/change-password}">Đổi mật khẩu</a>
+            <a th:href="@{/customer/pet-profile}">Hồ Sơ thú cưng</a>
+            <a th:href="@{/customer/list_order}">Đơn mua</a>
+            <a th:href="@{/customer/my-schedule}">Lịch</a>
         </ul>
     </div>
 
@@ -105,7 +105,7 @@
     <div class="main-content">
         <h4>Hồ sơ của tôi</h4>
         <hr>
-        <form th:action="@{/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/customer/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
             <div class="form-section row">
                 <input type="hidden" th:field="*{profileId}" />
                 <!-- Họ tên -->
@@ -113,7 +113,7 @@
                     <label class="col-sm-3 col-form-label">Họ tên:</label>
                     <div class="col-sm-9">
                         <input type="text" th:field="*{name}" class="form-control"
-                               th:readonly="${!editMode}" />
+                               th:readonly="${!edit}" />
                     </div>
                 </div>
 
@@ -122,7 +122,8 @@
                     <label class="col-sm-3 col-form-label">Số điện thoại:</label>
                     <div class="col-sm-9">
                         <input type="text" th:field="*{phone}" class="form-control"
-                               th:readonly="${!editMode}" />
+                               th:readonly="${!edit}" />
+                        <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></div>
                     </div>
                 </div>
 
@@ -131,8 +132,8 @@
                     <label class="col-sm-3 col-form-label">Tỉnh / Thành phố:</label>
                     <div class="col-sm-9">
                         <select id="city" name="cityId" th:field="*{cityId}" class="form-select"
-                                th:attr="data-init-city=${cityId}" th:disabled="${!editMode}">
-                            <option value="">-- Chọn tỉnh/thành phố --</option>
+                                th:attr="data-init-city=${cityId}" th:disabled="${!edit}">
+                            <option value="">-- Tỉnh/thành phố --</option>
                         </select>
                     </div>
                 </div>
@@ -142,8 +143,8 @@
                     <label class="col-sm-3 col-form-label">Quận / Huyện:</label>
                     <div class="col-sm-9">
                         <select id="district" name="districtId" th:field="*{districtId}" class="form-select"
-                                th:attr="data-init-district=${districtId}" th:disabled="${!editMode}">
-                            <option value="">-- Chọn quận/huyện --</option>
+                                th:attr="data-init-district=${districtId}" th:disabled="${!edit}">
+                            <option value="">-- Quận/huyện --</option>
                         </select>
                     </div>
                 </div>
@@ -153,20 +154,19 @@
                     <label class="col-sm-3 col-form-label">Phường / Xã:</label>
                     <div class="col-sm-9">
                         <select id="ward" name="wardId" th:field="*{wardId}" class="form-select"
-                                th:attr="data-init-ward=${wardId}" th:disabled="${!editMode}">
-                            <option value="">-- Chọn phường/xã --</option>
+                                th:attr="data-init-ward=${wardId}" th:disabled="${!edit}">
+                            <option value="">-- Phường/xã --</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Nút điều hướng -->
                 <div class="text-end mt-4">
-                    <a href="/profile" class="btn btn-secondary btn-custom">Quay lại</a>
+                    <a th:href="@{/customer/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
 
-                    <button th:if="${editMode}" type="submit" class="btn btn-success btn-custom">Lưu</button>
+                    <button th:if="${edit}" type="submit" class="btn btn-success btn-custom">Lưu</button>
 
-                    <a th:if="${!editMode}" th:href="@{'/profile/edit-mode'}"
-                       class="btn btn-primary btn-custom">Chỉnh sửa</a>
+                    <a th:href="@{/customer/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
                 </div>
             </div>
         </form>
@@ -190,7 +190,7 @@
             fetch("https://provinces.open-api.vn/api/p")
                 .then(res => res.json())
                 .then(data => {
-                    city.innerHTML = '<option value="">-- Chọn tỉnh/thành phố --</option>';
+                    city.innerHTML = '<option value="">-- Tỉnh/thành phố --</option>';
 
                     const initCity = city.getAttribute("data-init-city");
                     data.forEach(c => {

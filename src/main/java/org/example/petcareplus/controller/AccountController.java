@@ -11,6 +11,9 @@ import org.example.petcareplus.enums.AccountStatus;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -189,10 +193,46 @@ public class    AccountController {
 
         Long id = account.getAccountId();
 
-        session.setAttribute("loggedInUser", account);
-        return "redirect:/home";
-    }
+// Gán quyền thủ công vào SecurityContext
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(
+                        account.getPhone(),
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + account.getRole()))
+                );
 
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // ✅ Gán vào session để Spring Security giữ context giữa các request
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+// Gán vào session (tuỳ, nếu bạn cần dùng account trong session riêng)
+        session.setAttribute("loggedInUser", account);
+
+        // Điều hướng dựa theo vai trò
+        switch (account.getRole()) {
+            case ADMIN -> {
+                return "redirect:/admin/account";
+            }
+            case SELLER -> {
+                return "redirect:/seller/order-dashboard";
+            }
+            case VET -> {
+                return "redirect:/vet/dashboard";
+            }
+            case PET_GROOMER -> {
+                return "redirect:/pet-groomer/dashboard";
+            }
+            case MANAGER -> {
+                return "redirect:/manager/dashboard";
+            }
+            case CUSTOMER -> {
+                return "redirect:/home";
+            }
+            default -> {
+                return "redirect:/home";
+            }
+        }
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {

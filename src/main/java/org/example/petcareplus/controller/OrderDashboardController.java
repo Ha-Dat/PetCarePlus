@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Controller
+@RequestMapping ("/seller")
 public class OrderDashboardController {
 
     private final OrderService orderService;
@@ -85,7 +86,7 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 
     @GetMapping("/orders/approve/{id}")
@@ -93,7 +94,7 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.APPROVED);
         orderService.save(order);
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 
     @PostMapping("/orders/update-status/{id}")
@@ -106,6 +107,6 @@ public class OrderDashboardController {
         } catch (IllegalArgumentException e) {
             // Invalid status, ignore
         }
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 }

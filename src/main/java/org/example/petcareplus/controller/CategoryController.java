@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RequestMapping("/")
+@RequestMapping("/seller")
 @Controller
 public class CategoryController {
     @Autowired
@@ -40,7 +40,7 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("toastMessage", "Thêm danh mục thất bại!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 
     @PostMapping("/category/update")
@@ -61,7 +61,7 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("toastMessage", "Cập nhật thất bại!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 
     @PostMapping("/category/delete")
@@ -80,6 +80,6 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
 
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 }

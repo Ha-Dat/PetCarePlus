@@ -251,9 +251,8 @@
                 </div>
             </div>
         </div>
-        <form class="order-filter-form">
+        <form class="order-filter-form" method="get" th:action="@{/seller/order-dashboard}">
             <input type="text" class="form-control" placeholder="Order ID" name="orderId" th:value="${orderId}">
-
             <select class="form-select" name="status">
                 <option value="">Status</option>
                 <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
@@ -264,7 +263,6 @@
                 <option value="REJECTED" th:selected="${status == 'REJECTED'}">Rejected</option>
                 <option value="APPROVED" th:selected="${status == 'APPROVED'}">Approved</option>
             </select>
-
             <button type="submit" class="btn btn-primary">Filter</button>
         </form>
 
@@ -291,10 +289,10 @@
                             View
                         </button>
                         <a th:if="${order.status == 'PENDING'}"
-                           th:href="@{'/orders/approve/' + ${order.orderId}}"
+                           th:href="@{'/seller/orders/approve/' + ${order.orderId}}"
                            class="btn btn-sm btn-approve ms-2">Approve</a>
                         <a th:if="${order.status == 'PENDING'}"
-                           th:href="@{'/orders/reject/' + ${order.orderId}}"
+                           th:href="@{'/seller/orders/reject/' + ${order.orderId}}"
                            class="btn btn-sm btn-danger ms-2">Reject</a>
 
                     </td>
@@ -322,7 +320,7 @@
     function loadOrderDetail(button) {
         var orderId = $(button).data("id");
         $.ajax({
-            url: "/orders/detail/" + orderId,
+            url: "/seller/orders/detail/" + orderId,
             method: "GET",
             success: function (data) {
                 const parser = new DOMParser();
