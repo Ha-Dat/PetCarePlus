@@ -459,7 +459,7 @@
                                            data-breeds=${appointment.petProfile.breeds},
                                            data-weight=${appointment.petProfile.weight},
                                            data-age=${appointment.petProfile.age},
-                                           data-image=${appointment.petProfile.image}"
+                                           data-image=${appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias) ? appointment.petProfile.medias[0].url: ''}"
                                href="javascript:void(0)"
                                onclick="openPetProfileModal(this)">Chi tiết</a>
 

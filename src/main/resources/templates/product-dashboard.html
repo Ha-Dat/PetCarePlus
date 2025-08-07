@@ -449,17 +449,29 @@
                     <tr th:each="product, stat : ${products}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
                         <td th:text="${product?.name}"></td>
-                        <td><img th:src="${product?.image}" alt="Product image"></td>
+
+                        <!-- Hiển thị ảnh đầu tiên nếu có -->
+                        <td>
+                            <img th:if="${product?.medias?.size() > 0}"
+                                 th:src="@{${product.medias[0].url}}" alt="Product image"
+                                 style="width: 80px; height: auto;">
+                            <span th:if="${product?.medias?.size() == 0}">Không có ảnh</span>
+                        </td>
+
                         <td th:text="${product?.description}"></td>
+
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
+
                         <td>
-                    <span th:text="${product?.status}"
-                          th:classappend="${product?.status == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
-                    </span>
+        <span th:text="${product?.status}"
+              th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
+        </span>
                         </td>
+
                         <td th:text="${product?.category?.name}"></td>
+
                         <td>
                             <div class="action-dropdown">
                                 <button type="button" class="dropdown-toggle">⋮</button>
@@ -471,17 +483,17 @@
             data-price=${product.price},
             data-stock=${product.unitInStock},
             data-sold=${product.unitSold},
-            data-status=${product.status},
+            data-status=${product.status.name()},
             data-description=${product.description},
-            data-image=${product.image},
-data-createdDate=${product.createdDate}"
+            data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
+            data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/productDashboard/delete/__${product.productId}__}" method="post"
+                                          th:action="@{/product-dashboard/delete/__${product.productId}__}" method="post"
                                           th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
                                             🗑️ Xóa
@@ -546,8 +558,9 @@ data-createdDate=${product.createdDate}"
 
                 <label for="productStatus">Trạng thái *</label>
                 <select id="productStatus" name="status" required>
-                    <option value="active">ACTIVE</option>
-                    <option value="inactive">INACTIVE</option>
+                    <option value="IN_STOCK">Còn hàng</option>
+                    <option value="OUT_OF_STOCK">Hết hàng</option>
+                    <option value="INACTIVE">Không hoạt động</option>
                 </select>
             </div>
 
@@ -617,8 +630,9 @@ data-createdDate=${product.createdDate}"
 
                 <label for="editProductStatus">Trạng thái *</label>
                 <select id="editProductStatus" name="status" required>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="IN_STOCK">Còn hàng</option>
+                    <option value="OUT_OF_STOCK">Hết hàng</option>
+                    <option value="INACTIVE">Không hoạt động</option>
                 </select>
             </div>
 
@@ -645,6 +659,16 @@ data-createdDate=${product.createdDate}"
     <span id="toastMessage"></span>
 </div>
 <script>
+    function formatDateToYMDHMS(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return date.getFullYear() + '-' +
+            pad(date.getMonth() + 1) + '-' +
+            pad(date.getDate()) + ' ' +
+            pad(date.getHours()) + ':' +
+            pad(date.getMinutes()) + ':' +
+            pad(date.getSeconds());
+    }
+
     function openAddModal() {
         document.getElementById("addProductModal").style.display = "flex";
     }
@@ -680,8 +704,11 @@ data-createdDate=${product.createdDate}"
             unitInStock: parseInt(form.unitInStock.value),
             unitSold: parseInt(form.unitSold.value) || 0,
             status: form.status.value,
-            image: form.image.value.trim(),
-            categoryId: parseInt(form.categoryId.value)
+            medias: [{
+                url: form.image.value.trim()
+            }],
+            categoryId: parseInt(form.categoryId.value),
+            createdDate: formatDateToYMDHMS(new Date())
         };
 
         fetch('/product-dashboard/create', {
@@ -734,9 +761,11 @@ data-createdDate=${product.createdDate}"
             unitInStock: parseInt(form.unitInStock.value),
             unitSold: parseInt(form.unitSold.value) || 0,
             status: form.status.value,
-            image: form.image.value.trim(),
             categoryId: parseInt(form.categoryId.value),
-            createdDate: form.createdDate.value
+            createdDate: form.createdDate.value,
+            medias: [{
+                url: form.image.value.trim()
+            }]
         };
 
         fetch(`/product-dashboard/update/${productId}`, {
