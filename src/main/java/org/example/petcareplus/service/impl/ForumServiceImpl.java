@@ -319,6 +319,10 @@ public class ForumServiceImpl implements ForumService {
         return postRepository.findAll(pageable).getContent();
     }
 
+    @Override
+    public List<Post> findAllByAccountId(Long accountId) {
+        return postRepository.findAllWithMediasByAccountId(accountId);
+    }
 
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {
@@ -341,7 +345,7 @@ public class ForumServiceImpl implements ForumService {
         return "https://petcareplus.s3.ap-southeast-2.amazonaws.com/" + key;
     }
 
-    public void deleteFileFromS3(String url) {
+    private void deleteFileFromS3(String url) {
         String prefix = "https://petcareplus.s3.ap-southeast-2.amazonaws.com/";
         String key = url.replace(prefix, "");
 

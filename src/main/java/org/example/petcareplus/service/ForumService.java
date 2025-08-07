@@ -48,4 +48,6 @@ public interface ForumService {
     List<Post> findPendingPosts();
 
     List<Post> findTop6NewestPosts();
+
+    List<Post> findAllByAccountId(Long accountId);
 }
