@@ -23,7 +23,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +48,7 @@ public class AppointmentController {
 
         return "appointment-booking";
     }
+
     @Autowired
     private ServiceService serviceService;
 
@@ -68,20 +71,20 @@ public class AppointmentController {
             HttpSession session,
             Model model
     ) {
-            Account account = (Account) session.getAttribute("loggedInUser");
-            if (account == null) return "redirect:/login";
-            // Tạo pet profile mới từ form
-            PetProfile petProfile = new PetProfile();
-            petProfile.setName(petName);
-            petProfile.setSpecies(petSpecies);
-            petProfile.setBreeds(petBreed);
-            petProfile.setProfile(account.getProfile());
-            petProfileService.save(petProfile);
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+        // Tạo pet profile mới từ form
+        PetProfile petProfile = new PetProfile();
+        petProfile.setName(petName);
+        petProfile.setSpecies(petSpecies);
+        petProfile.setBreeds(petBreed);
+        petProfile.setProfile(account.getProfile());
+        petProfileService.save(petProfile);
 
-            // gán dữ liệu từ form
-            AppointmentBooking booking = new AppointmentBooking();
-            booking.setBookDate(bookDate);
-            booking.setNote(note);
+        // gán dữ liệu từ form
+        AppointmentBooking booking = new AppointmentBooking();
+        booking.setBookDate(bookDate);
+        booking.setNote(note);
 
         Optional<Service> service = serviceService.findById(serviceId);
         if (service.isEmpty()) {
@@ -89,19 +92,19 @@ public class AppointmentController {
             return "error";
         }
         booking.setService(service.get());
-            booking.setService(service.get());
-            booking.setStatus(BookingStatus.PENDING);
-            booking.setCreatedAt(LocalDateTime.now());
-            booking.setPetProfile(petProfile);
+        booking.setService(service.get());
+        booking.setStatus(BookingStatus.PENDING);
+        booking.setCreatedAt(LocalDateTime.now());
+        booking.setPetProfile(petProfile);
 
-            appointmentService.save(booking);
-            return "home";
+        appointmentService.save(booking);
+        return "home";
     }
 
     @GetMapping("/appointment/approved")
     public String approvedPage(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,
-                                  Model model) {
+                               @RequestParam(defaultValue = "10") int size,
+                               Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> approvedPage = appointmentService.getApprovedAppointments(PageRequest.of(page, size));
@@ -116,8 +119,8 @@ public class AppointmentController {
 
     @GetMapping("/appointment/pending")
     public String pendingPage(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> pendingPage = appointmentService.getPendingAppointments(PageRequest.of(page, size));
@@ -132,8 +135,8 @@ public class AppointmentController {
 
     @GetMapping("/appointment/history")
     public String historyPage(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> historyPage = appointmentService.getHistoryAppointments(PageRequest.of(page, size));
@@ -147,28 +150,26 @@ public class AppointmentController {
     }
 
     @PostMapping("/appointment/approve/{id}")
-    @ResponseBody
     public String approveAppointment(@PathVariable("id") Long id) {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
         if (appointmentBooking.isPresent()) {
             AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.ACCEPTED);
             appointmentService.save(appointment);
-            return "Đã chấp nhận";
+            return "redirect:/appointment/approved"; // This tells Spring to redirect
         }
-        return "Thao tác không thành công";
+        return "redirect:/appointment/pending?error=true"; // or some error page
     }
 
     @PostMapping("/appointment/disapprove/{id}")
-    @ResponseBody
     public String disapproveAppointment(@PathVariable("id") Long id) {
-        Optional<AppointmentBooking> disappointmentBooking = appointmentService.findById(id);
-        if (disappointmentBooking.isPresent()) {
-            AppointmentBooking appointment = disappointmentBooking.get();
+        Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
+        if (appointmentBooking.isPresent()) {
+            AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.REJECTED);
             appointmentService.save(appointment);
-            return "Đã từ chối";
+            return "redirect:/appointment/pending";
         }
-        return "Thao tác không thành công";
+        return "redirect:/appointment/pending?error=true";
     }
 }

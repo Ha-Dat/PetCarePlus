@@ -468,17 +468,21 @@
                                 Tạo đơn thuốc
                             </a>
 
-                            <a class="approved-btn" th:if="${mode == 'pending'}"
-                               th:href="@{/appointment/approve/${appointment.appointment_booking_id}}"
-                               onclick="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
-                                Chấp nhận
-                            </a>
+                            <!-- Chấp nhận -->
+                            <form th:if="${mode == 'pending'}"
+                                  th:action="@{/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
+                                <button type="submit" class="approved-btn">Chấp nhận</button>
+                            </form>
 
-                            <a class="disapproved-btn" th:if="${mode == 'pending'}"
-                               th:href="@{/appointment/disapprove/${appointment.appointment_booking_id}}"
-                               onclick="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
-                                Không chấp nhận
-                            </a>
+                            <!-- Không chấp nhận -->
+                            <form th:if="${mode == 'pending'}"
+                                  th:action="@{/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(appointments)}">
