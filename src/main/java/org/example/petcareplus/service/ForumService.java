@@ -39,4 +39,6 @@ public interface ForumService {
     void saveRating(Long postId, Long accountId, Rating rating);
 
     List<Post> findTop6NewestPosts();
+
+    List<Post> findAllByAccountId(Long accountId);
 }

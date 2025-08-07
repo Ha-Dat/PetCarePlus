@@ -273,4 +273,84 @@ public class ForumController {
         forumService.saveRating(postId, account.getAccountId(), rating);
         return "redirect:/post-detail/" + postId;
     }
+
+    @GetMapping("/forum-my-posts/{accountId}/{postId}/rating")
+    public String RatingOnMyPostList(@PathVariable Long postId, @RequestParam Rating rating, HttpSession session, @PathVariable Long accountId) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
+
+        // Gọi Service
+        forumService.saveRating(postId, account.getAccountId(), rating);
+        return "redirect:/forum-my-posts/" + accountId;
+    }
+
+    @GetMapping("/forum-my-posts/{accountId}")
+    public String getMyPosts(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size,
+                               @RequestParam(required = false) String keyword,
+                               @PathVariable Long accountId,
+                               Model model, HttpSession session) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+
+        List<Post> allPosts = forumService.findAllByAccountId(accountId);
+
+        // Lọc theo từ khóa nếu có
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
+
+        List<PostDTO> sortedPosts = allPosts.stream()
+                .map(PostDTO::new)
+                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
+                .toList();
+
+        // Tự tính chỉ số trang
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, sortedPosts.size());
+
+        List<PostDTO> pageContent = sortedPosts.subList(fromIndex, toIndex);
+
+        // Lấy 6 bài post mới nhất
+        List<Post> latestPosts = forumService.findTop6NewestPosts();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+
+        model.addAttribute("posts", pageContent);
+        model.addAttribute("hasNext", toIndex < sortedPosts.size());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("latestPosts", latestPostDTOs);
+        return "forum-my-posts";
+    }
+
+    @GetMapping("/api/posts-my-post/{accountId}")
+    @ResponseBody
+    public List<PostDTO> getMoreMyPosts(@RequestParam int page,
+                                      @RequestParam int size,
+                                      @RequestParam(required = false) String keyword,
+                                      @PathVariable Long accountId) {
+        List<Post> allPosts = forumService.findAllByAccountId(accountId);
+        // Lọc nếu có keyword
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            allPosts = allPosts.stream()
+                    .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
+                    .toList();
+        }
+        List<PostDTO> sortedPosts = allPosts.stream()
+                .map(PostDTO::new)
+                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
+                .toList();
+
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, sortedPosts.size());
+
+        if (fromIndex >= sortedPosts.size()) {
+            return List.of();
+        }
+
+        return sortedPosts.subList(fromIndex, toIndex);
+    }
 }

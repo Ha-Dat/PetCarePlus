@@ -130,19 +130,6 @@
                                     </svg>
                                     Trang chủ
                                 </a>
-                                <a href="/popular" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" />
-                                        <polyline points="16,7 22,7 22,13" />
-                                    </svg>
-                                    Phổ biến
-                                </a>
-                                <a href="/messages" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    Tin nhắn
-                                </a>
                             </nav>
                         </div>
                     </div>
@@ -161,7 +148,7 @@
                                     </svg>
                                     Hồ sơ
                                 </a>
-                                <a href="/my-posts" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                <a th:href="@{'/forum-my-posts/' + ${session.loggedInUser.accountId}}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                         <polyline points="14,2 14,8 20,8" />
