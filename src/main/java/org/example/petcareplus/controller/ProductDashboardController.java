@@ -53,9 +53,10 @@ public class ProductDashboardController {
                 product.get().getPrice(),
                 product.get().getUnitInStock(),
                 product.get().getUnitSold(),
-                product.get().getStatus(),
+                product.get().getStatus().toLowerCase(),
                 product.get().getImage(),
-                product.get().getCategory().getCategoryId()
+                product.get().getCategory().getCategoryId(),
+                product.get().getCreatedDate()
         );
     }
 
@@ -76,6 +77,7 @@ public class ProductDashboardController {
         product.setUnitSold(dto.getUnitSold());
         product.setStatus(dto.getStatus());
         product.setImage(dto.getImage());
+        product.setCreatedDate(dto.getCreatedDate());
         Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
         product.setCategory(category);
 

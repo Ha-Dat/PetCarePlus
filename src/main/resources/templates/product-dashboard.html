@@ -467,7 +467,8 @@
             data-sold=${product.unitSold},
             data-status=${product.status},
             data-description=${product.description},
-            data-image=${product.image}"
+            data-image=${product.image},
+data-createdDate=${product.createdDate}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
@@ -539,8 +540,8 @@
 
                 <label for="productStatus">Trạng thái *</label>
                 <select id="productStatus" name="status" required>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="active">ACTIVE</option>
+                    <option value="inactive">INACTIVE</option>
                 </select>
             </div>
 
@@ -584,6 +585,7 @@
 
         <form id="editProductForm" onsubmit="submitEditProduct(event)">
             <input type="hidden" id="editProductId" name="productId">
+            <input type="hidden" id="editCreatedDate" name="createdDate">
 
             <div>
                 <label for="editProductName">Tên sản phẩm *</label>
@@ -613,6 +615,7 @@
                     <option value="INACTIVE">INACTIVE</option>
                 </select>
             </div>
+
 
             <div class="form-group">
                 <label for="editProductDescription">Mô tả *</label>
@@ -698,28 +701,17 @@
     }
 
     function openEditModal(element) {
-        const productId = element.getAttribute('data-product-id');
-        const name = element.getAttribute('data-name');
-        const categoryId = element.getAttribute('data-category-id');
-        const price = element.getAttribute('data-price');
-        const stock = element.getAttribute('data-stock');
-        const sold = element.getAttribute('data-sold');
-        const status = element.getAttribute('data-status');
-        const description = element.getAttribute('data-description');
-        const image = element.getAttribute('data-image');
+        document.getElementById("editProductId").value = element.getAttribute('data-product-id');
+        document.getElementById("editProductName").value = element.getAttribute('data-name');
+        document.getElementById("editProductCategory").value = element.getAttribute('data-category-id');
+        document.getElementById("editProductPrice").value = element.getAttribute('data-price');
+        document.getElementById("editProductStock").value = element.getAttribute('data-stock');
+        document.getElementById("editProductSold").value = element.getAttribute('data-sold');
+        document.getElementById("editProductStatus").value = element.getAttribute('data-status');
+        document.getElementById("editProductDescription").value = element.getAttribute('data-description');
+        document.getElementById("editProductImage").value = element.getAttribute('data-image');
+        document.getElementById("editCreatedDate").value = element.getAttribute('data-createdDate');
 
-        // Gán vào form
-        document.getElementById("editProductId").value = productId;
-        document.getElementById("editProductName").value = name;
-        document.getElementById("editProductCategory").value = categoryId;
-        document.getElementById("editProductPrice").value = price;
-        document.getElementById("editProductStock").value = stock;
-        document.getElementById("editProductSold").value = sold;
-        document.getElementById("editProductStatus").value = status;
-        document.getElementById("editProductDescription").value = description;
-        document.getElementById("editProductImage").value = image;
-
-        // Hiển thị modal
         document.getElementById("editProductModal").style.display = "flex";
     }
 
@@ -737,7 +729,8 @@
             unitSold: parseInt(form.unitSold.value) || 0,
             status: form.status.value,
             image: form.image.value.trim(),
-            categoryId: parseInt(form.categoryId.value)
+            categoryId: parseInt(form.categoryId.value),
+            createdDate: form.createdDate.value
         };
 
         fetch(`/product-dashboard/update/${productId}`, {

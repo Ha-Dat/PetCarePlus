@@ -1,6 +1,9 @@
 package org.example.petcareplus.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class ProductDTO {
     private Long productId;
@@ -12,11 +15,13 @@ public class ProductDTO {
     private String status;
     private String image;
     private Long categoryId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
+    private Date createdDate;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(Long productId, String name, String description, BigDecimal price, int unitInStock, int unitSold, String status, String image, Long categoryId) {
+    public ProductDTO(Long productId, String name, String description, BigDecimal price, int unitInStock, int unitSold, String status, String image, Long categoryId, Date createdDate) {
         this.productId = productId;
         this.name = name;
         this.description = description;
@@ -26,6 +31,7 @@ public class ProductDTO {
         this.status = status;
         this.image = image;
         this.categoryId = categoryId;
+        this.createdDate = createdDate;
     }
 
     public Long getProductId() {
@@ -94,6 +100,15 @@ public class ProductDTO {
 
     public Long getCategoryId() {
         return categoryId;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public void setCategoryId(Long categoryId) {
