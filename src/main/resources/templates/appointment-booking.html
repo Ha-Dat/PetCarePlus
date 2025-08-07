@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Online - Đặt lịch dịch vụ thú cưng</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fdf9;
+      margin: 0;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 672px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .title {
+      color: #4a7c59;
+      font-size: 36px;
+      font-weight: 300;
+      letter-spacing: 0.9px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      color: #4a7c59;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .description {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .form-container {
+      background-color: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      padding: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group:first-child {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.4;
+      background-color: white;
+      transition:
+              border-color 0.2s,
+              box-shadow 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #4a7c59;
+      box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 8px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .date-input {
+      position: relative;
+    }
+
+    .date-input input {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .submit-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .submit-btn {
+      background-color: #4a7c59;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: #6b9a76;
+    }
+
+    .submit-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.3);
+    }
+
+    .play-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .form-container {
+        padding: 24px;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #a8e063, #56ab2f); /* xanh gradient */
+      padding: 12px 40px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      border-radius: 0 0 12px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      margin-top: 10px;
+    }
+
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-margin {
+      margin-right: 20px;
+    }
+
+    .nav-bar a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .nav-bar a:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .sale-badge a {
+      color: #ffeb3b;
+      font-weight: bold;
+      background-color: #d32f2f;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .sale-badge a:hover {
+      background-color: #b71c1c;
+    }
+
+    /* Category Button */
+    #categoryBtn {
+      color: white;
+      background: #2e7d32;
+      border-radius: 8px;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    #categoryBtn:hover {
+      background: #1d5c0d;
+      color: #d3d0d0;
+    }
+    /* Popup Menu */
+    .popup {
+      position: absolute;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      padding: 16px 24px;
+      z-index: 10;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .popup-content {
+      display: flex;
+      gap: 32px;
+    }
+
+    .main-categories,
+    .sub-categories-list,
+    .child-sub-list-wrapper {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      margin-right: 20px;
+    }
+
+    .child-sub-list-wrapper li {
+      list-style-type: none;
+    }
+
+    .category-item {
+      padding: 10px 18px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .category-item:hover {
+      background-color: #e0f0e9;
+      cursor: pointer;
+    }
+
+    .category-item.active {
+      background-color: #88df82;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .parent-item,
+    .child-item,
+    .child-sub-list span {
+      cursor: pointer;
+    }
+
+    .sub-list {
+      display: none;
+    }
+
+    .sub-list ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .child-item {
+      display: block;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .child-item:hover {
+      background-color: #e0f0e9;
+    }
+
+    .child-item.active {
+      background-color: #88df82;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .sub-list.active {
+      display: block;
+    }
+
+    .sub-list.active ul li {
+      list-style-type: none;
+    }
+
+    .sub-list span,
+    .child-sub-list span {
+      display: block;
+      padding: 6px 12px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .child-sub-list {
+      display: none;
+    }
+
+    /* Header Styling */
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: linear-gradient(to right, #e8f5e9, #ffffff);
+      border-bottom: 2px solid #b2dfdb;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+    }
+
+    .header_container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      margin-left: 30px;
+      margin-top: 10px;
+    }
+
+    .logo {
+      width: 60px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-bar input {
+      border-radius: 8px;
+      width: 320px;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    .search-bar input:focus {
+      border-color: #4caf50;
+      box-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
+    }
+
+    .search-btn {
+      border: none;
+      color: white;
+      background: #43a047;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background: #2e7d32;
+      color: white;
+    }
+
+    /* Right Header Area */
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .slogan {
+      color: #2e7d32;
+      font-style: italic;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .hotline {
+      color: #43a047;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .auth {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .login-btn,
+    .register-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .login-btn:hover {
+      background: #d5d5d5;
+    }
+
+    .register-btn {
+      width: 91.19px;
+      background: #388e3c;
+      color: white;
+    }
+
+    .register-btn:hover {
+      background: #2e7d32;
+    }
+
+    /* Cart Icon */
+    .cart {
+      margin-top: 8px;
+      margin-right: 13px;
+      margin-left: -20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #2e7d32;
+      transition: transform 0.2s ease;
+      width: 50px
+    }
+
+    .cart:hover {
+      transform: scale(1.2);
+    }
+
+    /* Dropdown user menu */
+    .user-dropdown,
+    .calender-dropdown{
+      position: relative;
+      display: inline-block;
+    }
+
+    .user-btn,
+    .calender-btn{
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .user-btn:hover,
+    .calender-btn:hover {
+      background: #388e3c;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #ffffff;
+      min-width: 160px;
+      z-index: 2000; /* cao hơn nav-bar */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dropdown-content a {
+      color: #333;
+      padding: 10px 16px;
+      text-decoration: none;
+      font-weight: normal;
+      display: block;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+      color: #000000;
+    }
+
+    .user-dropdown:hover .dropdown-content,
+    .calender-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #e8f5e9;
+      padding: 30px 40px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-top: 40px;
+      color: #333;
+      border-top: 2px solid #c8e6c9;
+    }
+
+    footer section {
+      margin-bottom: 20px;
+      min-width: 200px;
+    }
+
+    footer h4 {
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: #1b5e20;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    footer a {
+      color: #333;
+      text-decoration: none;
+      display: block;
+      padding: 4px 0;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="component/header :: header"></div>
+<div class="container">
+  <div class="form-wrapper">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="title">Booking Online</h1>
+      <h2 class="subtitle">Đặt lịch khám</h2>
+      <p class="description">
+        vui lòng điền đầy đủ thông tin.
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form id="appointmentBookingForm" action="/appointment/create" method="post" onsubmit="handleSubmit(event)">
+      <div class="form-container">
+
+        <!-- Pet Name -->
+        <div class="form-group">
+          <label for="petName">Tên vật nuôi</label>
+          <input
+                  type="text"
+                  id="petName"
+                  name="petName"
+                  placeholder="Tên vật nuôi..."
+                  required
+          />
+        </div>
+
+        <!-- Pet Species -->
+        <div class="form-group">
+          <label for="petSpecies">Loài vật nuôi</label>
+          <input
+                  type="text"
+                  id="petSpecies"
+                  name="petSpecies"
+                  placeholder="Chó, mèo, thỏ, hamster..."
+                  required
+          />
+        </div>
+
+        <!-- Pet Breed -->
+        <div class="form-group">
+          <label for="petBreed">Giống vật nuôi</label>
+          <input
+                  type="text"
+                  id="petBreed"
+                  name="petBreed"
+                  placeholder="shiba, mèo ta, chó cỏ..."
+                  required
+          />
+        </div>
+
+          <!-- Chọn dịch vụ -->
+          <div class="form-group">
+              <label for="serviceId">Chọn dịch vụ</label>
+              <div class="select-wrapper">
+                  <select id="serviceId" name="serviceId" required>
+                      <option value="">Chọn dịch vụ</option>
+                      <option th:each="ser : ${services}"
+                              th:value="${ser.serviceId}"
+                              th:text="${ser.name}">
+                      </option>
+                  </select>
+              </div>
+          </div>
+
+        <!-- Chọn thời gian -->
+        <div class="form-group">
+          <label for="bookDate">Thời gian</label>
+          <div class="date-input">
+            <input
+                    type="datetime-local"
+                    id="bookDate"
+                    name="bookDate"
+                    required
+            />
+          </div>
+        </div>
+
+        <!-- Ghi chú -->
+        <div class="form-group">
+          <label for="note">Ghi chú</label>
+          <textarea
+                  id="note"
+                  name="note"
+                  placeholder="Tình trạng vật nuôi..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Nút gửi -->
+      <div class="submit-container">
+        <button type="submit" class="submit-btn">
+          Đặt lịch ngay
+          <svg class="play-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M8 5v14l11-7z" fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<div th:replace="component/footer :: footer"></div>
+<script>
+  // pop_up
+  window.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("categoryBtn");
+    const popup = document.getElementById("categoryPopup");
+    const categoryItems = document.querySelectorAll(".category-item");
+    const subLists = document.querySelectorAll(".sub-list");
+    const childItems = document.querySelectorAll(".child-item");
+    const childSubLists = document.querySelectorAll(".child-sub-list");
+    const grandchildItems = document.querySelectorAll(".grandchild-item");
+
+    if (btn && popup) {
+      btn.addEventListener("click", () => {
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+      });
+    }
+
+    categoryItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const index = item.getAttribute("data-index");
+
+        categoryItems.forEach(i => i.classList.remove("active"));
+        subLists.forEach(s => s.classList.remove("active"));
+        childItems.forEach(c => c.classList.remove("active"));
+        childSubLists.forEach(c => c.style.display = "none");
+
+        item.classList.add("active");
+        document.querySelector(`.sub-list[data-index="${index}"]`)?.classList.add("active");
+      });
+    });
+
+    childItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const subIndex = item.getAttribute("data-sub-index");
+
+        childItems.forEach(c => c.classList.remove("active"));
+        childSubLists.forEach(list => list.style.display = "none");
+
+        item.classList.add("active");
+        const targetList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+        if (targetList) {
+          targetList.style.display = "block";
+        }
+      });
+    });
+
+    if (categoryItems.length > 0) {
+      categoryItems[0].click();
+    }
+
+    document.querySelectorAll(".parent-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const li = item.closest("li.category-item");
+        const index = li.dataset.index;
+        const subList = document.querySelector(`.sub-list[data-index="${index}"]`);
+        const hasChild = subList && subList.querySelectorAll(".child-item").length > 0;
+
+        if (!hasChild) {
+          const categoryName = item.textContent.trim();
+          window.location.href = `/view-product?category=${encodeURIComponent(categoryName)}`;
+        }
+      });
+    });
+
+    document.querySelectorAll(".child-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const subIndex = item.dataset.subIndex;
+        const childSubList = document.querySelector(`.child-sub-list[data-sub-index="${subIndex}"]`);
+        const hasGrandchild = childSubList && childSubList.querySelectorAll(".grandchild-item").length > 0;
+
+        // Reset trạng thái
+        document.querySelectorAll(".child-item").forEach(c => c.classList.remove("active"));
+        document.querySelectorAll(".child-sub-list").forEach(list => list.style.display = "none");
+
+        item.classList.add("active");
+
+        if (hasGrandchild) {
+          // Có cháu → chỉ hiện danh sách cháu
+          childSubList.style.display = "block";
+        } else {
+          // Không có cháu → chuyển trang
+          const parentLi = item.closest(".sub-list");
+          const parentIndex = parentLi.getAttribute("data-index");
+          const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+          const keyword = item.textContent.trim();
+          window.location.href = `/view-product?&category=${encodeURIComponent(parentName)}`;
+        }
+      });
+    });
+
+    document.querySelectorAll(".grandchild-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const grandchildName = item.textContent.trim();
+        const subList = item.closest(".child-sub-list");
+        const subIndex = subList.getAttribute("data-sub-index");
+        const [parentIndex] = subIndex.split("-");
+        const parentName = document.querySelector(`.category-item[data-index="${parentIndex}"] .parent-item`).textContent.trim();
+        const childItem = document.querySelector(`.sub-list[data-index="${parentIndex}"] .child-item[data-sub-index="${subIndex}"]`);
+        const keyword = childItem ? childItem.textContent.trim() : "";
+
+        window.location.href = `/view-product?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(parentName)}`;
+      });
+    });
+  });
+
+  // Set minimum date to today
+  document.getElementById("appointmentDate").min = new Date()
+          .toISOString()
+          .split("T")[0];
+
+    // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000)
+        .toISOString()
+        .slice(0, 16);
+    document.getElementById("appointmentDate").min = local;
+
+    function handleSubmit(event) {
+        event.preventDefault(); // Ngăn submit mặc định
+        // Gửi dữ liệu form
+        const form = document.getElementById('appointmentBookingForm');
+        // Hoặc đơn giản chỉ alert:
+        alert('Đặt lịch thành công!');
+        form.submit();
+    }
+</script>
+</body>
+</html>

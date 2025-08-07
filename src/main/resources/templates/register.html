@@ -3,7 +3,6 @@
 <head>
     <title>Đăng ký</title>
     <link rel="stylesheet" th:href="@{css/header.css}">
-    <link rel="stylesheet" th:href="@{css/footer.css}">
     <style>
         .password-wrapper {
             position: relative;
@@ -27,7 +26,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin-top: 10px;
+            margin-top: -10px;
         }
 
         .form-box {
@@ -81,6 +80,47 @@
         .form-fields label {
             display: block;
             margin-bottom: 10px;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #e8f5e9;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #333;
+            border-top: 2px solid #c8e6c9;
+        }
+
+        footer section {
+            margin-bottom: 20px;
+            min-width: 200px;
+        }
+
+        footer h4 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #1b5e20;
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        footer a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: #2e7d32;
         }
     </style>
 </head>

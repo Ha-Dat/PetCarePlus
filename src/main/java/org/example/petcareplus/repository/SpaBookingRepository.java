@@ -1,6 +1,6 @@
 package org.example.petcareplus.repository;
 
-import org.example.petcareplus.entity.HotelBooking;
+import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.SpaBooking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,9 +11,25 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
+import java.util.List;
+
 
 @Repository
 public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
+
+    @Query("""
+        SELECT new org.example.petcareplus.dto.MyServiceDTO(
+            sp.spaBookingId, p.name, s.name, s.serviceCategory, sp.bookDate, sp.status
+        )
+        FROM SpaBooking sp
+        JOIN sp.petProfile p
+        JOIN p.profile pf
+        JOIN pf.account acc
+        JOIN sp.service s
+        WHERE acc.accountId = :accountId
+    """)
+    List<MyServiceDTO> findSpaBookingsByAccountId(@Param("accountId") Long accountId);
+
     @Query("SELECT h FROM HotelBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
     Page<SpaBooking> findByBookDateBetween(@Param("start") LocalDateTime start,
                                              @Param("end") LocalDateTime end,

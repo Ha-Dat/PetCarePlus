@@ -7,6 +7,7 @@ import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -282,6 +283,34 @@ public class ForumServiceImpl implements ForumService {
         postRating.setRating(rating);
         postRatingRepository.save(postRating);
         }
+    }
+
+    @Override
+    public Page<Post> getPostsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postId").ascending());
+        return postRepository.findAll(pageable);
+    }
+
+    @Override
+    public void updatePostStatus(Long postId, boolean status) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            post.setChecked(status);
+            postRepository.save(post);
+        } else {
+            throw new RuntimeException("Không tìm thấy bài viết với ID: " + postId);
+        }
+    }
+
+    @Override
+    public List<Post> findApprovedPosts() {
+        return postRepository.findApprovedPostsOrderByCreatedAtDesc();
+    }
+
+    @Override
+    public List<Post> findPendingPosts() {
+        return postRepository.findByIsCheckedFalse();
     }
 
     @Override

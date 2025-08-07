@@ -169,7 +169,10 @@ public class PetProfileServiceImpl implements PetProfileService {
         return "https://petcareplus.s3.ap-southeast-2.amazonaws.com/" + key;
     }
 
-    public void deleteFileFromS3(String key) {
+    public void deleteFileFromS3(String url) {
+        String prefix = "https://petcareplus.s3.ap-southeast-2.amazonaws.com/";
+        String key = url.replace(prefix, "");
+
         s3Client.deleteObject(
                 DeleteObjectRequest.builder()
                         .bucket("petcareplus")

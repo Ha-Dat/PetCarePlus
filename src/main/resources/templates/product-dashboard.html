@@ -345,16 +345,6 @@
             background-color: #f8f9fa;
         }
 
-        /* Riêng nút xoá */
-        .dropdown-item.delete-btn {
-            color: #dc3545;
-            font-weight: 500;
-        }
-
-        .dropdown-item.delete-btn:hover {
-            background-color: #ffe5e5;
-        }
-
         /* Hover để hiện menu (hoặc dùng JS toggle nếu muốn click) */
         .action-dropdown:hover .dropdown-menu {
             display: block;
@@ -413,11 +403,11 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Seller Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="order-dashboard">🛒 Orders</a></li>
-            <li><a href="category-dashboard">📂 Categories</a></li>
-            <li class="active"><a href="product-dashboard">📦 Products</a></li>
-            <li><a href="#">🏷️ Promotions</a></li>
-            <li><a href="list-pet-profile?from=product-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
+            <li><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
+            <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
+            <li class="active"><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
+            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/list-pet-profile?from=/seller/product-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
     </aside>
 
@@ -489,7 +479,7 @@
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/productDashboard/delete/__${product.productId}__}" method="post"
+                                          th:action="@{/seller/productDashboard/delete/__${product.productId}__}" method="post"
                                           th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
                                             🗑️ Xóa
@@ -504,16 +494,16 @@
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/product-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                            <a th:href="@{/seller/product-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active' : ''">
-                            <a th:href="@{/product-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/seller/product-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                         </li>
 
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/product-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                            <a th:href="@{/seller/product-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -693,7 +683,7 @@
             categoryId: parseInt(form.categoryId.value)
         };
 
-        fetch('/product-dashboard/create', {
+        fetch('/seller/product-dashboard/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -758,7 +748,7 @@
             categoryId: parseInt(form.categoryId.value)
         };
 
-        fetch(`/product-dashboard/update/${productId}`, {
+        fetch(`/seller/product-dashboard/update/${productId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

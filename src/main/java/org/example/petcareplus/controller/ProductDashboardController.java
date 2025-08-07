@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 @Controller
+@RequestMapping("/seller")
 public class ProductDashboardController {
     private final ProductService productService;
 

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giới thiệu về PetCarePlus</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/footer.css}">
+    <style>
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            color: #1b5e20;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            color: #2e7d32;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .content-card h2 {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #c8e6c9;
+            padding-bottom: 10px;
+        }
+
+        .content-card p {
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .stats-section {
+            background: linear-gradient(45deg, #f1f8e9, #dcedc8);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .mission-vision {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .mission-vision h2 {
+            text-align: center;
+            color: #1b5e20;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+        }
+
+        .mv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .mv-item {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+        }
+
+        .mv-item h3 {
+            color: #2e7d32;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .mv-item p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .contact-info h2 {
+            color: #1b5e20;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .contact-item {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .contact-item h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .contact-item p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .mv-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="component/header :: header"></div>
+
+    <div class="about-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>Chào mừng đến với PetCarePlus</h1>
+            <p>Nơi chăm sóc thú cưng của bạn với tình yêu và trách nhiệm. Chúng tôi cung cấp các dịch vụ và sản phẩm chất lượng cao để đảm bảo thú cưng của bạn luôn khỏe mạnh và hạnh phúc.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-grid">
+            <div class="content-card">
+                <h2>Về Chúng Tôi</h2>
+                <p>PetCarePlus được thành lập với mục tiêu trở thành người bạn đồng hành tin cậy của các gia đình có thú cưng tại Việt Nam. Với đội ngũ nhân viên giàu kinh nghiệm và tâm huyết, chúng tôi cam kết mang đến những dịch vụ chăm sóc thú cưng tốt nhất.</p>
+                <p>Từ những sản phẩm thức ăn chất lượng cao đến các dịch vụ spa, khách sạn và khám chữa bệnh, PetCarePlus đáp ứng mọi nhu cầu của thú cưng và chủ nhân của chúng.</p>
+            </div>
+
+            <div class="content-card">
+                <h2>Dịch Vụ Của Chúng Tôi</h2>
+                <p><strong>🏥 Khám chữa bệnh:</strong> Đội ngũ bác sĩ thú y chuyên nghiệp với trang thiết bị hiện đại</p>
+                <p><strong>🏨 Khách sạn thú cưng:</strong> Nơi nghỉ dưỡng an toàn và thoải mái cho thú cưng của bạn</p>
+                <p><strong>💆 Spa & Grooming:</strong> Dịch vụ làm đẹp và chăm sóc sức khỏe chuyên nghiệp</p>
+                <p><strong>🛒 Cửa hàng:</strong> Đa dạng sản phẩm từ thức ăn đến đồ chơi chất lượng cao</p>
+            </div>
+
+            <div class="content-card">
+                <h2>Cam Kết Chất Lượng</h2>
+                <p>Chúng tôi cam kết mang đến:</p>
+                <p>✅ Sản phẩm chính hãng, chất lượng cao</p>
+                <p>✅ Dịch vụ chuyên nghiệp, tận tâm</p>
+                <p>✅ Giá cả hợp lý, minh bạch</p>
+                <p>✅ Hỗ trợ khách hàng 24/7</p>
+                <p>✅ Bảo hành và đổi trả theo quy định</p>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <h2>Thành Tựu Của Chúng Tôi</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">5000+</span>
+                    <span class="stat-label">Khách hàng tin tưởng</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Thú cưng được chăm sóc</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5+</span>
+                    <span class="stat-label">Năm kinh nghiệm</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Khách hàng hài lòng</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission & Vision -->
+        <div class="mission-vision">
+            <h2>Sứ Mệnh & Tầm Nhìn</h2>
+            <div class="mv-grid">
+                <div class="mv-item">
+                    <h3>🎯 Sứ Mệnh</h3>
+                    <p>Mang đến những dịch vụ chăm sóc thú cưng chất lượng cao, giúp thú cưng khỏe mạnh và hạnh phúc, đồng thời tạo sự an tâm cho chủ nhân của chúng.</p>
+                </div>
+                <div class="mv-item">
+                    <h3>👁️ Tầm Nhìn</h3>
+                    <p>Trở thành hệ thống chăm sóc thú cưng hàng đầu Việt Nam, được tin tưởng và lựa chọn bởi đông đảo khách hàng trong và ngoài nước.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="contact-info">
+            <h2>Thông Tin Liên Hệ</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <h3>📍 Địa Chỉ</h3>
+                    <p>Tầng 19, Tòa nhà ABC</p>
+                    <p>02 ABC, Mỹ Đình, Hà Nội</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📞 Điện Thoại</h3>
+                    <p>Hotline: 099.999.9999</p>
+                    <p>CSKH: 098.888.8888</p>
+                </div>
+                <div class="contact-item">
+                    <h3>✉️ Email</h3>
+                    <p>info@petcareplus.vn</p>
+                    <p>support@petcareplus.vn</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🕒 Giờ Làm Việc</h3>
+                    <p>Thứ 2 - Chủ nhật</p>
+                    <p>7:00 - 22:00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="component/footer :: footer"></div>
+</body>
+
+<script th:src="@{js/header.js}"></script>
+</html> 

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Controller
+@RequestMapping ()
 public class OrderDashboardController {
 
     private final OrderService orderService;
@@ -29,7 +30,7 @@ public class OrderDashboardController {
         this.paymentRepository = paymentRepository;
     }
 
-    @GetMapping("/order-dashboard")
+    @GetMapping("/seller/order-dashboard")
     public String orderDashboard(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -69,7 +70,7 @@ public class OrderDashboardController {
         return "order-dashboard";
     }
 
-    @GetMapping("/orders/detail/{id}")
+    @GetMapping("/seller/orders/detail/{id}")
     public String getOrderDetail(@PathVariable Long id, Model model) {
         Order order = orderService.get(id);
         Payment payment = paymentRepository.findByOrderOrderId(id);
@@ -80,23 +81,23 @@ public class OrderDashboardController {
 
 
 
-    @GetMapping("/orders/reject/{id}")
+    @GetMapping("/seller/orders/reject/{id}")
     public String rejectOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 
-    @GetMapping("/orders/approve/{id}")
+    @GetMapping("/seller/orders/approve/{id}")
     public String approveOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
         order.setStatus(OrderStatus.APPROVED);
         orderService.save(order);
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 
-    @PostMapping("/orders/update-status/{id}")
+    @PostMapping("/seller/orders/update-status/{id}")
     public String updateOrderStatus(@PathVariable("id") Long id, @RequestParam("status") String status) {
         Order order = orderService.get(id);
         try {
@@ -106,6 +107,6 @@ public class OrderDashboardController {
         } catch (IllegalArgumentException e) {
             // Invalid status, ignore
         }
-        return "redirect:/order-dashboard";
+        return "redirect:/seller/order-dashboard";
     }
 }

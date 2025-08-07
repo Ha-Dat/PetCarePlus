@@ -9,7 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RequestMapping("/")
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RequestMapping("/seller")
 @Controller
 public class CategoryController {
     @Autowired
@@ -19,12 +22,30 @@ public class CategoryController {
     public String categoryDashboard(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
                                     Model model) {
-        Page<Category> categoryPage = categoryService.getCategoriesPaginated(page, size);
-        model.addAttribute("categories", categoryPage.getContent());
-        model.addAttribute("allCategories", categoryService.findAll());
+        // Lấy tất cả categories để hỗ trợ dropdown
+        List<Category> allCategories = categoryService.findAll();
+
+        // Lấy danh mục ÔNG (parent null) với phân trang
+        List<Category> allTopLevelCategories = allCategories.stream()
+                .filter(cat -> cat.getParent() == null)
+                .collect(Collectors.toList());
+
+        // Tính toán phân trang thủ công cho top level categories
+        int totalTopCategories = allTopLevelCategories.size();
+        int totalPages = (int) Math.ceil((double) totalTopCategories / size);
+
+        // Lấy danh mục cho trang hiện tại
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalTopCategories);
+        List<Category> topLevelCategories = allTopLevelCategories.subList(startIndex, endIndex);
+
+        model.addAttribute("topCategories", topLevelCategories);
+        model.addAttribute("allCategories", allCategories);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
-        model.addAttribute("totalPages", categoryPage.getTotalPages());
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalElements", totalTopCategories);
+
         return "category-dashboard";
     }
 
@@ -40,7 +61,7 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("toastMessage", "Thêm danh mục thất bại!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 
     @PostMapping("/category/update")
@@ -61,7 +82,7 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("toastMessage", "Cập nhật thất bại!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 
     @PostMapping("/category/delete")
@@ -76,10 +97,10 @@ public class CategoryController {
                 redirectAttributes.addFlashAttribute("toastType", "error");
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("toastMessage", "Lỗi khi xóa danh mục!");
+            redirectAttributes.addFlashAttribute("toastMessage", "Danh mục này đã có danh mục con, không thể xóa!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
 
-        return "redirect:/category-dashboard";
+        return "redirect:/seller/category-dashboard";
     }
 }

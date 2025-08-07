@@ -47,7 +47,7 @@ public class HotelBookingController {
         this.serviceService = serviceService;
     }
 
-    @GetMapping("/list-hotel-booking")
+    @GetMapping("/pet-groomer/list-hotel-booking")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size,
@@ -68,7 +68,7 @@ public class HotelBookingController {
         return "list-hotel-booking";
     }
 
-    @PostMapping("/list-hotel-booking/approve-hotel/{id}")
+    @PostMapping("/pet-groomer/list-hotel-booking/approve-hotel/{id}")
     @ResponseBody
     public String approveBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -87,7 +87,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/list-hotel-booking/hotel-detail/{id}")
+    @GetMapping("/pet-groomer/list-hotel-booking/hotel-detail/{id}")
     @ResponseBody
     public ResponseEntity<?> getHotelBookingDetail(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -116,7 +116,7 @@ public class HotelBookingController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
-    @PostMapping("/list-hotel-booking/reject-hotel/{id}")
+    @PostMapping("/pet-groomer/list-hotel-booking/reject-hotel/{id}")
     @ResponseBody
     public String rejectBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -135,7 +135,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/hotel-booking/form")
+    @GetMapping("/hotel-booking-form")
     public String showHotelBookingForm(HttpSession session, Model model) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -154,7 +154,7 @@ public class HotelBookingController {
         return "hotel-booking";
     }
 
-    @GetMapping("/hotel-booking/form/{id}")
+    @GetMapping("/hotel-booking-form/{id}")
     public String showUpdateHotelBookingForm(@PathVariable("id") Long petProfileId, Model model) {
         PetProfile petProfile = petProfileService.findById(petProfileId);
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -209,7 +209,7 @@ public class HotelBookingController {
             booking.setService(service.get());
 
             hotelBookingService.save(booking);
-            return "redirect:/hotel-booking/form";
+            return "redirect:/hotel-booking";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());

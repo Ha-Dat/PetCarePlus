@@ -9,6 +9,7 @@ import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,12 @@ public class ForumController {
 
         Account account = (Account) session.getAttribute("loggedInUser");
 
+        // Chỉ lấy bài viết đã được duyệt
+        List<Post> approvedPosts = forumService.findApprovedPosts();
+        List<PostDTO> sortedPosts = approvedPosts.stream()
+                .map(PostDTO::new)
+                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
+                .toList();
         List<Post> allPosts = forumService.findAllWithMedias();
 
         // Lọc theo từ khóa nếu có
@@ -43,11 +50,6 @@ public class ForumController {
                     .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
                     .toList();
         }
-
-        List<PostDTO> sortedPosts = allPosts.stream()
-                .map(PostDTO::new)
-                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
-                .toList();
 
         // Tự tính chỉ số trang
         int fromIndex = page * size;
@@ -61,6 +63,17 @@ public class ForumController {
 
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
+
+        // Kiểm tra nếu user đã đăng nhập và có bài viết chờ duyệt
+        if (account != null) {
+            List<Post> userPendingPosts = forumService.findPendingPosts().stream()
+                    .filter(post -> post.getAccount().getAccountId().equals(account.getAccountId()))
+                    .toList();
+            if (!userPendingPosts.isEmpty()) {
+                model.addAttribute("pendingMessage", "Bạn có " + userPendingPosts.size() + " bài viết đang chờ duyệt");
+            }
+        }
+
         model.addAttribute("keyword", keyword);
         model.addAttribute("latestPosts", latestPostDTOs);
         return "forum";
@@ -71,6 +84,7 @@ public class ForumController {
     public List<PostDTO> getMorePosts(@RequestParam int page,
                                       @RequestParam int size,
                                       @RequestParam(required = false) String keyword) {
+        List<Post> approvedPosts = forumService.findApprovedPosts();
         List<Post> allPosts = forumService.findAll();
         // Lọc nếu có keyword
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -79,7 +93,7 @@ public class ForumController {
                     .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
                     .toList();
         }
-        List<PostDTO> sortedPosts = allPosts.stream()
+        List<PostDTO> sortedPosts = approvedPosts.stream()
                 .map(PostDTO::new)
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
@@ -100,6 +114,11 @@ public class ForumController {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Account account = (Account) session.getAttribute("loggedInUser");
+
+        // Kiểm tra nếu bài viết chưa được duyệt và không phải là tác giả
+        if (!post.getChecked() && (account == null || !post.getAccount().getAccountId().equals(account.getAccountId()))) {
+            return "redirect:/forum?error=post_not_approved";
+        }
 
         List<CommentPost> comments = forumService.findCommentByPostId(postId);
         PostDTO postDTO = new PostDTO(post);
