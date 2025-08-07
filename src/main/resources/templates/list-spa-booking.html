@@ -245,11 +245,11 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Groomer Dashboard</h2>
         <ul class="sidebar-menu">
-            <li class="active"><a href="list-spa-booking">🧴 Spa</a></li>
-            <li><a href="list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
+            <li class="active"><a href="/pet-groomer/list-spa-booking">🧴 Spa</a></li>
+            <li><a href="/pet-groomer/list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
             <li><a href="#">🛠️ Dịch vụ</a></li>
             <li><a href="#">📅 Ca làm việc</a></li>
-            <li><a href="list-pet-profile?from=list-spa-booking">🐶 Hồ Sơ Thú Cưng</a></li>
+            <li><a href="/list-pet-profile?from=/pet-groomer/list-spa-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
     </aside>
 
@@ -258,10 +258,10 @@
             <h1 class="page-title">Quản lý đơn Spa</h1>
         <div class="header">
             <div class="filters">
-                <form method="get" th:action="@{/list-hotel-booking}" style="display: flex; align-items: center;">
+                <form method="get" th:action="@{/pet-groomer/list-hotel-booking}" style="display: flex; align-items: center;">
                     <input type="date" name="date" th:value="${selectedDate}">
                     <button type="submit" class="filter-button">Lọc</button>
-                    <a th:href="@{/list-hotel-booking}" class="filter-button">Hủy lọc</a>
+                    <a th:href="@{/pet-groomer/list-hotel-booking}" class="filter-button">Hủy lọc</a>
                 </form>
             </div>
         </div>
@@ -273,7 +273,6 @@
                     <th>ID</th>
                     <th>Ngày đặt</th>
                     <th>Trạng thái</th>
-                    <th>Ghi chú</th>
                     <th>Loài</th>
                     <th>Tên dịch vụ</th>
                     <th>Thao tác</th>
@@ -284,7 +283,6 @@
                     <td th:text="${spaBookings.spaBookingId}"></td>
                     <td th:text="${spaBookings.bookDate}"></td>
                     <td th:text="${spaBookings.status}"></td>
-                    <td th:text="${spaBookings.note}"></td>
                     <td th:text="${spaBookings.petProfile.species}"></td>
                     <td th:text="${spaBookings.service.name}"></td>
                     <td>
@@ -313,16 +311,16 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
                     </li>
 
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active' : ''">
-                        <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
                     </li>
 
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
                     </li>
                 </ul>
             </div>
@@ -342,7 +340,7 @@
         }
 
         if (confirm("Bạn có chắc muốn duyệt booking ID " + spaBookingId + " không?")) {
-            fetch(`/list-spa-booking/approve-spa/${spaBookingId}`, {
+            fetch(`/pet-groomer/list-spa-booking/approve-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -366,7 +364,7 @@
         }
 
         if (confirm("Bạn có chắc muốn từ chối booking ID " + spaBookingId + " không?")) {
-            fetch(`/list-spa-booking/reject-spa/${spaBookingId}`, {
+            fetch(`/pet-groomer/list-spa-booking/reject-spa/${spaBookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())

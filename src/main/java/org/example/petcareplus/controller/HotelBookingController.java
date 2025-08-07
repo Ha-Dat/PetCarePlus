@@ -47,7 +47,7 @@ public class HotelBookingController {
         this.serviceService = serviceService;
     }
 
-    @GetMapping("/list-hotel-booking")
+    @GetMapping("/pet-groomer/list-hotel-booking")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size,
@@ -68,7 +68,7 @@ public class HotelBookingController {
         return "list-hotel-booking";
     }
 
-    @PostMapping("/list-hotel-booking/approve-hotel/{id}")
+    @PostMapping("/pet-groomer/list-hotel-booking/approve-hotel/{id}")
     @ResponseBody
     public String approveBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -87,7 +87,7 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/list-hotel-booking/hotel-detail/{id}")
+    @GetMapping("/pet-groomer/list-hotel-booking/hotel-detail/{id}")
     @ResponseBody
     public ResponseEntity<?> getHotelBookingDetail(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
@@ -116,7 +116,7 @@ public class HotelBookingController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
     }
 
-    @PostMapping("/list-hotel-booking/reject-hotel/{id}")
+    @PostMapping("/pet-groomer/list-hotel-booking/reject-hotel/{id}")
     @ResponseBody
     public String rejectBooking(@PathVariable("id") Long id) {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);

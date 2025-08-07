@@ -72,10 +72,10 @@ public class PetProfileController {
 
     @PostMapping("/customer/pet-profile/add")
     public String createNewPet(@Valid @ModelAttribute PetProfile petProfile,
-                            BindingResult result,
-                            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                            HttpSession session,
-                            Model model) {
+                               BindingResult result,
+                               @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                               HttpSession session,
+                               Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
         if (result.hasErrors()) {
@@ -112,8 +112,8 @@ public class PetProfileController {
 
     @GetMapping("/customer/pet-profile/edit")
     public String switchToEdit(@RequestParam("selectedId") Long selectedId,
-                              HttpSession session,
-                              Model model) {
+                               HttpSession session,
+                               Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
@@ -130,7 +130,7 @@ public class PetProfileController {
         return "pet-profile";
     }
 
-        @PostMapping("/customer/pet-profile/save")
+    @PostMapping("/customer/pet-profile/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
                                  @Valid @ModelAttribute PetProfile petProfile,
                                  BindingResult result,
@@ -138,7 +138,7 @@ public class PetProfileController {
                                  HttpSession session,
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        
+
         if (result.hasErrors()) {
             model.addAttribute("selectedId", petId);
             model.addAttribute("petProfile", petProfile);
@@ -149,7 +149,7 @@ public class PetProfileController {
         try {
             if (petId != null) {
                 petProfileService.updatePetProfile(petId, petProfile);
-                
+
                 // Handle image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
                     try {
@@ -158,13 +158,13 @@ public class PetProfileController {
                         model.addAttribute("error", "Lưu thông tin thành công nhưng upload ảnh thất bại: " + uploadError.getMessage());
                     }
                 }
-                
+
                 return "redirect:/customer/pet-profile?selectedId=" + petId;
             } else {
                 PetProfile newPet = petProfileService.createEmptyPet();
                 newPet.setProfile(account.getProfile());
                 PetProfile savedPet = petProfileService.save(newPet);
-                
+
                 // Handle image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
                     try {
@@ -173,7 +173,7 @@ public class PetProfileController {
                         model.addAttribute("error", "Tạo thú cưng thành công nhưng upload ảnh thất bại: " + uploadError.getMessage());
                     }
                 }
-                
+
                 return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
             }
         } catch (Exception e) {
@@ -185,7 +185,7 @@ public class PetProfileController {
         }
     }
 
-        // Test endpoint để kiểm tra file upload
+    // Test endpoint để kiểm tra file upload
     @PostMapping("/customer/pet-profile/test-upload")
     @ResponseBody
     public String testUpload(@RequestParam("imageFile") MultipartFile imageFile) {
@@ -194,7 +194,7 @@ public class PetProfileController {
         System.out.println("File size: " + imageFile.getSize());
         System.out.println("Content type: " + imageFile.getContentType());
         System.out.println("Is empty: " + imageFile.isEmpty());
-        
+
         return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
     }
 

@@ -45,7 +45,7 @@ public class SpaBookingController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/list-spa-booking")
+    @GetMapping("/pet-groomer/list-spa-booking")
     public String getAllSpaBookings(Model model,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "8") int size,
@@ -69,7 +69,7 @@ public class SpaBookingController {
         return "list-spa-booking";
     }
 
-    @PostMapping("/list-spa-booking/approve-spa/{id}")
+    @PostMapping("/pet-groomer/list-spa-booking/approve-spa/{id}")
     @ResponseBody
     public String approveSpaBooking(@PathVariable("id") Long id){
         Optional<SpaBooking> booking = spaBookingService.findById(id);
@@ -86,7 +86,7 @@ public class SpaBookingController {
         return "Không tìm thấy lịch";
     }
 
-    @PostMapping("/list-spa-booking/reject-spa/{id}")
+    @PostMapping("/pet-groomer/list-spa-booking/reject-spa/{id}")
     @ResponseBody
     public String rejectSpaBooking(@PathVariable("id") Long id){
         Optional<SpaBooking> booking = spaBookingService.findById(id);

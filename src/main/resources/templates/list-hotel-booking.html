@@ -366,11 +366,11 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Groomer Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="list-spa-booking">🧴 Spa</a></li>
-            <li class="active"><a href="list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
+            <li><a href="/pet-groomer/list-spa-booking">🧴 Spa</a></li>
+            <li class="active"><a href="/pet-groomer/list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
             <li><a href="#">🛠️ Dịch vụ</a></li>
             <li><a href="#">📅 Ca làm việc</a></li>
-            <li><a href="list-pet-profile?from=list-hotel-booking">🐶 Hồ Sơ Thú Cưng</a></li>
+            <li><a href="/list-pet-profile?from=/pet-groomer/list-hotel-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
     </aside>
 
@@ -379,10 +379,10 @@
             <h1 class="page-title">Quản lý đơn Pet Hotel</h1>
                 <div class="header">
                     <div class="filters">
-                        <form method="get" th:action="@{/list-hotel-booking}" style="display: flex; align-items: center;">
+                        <form method="get" th:action="@{/pet-groomer/list-hotel-booking}" style="display: flex; align-items: center;">
                             <input type="date" name="date" th:value="${selectedDate}">
                                 <button type="submit" class="filter-button">Lọc</button>
-                            <a th:href="@{/list-hotel-booking}" class="filter-button">Hủy lọc</a>
+                            <a th:href="@{/pet-groomer/list-hotel-booking}" class="filter-button">Hủy lọc</a>
                         </form>
                     </div>
                 </div>
@@ -454,16 +454,16 @@
                     <div class="pagination">
                         <ul>
                             <li th:if="${currentPage > 0}">
-                                <a th:href="@{'/list-hotel-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
                             </li>
 
                             <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                 th:classappend="${i == currentPage} ? 'active' : ''">
-                                <a th:href="@{'/list-hotel-booking'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${i}, size=8)}" th:text="${i + 1}"></a>
                             </li>
 
                             <li th:if="${currentPage < totalPages - 1}">
-                                <a th:href="@{'/list-hotel-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
                             </li>
                         </ul>
                     </div>
@@ -515,7 +515,7 @@
         }
 
         if (confirm("Bạn có chắc muốn duyệt booking ID " + bookingId + " không?")) {
-            fetch(`/list-hotel-booking/approve-hotel/${bookingId}`, {
+            fetch(`/pet-groomer/list-hotel-booking/approve-hotel/${bookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -534,7 +534,7 @@
         const id = button.dataset.id;
 
         if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
-            fetch(`/list-hotel-booking/reject-hotel/${id}`, {
+            fetch(`/pet-groomer/list-hotel-booking/reject-hotel/${id}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
