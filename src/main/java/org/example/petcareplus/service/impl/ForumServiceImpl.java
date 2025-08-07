@@ -7,6 +7,10 @@ import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -280,6 +284,41 @@ public class ForumServiceImpl implements ForumService {
         postRatingRepository.save(postRating);
         }
     }
+
+    @Override
+    public Page<Post> getPostsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postId").ascending());
+        return postRepository.findAll(pageable);
+    }
+
+    @Override
+    public void updatePostStatus(Long postId, boolean status) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            post.setChecked(status);
+            postRepository.save(post);
+        } else {
+            throw new RuntimeException("Không tìm thấy bài viết với ID: " + postId);
+        }
+    }
+
+    @Override
+    public List<Post> findApprovedPosts() {
+        return postRepository.findApprovedPostsOrderByCreatedAtDesc();
+    }
+
+    @Override
+    public List<Post> findPendingPosts() {
+        return postRepository.findByIsCheckedFalse();
+    }
+
+    @Override
+    public List<Post> findTop6NewestPosts() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAll(pageable).getContent();
+    }
+
 
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {

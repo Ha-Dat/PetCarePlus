@@ -4,7 +4,9 @@ import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
 import org.example.petcareplus.entity.Service;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +21,6 @@ public interface HotelBookingService {
     List<Service> Service_findAll();
 
     Optional<Service> Service_findById(Long id);
+
+    Page<HotelBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
 }

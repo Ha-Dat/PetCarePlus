@@ -1,8 +1,11 @@
 package org.example.petcareplus.service;
 
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.SpaBooking;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface SpaBookingService {
@@ -13,4 +16,5 @@ public interface SpaBookingService {
 
     SpaBooking save(SpaBooking spaBooking);
 
+    Page<SpaBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
 }

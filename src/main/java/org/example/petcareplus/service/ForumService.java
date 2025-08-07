@@ -5,6 +5,7 @@ import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.CommentPost;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.entity.Post;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,4 +38,14 @@ public interface ForumService {
     void deleteReplyCommentById(Long replyId);
 
     void saveRating(Long postId, Long accountId, Rating rating);
+
+    Page<Post> getPostsPaginated(int page, int size);
+
+    void updatePostStatus(Long postId, boolean status);
+    
+    List<Post> findApprovedPosts();
+    
+    List<Post> findPendingPosts();
+
+    List<Post> findTop6NewestPosts();
 }

@@ -614,119 +614,69 @@
     <!-- Header -->
     <div class="header">
       <h1 class="title">Booking Online</h1>
-      <h2 class="subtitle">Đặt lịch để chúng tôi phục vụ bạn tốt hơn</h2>
+      <h2 class="subtitle">Đặt lịch khám</h2>
       <p class="description">
-        vui lòng điền đầy đủ thông tin nhân viên của chúng tôi sẽ liên lạc
-        lại cho bạn trong ít phút.
+        vui lòng điền đầy đủ thông tin.
       </p>
     </div>
 
-    <!-- Chọn Pet Profile -->
-    <div class="form-group flex-row">
-      <label for="petProfileSelect">Chọn vật nuôi</label>
-      <div class="select-wrapper">
-        <select id="petProfileSelect" onchange="fillPetInfo()" required>
-          <option value="">-- Chọn vật nuôi --</option>
-          <option th:each="pet : ${petProfiles}"
-                  th:value="${pet.petProfileId}"
-                  th:data-name="${pet.name}"
-                  th:data-species="${pet.species}"
-                  th:data-breed="${pet.breeds}"
-                  th:data-weight="${pet.weight}"
-                  th:data-age="${pet.age}"
-                  th:text="${pet.name + ' (' + pet.species + ')'}">
-          </option>
-          <option value="create">➕ Tạo hồ sơ thú cưng mới</option>
-        </select>
-      </div>
-    </div>
-
     <!-- Form -->
-    <form id="hotelBookingForm" method="post" onsubmit="handleSubmit(event)">
+    <form id="appointmentBookingForm" action="/appointment/create" method="post" onsubmit="handleSubmit(event)">
       <div class="form-container">
 
         <!-- Pet Name -->
         <div class="form-group">
-          <label for="petName">Tên vật nuôi<span style="color: red">*</span></label>
+          <label for="petName">Tên vật nuôi</label>
           <input
                   type="text"
                   id="petName"
                   name="petName"
                   placeholder="Tên vật nuôi..."
                   required
-                  readonly
           />
         </div>
 
         <!-- Pet Species -->
         <div class="form-group">
-          <label for="petSpecies">Loài vật nuôi<span style="color: red">*</span></label>
+          <label for="petSpecies">Loài vật nuôi</label>
           <input
                   type="text"
                   id="petSpecies"
                   name="petSpecies"
                   placeholder="Chó, mèo, thỏ, hamster..."
                   required
-                  readonly
           />
         </div>
 
         <!-- Pet Breed -->
         <div class="form-group">
-          <label for="petBreed">Giống vật nuôi<span style="color: red">*</span></label>
+          <label for="petBreed">Giống vật nuôi</label>
           <input
                   type="text"
                   id="petBreed"
                   name="petBreed"
                   placeholder="shiba, mèo ta, chó cỏ..."
                   required
-                  readonly
           />
         </div>
 
-        <!-- Pet weight -->
-        <div class="form-group">
-          <label for="petBreed">Cân nặng (kg)<span style="color: red">*</span></label>
-          <input
-                  type="text"
-                  id="petWeight"
-                  name="petWeight"
-                  placeholder="10"
-                  required
-                  readonly
-          />
-        </div>
-
-        <!-- Pet Age -->
-        <div class="form-group">
-          <label for="petBreed">Tuổi thọ (năm)<span style="color: red">*</span></label>
-          <input
-                  type="text"
-                  id="petAge"
-                  name="petAge"
-                  placeholder="2"
-                  required
-                  readonly
-          />
-        </div>
-
-        <!-- Chọn dịch vụ -->
-        <div class="form-group">
-          <label for="serviceId">Chọn dịch vụ<span style="color: red">*</span></label>
-          <div class="select-wrapper">
-            <select id="serviceId" name="serviceId" required>
-              <option value="">Chọn loại dịch vụ hotel</option>
-              <option th:each="service : ${hotelServices}"
-                      th:value="${service.serviceId}"
-                      th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + '/giờ)'}">
-              </option>
-            </select>
+          <!-- Chọn dịch vụ -->
+          <div class="form-group">
+              <label for="serviceId">Chọn dịch vụ</label>
+              <div class="select-wrapper">
+                  <select id="serviceId" name="serviceId" required>
+                      <option value="">Chọn dịch vụ</option>
+                      <option th:each="ser : ${services}"
+                              th:value="${ser.serviceId}"
+                              th:text="${ser.name}">
+                      </option>
+                  </select>
+              </div>
           </div>
-        </div>
 
         <!-- Chọn thời gian -->
         <div class="form-group">
-          <label for="bookDate">Thời gian<span style="color: red">*</span></label>
+          <label for="bookDate">Thời gian</label>
           <div class="date-input">
             <input
                     type="datetime-local"
@@ -867,93 +817,26 @@
   });
 
   // Set minimum date to today
-  document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("appointmentDate").min = new Date()
+          .toISOString()
+          .split("T")[0];
+
+    // Set min to current datetime (format: yyyy-MM-ddTHH:mm)
     const now = new Date();
     const offset = now.getTimezoneOffset();
-    const localDatetime = new Date(now.getTime() - offset * 60000)
-            .toISOString()
-            .slice(0, 16);
+    const local = new Date(now.getTime() - offset * 60000)
+        .toISOString()
+        .slice(0, 16);
+    document.getElementById("appointmentDate").min = local;
 
-    const bookDateInput = document.getElementById("bookDate");
-    if (bookDateInput) {
-      bookDateInput.min = localDatetime;
+    function handleSubmit(event) {
+        event.preventDefault(); // Ngăn submit mặc định
+        // Gửi dữ liệu form
+        const form = document.getElementById('appointmentBookingForm');
+        // Hoặc đơn giản chỉ alert:
+        alert('Đặt lịch thành công!');
+        form.submit();
     }
-  });
-
-  //handle submit
-  function handleSubmit(event) {
-    event.preventDefault(); // Ngăn form tự gửi
-
-    const form = document.getElementById('hotelBookingForm');
-    const select = document.getElementById('petProfileSelect');
-    const petProfileId = select.value;
-
-    if (!petProfileId) {
-      alert('Vui lòng chọn vật nuôi!');
-      return;
-    }
-
-    const bookDateInput = document.getElementById('bookDate');
-    const selectedDate = new Date(bookDateInput.value);
-    const now = new Date();
-
-    if (selectedDate < now) {
-      alert('Không được chọn thời gian trong quá khứ!');
-      return;
-    }
-
-    form.action = `/hotel-booking/book/${petProfileId}`;
-    alert('Đặt lịch thành công!');
-    form.submit();
-  }
-
-
-  // Fill pet info
-    function fillPetInfo() {
-    const select = document.getElementById('petProfileSelect');
-    const selected = select.options[select.selectedIndex];
-    const selectedValue = select.value;
-
-      if (selectedValue === "create") {
-        window.location.href = "/pet-profile";
-        return;
-      }
-
-    const petName = document.getElementById('petName');
-    const petSpecies = document.getElementById('petSpecies');
-    const petBreed = document.getElementById('petBreed');
-    const petWeight = document.getElementById('petWeight');
-    const petAge = document.getElementById('petAge');
-
-    if (!select.value) {
-    // Nếu chưa chọn gì thì reset và khóa lại form
-    petName.value = '';
-    petSpecies.value = '';
-    petBreed.value = '';
-    petWeight.value = '';
-    petAge.value = '';
-
-    petName.readOnly = true;
-    petSpecies.readOnly = true;
-    petBreed.readOnly = true;
-    petWeight.readOnly = true;
-    petAge.readOnly = true;
-    return;
-  }
-
-    // Điền thông tin và mở khóa cho phép sửa
-    petName.value = selected.getAttribute('data-name') || '';
-    petSpecies.value = selected.getAttribute('data-species') || '';
-    petBreed.value = selected.getAttribute('data-breed') || '';
-    petWeight.value = selected.getAttribute('data-weight') || '';
-    petAge.value = selected.getAttribute('data-age') || '';
-
-    petName.readOnly = false;
-    petSpecies.readOnly = false;
-    petBreed.readOnly = false;
-    petWeight.readOnly = false;
-    petAge.readOnly = false;
-  }
 </script>
 </body>
 </html>

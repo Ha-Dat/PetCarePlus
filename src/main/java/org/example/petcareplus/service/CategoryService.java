@@ -16,7 +16,5 @@ public interface CategoryService {
 
     boolean deleteCategory(Long categoryId);
 
-    Page<Category> getCategoriesPaginated(int page, int size);
-
     boolean updateCategory(Long id, String name, Long parentId);
 }

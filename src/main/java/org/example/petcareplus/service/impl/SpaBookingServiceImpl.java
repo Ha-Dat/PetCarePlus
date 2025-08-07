@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.repository.SpaBookingRepository;
 import org.example.petcareplus.service.SpaBookingService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -37,6 +39,11 @@ public class SpaBookingServiceImpl implements SpaBookingService {
     @Override
     public SpaBooking save(SpaBooking spaBooking) {
         return spaBookingRepository.save(spaBooking);
+    }
+
+    @Override
+    public Page<SpaBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable) {
+        return spaBookingRepository.findByBookDateBetween(startOfDay, endOfDay, pageable);
     }
 
 }

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Khuyến mãi - PetCarePlus</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/footer.css}">
+    <style>
+        .promotions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .promotions-header {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            color: white;
+        }
+
+        .promotions-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .promotions-header p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .promotion-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .promotion-section h2 {
+            color: #d32f2f;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .promotion-section h3 {
+            color: #e53935;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #ffcdd2;
+            padding-bottom: 8px;
+        }
+
+        .promotion-section p {
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .promotion-section ul {
+            color: #333;
+            line-height: 1.7;
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .promotion-section li {
+            margin-bottom: 8px;
+        }
+
+        .promotions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .promotion-card {
+            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #ffcdd2;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promotion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+        }
+
+        .promotion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .promotion-card h4 {
+            color: #d32f2f;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .promotion-card p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .time-limited {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .time-limited h5 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .time-limited p {
+            color: #856404;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        .countdown {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .hot-deal {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hot-deal::before {
+            content: '🔥 HOT DEAL 🔥';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .hot-deal h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .hot-deal p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .hot-deal-button {
+            background: white;
+            color: #ff6b6b;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .hot-deal-button:hover {
+            transform: scale(1.05);
+        }
+
+        .loyalty-program {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .loyalty-program h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .loyalty-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .loyalty-benefit {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .loyalty-benefit h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .loyalty-benefit p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .service-promotions {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .service-promotions h3 {
+            color: #1565c0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .service-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .service-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .service-item h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .service-item p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .service-discount {
+            background: #1565c0;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .terms-notice {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .terms-notice h4 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+        }
+
+        .terms-notice ul {
+            color: #666;
+            margin-left: 20px;
+        }
+
+        .terms-notice li {
+            margin-bottom: 8px;
+        }
+
+        .contact-support {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .contact-support h3 {
+            color: #1b5e20;
+            margin-bottom: 20px;
+        }
+
+        .contact-support p {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .contact-support a {
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-support a:hover {
+            text-decoration: underline;
+        }
+
+        .no-promotions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .no-promotions h3 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .no-promotions p {
+            color: #888;
+        }
+
+        .promotion-status {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-upcoming {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-expired {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .promotions-header h1 {
+                font-size: 2rem;
+            }
+            
+            .promotions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .loyalty-benefits {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="component/header :: header"></div>
+
+    <div class="promotions-container">
+        <!-- Header Section -->
+        <div class="promotions-header">
+            <h1>🎉 Khuyến Mãi Hấp Dẫn</h1>
+            <p>Khám phá các chương trình khuyến mãi đặc biệt dành riêng cho thú cưng yêu quý của bạn tại PetCarePlus</p>
+        </div>
+
+        <!-- Khuyến mãi đang hoạt động -->
+        <div class="promotion-section" th:if="${!activePromotions.isEmpty()}">
+            <h2>🔥 Khuyến Mãi Đang Diễn Ra</h2>
+            <div class="promotions-grid">
+                <div class="promotion-card" th:each="promotion : ${activePromotions}">
+                    <div class="promotion-status status-active">ĐANG DIỄN RA</div>
+                    <div class="discount-badge" th:text="'-' + ${promotion.discount} + '%'"></div>
+                    <h4 th:text="${promotion.title}">Tên khuyến mãi</h4>
+                    <p th:text="${promotion.description}">Mô tả khuyến mãi</p>
+                    <div class="time-limited">
+                        <h5>⏰ Thời gian có hạn</h5>
+                        <p th:if="${promotion.startDate != null}">
+                            Từ: <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+                        <p th:if="${promotion.endDate != null}">
+                            Đến: <span th:text="${#temporals.format(promotion.endDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+                        <div class="countdown" th:if="${promotion.endDate != null}">
+                            <span th:with="days=${T(org.example.petcareplus.controller.HomeController).getDaysRemaining(currentTime, promotion.endDate)}"
+                                  th:text="${days > 0 ? 'Còn ' + days + ' ngày' : 'Sắp kết thúc'}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khuyến mãi sắp diễn ra -->
+        <div class="promotion-section" th:if="${!upcomingPromotions.isEmpty()}">
+            <h2>⏳ Khuyến Mãi Sắp Diễn Ra</h2>
+            <div class="promotions-grid">
+                <div class="promotion-card" th:each="promotion : ${upcomingPromotions}">
+                    <div class="promotion-status status-upcoming">SẮP DIỄN RA</div>
+                    <div class="discount-badge" th:text="'-' + ${promotion.discount} + '%'"></div>
+                    <h4 th:text="${promotion.title}">Tên khuyến mãi</h4>
+                    <p th:text="${promotion.description}">Mô tả khuyến mãi</p>
+                    <div class="time-limited">
+                        <h5>⏰ Bắt đầu từ</h5>
+                        <p th:if="${promotion.startDate != null}">
+                            <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+                        <div class="countdown">
+                            <span th:with="days=${T(org.example.petcareplus.controller.HomeController).getDaysRemaining(currentTime, promotion.startDate)}"
+                                  th:text="${days > 0 ? 'Còn ' + days + ' ngày' : 'Sắp bắt đầu'}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông báo không có khuyến mãi -->
+        <div class="no-promotions" th:if="${activePromotions.isEmpty() && upcomingPromotions.isEmpty()}">
+            <h3>😔 Hiện tại không có khuyến mãi nào</h3>
+            <p>Vui lòng quay lại sau để xem các chương trình khuyến mãi mới nhất!</p>
+        </div>
+
+        <!-- Chương trình khách hàng thân thiết -->
+        <div class="loyalty-program">
+            <h3>👑 Chương Trình Khách Hàng Thân Thiết</h3>
+            <p>Tích điểm và nhận ưu đãi đặc biệt khi mua sắm tại PetCarePlus</p>
+            
+            <div class="loyalty-benefits">
+                <div class="loyalty-benefit">
+                    <h4>🎯 Tích Điểm</h4>
+                    <p>1 điểm = 1.000đ giá trị mua hàng</p>
+                </div>
+                <div class="loyalty-benefit">
+                    <h4>💰 Đổi Quà</h4>
+                    <p>100 điểm = 10.000đ voucher mua hàng</p>
+                </div>
+                <div class="loyalty-benefit">
+                    <h4>🎁 Quà Tặng</h4>
+                    <p>Quà tặng sinh nhật và ưu đãi đặc biệt</p>
+                </div>
+                <div class="loyalty-benefit">
+                    <h4>⭐ Ưu Tiên</h4>
+                    <p>Ưu tiên đặt lịch và dịch vụ VIP</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khuyến mãi theo ngày -->
+        <div class="promotion-section">
+            <h2>📅 Khuyến Mãi Theo Ngày</h2>
+            <div class="promotions-grid">
+                <div class="promotion-card">
+                    <h4>🌅 Thứ 2 - Ngày Đầu Tuần</h4>
+                    <p><strong>Giảm 10%</strong> cho tất cả sản phẩm</p>
+                    <p>Áp dụng cho khách hàng mới</p>
+                </div>
+                <div class="promotion-card">
+                    <h4>💝 Thứ 4 - Ngày Yêu Thương</h4>
+                    <p><strong>Giảm 15%</strong> cho dịch vụ spa</p>
+                    <p>Dành cho cặp đôi thú cưng</p>
+                </div>
+                <div class="promotion-card">
+                    <h4>🎉 Thứ 6 - Ngày Cuối Tuần</h4>
+                    <p><strong>Giảm 20%</strong> cho đồ chơi</p>
+                    <p>Chuẩn bị cho cuối tuần vui vẻ</p>
+                </div>
+                <div class="promotion-card">
+                    <h4>🌟 Chủ Nhật - Ngày Gia Đình</h4>
+                    <p><strong>Giảm 25%</strong> cho thức ăn gia đình</p>
+                    <p>Gói lớn cho cả tuần</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khuyến mãi sinh nhật -->
+        <div class="promotion-section">
+            <h2>🎂 Khuyến Mãi Sinh Nhật</h2>
+            <p>Chúc mừng sinh nhật thú cưng yêu quý! PetCarePlus dành tặng những ưu đãi đặc biệt:</p>
+            <ul>
+                <li><strong>Giảm 50%</strong> cho dịch vụ spa và grooming</li>
+                <li><strong>Tặng bánh kem</strong> đặc biệt cho thú cưng</li>
+                <li><strong>Chụp ảnh kỷ niệm</strong> miễn phí</li>
+                <li><strong>Quà tặng sinh nhật</strong> trị giá 200.000đ</li>
+            </ul>
+            <div class="time-limited">
+                <h5>🎁 Áp dụng trong tháng sinh nhật</h5>
+                <p>Đăng ký trước 1 tuần để được chuẩn bị chu đáo</p>
+            </div>
+        </div>
+
+        <!-- Điều khoản khuyến mãi -->
+        <div class="terms-notice">
+            <h4>📋 Điều Khoản Khuyến Mãi</h4>
+            <ul>
+                <li>Khuyến mãi không áp dụng đồng thời với các chương trình khác</li>
+                <li>PetCarePlus có quyền thay đổi hoặc kết thúc chương trình bất cứ lúc nào</li>
+                <li>Khuyến mãi chỉ áp dụng cho sản phẩm có sẵn trong kho</li>
+                <li>Không áp dụng cho sản phẩm đã giảm giá</li>
+                <li>Quyết định cuối cùng thuộc về PetCarePlus</li>
+            </ul>
+        </div>
+
+        <!-- Liên hệ khuyến mãi -->
+        <div class="contact-support">
+            <h3>📞 Cần Tư Vấn Khuyến Mãi?</h3>
+            <p>Nếu bạn có thắc mắc về các chương trình khuyến mãi, vui lòng liên hệ:</p>
+            <p><strong>Hotline:</strong> <a href="tel:0999999999">099.999.9999</a></p>
+            <p><strong>Email:</strong> <a href="mailto:promotions@petcareplus.vn">promotions@petcareplus.vn</a></p>
+            <p><strong>Giờ làm việc:</strong> 7:00 - 22:00 (Thứ 2 - Chủ nhật)</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="component/footer :: footer"></div>
+
+    <script th:src="@{js/header.js}"></script>
+</body>
+</html> 

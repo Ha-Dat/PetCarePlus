@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giấy phép kinh doanh - PetCarePlus</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/footer.css}">
+    <style>
+        .license-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .license-header {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .license-header h1 {
+            font-size: 2.5rem;
+            color: #1b5e20;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .license-header p {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .license-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .license-section h2 {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .license-section h3 {
+            color: #2e7d32;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
+        }
+
+        .license-section p {
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .license-section ul {
+            color: #333;
+            line-height: 1.7;
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .license-section li {
+            margin-bottom: 8px;
+        }
+
+        .license-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .license-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e8f5e9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .license-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .license-card h4 {
+            color: #1b5e20;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .license-card p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .license-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .license-info h5 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .license-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .certification-section {
+            background: linear-gradient(45deg, #f1f8e9, #dcedc8);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .certification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .certification-item {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .certification-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .certification-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .certification-item h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .certification-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .important-notice {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .important-notice h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .important-notice p {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .contact-verification {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .contact-verification h3 {
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        .contact-verification p {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .contact-verification a {
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-verification a:hover {
+            text-decoration: underline;
+        }
+
+        .document-preview {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .document-preview h4 {
+            color: #1b5e20;
+            margin-bottom: 15px;
+        }
+
+        .document-preview p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .preview-button {
+            background: #4caf50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .preview-button:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .license-header h1 {
+                font-size: 2rem;
+            }
+            
+            .license-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .certification-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="component/header :: header"></div>
+
+    <div class="license-container">
+        <!-- Header Section -->
+        <div class="license-header">
+            <h1>📋 Giấy Phép Kinh Doanh</h1>
+            <p>PetCarePlus hoạt động với đầy đủ giấy phép kinh doanh và chứng nhận pháp lý theo quy định của pháp luật Việt Nam</p>
+        </div>
+
+        <!-- Thông tin doanh nghiệp -->
+        <div class="license-section">
+            <h2>🏢 Thông Tin Doanh Nghiệp</h2>
+            <div class="license-info">
+                <h5>Tên doanh nghiệp:</h5>
+                <p><strong>CÔNG TY CỔ PHẦN PETCAREPLUS VIỆT NAM</strong></p>
+                
+                <h5>Mã số doanh nghiệp:</h5>
+                <p><strong>0123456789</strong></p>
+                
+                <h5>Ngày cấp:</h5>
+                <p><strong>15/03/2020</strong></p>
+                
+                <h5>Nơi cấp:</h5>
+                <p><strong>Sở Kế hoạch và Đầu tư thành phố Hà Nội</strong></p>
+                
+                <h5>Địa chỉ trụ sở chính:</h5>
+                <p><strong>Tầng 19, Tòa nhà ABC, 02 ABC, Mỹ Đình, Nam Từ Liêm, Hà Nội</strong></p>
+                
+                <h5>Điện thoại:</h5>
+                <p><strong>099.999.9999</strong></p>
+                
+                <h5>Email:</h5>
+                <p><strong>info@petcareplus.vn</strong></p>
+            </div>
+        </div>
+
+        <!-- Giấy phép kinh doanh -->
+        <div class="license-section">
+            <h2>📄 Giấy Phép Kinh Doanh</h2>
+            <p>PetCarePlus được cấp Giấy phép kinh doanh số <strong>0123456789</strong> với các ngành nghề kinh doanh:</p>
+            
+            <div class="license-grid">
+                <div class="license-card">
+                    <h4>🏥 Dịch vụ thú y</h4>
+                    <p>Khám chữa bệnh cho động vật</p>
+                    <p>Tiêm phòng và tư vấn sức khỏe</p>
+                    <p>Phẫu thuật và điều trị bệnh</p>
+                </div>
+                <div class="license-card">
+                    <h4>🏨 Dịch vụ lưu trú</h4>
+                    <p>Khách sạn thú cưng</p>
+                    <p>Dịch vụ chăm sóc thú cưng</p>
+                    <p>Dịch vụ spa và grooming</p>
+                </div>
+                <div class="license-card">
+                    <h4>🛒 Bán lẻ</h4>
+                    <p>Thức ăn cho động vật</p>
+                    <p>Đồ chơi và phụ kiện thú cưng</p>
+                    <p>Thuốc thú y và thực phẩm chức năng</p>
+                </div>
+                <div class="license-card">
+                    <h4>🚚 Dịch vụ vận chuyển</h4>
+                    <p>Vận chuyển hàng hóa</p>
+                    <p>Dịch vụ giao hàng tận nơi</p>
+                    <p>Vận chuyển thú cưng</p>
+                </div>
+            </div>
+
+            <div class="document-preview">
+                <h4>Xem Giấy Phép Kinh Doanh</h4>
+                <p>Bạn có thể xem bản scan giấy phép kinh doanh của chúng tôi để đảm bảo tính minh bạch</p>
+                <button class="preview-button" onclick="alert('Tính năng xem giấy phép sẽ được cập nhật sớm!')">Xem Giấy Phép</button>
+            </div>
+        </div>
+
+        <!-- Chứng nhận và giấy phép khác -->
+        <div class="license-section">
+            <h2>🏆 Chứng Nhận Và Giấy Phép Khác</h2>
+            <div class="certification-section">
+                <h3>Chứng Nhận Chất Lượng</h3>
+                <div class="certification-grid">
+                    <div class="certification-item">
+                        <span class="certification-icon">🏥</span>
+                        <h4>Giấy phép hành nghề thú y</h4>
+                        <p>Số: VET-2020-001</p>
+                        <p>Cấp bởi: Cục Thú y</p>
+                    </div>
+                    <div class="certification-item">
+                        <span class="certification-icon">🔬</span>
+                        <h4>Chứng nhận ISO 9001:2015</h4>
+                        <p>Quản lý chất lượng</p>
+                        <p>Cấp bởi: Tổ chức chứng nhận quốc tế</p>
+                    </div>
+                    <div class="certification-item">
+                        <span class="certification-icon">🌿</span>
+                        <h4>Giấy phép vệ sinh an toàn thực phẩm</h4>
+                        <p>Số: VSATTP-2020-001</p>
+                        <p>Cấp bởi: Sở Y tế Hà Nội</p>
+                    </div>
+                    <div class="certification-item">
+                        <span class="certification-icon">🏢</span>
+                        <h4>Giấy phép xây dựng</h4>
+                        <p>Số: XD-2020-001</p>
+                        <p>Cấp bởi: Sở Xây dựng Hà Nội</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đăng ký thuế -->
+        <div class="license-section">
+            <h2>💰 Đăng Ký Thuế</h2>
+            <div class="license-info">
+                <h5>Mã số thuế:</h5>
+                <p><strong>0123456789</strong></p>
+                
+                <h5>Ngày đăng ký thuế:</h5>
+                <p><strong>20/03/2020</strong></p>
+                
+                <h5>Cơ quan thuế quản lý:</h5>
+                <p><strong>Chi cục Thuế quận Nam Từ Liêm</strong></p>
+                
+                <h5>Hình thức kê khai thuế:</h5>
+                <p><strong>Kê khai thuế điện tử</strong></p>
+            </div>
+        </div>
+
+        <!-- Bảo hiểm -->
+        <div class="license-section">
+            <h2>🛡️ Bảo Hiểm</h2>
+            <p>PetCarePlus đã mua đầy đủ các loại bảo hiểm theo quy định:</p>
+            <ul>
+                <li><strong>Bảo hiểm trách nhiệm dân sự:</strong> Bảo hiểm cho các rủi ro trong quá trình cung cấp dịch vụ</li>
+                <li><strong>Bảo hiểm tài sản:</strong> Bảo hiểm cho cơ sở vật chất và trang thiết bị</li>
+                <li><strong>Bảo hiểm y tế:</strong> Bảo hiểm cho nhân viên theo quy định</li>
+                <li><strong>Bảo hiểm xã hội:</strong> Đóng bảo hiểm xã hội cho nhân viên</li>
+            </ul>
+        </div>
+
+        <!-- Tuân thủ pháp luật -->
+        <div class="license-section">
+            <h2>⚖️ Tuân Thủ Pháp Luật</h2>
+            <p>PetCarePlus cam kết tuân thủ đầy đủ các quy định pháp luật:</p>
+            <ul>
+                <li><strong>Luật Doanh nghiệp:</strong> Hoạt động theo đúng quy định của Luật Doanh nghiệp</li>
+                <li><strong>Luật Thú y:</strong> Tuân thủ các quy định về hành nghề thú y</li>
+                <li><strong>Luật Bảo vệ môi trường:</strong> Đảm bảo vệ sinh môi trường trong hoạt động</li>
+                <li><strong>Luật Lao động:</strong> Tuân thủ quy định về lao động và bảo hiểm</li>
+                <li><strong>Luật Thuế:</strong> Thực hiện đầy đủ nghĩa vụ thuế</li>
+            </ul>
+        </div>
+
+        <!-- Lưu ý quan trọng -->
+        <div class="important-notice">
+            <h3>⚠️ Lưu Ý Quan Trọng</h3>
+            <p><strong>Tất cả giấy phép và chứng nhận</strong> của PetCarePlus đều được cập nhật thường xuyên và tuân thủ đúng quy định pháp luật.</p>
+            <p><strong>Khách hàng có thể kiểm tra</strong> tính hợp lệ của các giấy phép tại cơ quan chức năng có thẩm quyền.</p>
+            <p><strong>Mọi thay đổi về giấy phép</strong> sẽ được thông báo công khai trên website và tại cửa hàng.</p>
+        </div>
+
+        <!-- Liên hệ xác minh -->
+        <div class="contact-verification">
+            <h3>📞 Cần Xác Minh Giấy Phép?</h3>
+            <p>Nếu bạn cần xác minh tính hợp lệ của các giấy phép, vui lòng liên hệ:</p>
+            <p><strong>Phòng Pháp chế:</strong> <a href="tel:0999999999">099.999.9999</a></p>
+            <p><strong>Email:</strong> <a href="mailto:legal@petcareplus.vn">legal@petcareplus.vn</a></p>
+            <p><strong>Giờ làm việc:</strong> 8:00 - 17:00 (Thứ 2 - Thứ 6)</p>
+            <p><strong>Hoặc liên hệ trực tiếp:</strong> Tầng 19, Tòa nhà ABC, 02 ABC, Mỹ Đình, Hà Nội</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="component/footer :: footer"></div>
+
+    <script th:src="@{js/header.js}"></script>
+</body>
+</html> 
