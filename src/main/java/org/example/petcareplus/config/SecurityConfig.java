@@ -18,11 +18,6 @@ public class SecurityConfig {
                 .formLogin(login -> login.disable())
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/login", "/home", "/register", "/verify", "/resend-otp",
-                                "/css/**", "/js/**", "/img/**", "/uploads/**"
-                        ).permitAll()
-
                         // Phân quyền theo chức năng
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/seller/**").hasRole("SELLER")
@@ -31,7 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/manager/**").hasRole("MANAGER")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
 
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

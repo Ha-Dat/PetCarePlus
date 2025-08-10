@@ -220,7 +220,7 @@ public class    AccountController {
                 return "redirect:/vet/dashboard";
             }
             case PET_GROOMER -> {
-                return "redirect:/pet-groomer/list-spa-booking";
+                return "redirect:/pet-groomer/dashboard";
             }
             case MANAGER -> {
                 return "redirect:/manager/dashboard";
