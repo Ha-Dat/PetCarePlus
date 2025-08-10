@@ -2,6 +2,7 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.HotelBookingRepository;
 import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.repository.ServiceRepository;
@@ -62,4 +63,23 @@ public class HotelBookingServiceImpl implements HotelBookingService {
         return hotelBookingRepository.findByBookDateBetween(startOfDay, endOfDay, pageable);
     }
 
+    @Override
+    public List<Object[]> getBookingCountByMonthInCurrentYear() {
+        return hotelBookingRepository.getBookingCountByMonthInCurrentYear();
+    }
+
+    @Override
+    public Long getTotalHotelBookings() {
+        return hotelBookingRepository.count();
+    }
+
+    @Override
+    public Long getTotalPendingHotelBooking() {
+        return hotelBookingRepository.countByStatus(BookingStatus.PENDING);
+    }
+
+    @Override
+    public Long getTotalAcceptedHotelBookings() {
+        return hotelBookingRepository.countByStatus(BookingStatus.ACCEPTED);
+    }
 }

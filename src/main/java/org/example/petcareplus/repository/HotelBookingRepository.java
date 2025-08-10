@@ -2,6 +2,7 @@ package org.example.petcareplus.repository;
 
 import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.HotelBooking;
+import org.example.petcareplus.enums.BookingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -34,4 +35,13 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
     Page<HotelBooking> findByBookDateBetween(@Param("start") LocalDateTime start,
                                              @Param("end") LocalDateTime end,
                                              Pageable pageable);
+
+    @Query("SELECT MONTH(h.bookDate) AS month, COUNT(h) AS total " +
+            "FROM HotelBooking h " +
+            "WHERE YEAR(h.bookDate) = YEAR(CURRENT_DATE) " +
+            "GROUP BY MONTH(h.bookDate) " +
+            "ORDER BY month")
+    List<Object[]> getBookingCountByMonthInCurrentYear();
+
+    Long countByStatus(BookingStatus status);
 }
