@@ -211,7 +211,7 @@ public class    AccountController {
         // Điều hướng dựa theo vai trò
         switch (account.getRole()) {
             case ADMIN -> {
-                return "redirect:/admin/account";
+                return "redirect:/admin/dashboard";
             }
             case SELLER -> {
                 return "redirect:/seller/dashboard";
