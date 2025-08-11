@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.dto.MonthlyRevenueDTO;
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.entity.OrderItem;
@@ -12,7 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -140,4 +143,14 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
+    @Override
+    public List<MonthlyRevenueDTO> getMonthlyRevenue() {
+        return orderRepository.getMonthlyRevenue();
+    }
+
+    @Override
+    public BigDecimal getTotalRevenue() {
+        BigDecimal revenue = orderRepository.getTotalRevenue();
+        return revenue != null ? revenue : BigDecimal.ZERO;
+    }
 }

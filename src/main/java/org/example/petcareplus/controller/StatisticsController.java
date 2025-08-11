@@ -2,18 +2,23 @@ package org.example.petcareplus.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.petcareplus.dto.CategorySalesDTO;
+import org.example.petcareplus.dto.MonthlyRevenueDTO;
+import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.service.HotelBookingService;
+import org.example.petcareplus.service.OrderService;
+import org.example.petcareplus.service.ProductService;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -22,12 +27,18 @@ public class StatisticsController {
 
     private final HotelBookingService hotelBookingService;
     private final SpaBookingService spaBookingService;
+    private final ProductService productService;
+    private final OrderService orderService;
 
     @Autowired
     public StatisticsController(HotelBookingService hotelBookingService,
-                                SpaBookingService spaBookingService) {
+                                SpaBookingService spaBookingService,
+                                ProductService productService,
+                                OrderService orderService) {
         this.hotelBookingService = hotelBookingService;
         this.spaBookingService = spaBookingService;
+        this.productService = productService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/pet-groomer/dashboard")
@@ -73,5 +84,16 @@ public class StatisticsController {
         return "groomer-dashboard";
     }
 
+    @GetMapping("/test")
+    public String getSellerDashboard(Model model) {
+        List<CategorySalesDTO> stats = productService.getTotalSoldByEachParentCategory();
+        model.addAttribute("stats", stats);
+        List<MonthlyRevenueDTO> revenue = orderService.getMonthlyRevenue();
+        model.addAttribute("revenue", revenue);
+        model.addAttribute("totalUnitsInStock", productService.getTotalUnitsInStock());
+        model.addAttribute("totalUnitsSold", productService.getTotalUnitsSold());
+        model.addAttribute("totalRevenue", orderService.getTotalRevenue());
+        return "seller-dashboard";
+    }
 
 }

@@ -47,8 +47,9 @@ public class OrderDashboardController {
         long totalOrders = orders.size();
         long completedOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.COMPLETED).count();
         long pendingOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.PENDING).count();
-        
+
         BigDecimal totalRevenue = orders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED) // lọc đơn hoàn thành
                 .map(OrderDTO::getTotalPrice)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
