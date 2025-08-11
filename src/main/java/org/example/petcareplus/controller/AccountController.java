@@ -214,7 +214,7 @@ public class    AccountController {
                 return "redirect:/admin/account";
             }
             case SELLER -> {
-                return "redirect:/seller/order-dashboard";
+                return "redirect:/seller/dashboard";
             }
             case VET -> {
                 return "redirect:/vet/dashboard";

@@ -84,7 +84,7 @@ public class StatisticsController {
         return "groomer-dashboard";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/seller/dashboard")
     public String getSellerDashboard(Model model) {
         List<CategorySalesDTO> stats = productService.getTotalSoldByEachParentCategory();
         model.addAttribute("stats", stats);
