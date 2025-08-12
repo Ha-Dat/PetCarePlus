@@ -203,6 +203,8 @@
           <!-- Post Meta -->
           <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
             <span>Đăng bởi [[${post.account.name}]]</span>
+            <span class="opacity-40"
+                  th:text="' ' + ${post.account.role.getValue()}"></span>
             <span>•</span>
             <span>[[${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}]]</span>
           </div>
@@ -337,11 +339,13 @@
 
               <!-- Comment Content -->
               <div class="flex-1">
-                <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-                <span class="font-medium text-foreground"
-                th:text="'' + ${comment.account.name}">u/username</span>
+                <div class="flex items-center space-x-2 text-sm mb-2">
+                  <span class="font-medium text-foreground"
+                        th:text="${comment.account.name}"></span>
+                  <span class="opacity-40"
+                        th:text="' ' + ${comment.account.role.getValue()}"></span>
                   <span>•</span>
-                  <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
+                  <span class="text-muted-foreground" th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
 
                   <!-- nút sửa comment-->
                   <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
@@ -415,6 +419,8 @@
                   <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                     <span class="font-medium text-foreground"
                           th:text="'' + ${reply.account.name}">u/replier</span>
+                    <span class="opacity-40"
+                          th:text="' ' + ${comment.account.role.getValue()}"></span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
 
