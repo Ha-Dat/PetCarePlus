@@ -316,7 +316,7 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public List<Post> findTop6NewestPosts() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return postRepository.findAll(pageable).getContent();
+        return postRepository.findRecentPosts(pageable).getContent();
     }
 
     @Override
