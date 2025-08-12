@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.CheckoutDTO;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.enums.OrderStatus;
+import org.example.petcareplus.enums.PaymentStatus;
 import org.example.petcareplus.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,19 +24,25 @@ public class CheckoutController {
     private final ProductService productService;
     private final OrderService orderService;
     private final PromotionService promotionService;
+    private final PaymentService paymentService;
 
-    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService) {
+    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
         this.accountService = accountService;
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
         this.promotionService = promotionService;
+        this.paymentService = paymentService;
     }
+
 
     @GetMapping
     public String showCheckoutPage(Model model, HttpSession session) {
         // Lấy thông tin profile của người dùng
-        Long id = (Long) session.getAttribute("loggedInUser");
+//        Long id = (Long) session.getAttribute("loggedInUser");
+        Account account = (Account) session.getAttribute("loggedInUser");
+        Long id = account.getAccountId();
+
         if (id == null) {
             return "redirect:/login";
         }
@@ -79,10 +86,12 @@ public class CheckoutController {
     }
 
     @PostMapping("/create")
-    public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request) {
+    public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request, Model model) throws Exception {
 
         // Check session
-        Long id = (Long) session.getAttribute("loggedInUser");
+//        Long id = (Long) session.getAttribute("loggedInUser");
+        Account account = (Account) session.getAttribute("loggedInUser");
+        Long id = account.getAccountId();
         if (id == null) {
             return "redirect:/login";
         }
@@ -97,7 +106,7 @@ public class CheckoutController {
         Profile profile = profileService.getProfileByAccountAccountId(id);
 
         // Get account
-        Account account = accountService.getById(id).get();
+//        Account account = accountService.getById(id).get();
 
         // Handle promotion
         Promotion promotion;
@@ -114,8 +123,6 @@ public class CheckoutController {
         order.setNote(request.getNote());
         order.setTotalPrice(request.getTotalPrice());
 
-        System.out.println(" Check Total Price: " + request.getTotalPrice());
-
         order.setStatus(OrderStatus.PENDING);
         order.setDiscountAmount(request.getDiscountAmount());
         order.setPromotion(promotion);
@@ -125,11 +132,16 @@ public class CheckoutController {
 
         // Handle Address & Name & Phone
         if (request.isDifferentAddress()) {
-            order.setDeliverAddress(request.getDeliveryAddress());
+            String toAddress = request.getAddress();
+            String toWard = request.getWard();
+            String toDistrict = request.getDistrict();
+            String toCity = request.getCity();
+
+            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toDistrict + ", " + toCity);
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
         } else {
-            order.setDeliverAddress(profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
         }
@@ -137,17 +149,33 @@ public class CheckoutController {
         // Create order
         Long orderId =orderService.createOrder(order, cart);
 
+        // If VNPay
+        if ("VNPay".equalsIgnoreCase(request.getPaymentMethod())) {
+            String vnpayUrl = paymentService.createPaymentUrl(request.getTotalPrice(), orderId);
+            return "redirect:" + vnpayUrl;
+        }
+
+        model.addAttribute("orderId", orderId);
+
         // Clear cart
         session.removeAttribute("cart");
 
         // Redirect to order success page
-
-        return "redirect:/checkout/success/" + orderId;
+        return "order-success";
     }
 
-    @GetMapping("/success/{id}")
-    public String showOrderSuccessPage(Model model, Long id) {
-        model.addAttribute("orderId", id);
+    @GetMapping("/vnpay-return")
+    public String vnpayReturn(@RequestParam Map<String, String> params, Model model) {
+        // Lưu Payment từ VNPay callback
+        Payment savedPayment = paymentService.savePaymentFromVnPayReturn(params);
+        Long orderId = savedPayment.getOrder().getOrderId();
+
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("payment", savedPayment);
+        model.addAttribute("message", savedPayment.getStatus() == PaymentStatus.APPROVED
+                ? "Thanh toán thành công!"
+                : "Thanh toán thất bại!");
+
         return "order-success";
     }
 }
