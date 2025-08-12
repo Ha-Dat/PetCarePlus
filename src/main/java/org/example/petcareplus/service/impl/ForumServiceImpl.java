@@ -118,6 +118,7 @@ public class ForumServiceImpl implements ForumService {
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
+        existingPost.setChecked(false);
 
         // Lấy media cũ trong DB
         List<Media> existingMedias = mediaRepository.findByPost_postId(existingPost.getPostId());
