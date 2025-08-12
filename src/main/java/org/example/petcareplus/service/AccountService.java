@@ -2,6 +2,7 @@ package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.enums.AccountRole;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface AccountService {
     void updateAccount(Account account);
 
     Page<Account> getAccountPage(int page, int size);
+
+    Long countByRole(AccountRole role);
 }

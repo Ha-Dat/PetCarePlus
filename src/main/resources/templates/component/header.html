@@ -37,7 +37,7 @@
                     <div class="user-dropdown">
                         <button class="user-btn" style="background: #4caf50;" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
                         <div class="dropdown-content">
-                            <a href="/profile">Trang cá nhân</a>
+                            <a href="/customer/profile">Trang cá nhân</a>
                             <a href="/logout">Đăng xuất</a>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                 <div class="dropdown-content">
                     <a href="/spa-booking-form">Spa</a>
                     <a href="/hotel-booking-form">Hotel</a>
-                    <a href="#">Khám</a>
+                    <a href="/appointment-booking-form">Khám</a>
                 </div>
             </div>
 

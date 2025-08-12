@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý tài khoản</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background-color: #f2f2f2;
+    color: #333;
+  }
+
+  .dashboard {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 230px;
+    min-width: 230px;
+    max-width: 230px;
+    background-color: #2ec4b6;
+    color: white;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-title {
+    font-size: 22px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sidebar-menu li {
+    margin-bottom: 20px;
+  }
+
+  .sidebar-menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.3s;
+  }
+
+  .sidebar-menu li.active a,
+  .sidebar-menu a:hover {
+    background-color: #28b1a5;
+  }
+
+  /* Main content */
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .page-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+
+  /* Table */
+  .table-container {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  }
+
+  .account-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .account-table th,
+  .account-table td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .account-table th {
+    background-color: #e0f7f5;
+    color: #333;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  /* Add Category Button */
+  .add-account-btn {
+    padding: 8px 14px;
+    background-color: #00b894;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .add-account-btn:hover {
+    background-color: #009e82;
+  }
+
+  /* Pagination */
+  .pagination {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .pagination ul {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+    gap: 5px;
+  }
+
+  .pagination ul li a {
+    padding: 8px 12px;
+    text-decoration: none;
+    background-color: #e0f7f5;
+    color: #333;
+    border-radius: 6px;
+    transition: background 0.2s;
+    font-weight: bold;
+  }
+
+  .pagination ul li a:hover {
+    background-color: #2ec4b6;
+    color: white;
+  }
+
+  .pagination ul li.active a {
+    background-color: #2ec4b6;
+    color: white;
+  }
+
+  .action-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-toggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+  }
+
+  .dropdown-toggle:hover {
+    background-color: #f0f0f0;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #fff;
+    min-width: 140px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    border-radius: 8px;
+    padding: 4px 0;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .ban-btn {
+    background-color: #fff5f5;
+    color: #c62828;
+  }
+
+  .ban-btn:hover {
+    background-color: #ffecec;
+  }
+
+  .unban-btn {
+    color: #2e7d32;
+  }
+
+  .unban-btn:hover {
+    background-color: #d9f5df;
+  }
+
+  .action-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-box {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+  }
+
+  .modal-box h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .modal-box input, .modal-box select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .modal-actions .btn.submit {
+    background-color: #27ae60;
+    color: white;
+  }
+
+  .modal-actions .btn.cancel {
+    background-color: #e74c3c;
+    color: white;
+  }
+</style>
+<body>
+
+<div class="dashboard">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2 class="sidebar-title">Admin Dashboard</h2>
+    <ul class="sidebar-menu">
+      <li class="active"><a href="/admin/dashboard">📊 Thống kê</a></li>
+      <li><a href="/admin/account">👥 Tài khoản người dùng</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <h1 class="page-title">Thống kê và quản lý hệ thống</h1>
+
+    <!-- Hàng thống kê -->
+    <div class="row mb-4">
+      <div class="col-md custom-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Khách hàng</h5>
+            <h3 class="card-text" th:text="${totalCustomers}">0</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md custom-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Quản lý</h5>
+            <h3 class="card-text" th:text="${totalManagers}">0</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md custom-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Nhân viên chăm sóc</h5>
+            <h3 class="card-text" th:text="${totalGroomers}">0</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md custom-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Bác sĩ thú y</h5>
+            <h3 class="card-text" th:text="${totalVets}">0</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md custom-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Nhân viên bán hàng</h5>
+            <h3 class="card-text" th:text="${totalSellers}">0</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="align-items: flex-start;">
+      <div class="col-md-6">
+        <h5 style="text-align: center; margin-bottom: 10px;">
+          Thống kê đơn đặt spa và khách sạn thú cưng trong năm
+        </h5>
+        <div id="columnchart_material" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+      </div>
+
+      <div class="col-md-6">
+        <h5 style="text-align: center; margin-bottom: 10px;">
+          Doanh thu bán hàng theo tháng trong năm nay
+        </h5>
+        <div id="chart_div" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+      </div>
+    </div>
+
+
+  </main>
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script th:inline="javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Tháng', 'Doanh thu'],
+      /*[# th:each="item : ${revenue}"]*/
+      ['Tháng [[${item.month}]]', [[${item.totalRevenue}]]],
+      /*[/]*/
+    ]);
+
+    var options = {
+      title: 'Doanh thu bán hàng theo tháng trong năm nay',
+      hAxis: {title: 'Tháng', titleTextStyle: {color: '#333'}},
+      vAxis: {minValue: 0},
+      legend: { position: "none" }
+    };
+
+    var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+</script>
+
+<script th:inline="javascript">
+  const chartData = /*[[${chartDataJson}]]*/ '[]';
+
+  google.charts.load('current', { packages: ['bar'] });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    try {
+      const rawData = JSON.parse(chartData);
+
+      for (let i = 1; i < rawData.length; i++) {
+        rawData[i][0] = "T" + rawData[i][0];
+      }
+
+      const data = google.visualization.arrayToDataTable(rawData);
+
+      const options = {
+        chart: {},
+        legend: { position: 'none' }
+      };
+
+      const chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+      chart.draw(data, google.charts.Bar.convertOptions(options));
+    } catch (e) {
+      console.error("Lỗi khi tạo biểu đồ:", e);
+      document.getElementById('columnchart_material').innerHTML = "Dữ liệu không hợp lệ";
+    }
+  }
+</script>
+</body>
+</html>

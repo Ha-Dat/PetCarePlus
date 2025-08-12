@@ -54,6 +54,9 @@
     };
   </script>
   <style>
+    .logo {
+      width: 50px;
+    }
     .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -74,10 +77,8 @@
   <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
     <!-- Logo -->
     <div class="mr-4 flex">
-      <a class="mr-6 flex items-center space-x-2" href="/forum">
-        <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="text-primary-foreground font-bold text-lg">P</span>
-        </div>
+      <a class="mr-6 flex items-center space-x-2" href="/home">
+        <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
         <span class="hidden font-bold sm:inline-block text-xl">PetCare+</span>
       </a>
     </div>
@@ -108,7 +109,7 @@
 
       <!-- Avatar - Nếu đã đăng nhập thì về /profile -->
       <a th:if="${session.loggedInUser != null}"
-         href="/profile"
+         href="/customer/profile"
          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -137,19 +138,6 @@
                   </svg>
                   Trang chủ
                 </a>
-                <a href="/popular" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" />
-                    <polyline points="16,7 22,7 22,13" />
-                  </svg>
-                  Phổ biến
-                </a>
-                <a href="/messages" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  Tin nhắn
-                </a>
               </nav>
             </div>
           </div>
@@ -161,14 +149,14 @@
                 Người dùng
               </h3>
               <nav class="space-y-1">
-                <a href="/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                <a href="/customer/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
                   Hồ sơ
                 </a>
-                <a href="/my-posts" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                <a th:href="@{'/forum-my-posts/' + ${session.loggedInUser.accountId}}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14,2 14,8 20,8" />
@@ -335,17 +323,30 @@
     if (imageUpload) {
       imageUpload.addEventListener("change", function () {
         const files = this.files;
-        if (files.length > 0) {
+        if ((files.length > 0) && (files.length <= 3)) {
           console.log(`Selected ${files.length} image(s)`);
+        } else {
+          alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
+          this.value = "";
+          imagePreview.innerHTML = "";
+          imagePlaceholder.style.display = "block";
+          return;
         }
+
       });
     }
 
     if (videoUpload) {
       videoUpload.addEventListener("change", function () {
-        const file = this.files[0];
-        if (file) {
-          console.log("Selected video:", file.name);
+        const files = this.files[0];
+        if ((files.length > 0) && (files.length <= 3)) {
+          console.log(`Selected ${files.length} video(s)`);
+        } else {
+          alert("Bạn chỉ có thể đăng tối đa 3 video.");
+          this.value = "";
+          videoPreview.innerHTML = "";
+          videoPlaceholder.style.display = "block";
+          return;
         }
       });
     }

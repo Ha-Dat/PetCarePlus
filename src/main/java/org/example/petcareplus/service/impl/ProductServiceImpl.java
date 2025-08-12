@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.ProductService;
@@ -81,5 +82,22 @@ public class ProductServiceImpl implements ProductService {
 
     public List<Product> getTop5ByOrderByCreatedDateDesc() {
         return productRepository.findTop5ByOrderByCreatedDateDesc();
+    }
+
+    @Override
+    public List<CategorySalesDTO> getTotalSoldByEachParentCategory() {
+        return productRepository.getTotalSoldByEachParentCategory();
+    }
+
+    @Override
+    public int getTotalUnitsInStock() {
+        Integer total = productRepository.getTotalUnitsInStock();
+        return total != null ? total : 0;
+    }
+
+    @Override
+    public int getTotalUnitsSold() {
+        Integer total = productRepository.getTotalUnitsSold();
+        return total != null ? total : 0;
     }
 }

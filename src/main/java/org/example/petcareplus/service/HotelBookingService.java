@@ -23,4 +23,12 @@ public interface HotelBookingService {
     Optional<Service> Service_findById(Long id);
 
     Page<HotelBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
+
+    List<Object[]> getBookingCountByMonthInCurrentYear();
+
+    Long getTotalHotelBookings();
+
+    Long getTotalPendingHotelBooking();
+
+    Long getTotalAcceptedHotelBookings();
 }

@@ -12,7 +12,10 @@ public class CheckoutDTO {
     private boolean differentAddress;
     private String receiverName;
     private String receiverPhone;
-    private String deliveryAddress;
+    private String address;
+    private String ward;
+    private String district;
+    private String city;
     private String shippingMethod;
     private String paymentMethod;
     private String couponCode;
@@ -44,12 +47,36 @@ public class CheckoutDTO {
         this.receiverPhone = receiverPhone;
     }
 
-    public String getDeliveryAddress() {
-        return deliveryAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getWard() {
+        return ward;
+    }
+
+    public void setWard(String ward) {
+        this.ward = ward;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getShippingMethod() {

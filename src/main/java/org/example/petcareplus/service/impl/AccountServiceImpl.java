@@ -2,6 +2,7 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.repository.AccountRepository;
 import org.example.petcareplus.repository.ProfileRepository;
 import org.example.petcareplus.service.AccountService;
@@ -87,5 +88,10 @@ public class AccountServiceImpl implements AccountService {
     public Page<Account> getAccountPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("accountId").ascending());
         return accountRepository.findAll(pageable);
+    }
+
+    @Override
+    public Long countByRole(AccountRole role) {
+        return accountRepository.countByRole(role);
     }
 }

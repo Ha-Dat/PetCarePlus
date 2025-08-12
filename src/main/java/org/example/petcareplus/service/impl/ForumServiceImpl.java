@@ -118,6 +118,7 @@ public class ForumServiceImpl implements ForumService {
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
+        existingPost.setChecked(false);
 
         // Lấy media cũ trong DB
         List<Media> existingMedias = mediaRepository.findByPost_postId(existingPost.getPostId());
@@ -316,9 +317,13 @@ public class ForumServiceImpl implements ForumService {
     @Override
     public List<Post> findTop6NewestPosts() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return postRepository.findAll(pageable).getContent();
+        return postRepository.findRecentPosts(pageable).getContent();
     }
 
+    @Override
+    public List<Post> findAllByAccountId(Long accountId) {
+        return postRepository.findAllWithMediasByAccountId(accountId);
+    }
 
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {
@@ -341,7 +346,7 @@ public class ForumServiceImpl implements ForumService {
         return "https://petcareplus.s3.ap-southeast-2.amazonaws.com/" + key;
     }
 
-    public void deleteFileFromS3(String url) {
+    private void deleteFileFromS3(String url) {
         String prefix = "https://petcareplus.s3.ap-southeast-2.amazonaws.com/";
         String key = url.replace(prefix, "");
 

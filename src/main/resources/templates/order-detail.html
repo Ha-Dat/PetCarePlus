@@ -148,7 +148,7 @@
                             <td>
                                 <span style="color: #16bf16" th:class="${'badge ' +
                                                payment.status.name() == 'APPROVED' ? 'badge badge-success' :
-                                               payment.status.name() == 'PENDING' ? 'badge badge-warning' : 
+                                               payment.status.name() == 'PENDING' ? 'badge badge-warning' :
                                                payment.status.name() == 'CANCELLED' ? 'badge badge-danger' : 'badge badge-secondary'}"
                                       th:text="${payment.status.name()}">---</span>
                             </td>
@@ -170,7 +170,7 @@
             <div class="card">
                 <div class="card-header">Order Details</div>
                 <div class="card-body">
-                    <form method="post" th:action="@{'/orders/update-status/' + ${order.orderId}}">
+                    <form method="post" th:action="@{'/seller/orders/update-status/' + ${order.orderId}}">
                         <div class="form-group">
                             <label>Change Orders Status:</label>
                             <div class="input-group">

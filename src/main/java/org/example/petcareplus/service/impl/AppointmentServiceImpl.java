@@ -3,6 +3,7 @@ package org.example.petcareplus.service.impl;
 import org.example.petcareplus.entity.AppointmentBooking;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.AppointmentRepository;
+import org.example.petcareplus.repository.ServiceRepository;
 import org.example.petcareplus.service.AppointmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +14,11 @@ import java.util.Optional;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
+    private final ServiceRepository serviceRepository;
 
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository) {
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, ServiceRepository serviceRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.serviceRepository = serviceRepository;
     }
 
     @Override
@@ -44,5 +47,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Optional<AppointmentBooking> findById(Long id){
       return appointmentRepository.findById(id);
+    }
+
+    @Override
+    public Optional<org.example.petcareplus.entity.Service> Service_findById(Long id) {
+        return serviceRepository.findById(id);
     }
 }

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Quản lý đơn hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body {
             margin: 0;
@@ -198,6 +200,43 @@
             font-weight: bold;
             color: #198754;
         }
+
+        .seller-info {
+            margin: 17pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .seller-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seller-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .seller-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .logout-btn {
+            color: #ff4d4f;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #d9363e;
+        }
     </style>
 </head>
 <body>
@@ -206,12 +245,24 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Seller Dashboard</h2>
         <ul class="sidebar-menu">
-            <li class="active"><a href="order-dashboard">🛒 Đơn hàng</a></li>
-            <li><a href="category-dashboard">📂 Danh mục</a></li>
-            <li><a href="product-dashboard">📦 Sản phẩm</a></li>
+            <li><a href="/seller/dashboard">📊 Thống Kê</a></li>
+            <li class="active"><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
+            <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
+            <li><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
             <li><a href="#">🏷️ Khuyến mại</a></li>
-            <li><a href="list-pet-profile?from=order-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
+            <li><a href="/list-pet-profile?from=/seller/order-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="seller-info">
+            <div class="seller-details">
+                <span class="seller-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="seller-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </aside>
 
     <div class="main-content">
@@ -252,9 +303,8 @@
                 </div>
             </div>
         </div>
-        <form class="order-filter-form">
+        <form class="order-filter-form" method="get" th:action="@{/seller/order-dashboard}">
             <input type="text" class="form-control" placeholder="Order ID" name="orderId" th:value="${orderId}">
-
             <select class="form-select" name="status">
                 <option value="">Status</option>
                 <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
@@ -265,7 +315,6 @@
                 <option value="REJECTED" th:selected="${status == 'REJECTED'}">Rejected</option>
                 <option value="APPROVED" th:selected="${status == 'APPROVED'}">Approved</option>
             </select>
-
             <button type="submit" class="btn btn-primary">Filter</button>
         </form>
 
@@ -292,10 +341,10 @@
                             View
                         </button>
                         <a th:if="${order.status == 'PENDING'}"
-                           th:href="@{'/orders/approve/' + ${order.orderId}}"
+                           th:href="@{'/seller/orders/approve/' + ${order.orderId}}"
                            class="btn btn-sm btn-approve ms-2">Approve</a>
                         <a th:if="${order.status == 'PENDING'}"
-                           th:href="@{'/orders/reject/' + ${order.orderId}}"
+                           th:href="@{'/seller/orders/reject/' + ${order.orderId}}"
                            class="btn btn-sm btn-danger ms-2">Reject</a>
 
                     </td>
@@ -323,7 +372,7 @@
     function loadOrderDetail(button) {
         var orderId = $(button).data("id");
         $.ajax({
-            url: "/orders/detail/" + orderId,
+            url: "/seller/orders/detail/" + orderId,
             method: "GET",
             success: function (data) {
                 const parser = new DOMParser();
