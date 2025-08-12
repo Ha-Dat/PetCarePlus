@@ -1,6 +1,5 @@
 package org.example.petcareplus.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.CheckoutDTO;
 import org.example.petcareplus.entity.*;
@@ -26,17 +25,16 @@ public class CheckoutController {
     private final OrderService orderService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
-    private final ShipService shipService;
 
-    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService, ShipService shipService) {
+    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
         this.accountService = accountService;
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
         this.promotionService = promotionService;
         this.paymentService = paymentService;
-        this.shipService = shipService;
     }
+
 
     @GetMapping
     public String showCheckoutPage(Model model, HttpSession session) {
@@ -134,19 +132,22 @@ public class CheckoutController {
 
         // Handle Address & Name & Phone
         if (request.isDifferentAddress()) {
-            order.setDeliverAddress(request.getDeliveryAddress());
+            String toAddress = request.getAddress();
+            String toWard = request.getWard();
+            String toDistrict = request.getDistrict();
+            String toCity = request.getCity();
+
+            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toDistrict + ", " + toCity);
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
         } else {
-            order.setDeliverAddress(profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
         }
 
         // Create order
         Long orderId =orderService.createOrder(order, cart);
-
-        shipService.createShipment(order);
 
         // If VNPay
         if ("VNPay".equalsIgnoreCase(request.getPaymentMethod())) {
