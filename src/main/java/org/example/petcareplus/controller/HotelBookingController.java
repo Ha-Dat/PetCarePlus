@@ -125,17 +125,6 @@ public class HotelBookingController {
         return "hotel-booking";
     }
 
-    @GetMapping("/hotel-booking-form/{id}")
-    public String showUpdateHotelBookingForm(@PathVariable("id") Long petProfileId, Model model) {
-        PetProfile petProfile = petProfileService.findById(petProfileId);
-        List<Category> parentCategories = categoryService.getParentCategory();
-
-        model.addAttribute("hotelBooking", new HotelBooking()); // model binding
-        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL));
-        model.addAttribute("categories", parentCategories);
-        return "hotel-booking";
-    }
-
     @PostMapping("/hotel-booking/book/{id}")
     public String addHotelBooking(
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,

@@ -22,4 +22,5 @@ public interface AppointmentService {
 
     Optional<AppointmentBooking> findById(Long id);
 
+    Optional<org.example.petcareplus.entity.Service> Service_findById(Long id);
 }

@@ -613,7 +613,7 @@
     <div class="form-wrapper">
         <!-- Header -->
         <div class="header">
-            <h1 class="title">Đặt lịch spa Online</h1>
+            <h1 class="title">Đặt lịch spa</h1>
             <h2 class="subtitle">Đặt lịch để chúng tôi phục vụ bạn tốt hơn</h2>
             <p class="description">
                 vui lòng điền đầy đủ thông tin nhân viên của chúng tôi sẽ liên lạc
@@ -718,7 +718,7 @@
                             <option value="">Chọn loại dịch vụ</option>
                             <option th:each="service : ${spaServices}"
                                     th:value="${service.serviceId}"
-                                    th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + '/giờ)'}">
+                                    th:text="${service.name + ' (' + #numbers.formatCurrency(service.price)+')'}">
                             </option>
                         </select>
                     </div>
@@ -915,7 +915,7 @@
         const selectedValue = select.value;
 
         if (selectedValue === "create") {
-            window.location.href = "/pet-profile";
+            window.location.href = "/customer/pet-profile";
             return;
         }
 
