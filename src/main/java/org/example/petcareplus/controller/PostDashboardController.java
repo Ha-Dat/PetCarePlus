@@ -1,6 +1,8 @@
 package org.example.petcareplus.controller;
 
 import org.example.petcareplus.dto.PostDTO;
+import org.example.petcareplus.entity.Post;
+import org.example.petcareplus.service.ForumService;
 import org.example.petcareplus.service.PostDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,12 +15,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/post-dashboard")
 public class PostDashboardController {
 
     @Autowired
     private PostDashboardService postDashboardService;
+
+    @Autowired
+    private ForumService forumService;
 
     @GetMapping
     public String showDashboard(
@@ -28,6 +35,12 @@ public class PostDashboardController {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<PostDTO> postPage = postDashboardService.getPostsPaginated(pageable);
+
+        // Kiểm tra bài viết chờ duyệt
+            List<Post> userPendingPosts = forumService.findPendingPosts().stream().toList();
+            if (!userPendingPosts.isEmpty()) {
+                model.addAttribute("pendingMessage", "Bạn có " + userPendingPosts.size() + " bài viết đang chờ duyệt");
+            }
         
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("currentPage", page);

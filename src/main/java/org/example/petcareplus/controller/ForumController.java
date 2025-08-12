@@ -64,16 +64,6 @@ public class ForumController {
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
 
-        // Kiểm tra nếu user đã đăng nhập và có bài viết chờ duyệt
-        if (account != null) {
-            List<Post> userPendingPosts = forumService.findPendingPosts().stream()
-                    .filter(post -> post.getAccount().getAccountId().equals(account.getAccountId()))
-                    .toList();
-            if (!userPendingPosts.isEmpty()) {
-                model.addAttribute("pendingMessage", "Bạn có " + userPendingPosts.size() + " bài viết đang chờ duyệt");
-            }
-        }
-
         model.addAttribute("keyword", keyword);
         model.addAttribute("latestPosts", latestPostDTOs);
         return "forum";
