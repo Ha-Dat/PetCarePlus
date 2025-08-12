@@ -31,7 +31,7 @@ public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
     """)
     List<MyServiceDTO> findSpaBookingsByAccountId(@Param("accountId") Long accountId);
 
-    @Query("SELECT h FROM HotelBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
+    @Query("SELECT h FROM SpaBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
     Page<SpaBooking> findByBookDateBetween(@Param("start") LocalDateTime start,
                                              @Param("end") LocalDateTime end,
                                              Pageable pageable);

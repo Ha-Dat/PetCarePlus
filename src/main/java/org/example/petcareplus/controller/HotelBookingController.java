@@ -87,35 +87,6 @@ public class HotelBookingController {
         return "Not found";
     }
 
-    @GetMapping("/pet-groomer/list-hotel-booking/hotel-detail/{id}")
-    @ResponseBody
-    public ResponseEntity<?> getHotelBookingDetail(@PathVariable("id") Long id) {
-        Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
-        if (bookingOpt.isPresent()) {
-            HotelBooking booking = bookingOpt.get();
-            Map<String, Object> data = new HashMap<>();
-
-            // data đơn book
-            data.put("id", booking.getHotelBookingId());
-            data.put("bookDate", booking.getBookDate().toString());
-            data.put("status", booking.getStatus().getValue());
-            data.put("service", booking.getService().getName());
-            data.put("note", booking.getNote());
-            // data của pet
-            data.put("image", booking.getPetProfile().getMedias().get(0).getUrl());
-            data.put("petId", booking.getPetProfile().getPetProfileId());
-            data.put("petName", booking.getPetProfile().getName());
-            data.put("species", booking.getPetProfile().getSpecies());
-            data.put("breed", booking.getPetProfile().getBreeds());
-            // data chủ nuôi
-            data.put("name", booking.getPetProfile().getProfile().getAccount().getName());
-            data.put("phone", booking.getPetProfile().getProfile().getAccount().getPhone());
-
-            return ResponseEntity.ok(data);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking.");
-    }
-
     @PostMapping("/pet-groomer/list-hotel-booking/reject-hotel/{id}")
     @ResponseBody
     public String rejectBooking(@PathVariable("id") Long id) {
@@ -182,7 +153,6 @@ public class HotelBookingController {
         try {
             Account account = (Account) session.getAttribute("loggedInUser");
             if (account == null) return "redirect:/login";
-            // Tạo pet profile mới từ form
             PetProfile petProfile = petProfileService.findById(petProfileId);
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);
@@ -209,7 +179,7 @@ public class HotelBookingController {
             booking.setService(service.get());
 
             hotelBookingService.save(booking);
-            return "redirect:/hotel-booking";
+            return "redirect:/hotel-booking-form";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());

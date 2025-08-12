@@ -83,7 +83,7 @@
         }
 
         .table-container {
-            width: 200%;
+            width: 190%;
             border-collapse: collapse;
             margin-top: 25px;
             background-color: white;
@@ -92,19 +92,19 @@
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
         }
 
-        .spa-table {
+        .groomer-hotel-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .spa-table th,
-        .spa-table td {
+        .groomer-hotel-table th,
+        .groomer-hotel-table td {
             text-align: left;
-            padding: 12px 7px;
+            padding: 12px 15px;
             border-bottom: 1px solid #ddd;
         }
 
-        .spa-table th {
+        .groomer-hotel-table th {
             background-color: #e0f7f5;
             color: #333;
         }
@@ -113,7 +113,6 @@
             background-color: #f9f9f9;
         }
 
-        /* Pagination css */
         .pagination {
             margin-top: 20px;
             text-align: center;
@@ -221,6 +220,128 @@
         .action-dropdown:hover .dropdown-menu {
             display: block;
         }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* Mặc định ẩn, khi bật thì dùng JS để set display: flex */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal Box */
+        .modal-box {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            padding: 24px 32px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Header */
+        .modal-header h5 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        /* Info Sections */
+        .booking-info p,
+        .pet-info p,
+        .owner-info p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+            color: #374151;
+        }
+
+        .booking-info strong {
+            color: #111827;
+        }
+
+        /* Image */
+        .pet-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pet-image img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+        }
+
+        /* Divider */
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Close Button */
+        .close-button {
+            background-color: #38bdf8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .close-button:hover {
+            background-color: #0ea5e9;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .modal-box {
+                padding: 20px;
+            }
+
+            .modal-header h5 {
+                font-size: 1.3rem;
+            }
+
+            .booking-info p,
+            .pet-info p,
+            .owner-info p {
+                font-size: 0.9rem;
+            }
+
+            .pet-image img {
+                width: 100px;
+                height: 100px;
+            }
+        }
         .filter-button {
             padding: 6px 12px;
             margin-left: 10px;
@@ -256,19 +377,20 @@
 
     <!-- Main content -->
     <main class="main-content">
-            <h1 class="page-title">Quản lý đơn Spa</h1>
+        <h1 class="page-title">Quản lý đơn Spa</h1>
         <div class="header">
             <div class="filters">
-                <form method="get" th:action="@{/pet-groomer/list-hotel-booking}" style="display: flex; align-items: center;">
+                <form method="get" th:action="@{/pet-groomer/list-spa-booking}" style="display: flex; align-items: center;">
                     <input type="date" name="date" th:value="${selectedDate}">
                     <button type="submit" class="filter-button">Lọc</button>
-                    <a th:href="@{/pet-groomer/list-hotel-booking}" class="filter-button">Hủy lọc</a>
+                    <a th:href="@{/pet-groomer/list-spa-booking}" class="filter-button">Hủy lọc</a>
                 </form>
             </div>
         </div>
 
+        <!-- Table Container -->
         <div class="table-container">
-            <table class="spa-table">
+            <table class="groomer-hotel-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -280,25 +402,45 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="spaBookings : ${spaBookings}">
-                    <td th:text="${spaBookings.spaBookingId}"></td>
-                    <td th:text="${spaBookings.bookDate}"></td>
-                    <td th:text="${spaBookings.status}"></td>
-                    <td th:text="${spaBookings.petProfile.species}"></td>
-                    <td th:text="${spaBookings.service.name}"></td>
+                <tr th:each="spaBooking : ${spaBookings}">
+                    <td th:text="${spaBooking.spaBookingId}"></td>
+                    <td th:text="${spaBooking.bookDate}"></td>
+                    <td th:text="${spaBooking.status.getValue()}"></td>
+                    <td th:text="${spaBooking.petProfile.species}"></td>
+                    <td th:text="${spaBooking.service.name}"></td>
                     <td>
                         <div class="action-dropdown">
                             <button type="button" class="dropdown-toggle">•••</button>
                             <div class="dropdown-menu">
+                                <button type="button"
+                                        class="dropdown-item"
+                                        th:data-id="${spaBooking.spaBookingId}"
+                                        th:data-date="${spaBooking.bookDate}"
+                                        th:data-status="${spaBooking.status}"
+                                        th:data-service="${spaBooking.service.name}"
+
+                                        th:data-pet-image="${spaBooking.petProfile.medias.get(0).url}"
+                                        th:data-pet-name="${spaBooking.petProfile.name}"
+                                        th:data-pet-species="${spaBooking.petProfile.species}"
+                                        th:data-pet-breeds="${spaBooking.petProfile.breeds}"
+                                        th:data-pet-weight="${spaBooking.petProfile.weight}"
+                                        th:data-pet-age="${spaBooking.petProfile.age}"
+
+                                        th:data-account-name="${spaBooking.petProfile.profile.account.name}"
+                                        th:data-account-phone="${spaBooking.petProfile.profile.account.phone}"
+                                        th:data-pet-note="${spaBooking.note}"
+                                        onclick="openBookingDetail(this)">
+                                    Xem chi tiết
+                                </button>
 
                                 <button class="dropdown-item confirm-btn"
-                                        th:data-id="${spaBookings.spaBookingId}"
-                                        onclick="approveSpaBooking(this)">
+                                        th:data-id="${spaBooking.spaBookingId}"
+                                        onclick="acceptBooking(this)">
                                     Duyệt
                                 </button>
                                 <button class="dropdown-item reject-btn"
-                                        th:data-id="${spaBookings.spaBookingId}"
-                                        onclick="rejectSpaBooking(this)">
+                                        th:data-id="${spaBooking.spaBookingId}"
+                                        onclick="rejectBooking(this)">
                                     Từ chối
                                 </button>
                             </div>
@@ -312,36 +454,69 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                        <a th:href="@{'/pet-groomer/list-spa-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
                     </li>
 
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active' : ''">
-                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                        <a th:href="@{'/pet-groomer/list-spa-booking'(page=${i}, size=8)}" th:text="${i + 1}"></a>
                     </li>
 
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{'/pet-groomer/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                        <a th:href="@{'/pet-groomer/list-spa-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
                     </li>
                 </ul>
             </div>
         </div>
 
+        <!-- Modal Booking Detail -->
+        <div class="modal-overlay" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
+            <div class="modal-box">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Chi tiết đơn booking</h5>
+                    </div>
+                    <div class="booking-info">
+                        <p><strong>Booking ID:</strong> <span id="popup-id"></span></p>
+                        <p><strong>Ngày đặt:</strong> <span id="popup-date"></span></p>
+                        <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>
+                        <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
+                        <hr>
+                        <div class="pet-image">
+                            <img id="popup-image" src="" alt="Pet Image">
+                        </div>
+                        <div class="pet-info">
+                            <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
+                            <p><strong>Loài:</strong> <span id="popup-species"></span></p>
+                            <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
+                            <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+                            <p><strong>Tuổi:</strong> <span id="popup-age"></span></p>
+                        </div>
+                        <hr>
+                        <div class="owner-info">
+                            <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
+                            <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+                            <p><strong>Ghi chú:</strong> <span id="popup-note"></span></p>
+                        </div>
+                    </div>
+                    <button type="button" class="close-button" onclick="closeDetailPopup()">Đóng</button>
+                </div>
+            </div>
+        </div>
     </main>
 </div>
-</body>
+
 <script>
-    function approveSpaBooking(button) {
+    function acceptBooking(button) {
+        const bookingId = button.dataset.id;
 
-        const spaBookingId = button.dataset.id;
-
-        if (!spaBookingId) {
+        if (!bookingId) {
             alert("Không tìm thấy booking ID.");
             return;
         }
 
-        if (confirm("Bạn có chắc muốn duyệt booking ID " + spaBookingId + " không?")) {
-            fetch(`/pet-groomer/list-spa-booking/approve-spa/${spaBookingId}`, {
+        if (confirm("Bạn có chắc muốn duyệt booking ID " + bookingId + " không?")) {
+            fetch(`/pet-groomer/list-spa-booking/approve-spa/${bookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -350,22 +525,17 @@
                     location.reload();
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi duyệt.");
+                    console.error('Lỗi:', error);
+                    alert("Đã xảy ra lỗi khi duyệt booking.");
                 });
         }
     }
 
-    function rejectSpaBooking(button) {
-        const spaBookingId = button.dataset.id;
+    function rejectBooking(button) {
+        const id = button.dataset.id;
 
-        if (!spaBookingId) {
-            alert("Không tìm thấy booking ID.");
-            return;
-        }
-
-        if (confirm("Bạn có chắc muốn từ chối booking ID " + spaBookingId + " không?")) {
-            fetch(`/pet-groomer/list-spa-booking/reject-spa/${spaBookingId}`, {
+        if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
+            fetch(`/pet-groomer/list-spa-booking/reject-spa/${id}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -375,14 +545,49 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi duyệt.");
+                    alert("Có lỗi xảy ra khi từ chối.");
                 });
         }
+    }
+
+    function openBookingDetail(button) {
+        document.getElementById("popup-id").textContent = button.getAttribute("data-id");
+        document.getElementById("popup-date").textContent = formatDateTime(button.getAttribute("data-date"));
+        document.getElementById("popup-status").textContent = button.getAttribute("data-status");
+        document.getElementById("popup-service").textContent = button.getAttribute("data-service");
+
+        document.getElementById("popup-image").src = button.getAttribute("data-pet-image");
+        document.getElementById("popup-petName").textContent = button.getAttribute("data-pet-name");
+        document.getElementById("popup-species").textContent = button.getAttribute("data-pet-species");
+        document.getElementById("popup-breed").textContent = button.getAttribute("data-pet-breeds");
+        document.getElementById("popup-weight").textContent = button.getAttribute("data-pet-weight");
+        document.getElementById("popup-age").textContent = button.getAttribute("data-pet-age");
+
+        document.getElementById("popup-owner").textContent = button.getAttribute("data-account-name");
+        document.getElementById("popup-phone").textContent = button.getAttribute("data-account-phone");
+        document.getElementById("popup-note").textContent = button.getAttribute("data-pet-note");
+
+        document.getElementById("bookingDetailModal").style.display = "flex";
+    }
+
+    function formatDateTime(datetimeStr) {
+        if (!datetimeStr) return "Không có";
+        const date = new Date(datetimeStr);
+        if (isNaN(date.getTime())) return datetimeStr;
+        return date.toLocaleString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
     }
 
     function closeDetailPopup() {
-        document.getElementById('detail-popup').style.display = 'none';
+        document.getElementById('bookingDetailModal').style.display = 'none';
     }
 </script>
+
+</body>
 </html>
 

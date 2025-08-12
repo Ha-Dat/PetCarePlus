@@ -1,6 +1,7 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.HotelBooking;
+import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.entity.SpaBooking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,6 @@ public interface SpaBookingService {
     Long getTotalPendingSpaBooking();
 
     Long getTotalAcceptedSpaBookings();
+
+    Optional<Service> Service_findById(Long id);
 }
