@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý danh mục</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* General styles */
         body {
@@ -616,6 +616,43 @@
             background-color: #c8e6c9 !important;
             border-left: 4px solid #4caf50;
         }
+
+        .seller-info {
+            margin: 18pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .seller-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seller-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .seller-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .logout-btn {
+            color: #ff4d4f;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #d9363e;
+        }
     </style>
 </head>
 <body>
@@ -631,6 +668,17 @@
             <li><a href="#">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/category-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="seller-info">
+            <div class="seller-details">
+                <span class="seller-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="seller-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </aside>
 
     <div class="main-content">

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Quản lý spa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body {
             margin: 0;
@@ -358,6 +360,43 @@
         .filter-button:hover {
             background-color: #0056b3;
         }
+
+        .pet-groomer-info {
+            margin: 18pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .pet-groomer-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pet-groomer-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pet-groomer-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .logout-btn {
+            color: #ff4d4f;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #d9363e;
+        }
     </style>
 </head>
 <body>
@@ -373,6 +412,17 @@
             <li><a href="#">📅 Ca làm việc</a></li>
             <li><a href="/list-pet-profile?from=/pet-groomer/list-spa-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="pet-groomer-info">
+            <div class="pet-groomer-details">
+                <span class="pet-groomer-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="pet-groomer-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </aside>
 
     <!-- Main content -->
