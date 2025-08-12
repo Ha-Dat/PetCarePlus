@@ -278,6 +278,7 @@ public class ForumController {
                                Model model, HttpSession session) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) return "redirect:/login";
 
         List<Post> allPosts = forumService.findAllByAccountId(accountId);
 

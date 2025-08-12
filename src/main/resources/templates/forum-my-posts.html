@@ -200,7 +200,9 @@
                 <!-- Posts List -->
                 <div id="posts-container" class="space-y-4">
                     <!-- Loop Posts -->
-                    <div th:each="post : ${posts}" class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+                    <div th:each="post : ${posts}"
+                         th:classappend="${!post.checked} ? 'opacity-30' : ''"
+                         class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
                         <div class="flex">
                             <!-- Voting Section -->
                             <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
@@ -428,7 +430,7 @@
                     }
 
                     const postHtml = `
-                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+                    <div class=" ${!post.checked ? 'opacity-30' : ''} rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
                         <div class="flex">
                             <!-- Voting Section -->
                             <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
