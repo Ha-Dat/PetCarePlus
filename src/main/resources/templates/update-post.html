@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8" />
@@ -359,7 +359,7 @@
                 const files = this.files;
                 imagePreview.innerHTML = "";
 
-                if (files.length > 0 && files.length <= 3) {
+                if (files.length <= 3) {
                     imagePlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
@@ -386,7 +386,7 @@
                 const files = this.files;
                 videoPreview.innerHTML = "";
 
-                if (files.length > 0 && files.length <= 3) {
+                if (files.length <= 3) {
                     videoPlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
