@@ -387,12 +387,10 @@
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <h2 class="sidebar-title">Groomer Dashboard</h2>
+        <h2 class="sidebar-title">Manager Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="list-spa-booking">🧴 Spa</a></li>
-            <li><a href="list-hotel-booking">🏨 Pet Hotel</a></li>
-            <li class="active"><a href="service-dashboard">🛠️ Dịch vụ</a></li>
-            <li><a href="#">📅 Ca làm việc</a></li>
+            <li class="active"><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
+            <li><a href="#">📅 Quản lý ca làm việc</a></li>
         </ul>
     </aside>
 
@@ -452,16 +450,16 @@
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/service-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                            <a th:href="@{/manager/service-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active' : ''">
-                            <a th:href="@{/service-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/manager/service-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                         </li>
 
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/service-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                            <a th:href="@{/manager/service-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -584,7 +582,7 @@
             duration: parseInt(form.duration.value)
         };
 
-        fetch('/service-dashboard/create', {
+        fetch('/manager/service-dashboard/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -595,7 +593,7 @@
                 if (res.ok) {
                     closeAddModal();
                     showToast("Thêm dịch vụ thành công!", "success");
-                    setTimeout(() => window.location.href = "/service-dashboard", 1000);
+                    setTimeout(() => window.location.href = "/manager/service-dashboard", 1000);
                 } else {
                     showToast("Thêm dịch vụ thất bại!", "error");
                 }
@@ -637,7 +635,7 @@
             duration: parseInt(form.duration.value)
         };
 
-        fetch(`/service-dashboard/update/${serviceId}`, {
+        fetch(`/manager/service-dashboard/update/${serviceId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -663,7 +661,7 @@
     function confirmDeleteAndToast(serviceId) {
         const confirmed = confirm("Bạn có chắc muốn xóa dịch vụ này?");
         if (confirmed) {
-            fetch(`/service-dashboard/delete/${serviceId}`, {
+            fetch(`/manager/service-dashboard/delete/${serviceId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -686,6 +684,52 @@
             });
         }
     }
+    document.addEventListener("DOMContentLoaded", () => {
+        const categoryAdd = document.getElementById("serviceCategory");
+        const durationAdd = document.getElementById("serviceDuration");
+
+        const categoryEdit = document.getElementById("editServiceCategory");
+        const durationEdit = document.getElementById("editServiceDuration");
+
+        function lockIfHotel(categorySelect, durationInput) {
+            if (categorySelect.value === "HOTEL") { // hoặc "Khách sạn thú cưng"
+                durationInput.value = 60;
+                durationInput.readOnly = true; // khóa nhập liệu
+                durationInput.addEventListener('keydown', e => e.preventDefault()); // chặn bàn phím
+                durationInput.addEventListener('wheel', e => e.preventDefault());   // chặn cuộn chuột
+                durationInput.addEventListener('input', e => e.preventDefault());   // chặn thay đổi
+            } else {
+                durationInput.readOnly = false;
+            }
+        }
+
+        // Add form: chỉ khi chọn
+        categoryAdd.addEventListener("change", () => lockIfHotel(categoryAdd, durationAdd));
+
+        // Edit form: khi chọn
+        categoryEdit.addEventListener("change", () => lockIfHotel(categoryEdit, durationEdit));
+
+        // Khi mở modal edit: nếu đã là "Khách sạn thú cưng" thì khóa luôn
+        window.openEditModal = function (element) {
+            const serviceId = element.getAttribute('data-service-id');
+            const name = element.getAttribute('data-name');
+            const category = element.getAttribute('data-category');
+            const price = element.getAttribute('data-price');
+            const duration = element.getAttribute('data-duration');
+
+            document.getElementById("editServiceId").value = serviceId;
+            document.getElementById("editServiceName").value = name;
+            document.getElementById("editServiceCategory").value = category;
+            document.getElementById("editServicePrice").value = price;
+            document.getElementById("editServiceDuration").value = duration;
+
+            // Khóa nếu đã là Khách sạn thú cưng
+            lockIfHotel(categoryEdit, durationEdit);
+
+            document.getElementById("editServiceModal").style.display = "flex";
+        }
+    });
+
 </script>
 </body>
 </html>
