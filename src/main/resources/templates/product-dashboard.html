@@ -347,6 +347,16 @@
             background-color: #f8f9fa;
         }
 
+        /* Riêng nút xoá */
+        .dropdown-item.delete-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.delete-btn:hover {
+            background-color: #ffe5e5;
+        }
+
         /* Hover để hiện menu (hoặc dùng JS toggle nếu muốn click) */
         .action-dropdown:hover .dropdown-menu {
             display: block;
@@ -507,9 +517,9 @@
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
                         <td>
-                    <span th:text="${product?.status}"
-                          th:classappend="${product?.status == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
-                    </span>
+                        <span th:text="${product?.status.getValue()}"
+                        th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
+                        </span>
                         </td>
                         <td th:text="${product?.category?.name}"></td>
                         <td>
@@ -518,20 +528,22 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
                                        th:attr="data-product-id=${product.productId},
-                                            data-name=${product.name},
-                                            data-category-id=${product.category.categoryId},
-                                            data-price=${product.price},
-                                            data-stock=${product.unitInStock},
-                                            data-sold=${product.unitSold},
-                                            data-status=${product.status},
-                                            data-description=${product.description}"
+                                                data-name=${product.name},
+                                                data-category-id=${product.category.categoryId},
+                                                data-price=${product.price},
+                                                data-stock=${product.unitInStock},
+                                                data-sold=${product.unitSold},
+                                                data-status=${product.status.name()},
+                                                data-description=${product.description},
+                                                data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
+                                                data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/seller/productDashboard/delete/__${product.productId}__}" method="post"
+                                          th:action="@{/seller/product-dashboard/delete/__${product.productId}__}" method="post"
                                           th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
                                             🗑️ Xóa
@@ -569,7 +581,7 @@
     <div class="modal-box">
         <h2 id="modalTitle">Thêm sản phẩm mới</h2>
 
-        <form id="createProductForm" onsubmit="submitCreateProduct(event)">
+        <form id="createProductForm" enctype="multipart/form-data" onsubmit="submitCreateProduct(event)">
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
             <div>
                 <label for="productName">Tên sản phẩm *</label>
@@ -610,18 +622,11 @@
                 ></textarea>
             </div>
 
-            <div class="form-group form-group-full">
-                <label for="productImage">Hình ảnh *</label>
-                <div class="image-input-group">
-                    <input type="text" id="productImage" name="image" required placeholder="URL hình ảnh hoặc tên file"/>
-
-                    <button type="button" class="upload-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7,10 12,15 17,10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                    </button>
+            <div>
+                <label for="addProductImage">Ảnh:</label>
+                <input type="file" name="imageFile" id="addProductImage" class="form-control mb-2" accept="image/*" onchange="addProductImagePreviewImage(this)">
+                <div id="addProductImagePreview" class="mt-2" style="display: none;">
+                    <img id="addProductImagePreviewImg" src="" alt="Preview" style="max-width: 120px; max-height: 120px; border: 2px solid #4caf50;">
                 </div>
             </div>
 
@@ -643,6 +648,7 @@
 
         <form id="editProductForm" onsubmit="submitEditProduct(event)">
             <input type="hidden" id="editProductId" name="productId">
+            <input type="hidden" id="editCreatedDate" name="createdDate">
 
             <div>
                 <label for="editProductName">Tên sản phẩm *</label>
@@ -680,9 +686,12 @@
                 <textarea id="editProductDescription" name="description" rows="4" required></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="editProductImage">Hình ảnh *</label>
-                <input type="text" id="editProductImage" name="image" required>
+            <div>
+                <label for="editProductImage">Ảnh:</label>
+                <input type="file" name="imageFile" id="editProductImage" class="form-control mb-2" accept="image/*" onchange="editProductImagePreviewImage(this)">
+                <div id="editProductImagePreview" class="mt-2" style="display: none;">
+                    <img id="editProductImagePreviewImg" src="" alt="Preview" style="max-width: 120px; max-height: 120px; border: 2px solid #4caf50;">
+                </div>
             </div>
 
             <div class="modal-actions">
@@ -697,6 +706,81 @@
     <span id="toastMessage"></span>
 </div>
 <script>
+    function editProductImagePreviewImage(input) {
+        const file = input.files[0];
+        const preview = document.getElementById('editProductImagePreview');
+        const previewImg = document.getElementById('editProductImagePreviewImg');
+
+        if (file) {
+            // Kiểm tra kích thước file (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File ảnh quá lớn. Vui lòng chọn file nhỏ hơn 5MB.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            // Kiểm tra loại file
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh hợp lệ.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function addProductImagePreviewImage(input) {
+        const file = input.files[0];
+        const preview = document.getElementById('addProductImagePreview');
+        const previewImg = document.getElementById('addProductImagePreviewImg');
+
+        if (file) {
+            // Kiểm tra kích thước file (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File ảnh quá lớn. Vui lòng chọn file nhỏ hơn 5MB.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            // Kiểm tra loại file
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh hợp lệ.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+    function formatDateToYMDHMS(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return date.getFullYear() + '-' +
+            pad(date.getMonth() + 1) + '-' +
+            pad(date.getDate()) + ' ' +
+            pad(date.getHours()) + ':' +
+            pad(date.getMinutes()) + ':' +
+            pad(date.getSeconds());
+    }
+
     function openAddModal() {
         document.getElementById("addProductModal").style.display = "flex";
     }
@@ -724,29 +808,17 @@
         event.preventDefault();
 
         const form = document.getElementById('createProductForm');
-
-        const data = {
-            name: form.name.value.trim(),
-            description: form.description.value.trim(),
-            price: parseFloat(form.price.value),
-            unitInStock: parseInt(form.unitInStock.value),
-            unitSold: parseInt(form.unitSold.value) || 0,
-            status: form.status.value,
-            categoryId: parseInt(form.categoryId.value)
-        };
+        const formData = new FormData(form); // Lấy cả text + file
 
         fetch('/seller/product-dashboard/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            body: formData
         })
             .then(res => {
                 if (res.ok) {
                     closeAddModal();
                     showToast("Thêm sản phẩm thành công!", "success");
-                    setTimeout(() => window.location.href = "/product-dashboard", 1000);
+                    setTimeout(() => window.location.reload(), 1000);
                 } else {
                     showToast("Thêm sản phẩm thất bại!", "error");
                 }
@@ -757,29 +829,20 @@
             });
     }
 
+
     function openEditModal(element) {
-        const productId = element.getAttribute('data-product-id');
-        const name = element.getAttribute('data-name');
-        const categoryId = element.getAttribute('data-category-id');
-        const price = element.getAttribute('data-price');
-        const stock = element.getAttribute('data-stock');
-        const sold = element.getAttribute('data-sold');
-        const status = element.getAttribute('data-status');
-        const description = element.getAttribute('data-description');
-        const image = element.getAttribute('data-image');
+        document.getElementById("editProductId").value = element.getAttribute('data-product-id');
+        document.getElementById("editProductName").value = element.getAttribute('data-name');
+        document.getElementById("editProductCategory").value = element.getAttribute('data-category-id');
+        document.getElementById("editProductPrice").value = element.getAttribute('data-price');
+        document.getElementById("editProductStock").value = element.getAttribute('data-stock');
+        document.getElementById("editProductSold").value = element.getAttribute('data-sold');
+        document.getElementById("editProductStatus").value = element.getAttribute('data-status');
+        document.getElementById("editProductDescription").value = element.getAttribute('data-description');
+        document.getElementById("editProductImagePreviewImg").src = element.getAttribute('data-image');
+        document.getElementById("editProductImagePreview").style.display = 'block';
+        document.getElementById("editCreatedDate").value = element.getAttribute('data-createdDate');
 
-        // Gán vào form
-        document.getElementById("editProductId").value = productId;
-        document.getElementById("editProductName").value = name;
-        document.getElementById("editProductCategory").value = categoryId;
-        document.getElementById("editProductPrice").value = price;
-        document.getElementById("editProductStock").value = stock;
-        document.getElementById("editProductSold").value = sold;
-        document.getElementById("editProductStatus").value = status;
-        document.getElementById("editProductDescription").value = description;
-        document.getElementById("editProductImage").value = image;
-
-        // Hiển thị modal
         document.getElementById("editProductModal").style.display = "flex";
     }
 
@@ -787,36 +850,27 @@
         event.preventDefault();
 
         const form = document.getElementById('editProductForm');
-        const productId = document.getElementById('editProductId').value;
+        const formData = new FormData(form); // chứa cả text và file
 
-        const data = {
-            name: form.name.value.trim(),
-            description: form.description.value.trim(),
-            price: parseFloat(form.price.value),
-            unitInStock: parseInt(form.unitInStock.value),
-            unitSold: parseInt(form.unitSold.value) || 0,
-            status: form.status.value,
-            image: form.image.value.trim(),
-            categoryId: parseInt(form.categoryId.value)
-        };
-
-        fetch(`/seller/product-dashboard/update/${productId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.ok) {
-                closeEditModal();
-                showToast("Cập nhật sản phẩm thành công!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast("Cập nhật sản phẩm thất bại!", "error");
-            }
-        }).catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast("Có lỗi xảy ra khi cập nhật!", "error");
-        });
+        fetch('/seller/product-dashboard/update', {
+            method: 'POST', // hoặc PUT nếu backend hỗ trợ
+            body: formData
+        })
+            .then(res => {
+                if (res.ok) {
+                    closeEditModal();
+                    showToast("Cập nhật sản phẩm thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Cập nhật sản phẩm thất bại!", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+            });
     }
+
 
     function closeEditModal() {
         document.getElementById('editProductModal').style.display = 'none';

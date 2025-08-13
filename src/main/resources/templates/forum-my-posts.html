@@ -86,7 +86,7 @@
         </div>
 
         <!-- Search Bar -->
-        <form method="get" action="/forum" class="flex flex-1 items-center space-x-2 max-w-md">
+        <form method="get" th:action="@{'/forum-my-posts/' + ${account.accountId}}" class="flex flex-1 items-center space-x-2 max-w-md">
             <div class="relative w-full">
                 <svg class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8" />

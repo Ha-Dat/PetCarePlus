@@ -374,7 +374,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="a, aStat : ${accounts}">
+                <tr th:each="a : ${accounts}">
                     <td th:text="${a.accountId}"></td>
                     <td th:text="${a.name}"></td>
                     <td th:text="${a.phone}"></td>
@@ -387,13 +387,14 @@
                                 <button th:onclick="'viewDetail(' + ${a.accountId} + ')'"
                                         class="dropdown-item">Chi tiết</button>
 
-                                <form th:action="@{'/admin/account/change-status/' + ${a.accountId}}" method="post">
-                                    <button type="submit"
-                                            th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
-                                            th:class="'dropdown-item ' + ${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
-                                            onclick="changeStatus(this)">
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        th:data-id="${a.accountId}"
+                                        th:data-status="${a.status.value}"
+                                        th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
+                                        th:class="'dropdown-item ' + (${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'})"
+                                        onclick="changeStatus(this)">
+                                </button>
+
                             </div>
                         </div>
                     </td>
@@ -406,15 +407,15 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{'/admin/account/list'(page=${currentPage - 1}, size=${size})}">«</a>
+                        <a th:href="@{'/admin/account'(page=${currentPage - 1}, size=${size})}">«</a>
                     </li>
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:class="${i == currentPage} ? 'active'">
-                        <a th:href="@{'/admin/account/list'(page=${i}, size=${size})}"
+                        <a th:href="@{'/admin/account'(page=${i}, size=${size})}"
                         th:text="${i + 1}"></a>
                     </li>
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{'/admin/account/list'(page=${currentPage + 1}, size=${size})}">»</a>
+                        <a th:href="@{'/admin/account'(page=${currentPage + 1}, size=${size})}">»</a>
                     </li>
                 </ul>
             </div>
@@ -429,18 +430,18 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <form th:action="@{/admin/account/create}" method="post">
+                <form th:action="@{/admin/create}" method="post" id="createAccountForm">
                     <label>Tên:</label>
-                    <input type="text" name="name" required><br><br>
+                    <input type="text" name="name" id="createName" required><br><br>
 
                     <label>SĐT:</label>
-                    <input type="text" name="phone" required><br><br>
+                    <input type="text" name="phone" id="createPhone" required><br><br>
 
                     <label>Mật khẩu:</label>
-                    <input type="password" name="password" required><br><br>
+                    <input type="password" name="password" id="createPassword" required><br><br>
 
                     <label>Vai trò:</label>
-                    <select name="role">
+                    <select id="createRole" name="role">
                         <option th:each="r : ${roles}"
                                 th:value="${r.name()}"
                                 th:text="${r.value}">
@@ -468,6 +469,11 @@
 
                     <label for="phone">SĐT:</label>
                     <input type="text" id="phone" required><br><br>
+
+                    <div class="form-group" id="passwordGroup" style="display:none;">
+                        <label for="password">Mật khẩu:</label>
+                        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu mới (nếu đổi)">
+                    </div>
 
                     <label for="role">Vai trò:</label>
                     <select id="role" name="role">
@@ -499,16 +505,61 @@
 </div>
 </body>
 <script>
-    function openCreateModal() {
-        document.getElementById('createAccountModal').style.display = 'flex';
+function openCreateModal() {
+document.getElementById('createAccountModal').style.display = 'flex';
+
+// Ẩn role ADMIN và CUSTOMER
+const roleSelect = document.querySelector('#createAccountModal select[name="role"]');
+        Array.from(roleSelect.options).forEach(option => {
+            if (option.value.toUpperCase() === "ADMIN" || option.value.toUpperCase() === "CUSTOMER") {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        });
     }
 
     function closeCreateModal() {
         document.getElementById('createAccountModal').style.display = 'none';
     }
 
-    function viewDetail(id) {
-        fetch('/admin/account/detail/' + id)
+document.getElementById("createAccountForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // ngăn submit mặc định
+
+    const name = document.getElementById("createName").value.trim();
+    const phone = document.getElementById("createPhone").value.trim();
+    const password = document.getElementById("createPassword").value;
+    const phoneRegex = /^0\d{9}$/;
+
+    if (name.length < 2 || name.length > 50) {
+        alert("Tên phải từ 2 đến 50 ký tự");
+        return;
+    }
+    if (!phoneRegex.test(phone)) {
+        alert("Số điện thoại không hợp lệ (bắt đầu bằng 0, đủ 10 số)");
+        return;
+    }
+    if (password.length < 6) {
+        alert("Mật khẩu phải ít nhất 6 ký tự");
+        return;
+    }
+
+    // Kiểm tra trùng phone bằng AJAX
+    const response = await fetch(`/admin/check-phone?phone=${encodeURIComponent(phone)}`);
+    const data = await response.json();
+    if (data.exists) {
+        alert("Số điện thoại đã có tài khoản!");
+        return;
+    }
+
+    // Nếu tất cả ok → submit form
+    this.submit();
+});
+
+
+
+function viewDetail(id) {
+        fetch('/admin/detail/' + id)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("Không tìm thấy tài khoản.");
@@ -516,21 +567,37 @@
                 return res.json();
             })
             .then(data => {
-                // Populate fields
+                // Populate các field
                 document.getElementById("accountId").value = data.accountId;
                 document.getElementById("name").value = data.name;
                 document.getElementById("phone").value = data.phone;
                 document.getElementById("role").value = data.role;
                 document.getElementById("status").value = data.status;
-                document.getElementById("accountDetailModal").style.display = 'flex';
 
+                // Ẩn bớt role Admin và Customer khi update
+                const roleSelect = document.getElementById("role");
+                Array.from(roleSelect.options).forEach(option => {
+                    if (option.value.toUpperCase() === "ADMIN" || option.value.toUpperCase() === "CUSTOMER") {
+                        option.style.display = "none";
+                    } else {
+                        option.style.display = "block";
+                    }
+                });
+
+                // Hiển thị hoặc ẩn ô nhập mật khẩu
+                if (data.role.toUpperCase() !== "ADMIN" && data.role.toUpperCase() !== "CUSTOMER") {
+                    document.getElementById("passwordGroup").style.display = "block";
+                } else {
+                    document.getElementById("passwordGroup").style.display = "none";
+                }
+
+                // Reset disabled state
                 const nameField = document.getElementById("name");
                 const phoneField = document.getElementById("phone");
                 const roleField = document.getElementById("role");
                 const statusField = document.getElementById("status");
                 const updateBtn = document.getElementById("updateBtn");
 
-                // Reset disabled state
                 nameField.readOnly = false;
                 phoneField.readOnly = false;
                 roleField.disabled = false;
@@ -540,14 +607,14 @@
                 const role = data.role.toUpperCase();
 
                 if (role === "ADMIN") {
-                    // Make all inputs readonly or disabled
+                    // Admin → không cho chỉnh gì
                     nameField.readOnly = true;
                     phoneField.readOnly = true;
                     roleField.disabled = true;
                     statusField.disabled = true;
                     updateBtn.style.display = 'none';
                 } else if (role === "CUSTOMER") {
-                    // Allow update but disable role selection
+                    // Customer → cho chỉnh nhưng không cho đổi role
                     phoneField.disabled = true;
                     roleField.disabled = true;
                 }
@@ -560,29 +627,48 @@
             });
     }
 
+
     function closeDetailModal() {
         document.getElementById("accountDetailModal").style.display = 'none';
     }
 
     function submitUpdate() {
         const id = document.getElementById("accountId").value;
-        const data = {
-            name: document.getElementById("name").value,
-            phone: document.getElementById("phone").value,
-            role: document.getElementById("role").value,
-            status: document.getElementById("status").value
-        };
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const role = document.getElementById("role").value;
+        const status = document.getElementById("status").value;
+        const password = document.getElementById("password").value.trim();
+        const phoneRegex = /^0\d{9}$/;
 
-        fetch('/admin/account/update/' + id, {
+        // Validate tên
+        if (name.length < 2 || name.length > 50) {
+            alert("Tên phải từ 2 đến 50 ký tự");
+            return;
+        }
+
+        // Validate số điện thoại
+        if (!phoneRegex.test(phone)) {
+            alert("Số điện thoại không hợp lệ (bắt đầu bằng 0, đủ 10 số)");
+            return;
+        }
+
+        // Chuẩn bị dữ liệu gửi lên
+        const data = { name, phone, role, status };
+
+        // Chỉ gửi password nếu có nhập và role không phải ADMIN/CUSTOMER
+        if (password && role !== "ADMIN" && role !== "CUSTOMER") {
+            data.password = password;
+        }
+
+        fetch('/admin/update/' + id, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
             .then(res => {
                 if (!res.ok) {
-                    throw new Error("Cập nhật thất bại.");
+                    return res.text().then(msg => { throw new Error(msg); });
                 }
                 alert("Cập nhật thành công!");
                 closeDetailModal();
@@ -596,7 +682,7 @@
     function changeStatus(button) {
         const id = button.getAttribute("data-id");
 
-        fetch('/admin/account/change-status/' + id, {
+        fetch('/admin/change-status/' + id, {
             method: 'POST'
         })
             .then(res => {
@@ -611,8 +697,8 @@
                 // Cập nhật trạng thái mới
                 const statusCell = document.getElementById("status-" + id);
                 const currentStatus = button.getAttribute("data-status");
-                let newStatus, newText, newClass;
 
+                let newStatus, newText, newClass;
                 if (currentStatus === "Hoạt động") {
                     newStatus = "Khóa";
                     newText = "Mở khóa";
@@ -623,16 +709,15 @@
                     newClass = "ban-btn";
                 }
 
-                // Cập nhật DOM
                 statusCell.innerText = newStatus;
                 button.innerText = newText;
                 button.setAttribute("data-status", newStatus);
-                button.className = newClass;
+                button.className = "dropdown-item " + newClass;
             })
             .catch(err => {
                 alert(err.message);
             });
     }
-</script>
 
+</script>
 </html>

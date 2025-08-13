@@ -163,6 +163,12 @@
             width: 100%;
         }
 
+        .image-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .image-input-group input {
             flex: 1;
         }
@@ -198,9 +204,18 @@
             cursor: pointer;
         }
 
+        .btn-primary {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
         .btn-secondary {
             background-color: #ccc;
             color: black;
+        }
+
+        .btn-primary:hover {
+            background-color: #26b2a5;
         }
 
         .btn-secondary:hover {
@@ -443,37 +458,47 @@
                         <td th:text="${appointment.note}"></td>
                         <td th:text="${appointment.status}"></td>
                         <td>
-                            <div class="action-dropdown">
-                                <button type="button" class="dropdown-toggle">⋮</button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item"
-                                       th:attr="data-name=${appointment.petProfile.name},
-                                           data-species=${appointment.petProfile.species},
-                                           data-breeds=${appointment.petProfile.breeds},
-                                           data-weight=${appointment.petProfile.weight},
-                                           data-age=${appointment.petProfile.age},
-                                           data-image=${appointment.petProfile.medias[0].url}"
-                                       href="javascript:void(0)"
-                                       onclick="openPetProfileModal(this)">Chi tiết</a>
+                            <a class="detail-btn"
+                               th:attr="data-name=${appointment.petProfile.name},
+            data-species=${appointment.petProfile.species},
+            data-breeds=${appointment.petProfile.breeds},
+            data-weight=${appointment.petProfile.weight},
+            data-age=${appointment.petProfile.age},
+            data-image=${(appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias))
+                          ? appointment.petProfile.medias[0].url
+                          : ''}"
+                               href="javascript:void(0)"
+                               onclick="openPetProfileModal(this)">
+                                Chi tiết
+                            </a>
 
-                                    <a class="dropdown-item" th:if="${mode == 'approved'}"
-                                       th:onclick="">
-                                        Tạo đơn thuốc
-                                    </a>
 
-                                    <a class="dropdown-item" th:if="${mode == 'pending'}"
-                                       th:href="@{/appointment/approve/${appointment.appointment_booking_id}}"
-                                       onclick="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
-                                        Chấp nhận
-                                    </a>
+                            <a class="prescription-btn"
+                               th:if="${mode == 'approved'}"
+                               th:attr="data-appointment-id=${appointment.appointmentBookingId},
+data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
+                                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
+                                : 'Chưa có đơn thuốc'}"
+                               href="javascript:void(0)"
+                               onclick="openPrescriptionModal(this)">
+                                Đơn thuốc
+                            </a>
 
-                                    <a class="dropdown-item" th:if="${mode == 'pending'}"
-                                       th:href="@{/appointment/disapprove/${appointment.appointment_booking_id}}"
-                                       onclick="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
-                                        Không chấp nhận
-                                    </a>
-                                </div>
-                            </div>
+                            <!-- Chấp nhận -->
+                            <form th:if="${mode == 'pending'}"
+                                  th:action="@{/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
+                                <button type="submit" class="approved-btn">Chấp nhận</button>
+                            </form>
+
+                            <!-- Không chấp nhận -->
+                            <form th:if="${mode == 'pending'}"
+                                  th:action="@{/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(appointments)}">
@@ -503,6 +528,7 @@
         </div>
     </main>
 </div>
+<!-- Pet Profile Modal -->
 <div id="petProfile" class="modal-overlay" style="display: none;">
     <div class="modal-box">
         <h2 id="modalTitle">Thông tin thú cưng</h2>
@@ -534,11 +560,48 @@
     </div>
 </div>
 
+<!-- Prescription Modal -->
+<div id="prescription_modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>
+        <div class="modal-content">
+            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">
+                <input id="appointmentId" type="hidden" />
 
+                <div class="form-group">
+                    <textarea id="prescriptionNote" rows="4" required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
 </div>
+
+<!-- Script -->
 <script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toastMessage.innerText = message;
+        toast.className = `toast show ${type}`;
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
+    }
+
     function openPetProfileModal(element) {
         const name = element.getAttribute('data-name');
         const species = element.getAttribute('data-species');
@@ -550,10 +613,9 @@
         document.getElementById("petName").value = name;
         document.getElementById("petSpecies").value = species;
         document.getElementById("petAge").value = age;
-        document.getElementById("petImagePreview").src = image;
+        document.getElementById("petImagePreview").src = image || "";
         document.getElementById("petBreeds").value = breeds;
         document.getElementById("petWeight").value = weight;
-
         document.getElementById("petProfile").style.display = "flex";
     }
 
@@ -561,6 +623,48 @@
         document.getElementById("petProfile").style.display = "none";
     }
 
+    function openPrescriptionModal(element) {
+        document.getElementById("prescription_modal").style.display = "flex";
+        document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
+        document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
+    }
+
+    function closePrescriptionModal() {
+        document.getElementById("prescription_modal").style.display = "none";
+    }
+
+    function submitPrescriptionModal(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('createPrescriptionForm');
+        const data = {
+            appointmentId: parseInt(form.appointmentId.value),
+            prescriptionNote: form.prescriptionNote.value
+        };
+
+        fetch('/appointment/createPrescription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.ok) {
+                    closePrescriptionModal();
+                    showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
+                    setTimeout(() => window.location.href = "/appointment/approved", 1000);
+                } else {
+                    return res.text().then(message => {
+                        showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+            });
+    }
 </script>
 </body>
 </html>

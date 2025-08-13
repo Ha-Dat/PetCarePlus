@@ -45,6 +45,7 @@ public class AppointmentBooking {
 
     //method thêm trong trường hợp lombok không hoạt động
 
+
     public Long getAppointmentBookingId() {
         return appointmentBookingId;
     }

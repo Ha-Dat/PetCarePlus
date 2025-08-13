@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/my-schedule")
+@RequestMapping("/customer/my-schedule")
 public class MyServiceController {
 
     private final BookingService bookingService;
@@ -72,6 +72,6 @@ public class MyServiceController {
         }
 
         bookingService.cancelBookingByTypeAndId(category, bookingId);
-        return "redirect:/my-schedule?type=" + (type == null ? "all" : type) + "&status=" + (status == null ? "all" : status);
+        return "redirect:/customer/my-schedule?type=" + (type == null ? "all" : type) + "&status=" + (status == null ? "all" : status);
     }
 }

@@ -175,14 +175,35 @@
                             <label>Change Orders Status:</label>
                             <div class="input-group">
                                 <select class="form-control" name="status">
-                                    <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Pending</option>
-                                    <option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Completed</option>
-                                    <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">Processing</option>
-                                    <option value="DELIVERING" th:selected="${order.status.name() == 'DELIVERING'}">Delivering</option>
-                                    <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option>
-                                    <option value="REJECTED" th:selected="${order.status.name() == 'REJECTED'}">Rejected</option>
-                                    <option value="APPROVED" th:selected="${order.status.name() == 'APPROVED'}">Approved</option>
+                                    <option value="PENDING"
+                                            th:if="${order.status.name() == 'PENDING'}"
+                                            th:selected="${order.status.name() == 'PENDING'}">Pending</option>
+
+                                    <option value="PROCESSING"
+                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PROCESSING'}"
+                                            th:selected="${order.status.name() == 'PROCESSING'}">Processing</option>
+
+                                    <option value="DELIVERING"
+                                            th:if="${order.status.name() == 'PROCESSING' or order.status.name() == 'DELIVERING'}"
+                                            th:selected="${order.status.name() == 'DELIVERING'}">Delivering</option>
+
+                                    <option value="COMPLETED"
+                                            th:if="${order.status.name() == 'DELIVERING' or order.status.name() == 'COMPLETED'}"
+                                            th:selected="${order.status.name() == 'COMPLETED'}">Completed</option>
+
+                                    <option value="CANCELLED"
+                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PROCESSING'}"
+                                            th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option>
+
+                                    <option value="REJECTED"
+                                            th:if="${order.status.name() == 'PENDING'}"
+                                            th:selected="${order.status.name() == 'REJECTED'}">Rejected</option>
+
+                                    <option value="APPROVED"
+                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'APPROVED'}"
+                                            th:selected="${order.status.name() == 'APPROVED'}">Approved</option>
                                 </select>
+
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-primary">Change</button>
                                 </div>

@@ -1,6 +1,7 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.enums.BookingStatus;
@@ -20,21 +21,26 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+    private final PrescriptionService prescriptionService;
     private final PetProfileService petProfileService;
     private final ServiceService serviceService;
     private final CategoryService categoryService;
 
-    @Autowired
-    public AppointmentController(AppointmentService appointmentService, PetProfileService petProfileService, ServiceService serviceService, CategoryService categoryService) {
+ @Autowired
+    public AppointmentController(AppointmentService appointmentService, PetProfileService petProfileService, ServiceService serviceService, CategoryService categoryService, PrescriptionService prescriptionService) {
         this.appointmentService = appointmentService;
+        this.prescriptionService = prescriptionService;
         this.petProfileService = petProfileService;
         this.serviceService = serviceService;
         this.categoryService = categoryService;
@@ -57,7 +63,6 @@ public class AppointmentController {
         model.addAttribute("categories", parentCategories);
         return "appointment-booking";
     }
-
 
     @ModelAttribute("services")
     public List<Service> getServiceOptions() {
@@ -118,13 +123,21 @@ public class AppointmentController {
 
     @GetMapping("/appointment/approved")
     public String approvedPage(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,
-                                  Model model) {
+                               @RequestParam(defaultValue = "10") int size,
+                               Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> approvedPage = appointmentService.getApprovedAppointments(PageRequest.of(page, size));
 
+        // ✅ This must return a List
+        List<Prescription> prescriptions = prescriptionService.findAll();
+
+        // ✅ Build a map of appointmentId -> prescription
+        Map<Long, Prescription> prescriptionMap = prescriptions.stream()
+                .collect(Collectors.toMap(p -> p.getAppointment().getAppointmentBookingId(), Function.identity()));
+
         model.addAttribute("appointments", approvedPage.getContent());
+        model.addAttribute("prescriptionMap", prescriptionMap);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
@@ -134,8 +147,8 @@ public class AppointmentController {
 
     @GetMapping("/appointment/pending")
     public String pendingPage(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> pendingPage = appointmentService.getPendingAppointments(PageRequest.of(page, size));
@@ -150,8 +163,8 @@ public class AppointmentController {
 
     @GetMapping("/appointment/history")
     public String historyPage(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> historyPage = appointmentService.getHistoryAppointments(PageRequest.of(page, size));
@@ -165,28 +178,61 @@ public class AppointmentController {
     }
 
     @PostMapping("/appointment/approve/{id}")
-    @ResponseBody
     public String approveAppointment(@PathVariable("id") Long id) {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
         if (appointmentBooking.isPresent()) {
             AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.ACCEPTED);
             appointmentService.save(appointment);
-            return "Đã chấp nhận";
+            return "redirect:/appointment/approved"; // This tells Spring to redirect
         }
-        return "Thao tác không thành công";
+        return "redirect:/appointment/pending?error=true"; // or some error page
     }
 
     @PostMapping("/appointment/disapprove/{id}")
-    @ResponseBody
     public String disapproveAppointment(@PathVariable("id") Long id) {
-        Optional<AppointmentBooking> disappointmentBooking = appointmentService.findById(id);
-        if (disappointmentBooking.isPresent()) {
-            AppointmentBooking appointment = disappointmentBooking.get();
+        Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
+        if (appointmentBooking.isPresent()) {
+            AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.REJECTED);
             appointmentService.save(appointment);
-            return "Đã từ chối";
+            return "redirect:/appointment/pending";
         }
-        return "Thao tác không thành công";
+        return "redirect:/appointment/pending?error=true";
+    }
+
+    @PostMapping("/appointment/createPrescription")
+    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
+        Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
+
+        if (optionalAppointment.isEmpty()) {
+            return ResponseEntity.badRequest().body("Appointment not found.");
+        }
+
+        AppointmentBooking appointment = optionalAppointment.get();
+
+        // Chỉ cho phép tạo đơn thuốc nếu service category là APPOINTMENT
+        if (appointment.getService() == null ||
+                appointment.getService().getServiceCategory() != ServiceCategory.APPOINTMENT) {
+            return ResponseEntity.badRequest().body("Không thể tạo đơn thuốc cho dịch vụ không phải loại 'appointment'.");
+        }
+
+        // Check if prescription already exists
+        Optional<Prescription> optionalPrescription = Optional.ofNullable(prescriptionService.findByAppointmentId(dto.getAppointmentId()));
+
+        Prescription prescription;
+        if (optionalPrescription.isPresent()) {
+            // Update existing prescription
+            prescription = optionalPrescription.get();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+        } else {
+            // Create new prescription
+            prescription = new Prescription();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+            prescription.setAppointment(appointment);
+        }
+
+        prescriptionService.save(prescription);
+        return ResponseEntity.ok("Thêm đơn thuốc thành công.");
     }
 }

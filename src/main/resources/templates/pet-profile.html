@@ -236,11 +236,10 @@
                 <span th:text="${selectedPet.name}">Tên</span> - 
                 <span th:text="${selectedPet.species}">Loài</span> 
                 <span th:if="${selectedPet.breeds != null}">(<span th:text="${selectedPet.breeds}">Giống</span>)</span>
-                <span th:if="${selectedPet.age != null}">, <span th:text="${selectedPet.age}">Tuổi</span> tuổi</span>
+                <span th:if="${selectedPet.age != null}">, <span th:text="${selectedPet.age * 12 + ' tháng'}">Tuổi</span> tuổi</span>
                 <span th:if="${selectedPet.weight != null}">, <span th:text="${selectedPet.weight}">Cân nặng</span> kg</span>
             </div>
 
-            
             <!-- Nếu có thú cưng -->
             <div th:if="${#lists.size(petProfiles) > 0}">
                 <!-- Dropdown chọn thú cưng -->
@@ -335,7 +334,9 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Cân nặng (kg):</label>
                             <div class="col-sm-9">
-                                <input type="number" name="weight" th:value="${selectedPet.weight}" th:readonly="${!edit}" class="form-control" step="0.1" min="0">
+                                <input type="number" name="weight" min="0" max="100" step="0.1"
+                                       th:value="${selectedPet.weight}" th:readonly="${!edit}"
+                                       oninput="validateWeight(this)" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -410,7 +411,20 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-function previewImage(input) {
+
+    function validateWeight(input) {
+        const val = parseFloat(input.value);
+        if (val < 0 || isNaN(val)) {
+            alert("Cân nặng không được âm!");
+            input.value = '';
+        } else if (val > 100) {
+            alert("Cân nặng quá lớn (tối đa 200kg)!");
+            input.value = '';
+        }
+    }
+
+
+    function previewImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('imagePreview');
     const previewImg = document.getElementById('previewImg');

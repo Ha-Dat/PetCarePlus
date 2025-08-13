@@ -27,7 +27,6 @@ public class Promotion {
     private String description;
 
     @Column(nullable = false, scale = 2)
-    @Size(min = 1, max = 100)
     private BigDecimal discount;
 
     private LocalDateTime startDate;
@@ -69,11 +68,11 @@ public class Promotion {
         this.description = description;
     }
 
-    public @Size(min = 1, max = 100) BigDecimal getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(@Size(min = 1, max = 100) BigDecimal discount) {
+    public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
 
@@ -101,19 +100,19 @@ public class Promotion {
         this.status = status;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
     public List<Media> getMedias() {
         return medias;
     }
 
     public void setMedias(List<Media> medias) {
         this.medias = medias;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }
