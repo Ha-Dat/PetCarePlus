@@ -430,15 +430,15 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <form th:action="@{/admin/create}" method="post" onsubmit="return validateCreateForm()">
+                <form th:action="@{/admin/create}" method="post" id="createAccountForm">
                     <label>Tên:</label>
-                    <input type="text" name="name" required><br><br>
+                    <input type="text" name="name" id="createName" required><br><br>
 
                     <label>SĐT:</label>
-                    <input type="text" name="phone" required><br><br>
+                    <input type="text" name="phone" id="createPhone" required><br><br>
 
                     <label>Mật khẩu:</label>
-                    <input type="password" name="password" required><br><br>
+                    <input type="password" name="password" id="createPassword" required><br><br>
 
                     <label>Vai trò:</label>
                     <select id="createRole" name="role">
@@ -505,11 +505,11 @@
 </div>
 </body>
 <script>
-    function openCreateModal() {
-        document.getElementById('createAccountModal').style.display = 'flex';
+function openCreateModal() {
+document.getElementById('createAccountModal').style.display = 'flex';
 
-        // Ẩn role ADMIN và CUSTOMER
-        const roleSelect = document.querySelector('#createAccountModal select[name="role"]');
+// Ẩn role ADMIN và CUSTOMER
+const roleSelect = document.querySelector('#createAccountModal select[name="role"]');
         Array.from(roleSelect.options).forEach(option => {
             if (option.value.toUpperCase() === "ADMIN" || option.value.toUpperCase() === "CUSTOMER") {
                 option.style.display = "none";
@@ -523,29 +523,42 @@
         document.getElementById('createAccountModal').style.display = 'none';
     }
 
-    function validateCreateForm() {
-        const name = document.getElementById("createName").value.trim();
-        const phone = document.getElementById("createPhone").value.trim();
-        const password = document.getElementById("createPassword").value;
-        const phoneRegex = /^0\d{9}$/;
+document.getElementById("createAccountForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // ngăn submit mặc định
 
-        if (name.length < 2 || name.length > 50) {
-            alert("Tên phải từ 2 đến 50 ký tự");
-            return false;
-        }
-        if (!phoneRegex.test(phone)) {
-            alert("Số điện thoại không hợp lệ (bắt đầu bằng 0, đủ 10 số)");
-            return false;
-        }
-        if (password.length < 6) {
-            alert("Mật khẩu phải ít nhất 6 ký tự");
-            return false;
-        }
-        return true;
+    const name = document.getElementById("createName").value.trim();
+    const phone = document.getElementById("createPhone").value.trim();
+    const password = document.getElementById("createPassword").value;
+    const phoneRegex = /^0\d{9}$/;
+
+    if (name.length < 2 || name.length > 50) {
+        alert("Tên phải từ 2 đến 50 ký tự");
+        return;
+    }
+    if (!phoneRegex.test(phone)) {
+        alert("Số điện thoại không hợp lệ (bắt đầu bằng 0, đủ 10 số)");
+        return;
+    }
+    if (password.length < 6) {
+        alert("Mật khẩu phải ít nhất 6 ký tự");
+        return;
     }
 
+    // Kiểm tra trùng phone bằng AJAX
+    const response = await fetch(`/admin/check-phone?phone=${encodeURIComponent(phone)}`);
+    const data = await response.json();
+    if (data.exists) {
+        alert("Số điện thoại đã có tài khoản!");
+        return;
+    }
 
-    function viewDetail(id) {
+    // Nếu tất cả ok → submit form
+    this.submit();
+});
+
+
+
+function viewDetail(id) {
         fetch('/admin/detail/' + id)
             .then(res => {
                 if (!res.ok) {
