@@ -655,6 +655,8 @@
                   placeholder="Tên vật nuôi..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
           />
         </div>
 
@@ -668,6 +670,8 @@
                   placeholder="Chó, mèo, thỏ, hamster..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
           />
         </div>
 
@@ -681,6 +685,8 @@
                   placeholder="shiba, mèo ta, chó cỏ..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
           />
         </div>
 
@@ -694,6 +700,8 @@
                   placeholder="10"
                   required
                   readonly
+                  min="1"
+                  max="200"
           />
         </div>
 
@@ -707,6 +715,8 @@
                   placeholder="2"
                   required
                   readonly
+                  min="1"
+                  max="300"
           />
         </div>
 
@@ -884,9 +894,15 @@
   function handleSubmit(event) {
     event.preventDefault(); // Ngăn form tự gửi
 
-    const form = document.getElementById('appointmentBookingForm');
+    const form = document.getElementById('spaBookingForm');
     const select = document.getElementById('petProfileSelect');
     const petProfileId = select.value;
+    const petName = document.getElementById("petName").value.trim();
+    const petSpecies = document.getElementById("petSpecies").value.trim();
+    const petBreed = document.getElementById("petBreed").value.trim();
+    const petWeight = parseFloat(document.getElementById("petWeight").value.trim());
+    const petAge = parseInt(document.getElementById("petAge").value.trim());
+
 
     if (!petProfileId) {
       alert('Vui lòng chọn vật nuôi!');
@@ -902,10 +918,41 @@
       return;
     }
 
-    form.action = `/appointment-booking/book/${petProfileId}`;
+    // Validate tên vật nuôi
+    if (petName.length < 1 || petName.length > 50) {
+      alert("Tên vật nuôi phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate loài
+    if (petSpecies.length < 1 || petSpecies.length > 50) {
+      alert("Tên loài phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate giống
+    if (petBreed.length < 1 || petBreed.length > 50) {
+      alert("Tên giống phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate cân nặng
+    if (isNaN(petWeight) || petWeight < 1 || petWeight > 200) {
+      alert("Cân nặng phải từ 1 đến 200 kg.");
+      return false;
+    }
+
+    // Validate tuổi
+    if (isNaN(petAge) || petAge < 1 || petAge > 300) {
+      alert("Tuổi vật nuôi phải từ 1 đến 300 tháng.");
+      return false;
+    }
+
+    form.action = `/spa-booking/book/${petProfileId}`;
     alert('Đặt lịch thành công!');
     form.submit();
   }
+
 
 
   // Fill pet info
