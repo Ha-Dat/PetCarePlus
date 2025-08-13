@@ -142,7 +142,7 @@
             <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th>Tiêu đề</th>
+                <th>Mã</th>
                 <th>Mô tả</th>
                 <th>Giảm giá</th>
                 <th>Ngày bắt đầu</th>
@@ -195,27 +195,27 @@
         <form id="promotionDetailForm">
             <input type="hidden" id="detailId">
 
-            <label for="detailTitle">Tiêu đề:</label>
+            <label for="detailTitle">Mã<span style="color: red">*</span>:</label>
             <input type="text" id="detailTitle" readonly><br><br>
 
-            <label for="detailDescription">Mô tả:</label>
+            <label for="detailDescription">Mô tả:<span style="color: red">*</span></label>
             <textarea id="detailDescription" rows="3" readonly></textarea><br><br>
 
-            <label for="detailDiscount">Giảm giá (%):</label>
+            <label for="detailDiscount">Giảm giá (%):<span style="color: red">*</span></label>
             <input type="text" id="detailDiscount" readonly><br><br>
 
-            <label for="detailStart">Ngày bắt đầu:</label>
+            <label for="detailStart">Ngày bắt đầu:<span style="color: red">*</span></label>
             <input type="text" id="detailStart" readonly><br><br>
 
-            <label for="detailEnd">Ngày kết thúc:</label>
+            <label for="detailEnd">Ngày kết thúc:<span style="color: red">*</span></label>
             <input type="text" id="detailEnd" readonly><br><br>
 
-            <label for="detailStatus">Trạng thái:</label>
+            <label for="detailStatus">Trạng thái:<span style="color: red">*</span></label>
             <input type="text" id="detailStatus" readonly><br><br>
 
             <label>Hình ảnh:</label>
-            <div id="detailImages" class="image-preview"></div><br>
-
+            <div id="detailImages"  class="mt-2">
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn cancel" onclick="closeDetailModal()">Đóng</button>
             </div>
@@ -228,29 +228,34 @@
     <div class="modal-box">
         <h2>Tạo khuyến mãi mới</h2>
         <form id="createPromotionForm" action="/seller/promotion/create" method="post" enctype="multipart/form-data">
-            <label>Tiêu đề:</label>
-            <input type="text" name="title" required>
+            <label>Mã:<span style="color: red">*</span></label>
+            <input type="text" name="title" required maxlength="20" pattern="[A-Za-z0-9]+"
+                   title="Chỉ được nhập chữ và số liền nhau, không khoảng trắng">
 
-            <label>Mô tả:</label>
-            <textarea name="description" rows="3" required></textarea>
+            <label>Mô tả:<span style="color: red">*</span></label>
+            <textarea name="description" rows="3" required maxlength="200"></textarea>
 
-            <label>Giảm giá (%):</label>
-            <input type="number" name="discount" min="1" max="100" required placeholder="Nhập %">
+            <label>Giảm giá (%):<span style="color: red">*</span></label>
+            <input type="number" name="discount" min="1" max="100" required placeholder="Nhập %"
+                   title="lớn hơn 0, nhỏ hơn hoặc bằng 100">
 
-            <label>Ngày bắt đầu:</label>
-            <input type="datetime-local" name="startDate" required>
+            <label>Ngày bắt đầu:<span style="color: red">*</span></label>
+            <input type="datetime-local" name="startDate" id="startDate" required>
 
-            <label>Ngày kết thúc:</label>
-            <input type="datetime-local" name="endDate" required>
+            <label>Ngày kết thúc:<span style="color: red">*</span></label>
+            <input type="datetime-local" name="endDate" id="endDate" required>
 
-            <label>Trạng thái:</label>
+            <label>Trạng thái:<span style="color: red">*</span></label>
             <select name="status" required>
                 <option value="ACTIVE">Đang hoạt động</option>
                 <option value="INACTIVE">Ngừng hoạt động</option>
             </select>
 
             <label>Hình ảnh:</label>
-            <input type="file" name="mediaFiles" multiple accept="image/*">
+            <input type="file" name="imageFile" id="addProductImage" accept="image/*" onchange="addProductImagePreviewImage(this)">
+            <div id="addProductImagePreview" class="mt-2" style="display: none;">
+                <img id="addProductImagePreviewImg" src="" alt="Preview" style="max-width: 120px; max-height: 120px; border: 2px solid #4caf50;">
+            </div>
 
             <div class="modal-actions">
                 <button type="button" class="btn cancel" onclick="closeCreateModal()">Hủy</button>
@@ -305,6 +310,11 @@
                     data.mediaUrls.forEach(url => {
                         const img = document.createElement("img");
                         img.src = url;
+                        // Thêm style giống preview
+                        img.style.maxWidth = "120px";
+                        img.style.maxHeight = "120px";
+                        img.style.border = "2px solid #4caf50";
+                        img.style.marginRight = "5px"; // optional, tạo khoảng cách giữa ảnh
                         imagesContainer.appendChild(img);
                     });
                 }
@@ -343,6 +353,86 @@
             }
         });
     }
+    function addProductImagePreviewImage(input) {
+        const file = input.files[0];
+        const preview = document.getElementById('addProductImagePreview');
+        const previewImg = document.getElementById('addProductImagePreviewImg');
+
+        if (file) {
+            // Kiểm tra kích thước file (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File ảnh quá lớn. Vui lòng chọn file nhỏ hơn 5MB.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            // Kiểm tra loại file
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh hợp lệ.');
+                input.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const startInput = document.getElementById("startDate");
+        const endInput = document.getElementById("endDate");
+
+        // Lấy thời gian hiện tại bù timezone
+        const now = new Date();
+        const tzOffset = now.getTimezoneOffset() * 60000;
+        const localNowStr = new Date(now - tzOffset).toISOString().slice(0,16);
+
+        // Set min cho 2 input
+        startInput.min = localNowStr;
+        endInput.min = localNowStr;
+
+        // Khi startDate thay đổi, update min của endDate
+        startInput.addEventListener("change", () => {
+            if(startInput.value){
+                const startDate = new Date(startInput.value + ":00"); // thêm giây
+                const startLocal = new Date(startDate.getTime() - tzOffset);
+
+                const endDate = endInput.value ? new Date(endInput.value + ":00") : null;
+                const endLocal = endDate ? new Date(endDate.getTime() - tzOffset) : null;
+
+                // set min endDate
+                endInput.min = startInput.value;
+
+                if(endLocal && endLocal < startLocal){
+                    endInput.value = startInput.value; // tự chỉnh
+                }
+            }
+        });
+
+        // Khi endDate thay đổi, kiểm tra ≥ startDate
+        endInput.addEventListener("change", () => {
+            if(startInput.value && endInput.value){
+                const startDate = new Date(startInput.value + ":00");
+                const startLocal = new Date(startDate.getTime() - tzOffset);
+
+                const endDate = new Date(endInput.value + ":00");
+                const endLocal = new Date(endDate.getTime() - tzOffset);
+
+                if(endLocal < startLocal){
+                    alert("Ngày kết thúc không được sớm hơn ngày bắt đầu!");
+                    endInput.value = startInput.value;
+                }
+            }
+        });
+    });
 </script>
 
 </body>

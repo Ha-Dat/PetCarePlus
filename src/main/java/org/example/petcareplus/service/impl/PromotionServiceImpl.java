@@ -40,4 +40,9 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion getPromotionById(Long id) {
         return promotionRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public Promotion getPromotionWithMedias(Long id) {
+        return promotionRepository.getPromotionWithMedias(id);
+    }
 }

@@ -16,4 +16,5 @@ public interface PromotionService {
 
     Promotion getPromotionById(Long id);
 
+    Promotion getPromotionWithMedias(Long id);
 }

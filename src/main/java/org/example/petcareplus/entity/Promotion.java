@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.example.petcareplus.enums.PromotionStatus;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"medias", "orders"})
 public class Promotion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
