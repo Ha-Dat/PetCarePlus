@@ -21,7 +21,7 @@ public class City {
     private String name;
 
     @OneToMany(mappedBy = "city")
-    private List<District> districts;
+    private List<Ward> wards;
 
     @OneToMany(mappedBy = "city")
     private List<Profile> profiles;
@@ -44,12 +44,12 @@ public class City {
         this.name = name;
     }
 
-    public List<District> getDistricts() {
-        return districts;
+    public List<Ward> getWards() {
+        return wards;
     }
 
-    public void setDistricts(List<District> districts) {
-        this.districts = districts;
+    public void setWards(List<Ward> wards) {
+        this.wards = wards;
     }
 
     public List<Profile> getProfiles() {

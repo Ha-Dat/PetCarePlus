@@ -5,7 +5,6 @@ import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.City;
 import org.example.petcareplus.entity.Profile;
 import org.example.petcareplus.repository.CityRepository;
-import org.example.petcareplus.repository.DistrictRepository;
 import org.example.petcareplus.repository.ProfileRepository;
 import org.example.petcareplus.repository.WardRepository;
 import org.example.petcareplus.service.ProfileService;
@@ -20,16 +19,13 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final CityRepository cityRepository;
 
-    private final DistrictRepository districtRepository;
-
     private final WardRepository wardRepository;
 
     private final ProfileRepository profileRepository;
 
     @Autowired
-    public ProfileServiceImpl(CityRepository cityRepository, DistrictRepository districtRepository, WardRepository wardRepository, ProfileRepository profileRepository) {
+    public ProfileServiceImpl(CityRepository cityRepository, WardRepository wardRepository, ProfileRepository profileRepository) {
         this.cityRepository = cityRepository;
-        this.districtRepository = districtRepository;
         this.wardRepository = wardRepository;
         this.profileRepository = profileRepository;
     }
@@ -39,35 +35,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.findByAccountAccountId(accountId);
     }
 
-
-    @Override
-    public List<Profile> getAllProfiles() {
-        return profileRepository.findAll();
-    }
-
-    @Override
-    public Optional<Profile> getProfileById(Integer id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Profile> getProfileById(Long id) {
-        return profileRepository.findById(id);
-    }
-
-    @Override
-    public Optional<City> findCityById(Long cityId) {
-        return Optional.empty();
-    }
-
     @Override
     public Profile save(Profile profile) {
         return profileRepository.save(profile);
-    }
-
-    @Override
-    public List<City> getAllCities() {
-        return cityRepository.findAll();
     }
 
     @Override
@@ -87,14 +57,6 @@ public class ProfileServiceImpl implements ProfileService {
             dto.setCityName(profile.getCity().getName());
         } else {
             dto.setCityName("Chọn thành phố");
-        }
-
-        // District
-        if (profile.getDistrict() != null) {
-            dto.setDistrictId(profile.getDistrict().getDistrictId());
-            dto.setDistrictName(profile.getDistrict().getName());
-        } else {
-            dto.setDistrictName("Chọn quận/huyện");
         }
 
         // Ward
@@ -127,7 +89,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         cityRepository.findById(profileDTO.getCityId()).ifPresent(profile::setCity);
-        districtRepository.findById(profileDTO.getDistrictId()).ifPresent(profile::setDistrict);
         wardRepository.findById(profileDTO.getWardId()).ifPresent(profile::setWard);
 
         profileRepository.save(profile);

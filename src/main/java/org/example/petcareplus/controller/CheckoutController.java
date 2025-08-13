@@ -141,7 +141,7 @@ public class CheckoutController {
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
         } else {
-            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
         }
