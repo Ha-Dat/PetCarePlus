@@ -123,6 +123,48 @@ public class ProductDashboardController {
         return product;
     }
 
+    @PostMapping("/product-dashboard/create")
+    @ResponseBody
+    public ResponseEntity<?> createProduct(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("unitInStock") int unitInStock,
+            @RequestParam(value = "unitSold", defaultValue = "0") int unitSold,
+            @RequestParam("status") String status,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
+    ) {
+        Product product = new Product();
+
+        // Cập nhật thông tin cơ bản
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setUnitInStock(unitInStock);
+        product.setUnitSold(unitSold);
+        product.setStatus(ProductStatus.valueOf(status));
+        product.setCategory(categoryService.findById(categoryId));
+
+        // Nếu có ảnh mới
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = saveFileToS3(imageFile, "uploads/products/");
+
+            // Nếu product đã có media thì thay ảnh
+            if (product.getMedias() != null && !product.getMedias().isEmpty()) {
+                product.getMedias().get(0).setUrl(imageUrl);
+            } else {
+                Media media = new Media();
+                media.setUrl(imageUrl);
+                media.setProduct(product);
+                product.setMedias(List.of(media));
+            }
+        }
+
+        productService.save(product);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/product-dashboard/update")
     @ResponseBody
     public ResponseEntity<?> updateProduct(

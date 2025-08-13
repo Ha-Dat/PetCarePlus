@@ -489,7 +489,6 @@
                         <th>STT</th>
                         <th>Tên</th>
                         <th>Ảnh</th>
-                        <th>Mô tả</th>
                         <th>Giá</th>
                         <th>Tồn kho</th>
                         <th>Đã bán</th>
@@ -512,7 +511,6 @@
                                  src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
                                  alt="No Image">
                         </td>
-                        <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
@@ -585,7 +583,7 @@
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
             <div>
                 <label for="productName">Tên sản phẩm *</label>
-                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
+                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm" maxlength="50"/>
 
                 <label for="productCategory">Danh mục *</label>
                 <select id="productCategory" name="categoryId" required>
