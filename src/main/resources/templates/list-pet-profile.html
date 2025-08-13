@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: "Nunito", sans-serif;
+            background-color: #f9fbfc;
+            padding-right: 30px;
+            padding-left: 30px;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        .table-container {
+            width: 1300px;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .filters label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .filters input[type="date"] {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .table-container {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .groomer-hotel-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .groomer-hotel-table th,
+        .groomer-hotel-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .groomer-hotel-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Dropdown container */
+        .action-dropdown {
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            border-radius: 8px;
+            padding: 4px 0;
+            overflow: hidden;
+        }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.confirm-btn {
+            color: #3dba3a;
+            font-weight: 500;
+        }
+
+        .dropdown-item.confirm-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .dropdown-item.reject-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.reject-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* Mặc định ẩn, khi bật thì dùng JS để set display: flex */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal Box */
+        .modal-box {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            padding: 24px 32px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Header */
+        .modal-header h5 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        /* Info Sections */
+        .booking-info p,
+        .pet-info p,
+        .owner-info p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+            color: #374151;
+        }
+
+        .booking-info strong {
+            color: #111827;
+        }
+
+        /* Image */
+        .pet-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pet-image img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+        }
+
+        /* Divider */
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Close Button */
+        .close-button {
+            background-color: #38bdf8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .close-button:hover {
+            background-color: #0ea5e9;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .modal-box {
+                padding: 20px;
+            }
+
+            .modal-header h5 {
+                font-size: 1.3rem;
+            }
+
+            .booking-info p,
+            .pet-info p,
+            .owner-info p {
+                font-size: 0.9rem;
+            }
+
+            .pet-image img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Màu xanh lá */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #45a049; /* Màu khi hover */
+        }
+
+        .cancel-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f44336; /* Đỏ */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cancel-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-button,
+        .cancel-button {
+            font-size: 16px; /* hoặc cỡ bạn muốn, ví dụ 1rem */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Main content -->
+    <main class="main-content">
+        <a th:if="${from != null}" th:href="@{${from}}" class="back-button">← Quay lại</a>
+        <h1 class="page-title">Danh sách hồ sơ thú cưng</h1>
+        <div class="header">
+            <div class="filters">
+                <form th:action="@{/list-pet-profile}" method="get" class="search-form">
+                    <input type="text" name="keyword" placeholder="🔍 Tìm theo tên thú cưng..." th:value="${keyword}" class="search-input">
+                    <input type="hidden" name="from" th:value="${from}">
+                    <button type="submit" class="search-button">Tìm kiếm</button>
+                    <a th:href="@{/list-pet-profile(from=${from})}" class="cancel-button">Hủy</a>
+                </form>
+            </div>
+        </div>
+        <!-- Table Container -->
+        <div class="table-container">
+            <table class="groomer-hotel-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hình ảnh</th>
+                    <th>Tên</th>
+                    <th>Loài</th>
+                    <th>Giống</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pet : ${petProfiles}">
+                    <td th:text="${pet.petProfileId}"></td>
+                    <td>
+                        <img th:src="${pet.medias.size() > 0 ? pet.medias.get(0).url : '/default.png'}" alt="Ảnh thú cưng" width="80" height="80" style="border-radius: 8px;">
+                    </td>
+                    <td th:text="${pet.name}"></td>
+                    <td th:text="${pet.species}"></td>
+                    <td th:text="${pet.breeds}"></td>
+                    <td>
+                        <div class="action-dropdown">
+                            <button type="button" class="dropdown-toggle">•••</button>
+                            <div class="dropdown-menu">
+                                <button type="button"
+                                        class="dropdown-item"
+                                        th:data-pet-name="${pet.name}"
+                                        th:data-pet-species="${pet.species}"
+                                        th:data-pet-breeds="${pet.breeds}"
+                                        th:data-pet-weight="${pet.weight}"
+                                        th:data-pet-age="${pet.age}"
+                                        th:data-pet-image="${pet.medias.size() > 0 ? pet.medias.get(0).url : '/default.png'}"
+                                        th:data-account-name="${pet.profile.account.name}"
+                                        th:data-account-phone="${pet.profile.account.phone}"
+                                        onclick="openPetDetail(this)">
+                                    Xem chi tiết
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 0}">
+                        <a th:href="@{'/list-pet-profile'(page=${currentPage - 1}, size=8, from=${from}, keyword=${keyword})}">&lt;</a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active' : ''">
+                        <a th:href="@{'/list-pet-profile'(page=${i}, size=8, from=${from}, keyword=${keyword})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{'/list-pet-profile'(page=${currentPage + 1}, size=8, from=${from}, keyword=${keyword})}">&gt;</a>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+
+        <!-- Detail -->
+        <div class="modal-overlay" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
+            <div class="modal-box">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>Chi tiết đơn booking</h5>
+                    </div>
+                    <div class="booking-info">
+                        <div class="pet-image">
+                            <img id="popup-image" src="" alt="Pet Image">
+                        </div>
+                        <div class="pet-info">
+                            <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
+                            <p><strong>Loài:</strong> <span id="popup-species"></span></p>
+                            <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
+                            <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+                            <p><strong>Tuổi:</strong> <span id="popup-age"></span></p>
+                        </div>
+                        <hr>
+                        <div class="owner-info">
+                            <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
+                            <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+                        </div>
+                    </div>
+                    <button type="button" class="close-button" onclick="closeDetailPopup()">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+    function openPetDetail(button) {
+        document.getElementById("popup-petName").textContent = button.getAttribute("data-pet-name");
+        document.getElementById("popup-species").textContent = button.getAttribute("data-pet-species");
+        document.getElementById("popup-breed").textContent = button.getAttribute("data-pet-breeds");
+        document.getElementById("popup-weight").textContent = button.getAttribute("data-pet-weight");
+        document.getElementById("popup-age").textContent = button.getAttribute("data-pet-age");
+        document.getElementById("popup-image").src = button.getAttribute("data-pet-image");
+        document.getElementById("popup-owner").textContent = button.getAttribute("data-account-name");
+        document.getElementById("popup-phone").textContent = button.getAttribute("data-account-phone");
+
+        document.getElementById("bookingDetailModal").style.display = "flex";
+    }
+
+    function closeDetailPopup() {
+        document.getElementById('bookingDetailModal').style.display = 'none';
+    }
+
+    // Tự động ẩn popup nếu click ra ngoài
+    document.addEventListener('click', function (e) {
+        const popup = document.getElementById('popup-menu');
+        if (!popup.contains(e.target) && !e.target.classList.contains('dots-btn')) {
+            popup.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: "Nunito", sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        .filters label {
+            font-size: 14px;
+        }
+
+        .filters input[type="date"] {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Header */
+        .modal-header h5 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        /* Info Sections */
+        .booking-info p,
+        .pet-info p,
+        .owner-info p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+            color: #374151;
+        }
+
+        .booking-info strong {
+            color: #111827;
+        }
+
+        .pet-image img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .modal-box {
+                padding: 20px;
+            }
+
+            .modal-header h5 {
+                font-size: 1.3rem;
+            }
+
+            .booking-info p,
+            .pet-info p,
+            .owner-info p {
+                font-size: 0.9rem;
+            }
+
+            .pet-image img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Groomer Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="/pet-groomer/dashboard">📊 Thống Kê</a></li>
+            <li><a href="/pet-groomer/list-spa-booking">🧴 Spa</a></li>
+            <li><a href="/pet-groomer/list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
+            <li><a href="#">🛠️ Dịch vụ</a></li>
+            <li><a href="#">📅 Ca làm việc</a></li>
+            <li><a href="/list-pet-profile?from=/pet-groomer/list-hotel-booking">🐶 Hồ Sơ Thú Cưng</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <h1 class="page-title">Thống kê và quản lý lịch hẹn</h1>
+
+        <!-- Hàng thống kê -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn khách sạn thú cưng</h5>
+                        <h3 class="card-text" th:text="${totalHotelBookings}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn spa thú cưng</h5>
+                        <h3 class="card-text" th:text="${totalSpaBookings}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn đang chờ</h5>
+                        <h3 class="card-text" th:text="${totalPendingBookings}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Đơn đã chấp nhận</h5>
+                        <h3 class="card-text" th:text="${totalAcceptedBookings}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hàng biểu đồ -->
+        <div class="row">
+            <div class="col-md-9">
+                <h5 style="text-align: center; margin-bottom: 10px;">Thống kê đơn trong năm</h5>
+                <div id="columnchart_material" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+            </div>
+            <div class="col-md-3">
+                <h6 style="text-align: center; margin-bottom: 10px; font-size: 90%; margin-top: 6px">Tỷ lệ đơn đặt Spa và Khách Sạn thú cưng</h6>
+                <div id="donutchart" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- thống kê đơn đặt trong năm -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script th:inline="javascript">
+    const chartData = /*[[${chartDataJson}]]*/ '[]';
+
+    google.charts.load('current', { packages: ['bar'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        try {
+            const rawData = JSON.parse(chartData);
+
+            for (let i = 1; i < rawData.length; i++) {
+                rawData[i][0] = "T" + rawData[i][0];
+            }
+
+            const data = google.visualization.arrayToDataTable(rawData);
+
+            const options = {
+                chart: {},
+                legend: { position: 'none' }
+            };
+
+            const chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+            chart.draw(data, google.charts.Bar.convertOptions(options));
+        } catch (e) {
+            console.error("Lỗi khi tạo biểu đồ:", e);
+            document.getElementById('columnchart_material').innerHTML = "Dữ liệu không hợp lệ";
+        }
+    }
+</script>
+<!-- Thông kê tỷ lệ đơn Spa và Hotel -->
+<script th:inline="javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Loại dịch vụ', 'Số đơn đặt'],
+            ['Hotel', [[${totalHotelBookings}]]],
+            ['Spa', [[${totalSpaBookings}]]]
+        ]);
+
+        var options = {
+            pieHole: 0.4,
+            legend: { position: 'none' }
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+    }
+</script>
+</body>
+</html>

@@ -5,10 +5,6 @@ import org.example.petcareplus.repository.CategoryRepository;
 import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,13 +56,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.deleteById(categoryId);
         return true; // Xóa thành công
-    }
-
-
-    @Override
-    public Page<Category> getCategoriesPaginated(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("categoryId").ascending());
-        return categoryRepository.findAll(pageable);
     }
 
     @Override

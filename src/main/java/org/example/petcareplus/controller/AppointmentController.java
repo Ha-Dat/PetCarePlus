@@ -33,73 +33,92 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final PrescriptionService prescriptionService;
+    private final PetProfileService petProfileService;
+    private final ServiceService serviceService;
+    private final CategoryService categoryService;
 
-    public AppointmentController(AppointmentService appointmentService, PrescriptionService prescriptionService) {
+ @Autowired
+    public AppointmentController(AppointmentService appointmentService, PetProfileService petProfileService, ServiceService serviceService, CategoryService categoryService, PrescriptionService prescriptionService) {
         this.appointmentService = appointmentService;
         this.prescriptionService = prescriptionService;
+        this.petProfileService = petProfileService;
+        this.serviceService = serviceService;
+        this.categoryService = categoryService;
     }
 
-    @GetMapping("/appointment-booking")
-    public String showHotelBookingForm(HttpSession session, Model model) {
+    @GetMapping("/appointment-booking-form")
+    public String showAppointmentBookingForm(HttpSession session, Model model) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
         }
 
+        List<Category> parentCategories = categoryService.getParentCategory();
+        List<PetProfile> petProfiles = petProfileService.findByProfileId(account.getProfile().getProfileId());
+
+        model.addAttribute("petProfiles", petProfiles);
+        model.addAttribute("appointmentBooking", new AppointmentBooking()); // model binding
+        model.addAttribute("appointmentServices", serviceService.findByServiceCategory(ServiceCategory.APPOINTMENT));
+        model.addAttribute("categories", parentCategories);
         return "appointment-booking";
     }
-
-    @Autowired
-    private ServiceService serviceService;
 
     @ModelAttribute("services")
     public List<Service> getServiceOptions() {
         return serviceService.findByServiceCategory(ServiceCategory.APPOINTMENT);
     }
 
-    @Autowired
-    private PetProfileService petProfileService;
 
-    @PostMapping("/appointment/create")
-    public String addHotelBooking(
+    @PostMapping("/appointment-booking/book/{id}")
+    public String addAppointmentBooking(
             @RequestParam("bookDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime bookDate,
             @RequestParam("note") String note,
             @RequestParam("serviceId") Long serviceId,
             @RequestParam("petName") String petName,
             @RequestParam("petSpecies") String petSpecies,
             @RequestParam("petBreed") String petBreed,
+            @RequestParam("petWeight") float petWeight,
+            @RequestParam("petAge") Integer petAge,
+            @PathVariable("id") Long petProfileId,
             HttpSession session,
             Model model
     ) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-        // Tạo pet profile mới từ form
-        PetProfile petProfile = new PetProfile();
-        petProfile.setName(petName);
-        petProfile.setSpecies(petSpecies);
-        petProfile.setBreeds(petBreed);
-        petProfile.setProfile(account.getProfile());
-        petProfileService.save(petProfile);
+        try {
+            Account account = (Account) session.getAttribute("loggedInUser");
+            if (account == null) return "redirect:/login";
+            PetProfile petProfile = petProfileService.findById(petProfileId);
+            petProfile.setName(petName);
+            petProfile.setSpecies(petSpecies);
+            petProfile.setBreeds(petBreed);
+            petProfile.setWeight(petWeight);
+            petProfile.setAge(petAge);
+            petProfile.setProfile(account.getProfile());
+            petProfileService.updatePetProfile(petProfileId, petProfile);
 
-        // gán dữ liệu từ form
-        AppointmentBooking booking = new AppointmentBooking();
-        booking.setBookDate(bookDate);
-        booking.setNote(note);
+            // gán dữ liệu từ form
+            AppointmentBooking booking = new AppointmentBooking();
+            booking.setBookDate(bookDate);
+            booking.setNote(note);
+            booking.setStatus(BookingStatus.PENDING);
+            booking.setCreatedAt(LocalDateTime.now());
 
-        Optional<Service> service = serviceService.findById(serviceId);
-        if (service.isEmpty()) {
-            model.addAttribute("error", "Dịch vụ không tồn tại");
+            booking.setPetProfile(petProfile);
+
+            Optional<Service> service = appointmentService.Service_findById(serviceId);
+            if (service.isEmpty()) {
+                model.addAttribute("error", "Dịch vụ không tồn tại");
+                return "error";
+            }
+            booking.setService(service.get());
+
+            appointmentService.save(booking);
+            return "redirect:/appointment-booking-form";
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
             return "error";
         }
-        booking.setService(service.get());
-        booking.setService(service.get());
-        booking.setStatus(BookingStatus.PENDING);
-        booking.setCreatedAt(LocalDateTime.now());
-        booking.setPetProfile(petProfile);
-
-        appointmentService.save(booking);
-        return "home";
     }
 
     @GetMapping("/appointment/approved")
@@ -123,10 +142,8 @@ public class AppointmentController {
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
         model.addAttribute("mode", "approved");
-
         return "appointment.html";
     }
-
 
     @GetMapping("/appointment/pending")
     public String pendingPage(@RequestParam(defaultValue = "0") int page,

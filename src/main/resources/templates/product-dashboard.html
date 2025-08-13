@@ -1,14 +1,16 @@
 <!doctype html>
 <html lang="vi">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
             margin: 0;
             font-family: "Nunito", sans-serif;
-            background-color: #f9fbfc;
+            background-color: white;
         }
 
         .dashboard {
@@ -18,15 +20,15 @@
 
         /* Sidebar */
         .sidebar {
-            width: 230px;
+            width: 270px;
             min-width: 230px;
-            max-width: 230px;
+            max-width: 270px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
+            height: 94.5vh;
             top: 0;
             left: 0;
-            padding: 20px;
+            padding: 38px 20px 20px 20px;
             transition: width 0.3s ease;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
         }
@@ -405,6 +407,44 @@
             90%  { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-20px); }
         }
+
+
+        .seller-info {
+            margin: 18pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .seller-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seller-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .seller-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .logout-btn {
+            color: #ff4d4f;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #d9363e;
+        }
     </style>
 </head>
 <body>
@@ -413,11 +453,24 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Seller Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="#">🛒 Orders</a></li>
-            <li><a href="category-dashboard">📂 Categories</a></li>
-            <li class="active"><a href="product-dashboard">📦 Products</a></li>
-            <li><a href="#">🏷️ Promotions</a></li>
+            <li><a href="/seller/dashboard">📊 Thống Kê</a></li>
+            <li><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
+            <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
+            <li class="active"><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
+            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/list-pet-profile?from=/seller/product-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="seller-info">
+            <div class="seller-details">
+                <span class="seller-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="seller-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -449,29 +502,26 @@
                     <tr th:each="product, stat : ${products}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
                         <td th:text="${product?.name}"></td>
-
-                        <!-- Hiển thị ảnh đầu tiên nếu có -->
                         <td>
-                            <img th:if="${product?.medias?.size() > 0}"
-                                 th:src="@{${product.medias[0].url}}" alt="Product image"
-                                 style="width: 80px; height: auto;">
-                            <span th:if="${product?.medias?.size() == 0}">Không có ảnh</span>
+                            <img th:if="${!#lists.isEmpty(product.medias)}"
+                                 th:src="@{${product.medias[0].url}}"
+                                 alt="Product Image">
+
+                            <!-- fallback nếu không có ảnh -->
+                            <img th:if="${#lists.isEmpty(product.medias)}"
+                                 src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                                 alt="No Image">
                         </td>
-
                         <td th:text="${product?.description}"></td>
-
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
-
                         <td>
         <span th:text="${product?.status}"
               th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
         </span>
                         </td>
-
                         <td th:text="${product?.category?.name}"></td>
-
                         <td>
                             <div class="action-dropdown">
                                 <button type="button" class="dropdown-toggle">⋮</button>
@@ -493,7 +543,7 @@
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/product-dashboard/delete/__${product.productId}__}" method="post"
+                                          th:action="@{/seller/productDashboard/delete/__${product.productId}__}" method="post"
                                           th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
                                             🗑️ Xóa
@@ -508,16 +558,16 @@
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/product-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                            <a th:href="@{/seller/product-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active' : ''">
-                            <a th:href="@{/product-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/seller/product-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                         </li>
 
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/product-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                            <a th:href="@{/seller/product-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -558,9 +608,10 @@
 
                 <label for="productStatus">Trạng thái *</label>
                 <select id="productStatus" name="status" required>
-                    <option value="IN_STOCK">Còn hàng</option>
-                    <option value="OUT_OF_STOCK">Hết hàng</option>
-                    <option value="INACTIVE">Không hoạt động</option>
+                    <option value="ACTIVE">Chọn trạng thái</option>
+                    <option th:each="status : ${productStatus}"
+                            th:value="${status.name()}"
+                            th:text="${status.value}"></option>
                 </select>
             </div>
 
@@ -630,12 +681,12 @@
 
                 <label for="editProductStatus">Trạng thái *</label>
                 <select id="editProductStatus" name="status" required>
-                    <option value="IN_STOCK">Còn hàng</option>
-                    <option value="OUT_OF_STOCK">Hết hàng</option>
-                    <option value="INACTIVE">Không hoạt động</option>
+                    <option value="ACTIVE">Chọn trạng thái</option>
+                    <option th:each="status : ${productStatus}"
+                            th:value="${status.name()}"
+                            th:text="${status.value}"></option>
                 </select>
             </div>
-
 
             <div class="form-group">
                 <label for="editProductDescription">Mô tả *</label>
@@ -711,7 +762,7 @@
             createdDate: formatDateToYMDHMS(new Date())
         };
 
-        fetch('/product-dashboard/create', {
+        fetch('/seller/product-dashboard/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -768,7 +819,7 @@
             }]
         };
 
-        fetch(`/product-dashboard/update/${productId}`, {
+        fetch(`/seller/product-dashboard/update/${productId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

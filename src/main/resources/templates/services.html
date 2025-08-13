@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dịch vụ - PetCarePlus</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/footer.css}">
+    <style>
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .services-header {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            color: white;
+        }
+
+        .services-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .services-header p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .service-category {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .service-category h2 {
+            color: #1b5e20;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid #e8f5e9;
+            padding-bottom: 15px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e8f5e9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .service-card h3 {
+            color: #1b5e20;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .service-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .service-price {
+            background: #4caf50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .service-duration {
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .book-button {
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .book-button:hover {
+            background: #45a049;
+        }
+
+        .category-description {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .category-description h3 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .category-description p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .service-features {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .service-features h3 {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .feature-item h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feature-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .contact-services {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .contact-services h3 {
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        .contact-services p {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .contact-services a {
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-services a:hover {
+            text-decoration: underline;
+        }
+
+        .service-highlight {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .service-highlight h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .service-highlight p {
+            color: #856404;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .services-header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-details {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="component/header :: header"></div>
+
+    <div class="services-container">
+        <!-- Header Section -->
+        <div class="services-header">
+            <h1>🏥 Dịch Vụ Chăm Sóc Thú Cưng</h1>
+            <p>PetCarePlus cung cấp đầy đủ các dịch vụ chăm sóc thú cưng chuyên nghiệp với đội ngũ bác sĩ thú y giàu kinh nghiệm và trang thiết bị hiện đại</p>
+        </div>
+
+        <!-- Dịch vụ SPA -->
+        <div class="service-category">
+            <h2>💆 Dịch Vụ Spa & Grooming</h2>
+            <div class="category-description">
+                <h3>Chăm sóc sắc đẹp cho thú cưng</h3>
+                <p>Dịch vụ spa và grooming chuyên nghiệp giúp thú cưng của bạn luôn sạch sẽ, đẹp đẽ và khỏe mạnh. Đội ngũ chuyên viên giàu kinh nghiệm với các sản phẩm chăm sóc cao cấp.</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>🛁 Grooming</h3>
+                    <p>Dịch vụ làm đẹp toàn diện bao gồm tắm rửa, cắt tỉa lông, chải chuốt và làm đẹp cho thú cưng của bạn.</p>
+                    <div class="service-details">
+                        <div class="service-price">20.000đ</div>
+                        <div class="service-duration">⏰ 60 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>💅 Cắt Móng</h3>
+                    <p>Cắt tỉa móng chân an toàn và chuyên nghiệp, giúp thú cưng thoải mái và tránh các vấn đề về móng.</p>
+                    <div class="service-details">
+                        <div class="service-price">10.000đ</div>
+                        <div class="service-duration">⏰ 15 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>🦷 Vệ Sinh Răng</h3>
+                    <p>Làm sạch răng và nướu, loại bỏ cao răng, giúp thú cưng có hơi thở thơm tho và răng khỏe mạnh.</p>
+                    <div class="service-details">
+                        <div class="service-price">15.000đ</div>
+                        <div class="service-duration">⏰ 30 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>🚿 Tắm Thú Cưng</h3>
+                    <p>Dịch vụ tắm rửa chuyên nghiệp với sản phẩm chăm sóc da và lông phù hợp với từng loại thú cưng.</p>
+                    <div class="service-details">
+                        <div class="service-price">12.000đ</div>
+                        <div class="service-duration">⏰ 45 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>💆 Massage Thú Cưng</h3>
+                    <p>Massage thư giãn giúp thú cưng giảm stress, cải thiện tuần hoàn máu và tăng cường sức khỏe.</p>
+                    <div class="service-details">
+                        <div class="service-price">25.000đ</div>
+                        <div class="service-duration">⏰ 30 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dịch vụ Khám chữa bệnh -->
+        <div class="service-category">
+            <h2>🏥 Dịch Vụ Khám Chữa Bệnh</h2>
+            <div class="category-description">
+                <h3>Chăm sóc sức khỏe toàn diện</h3>
+                <p>Đội ngũ bác sĩ thú y chuyên nghiệp với trang thiết bị hiện đại, cung cấp các dịch vụ khám chữa bệnh chất lượng cao cho thú cưng của bạn.</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>👨‍⚕️ Khám Tổng Quát</h3>
+                    <p>Khám sức khỏe tổng quát, kiểm tra các chỉ số sinh lý và tư vấn chăm sóc sức khỏe cho thú cưng.</p>
+                    <div class="service-details">
+                        <div class="service-price">50.000đ</div>
+                        <div class="service-duration">⏰ 30 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>💉 Tiêm Phòng</h3>
+                    <p>Tiêm phòng các loại vaccine cần thiết để bảo vệ thú cưng khỏi các bệnh truyền nhiễm nguy hiểm.</p>
+                    <div class="service-details">
+                        <div class="service-price">25.000đ</div>
+                        <div class="service-duration">⏰ 20 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>🦟 Trị Bọ Chét</h3>
+                    <p>Điều trị và phòng ngừa bọ chét, ve rận hiệu quả với các sản phẩm an toàn cho thú cưng.</p>
+                    <div class="service-details">
+                        <div class="service-price">20.000đ</div>
+                        <div class="service-duration">⏰ 20 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dịch vụ Khách sạn -->
+        <div class="service-category">
+            <h2>🏨 Dịch Vụ Khách Sạn & Huấn Luyện</h2>
+            <div class="category-description">
+                <h3>Nơi nghỉ dưỡng và phát triển cho thú cưng</h3>
+                <p>Khách sạn thú cưng cao cấp với không gian rộng rãi, an toàn và dịch vụ chăm sóc 24/7. Kết hợp với các khóa huấn luyện chuyên nghiệp.</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>🏨 Lưu Trú Thú Cưng</h3>
+                    <p>Dịch vụ lưu trú an toàn và thoải mái với phòng riêng biệt, chăm sóc 24/7 và các hoạt động vui chơi.</p>
+                    <div class="service-details">
+                        <div class="service-price">30.000đ</div>
+                        <div class="service-duration">⏰ 24 giờ</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+
+                <div class="service-card">
+                    <h3>🎓 Huấn Luyện Thú Cưng</h3>
+                    <p>Khóa huấn luyện chuyên nghiệp giúp thú cưng ngoan ngoãn, biết vâng lời và có hành vi tốt.</p>
+                    <div class="service-details">
+                        <div class="service-price">40.000đ</div>
+                        <div class="service-duration">⏰ 60 phút</div>
+                    </div>
+                    <button class="book-button" onclick="alert('Tính năng đặt lịch sẽ được cập nhật sớm!')">Đặt Lịch</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đặc điểm dịch vụ -->
+        <div class="service-features">
+            <h3>🌟 Tại Sao Chọn Dịch Vụ Của PetCarePlus?</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>👨‍⚕️ Đội Ngũ Chuyên Nghiệp</h4>
+                    <p>Bác sĩ thú y và chuyên viên giàu kinh nghiệm, được đào tạo bài bản</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🏥 Trang Thiết Bị Hiện Đại</h4>
+                    <p>Máy móc và thiết bị y tế tiên tiến, đảm bảo chẩn đoán và điều trị chính xác</p>
+                </div>
+                <div class="feature-item">
+                    <h4>💝 Chăm Sóc Tận Tâm</h4>
+                    <p>Dịch vụ chăm sóc 24/7 với tình yêu thương và trách nhiệm cao</p>
+                </div>
+                <div class="feature-item">
+                    <h4>💰 Giá Cả Hợp Lý</h4>
+                    <p>Mức giá cạnh tranh với chất lượng dịch vụ cao cấp</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🕒 Linh Hoạt Thời Gian</h4>
+                    <p>Làm việc từ 7:00 - 22:00, hỗ trợ đặt lịch online</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🏆 Uy Tín Đã Được Chứng Minh</h4>
+                    <p>Hơn 5000 khách hàng tin tưởng và đánh giá 5 sao</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lưu ý quan trọng -->
+        <div class="service-highlight">
+            <h4>⚠️ Lưu Ý Quan Trọng</h4>
+            <p><strong>Đặt lịch trước:</strong> Vui lòng đặt lịch ít nhất 1 ngày trước để đảm bảo có slot trống</p>
+            <p><strong>Thông tin thú cưng:</strong> Mang theo sổ tiêm phòng và thông tin sức khỏe của thú cưng</p>
+            <p><strong>Thanh toán:</strong> Chấp nhận tiền mặt, chuyển khoản và thẻ tín dụng</p>
+            <p><strong>Hủy lịch:</strong> Có thể hủy lịch trước 2 giờ mà không bị phạt</p>
+        </div>
+
+        <!-- Liên hệ dịch vụ -->
+        <div class="contact-services">
+            <h3>📞 Cần Tư Vấn Dịch Vụ?</h3>
+            <p>Nếu bạn cần tư vấn chi tiết về các dịch vụ, vui lòng liên hệ:</p>
+            <p><strong>Hotline:</strong> <a href="tel:0999999999">099.999.9999</a></p>
+            <p><strong>Email:</strong> <a href="mailto:services@petcareplus.vn">services@petcareplus.vn</a></p>
+            <p><strong>Giờ làm việc:</strong> 7:00 - 22:00 (Thứ 2 - Chủ nhật)</p>
+            <p><strong>Địa chỉ:</strong> Tầng 19, Tòa nhà ABC, 02 ABC, Mỹ Đình, Hà Nội</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="component/footer :: footer"></div>
+
+    <script th:src="@{js/header.js}"></script>
+</body>
+</html> 

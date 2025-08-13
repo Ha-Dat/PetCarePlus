@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PetCare+ - Cộng đồng chăm sóc thú cưng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(142 49% 58%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(142 49% 58%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .logo {
+            width: 50px;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+<!-- Header -->
+<header
+        class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+    <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
+        <!-- Logo -->
+        <div class="mr-4 flex">
+            <a class="mr-6 flex items-center space-x-2" href="/home">
+                <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
+                <span class="hidden font-bold sm:inline-block text-xl">PetCare+</span>
+            </a>
+        </div>
+
+        <!-- Search Bar -->
+        <form method="get" action="/forum" class="flex flex-1 items-center space-x-2 max-w-md">
+            <div class="relative w-full">
+                <svg class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input
+                        type="text"
+                        id="searchInput"
+                        name="keyword"
+                        placeholder="Tìm kiếm bài viết của bạn"
+                        th:value="${keyword}"
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-8 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+            </div>
+        </form>
+
+
+        <!-- Navigation -->
+        <div class="flex flex-1 items-center justify-end space-x-2">
+            <!-- Nếu đã đăng nhập -->
+            <a th:if="${session.loggedInUser != null}"
+               href="/create-post"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 hidden sm:flex">
+                <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+                <span>Tạo bài</span>
+            </a>
+
+            <!-- Avatar - Nếu đã đăng nhập thì về /profile -->
+            <a th:if="${session.loggedInUser != null}"
+               href="/customer/profile"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </a>
+
+            <!-- Avatar - Nếu chưa đăng nhập thì về /login -->
+            <a th:if="${session.loggedInUser == null}"
+               href="/login"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </a>
+        </div>
+
+    </div>
+</header>
+
+<div class="container max-w-7xl mx-auto px-4 py-6">
+    <div class="flex gap-6">
+        <!-- Left Sidebar -->
+        <div class="hidden lg:block">
+            <div class="w-64 sticky top-20 h-fit">
+                <div class="space-y-4">
+                    <!-- Main Navigation -->
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-3">
+                            <nav class="space-y-1">
+                                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                        <polyline points="9,22 9,12 15,12 15,22" />
+                                    </svg>
+                                    Trang chủ
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="p-3">
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                                Người dùng
+                            </h3>
+                            <nav class="space-y-1">
+                                <a href="/customer/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    Hồ sơ
+                                </a>
+                                <a th:href="@{'/forum-my-posts/' + ${session.loggedInUser.accountId}}"
+                                   class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground bg-accent">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                        <polyline points="10,9 9,9 8,9" />
+                                    </svg>
+                                    Xem bài viết của tôi
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 max-w-2xl">
+            <div class="w-full">
+                <!-- Posts List -->
+                <div id="posts-container" class="space-y-4">
+                    <!-- Loop Posts -->
+                    <div th:each="post : ${posts}"
+                         th:classappend="${!post.checked} ? 'opacity-30' : ''"
+                         class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+                        <div class="flex">
+                            <!-- Voting Section -->
+                            <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
+                                <!-- upvote -->
+                                <a th:href="@{'/forum-my-posts/'+ ${session.loggedInUser.accountId} + '/' + ${post.getPostId()} + '/rating?rating=UPVOTE'}"
+                                   class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m5 12 7-7 7 7" />
+                                        <path d="M12 19V5" />
+                                    </svg>
+                                </a>
+                                <span class="text-xs font-medium text-muted-foreground" th:text="${post.getRating()}"></span>
+                                <!-- downvote -->
+                                <a th:href="@{'/forum-my-posts/'+ ${session.loggedInUser.accountId} + '/' + ${post.getPostId()} + '/rating?rating=DOWNVOTE'}"
+                                   class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14" />
+                                        <path d="m19 12-7 7-7-7" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <!-- Content Section -->
+                            <div class="flex-1 p-3">
+                                <!-- Post Meta -->
+                                <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+                                    <span>Đăng bởi <u><span th:text="${post.accountName}">Username</span></u></span>
+                                    <span>•</span>
+                                    <span th:text="${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}"></span>
+                                </div>
+
+                                <!-- Post Title -->
+                                <a th:href="@{'/post-detail/' + ${post.postId}}">
+                                    <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer"
+                                        th:text="${post.title}">
+                                        Tiêu đề
+                                    </h3>
+                                </a>
+
+                                <!-- Media -->
+                                <!-- Hiển thị video -->
+                                <th:block th:each="media : ${post.medias}">
+                                    <div th:if="${media.mediaCategory.name() == 'POST_VIDEO'}"
+                                         class="mb-3 rounded-md overflow-hidden relative">
+                                        <video controls class="w-full h-auto object-cover">
+                                            <source th:src="${media.url}" type="video/mp4" />
+                                            Trình duyệt của bạn không hỗ trợ video.
+                                        </video>
+                                    </div>
+                                </th:block>
+
+
+                                <!-- Hiển thị ảnh -->
+                                <th:block th:each="media : ${post.medias}">
+                                    <div th:if="${media.mediaCategory.name() == 'POST_IMAGE'}"
+                                         class="mb-3 rounded-md overflow-hidden max-h-96 relative">
+                                        <img th:src="${media.url}"
+                                             alt="" class="w-full h-auto object-cover" />
+                                    </div>
+                                </th:block>
+
+                                <!-- Post Content -->
+                                <p class="text-sm text-muted-foreground mb-3 line-clamp-3"
+                                   th:text="${post.description}">
+                                    Nội dung...
+                                </p>
+
+                                <!-- Post Actions -->
+                                <div class="flex items-center space-x-2">
+                                    <!-- Bình luận -->
+                                    <a th:href="@{'/post-detail/' + ${post.postId}}"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                                        <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                                        </svg>
+                                        <span>Bình luận</span>
+                                    </a>
+
+                                    <!-- Chỉ hiện nếu là chủ bài viết -->
+                                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.accountId}"
+                                       th:href="@{'/update-post/' + ${post.postId}}"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                                        <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9" />
+                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                        </svg>
+                                        <span>Sửa</span>
+                                    </a>
+
+                                    <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.accountId}"
+                                       th:href="@{'/delete-post/' + ${post.postId}}"
+                                       onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
+                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                                        <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6l-2 14H7L5 6"></path>
+                                            <path d="M10 11v6"></path>
+                                            <path d="M14 11v6"></path>
+                                            <path d="M5 6l1-3h12l1 3"></path>
+                                        </svg>
+                                        <span>Xóa</span>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="flex justify-center mt-8">
+                <button id="load-more-btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium border bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8">
+                    Tải thêm bài viết
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent Posts -->
+        <div class="hidden lg:block">
+            <div class="w-80 sticky top-20">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                        <h3 class="text-sm font-semibold leading-none tracking-tight">
+                            Bài viết gần đây
+                        </h3>
+                    </div>
+                    <div class="p-6 pt-0 space-y-3">
+                        <a th:each="latestPost : ${latestPosts}"
+                           th:href="@{'/post-detail/' + ${latestPost.postId}}"
+                           class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
+
+                            <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2"
+                                th:text="${latestPost.title}">Tiêu đề</h4>
+
+                            <div class="flex items-center justify-between text-xs text-muted-foreground">
+                                <span th:text="${#temporals.format(latestPost.createdAt, 'HH:mm dd/MM/yyyy')}">Ngày đăng</span>
+
+                                <div class="flex items-center gap-1">
+                                    <span th:text="'Đăng bởi ' + ${latestPost.accountName}">Đăng bởi ...</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Simple JavaScript functionality
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("PetCare+ loaded successfully");
+
+        // Tab functionality
+        const tabButtons = document.querySelectorAll('[role="tab"]');
+        tabButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                // Remove active class from all buttons
+                tabButtons.forEach((btn) => {
+                    btn.classList.remove(
+                        "bg-background",
+                        "text-foreground",
+                        "shadow-sm",
+                    );
+                });
+                // Add active class to clicked button
+                this.classList.add("bg-background", "text-foreground", "shadow-sm");
+            });
+        });
+    });
+
+    let currentPage = 0;
+    const pageSize = 5;
+
+    const loggedInUserId = /*[[${session.loggedInUser != null ? session.loggedInUser.accountId : 'null'}]]*/ null;
+
+    document.getElementById("load-more-btn").addEventListener("click", function () {
+        currentPage++;
+
+        const keyword = document.getElementById("searchInput").value;
+        fetch(`/api/posts-my-post/${loggedInUserId}?page=${currentPage}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    document.getElementById("load-more-btn").style.display = "none";
+                    return;
+                }
+
+                const container = document.getElementById("posts-container");
+
+                data.forEach(post => {
+                    const isOwner = loggedInUserId !== null && loggedInUserId === post.accountId;
+
+                    const createdAt = new Date(post.createdAt);
+                    const formattedCreatedAt = createdAt.toLocaleString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    });
+
+                    // Tạo HTML cho ảnh và video
+                    let mediaHtml = '';
+                    if (post.medias && Array.isArray(post.medias)) {
+                        post.medias.forEach(media => {
+                            if (media.mediaCategory === 'POST_IMAGE') {
+                                mediaHtml += `
+                                <div class="mb-3 rounded-md overflow-hidden max-h-96 relative">
+                                    <img src="${media.url}" alt="" class="w-full h-auto object-cover" />
+                                </div>`;
+                            } else if (media.mediaCategory === 'POST_VIDEO') {
+                                mediaHtml += `
+                                <div class="mb-3 rounded-md overflow-hidden relative">
+                                    <video controls class="w-full h-auto object-cover">
+                                        <source src="${media.url}" type="video/mp4" />
+                                        Trình duyệt của bạn không hỗ trợ video.
+                                    </video>
+                                </div>`;
+                            }
+                        });
+                    }
+
+                    const postHtml = `
+                    <div class=" ${!post.checked ? 'opacity-30' : ''} rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+                        <div class="flex">
+                            <!-- Voting Section -->
+                            <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
+                                <a href="/forum/${post.postId}/rating?rating=UPVOTE"
+                                   class="h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-md flex items-center justify-center text-sm">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m5 12 7-7 7 7" />
+                                        <path d="M12 19V5" />
+                                    </svg>
+                                </a>
+                                <span class="text-xs font-medium text-muted-foreground">${post.rating}</span>
+                                <a href="/forum/${post.postId}/rating?rating=DOWNVOTE"
+                                   class="h-6 w-6 hover:bg-destructive/10 hover:text-destructive rounded-md flex items-center justify-center text-sm">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14" />
+                                        <path d="m19 12-7 7-7-7" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <!-- Content Section -->
+                            <div class="flex-1 p-3">
+                                <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+                                    <span>Đăng bởi <u>${post.accountName || 'Ẩn danh'}</u></span>
+                                    <span>•</span>
+                                    <span>${formattedCreatedAt}</span>
+                                </div>
+
+                                <a href="/post-detail/${post.postId}">
+                                    <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer">${post.title}</h3>
+                                </a>
+
+                                ${mediaHtml}
+
+                                <p class="text-sm text-muted-foreground mb-3 line-clamp-3">${post.description}</p>
+
+                                <div class="flex items-center space-x-2">
+                                    <a href="/post-detail/${post.postId}" class="h-8 px-3 py-2 text-xs rounded-md hover:bg-accent hover:text-accent-foreground flex items-center">
+                                        <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                                        </svg>
+                                        <span>Bình luận</span>
+                                    </a>
+
+                                    ${isOwner ? `
+                                        <a href="/update-post/${post.postId}" class="h-8 px-3 py-2 text-xs rounded-md hover:bg-accent hover:text-accent-foreground flex items-center">
+                                            <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 20h9" />
+                                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                            </svg>
+                                            <span>Sửa</span>
+                                        </a>
+                                        <a href="/delete-post/${post.postId}" onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')" class="h-8 px-3 py-2 text-xs rounded-md hover:bg-destructive hover:text-destructive-foreground flex items-center">
+                                            <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6l-2 14H7L5 6"></path>
+                                                <path d="M10 11v6"></path>
+                                                <path d="M14 11v6"></path>
+                                                <path d="M5 6l1-3h12l1 3"></path>
+                                            </svg>
+                                            <span>Xóa</span>
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                    container.insertAdjacentHTML('beforeend', postHtml);
+                });
+            });
+    });
+
+</script>
+</body>
+</html>

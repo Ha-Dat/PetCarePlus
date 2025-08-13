@@ -2,11 +2,16 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.repository.AccountRepository;
 import org.example.petcareplus.repository.ProfileRepository;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,5 +82,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateAccount(Account account) {
         accountRepository.save(account);
+    }
+
+    @Override
+    public Page<Account> getAccountPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("accountId").ascending());
+        return accountRepository.findAll(pageable);
+    }
+
+    @Override
+    public Long countByRole(AccountRole role) {
+        return accountRepository.countByRole(role);
     }
 }

@@ -10,6 +10,8 @@ public class OrderDTO {
     private String customerName;
     private OrderStatus status;
     private BigDecimal totalPrice;
+    private BigDecimal shippingFee;
+    private BigDecimal discountAmount;
     private LocalDateTime orderDate;
     private String paymentMethod;
     private String address;
@@ -28,9 +30,39 @@ public class OrderDTO {
         this.address = address;
     }
 
+    public OrderDTO(Long orderId, String customerName, OrderStatus status, BigDecimal totalPrice,
+                    BigDecimal shippingFee, BigDecimal discountAmount, LocalDateTime orderDate, 
+                    String paymentMethod, String address) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.shippingFee = shippingFee;
+        this.discountAmount = discountAmount;
+        this.orderDate = orderDate;
+        this.paymentMethod = paymentMethod;
+        this.address = address;
+    }
+
     public String getFormattedTotalPrice() {
         if (totalPrice == null) return "0 đ";
         return String.format("%,.0f đ", totalPrice.doubleValue()); // format như: 12,000 đ
+    }
+
+    public String getFormattedShippingFee() {
+        if (shippingFee == null) return "0 đ";
+        return String.format("%,.0f đ", shippingFee.doubleValue());
+    }
+
+    public String getFormattedDiscountAmount() {
+        if (discountAmount == null) return "0 đ";
+        return String.format("%,.0f đ", discountAmount.doubleValue());
+    }
+
+    public String getFormattedSubtotal() {
+        if (totalPrice == null || shippingFee == null || discountAmount == null) return "0 đ";
+        BigDecimal subtotal = totalPrice.subtract(shippingFee).add(discountAmount);
+        return String.format("%,.0f đ", subtotal.doubleValue());
     }
 
 
@@ -88,5 +120,21 @@ public class OrderDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(BigDecimal shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

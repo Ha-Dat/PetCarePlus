@@ -1,6 +1,9 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.SpaBooking;
+import org.example.petcareplus.enums.BookingStatus;
+import org.example.petcareplus.repository.ServiceRepository;
 import org.example.petcareplus.repository.SpaBookingRepository;
 import org.example.petcareplus.service.SpaBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +13,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class SpaBookingServiceImpl implements SpaBookingService {
 
     private final SpaBookingRepository spaBookingRepository;
+    private final ServiceRepository serviceRepository;
 
     @Autowired
-    public SpaBookingServiceImpl(SpaBookingRepository spaBookingRepository) {
+    public SpaBookingServiceImpl(SpaBookingRepository spaBookingRepository, ServiceRepository serviceRepository) {
         this.spaBookingRepository = spaBookingRepository;
+        this.serviceRepository = serviceRepository;
     }
 
     @Override
@@ -39,4 +46,33 @@ public class SpaBookingServiceImpl implements SpaBookingService {
         return spaBookingRepository.save(spaBooking);
     }
 
+    @Override
+    public Page<SpaBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable) {
+        return spaBookingRepository.findByBookDateBetween(startOfDay, endOfDay, pageable);
+    }
+
+    @Override
+    public List<Object[]> getBookingCountByMonthInCurrentYear() {
+        return spaBookingRepository.getBookingCountByMonthInCurrentYear();
+    }
+
+    @Override
+    public Long getTotalSpaBookings() {
+        return spaBookingRepository.count();
+    }
+
+    @Override
+    public Long getTotalPendingSpaBooking() {
+        return spaBookingRepository.countByStatus(BookingStatus.PENDING);
+    }
+
+    @Override
+    public Long getTotalAcceptedSpaBookings() {
+        return spaBookingRepository.countByStatus(BookingStatus.ACCEPTED);
+    }
+
+    @Override
+    public Optional<org.example.petcareplus.entity.Service> Service_findById(Long id) {
+        return serviceRepository.findById(id);
+    }
 }

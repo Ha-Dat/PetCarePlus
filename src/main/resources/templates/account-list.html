@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Quản lý tài khoản</title>
     <link rel="stylesheet" href="/css/style.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -10,180 +10,420 @@
 <style>
     body {
         margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #f9f9fb;
+        font-family: 'Nunito', sans-serif;
+        background-color: white;
+        color: #333;
     }
 
     .dashboard {
         display: flex;
+        height: 100vh;
     }
 
+    /* Sidebar */
     .sidebar {
-        width: 240px;
-        background-color: white;
-        border-right: 1px solid #e5e5e5;
+        width: 230px;
+        min-width: 230px;
+        max-width: 230px;
+        background-color: #2ec4b6;
+        color: white;
+        height: 94.5vh;
+        top: 0;
+        left: 0;
         padding: 20px;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     }
 
-    .sidebar .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+    .sidebar-title {
+        font-size: 22px;
+        margin-bottom: 30px;
+        text-align: center;
     }
 
-    .sidebar nav ul {
+    .sidebar-menu {
         list-style: none;
         padding: 0;
     }
 
-    .sidebar nav li {
-        margin: 20px 0;
+    .sidebar-menu li {
+        margin-bottom: 20px;
     }
 
-    .sidebar nav li.active a,
-    .sidebar nav a:hover {
-        color: #6366f1;
-        font-weight: bold;
+    .sidebar-menu a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        display: block;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: background 0.3s;
     }
 
-    .sidebar .user-info {
-        position: absolute;
-        bottom: 20px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
+    .sidebar-menu li.active a,
+    .sidebar-menu a:hover {
+        background-color: #28b1a5;
     }
 
+    /* Main content */
     .main-content {
-        flex: 1;
+        flex-grow: 1;
         padding: 20px;
+        overflow-y: auto;
     }
 
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .page-title {
+        font-size: 28px;
+        margin-bottom: 25px;
     }
 
+    /* Table */
     .table-container {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    .account-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .account-table th,
+    .account-table td {
+        text-align: left;
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .account-table th {
+        background-color: #e0f7f5;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    /* Add Category Button */
+    .add-account-btn {
+        padding: 8px 14px;
+        background-color: #00b894;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .add-account-btn:hover {
+        background-color: #009e82;
+    }
+
+    /* Pagination */
+    .pagination {
+        text-align: center;
         margin-top: 20px;
     }
 
-    table {
+    .pagination ul {
+        display: inline-flex;
+        list-style: none;
+        padding: 0;
+        gap: 5px;
+    }
+
+    .pagination ul li a {
+        padding: 8px 12px;
+        text-decoration: none;
+        background-color: #e0f7f5;
+        color: #333;
+        border-radius: 6px;
+        transition: background 0.2s;
+        font-weight: bold;
+    }
+
+    .pagination ul li a:hover {
+        background-color: #2ec4b6;
+        color: white;
+    }
+
+    .pagination ul li.active a {
+        background-color: #2ec4b6;
+        color: white;
+    }
+
+    .action-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-toggle {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-toggle:hover {
+        background-color: #f0f0f0;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background-color: #fff;
+        min-width: 140px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        z-index: 100;
+        border-radius: 8px;
+        padding: 4px 0;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
         width: 100%;
-        background: white;
-        border-collapse: collapse;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    table th, table td {
-        padding: 15px;
+        font-size: 14px;
+        color: #333;
+        background: none;
+        border: none;
         text-align: left;
-        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
     }
 
-    .avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-right: 10px;
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
     }
 
-    .status.complete {
-        color: green;
-        background-color: #e6f4ea;
-        padding: 5px 10px;
-        border-radius: 10px;
+    .ban-btn {
+        background-color: #fff5f5;
+        color: #c62828;
     }
 
-    .status.pending {
-        color: #e8a522;
-        background-color: #fff5e5;
-        padding: 5px 10px;
-        border-radius: 10px;
+    .ban-btn:hover {
+        background-color: #ffecec;
     }
 
-    .status.cancel {
-        color: red;
-        background-color: #fde8e8;
-        padding: 5px 10px;
-        border-radius: 10px;
+    .unban-btn {
+        color: #2e7d32;
     }
 
+    .unban-btn:hover {
+        background-color: #d9f5df;
+    }
+
+    .action-dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-box {
+        background: white;
+        border-radius: 16px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 30px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        box-sizing: border-box;
+    }
+
+    .modal-box h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .modal-box input, .modal-box select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .modal-actions .btn.submit {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    .modal-actions .btn.cancel {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .admin-info {
+        margin: 29pc 0 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        background-color: #f7f7f7;
+        border-radius: 8px;
+    }
+
+    .admin-details {
+        gap: 3px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-name {
+        color: #1f2937;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .admin-role {
+        font-size: 12px;
+        color: #777;
+    }
+
+    .logout-btn {
+        color: #ff4d4f;
+        font-size: 18px;
+        text-decoration: none;
+    }
+
+    .logout-btn:hover {
+        color: #d9363e;
+    }
 </style>
 <body>
 
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo">
-            <img src="/images/logo.png" alt="Logo"/>
-            <h2>admin</h2>
+        <h2 class="sidebar-title">Admin Dashboard</h2>
+
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard">📊 Thống kê</a></li>
+            <li class="active"><a href="/admin/account">👥 Tài khoản người dùng</a></li>
+        </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="admin-info">
+            <div class="admin-details">
+                <span class="admin-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="admin-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
-        <nav>
-            <ul>
-                <li><a href="/dashboard"><i class="fas fa-chart-bar"></i>Thống kê</a></li>
-                <li class="active"><a href="/customers"><i class="fas fa-users"></i>Tài khoản</a></li>
-            </ul>
-        </nav>
     </aside>
 
     <!-- Main content -->
     <main class="main-content">
-        <button onclick="openCreateModal()">Tạo tài khoản mới</button>
+        <h1 class="page-title">Quản lý tài khoản</h1>
+        <button class="btn add-account-btn"
+                onclick="openCreateModal()">
+            Tạo tài khoản mới
+        </button>
 
         <!-- Table -->
-        <section class="table-container">
-            <table>
+        <div class="table-container">
+            <table class="account-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>STT</th>
                     <th>Tên</th>
                     <th>SĐT</th>
                     <th>Vai trò</th>
                     <th>Trạng thái</th>
-                    <th></th>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="a : ${accounts}">
-                    <td th:text="${a.accountId}">#</td>
+                <tr th:each="a, aStat : ${accounts}">
+                    <td th:text="${a.accountId}"></td>
+                    <td th:text="${a.name}"></td>
+                    <td th:text="${a.phone}"></td>
+                    <td th:text="${a.role.value}"></td>
+                    <td th:id="'status-' + ${a.accountId}" th:text="${a.status.value}"></td>
                     <td>
-                        <span th:text="${a.name}"></span>
-                    </td>
-                    <td>
-                        <i class="fas fa-phone"></i>
-                        <span th:text="${a.phone}"></span>
-                    </td>
-                    <td>
-                        <span th:text="${a.role}"></span>
-                    </td>
-                    <td>
-                        <span th:text="${a.status}"></span>
-                    </td>
-                    <td>
-                        <button th:onclick="'viewDetail(' + ${a.accountId} + ')'">Chi tiết</button>
+                        <div class="action-dropdown">
+                            <button type="button" class="dropdown-toggle">⋮</button>
+                            <div class="dropdown-menu">
+                                <button th:onclick="'viewDetail(' + ${a.accountId} + ')'"
+                                        class="dropdown-item">Chi tiết</button>
 
-                        <form th:action="@{'/admin/account/ban/' + ${a.accountId}}" method="post"
-                              style="display:inline;">
-                            <button type="submit"
-                                    th:text="${a.status == 'ACTIVE' ? 'Khóa' : 'Mở khóa'}"
-                                    th:class="${a.status == 'ACTIVE' ? 'ban-btn' : 'unban-btn'}">
-                            </button>
-                        </form>
+                                <form th:action="@{'/admin/account/change-status/' + ${a.accountId}}" method="post">
+                                    <button type="submit"
+                                            th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
+                                            th:class="'dropdown-item ' + ${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
+                                            onclick="changeStatus(this)">
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </td>
 
                 </tr>
                 </tbody>
             </table>
-        </section>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${currentPage > 0}">
+                        <a th:href="@{'/admin/account/list'(page=${currentPage - 1}, size=${size})}">«</a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${i == currentPage} ? 'active'">
+                        <a th:href="@{'/admin/account/list'(page=${i}, size=${size})}"
+                        th:text="${i + 1}"></a>
+                    </li>
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <a th:href="@{'/admin/account/list'(page=${currentPage + 1}, size=${size})}">»</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Popup Modal -->
-        <div id="createAccountModal" style="display:none; position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-            <div style="background: white; margin: 100px auto; padding: 20px; width: 400px; border-radius: 8px; position: relative;">
-                <h3>Tạo tài khoản mới</h3>
+        <div class="modal-overlay" id="createAccountModal">
+            <div class="modal-box">
+                <h2>Tạo tài khoản mới</h2>
 
                 <div th:if="${error}" style="color: red; margin-bottom: 10px;">
                     <p th:text="${error}"></p>
@@ -201,23 +441,25 @@
 
                     <label>Vai trò:</label>
                     <select name="role">
-                        <option value="SELLER">Seller</option>
-                        <option value="PET_GROOMER">Pet Groomer</option>
-                        <option value="DOCTOR">Doctor</option>
-                        <option value="MANAGER">Manager</option>
-                    </select><br><br>
+                        <option th:each="r : ${roles}"
+                                th:value="${r.name()}"
+                                th:text="${r.value}">
+                        </option>
+                    </select>
+                    <br>
 
-                    <button type="submit">Tạo</button>
-                    <button type="button" onclick="closeCreateModal()">Hủy</button>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn submit">Tạo</button>
+                        <button type="button" class="btn cancel" onclick="closeCreateModal()">Hủy</button>
+                    </div>
                 </form>
             </div>
         </div>
 
         <!-- Modal Chi tiết tài khoản -->
-        <div id="accountDetailModal" style="display:none; position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-            <div style="background: white; margin: 100px auto; padding: 20px; width: 400px; border-radius: 8px; position: relative;">
-                <h3>Chi tiết tài khoản</h3>
+        <div id="accountDetailModal" class="modal-overlay">
+            <div class="modal-box">
+                <h2>Chi tiết tài khoản</h2>
                 <form id="accountDetailForm">
                     <input type="hidden" id="accountId">
 
@@ -228,21 +470,27 @@
                     <input type="text" id="phone" required><br><br>
 
                     <label for="role">Vai trò:</label>
-                    <select id="role">
-                        <option value="SELLER">Seller</option>
-                        <option value="PET_GROOMER">Pet Groomer</option>
-                        <option value="DOCTOR">Doctor</option>
-                        <option value="MANAGER">Manager</option>
-                    </select><br><br>
+                    <select id="role" name="role">
+                        <option th:each="r : ${roles}"
+                                th:value="${r.name()}"
+                                th:text="${r.value}">
+                        </option>
+                    </select>
+                    <br><br>
 
                     <label for="status">Trạng thái:</label>
-                    <select id="status">
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="INACTIVE">INACTIVE</option>
-                    </select><br><br>
+                    <select id="status" name="status">
+                        <option th:each="s : ${statuses}"
+                                th:value="${s.name()}"
+                                th:text="${s.value}">
+                        </option>
+                    </select>
+                    <br><br>
 
-                    <button type="button" id="updateBtn" onclick="submitUpdate()">Cập nhật</button>
-                    <button type="button" onclick="closeDetailModal()">Đóng</button>
+                    <div class="modal-actions">
+                        <button type="button" class="btn submit" id="updateBtn" onclick="submitUpdate()">Cập nhật</button>
+                        <button type="button" class="btn cancel" onclick="closeDetailModal()">Đóng</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -252,7 +500,7 @@
 </body>
 <script>
     function openCreateModal() {
-        document.getElementById('createAccountModal').style.display = 'block';
+        document.getElementById('createAccountModal').style.display = 'flex';
     }
 
     function closeCreateModal() {
@@ -268,19 +516,44 @@
                 return res.json();
             })
             .then(data => {
+                // Populate fields
                 document.getElementById("accountId").value = data.accountId;
                 document.getElementById("name").value = data.name;
                 document.getElementById("phone").value = data.phone;
                 document.getElementById("role").value = data.role;
                 document.getElementById("status").value = data.status;
-                document.getElementById("accountDetailModal").style.display = 'block';
+                document.getElementById("accountDetailModal").style.display = 'flex';
 
+                const nameField = document.getElementById("name");
+                const phoneField = document.getElementById("phone");
+                const roleField = document.getElementById("role");
+                const statusField = document.getElementById("status");
                 const updateBtn = document.getElementById("updateBtn");
-                if (data.role.toUpperCase() === "ADMIN" || data.role.toUpperCase() === "CUSTOMER") {
+
+                // Reset disabled state
+                nameField.readOnly = false;
+                phoneField.readOnly = false;
+                roleField.disabled = false;
+                statusField.disabled = false;
+                updateBtn.style.display = 'inline-block';
+
+                const role = data.role.toUpperCase();
+
+                if (role === "ADMIN") {
+                    // Make all inputs readonly or disabled
+                    nameField.readOnly = true;
+                    phoneField.readOnly = true;
+                    roleField.disabled = true;
+                    statusField.disabled = true;
                     updateBtn.style.display = 'none';
-                } else {
-                    updateBtn.style.display = 'inline-block';
+                } else if (role === "CUSTOMER") {
+                    // Allow update but disable role selection
+                    phoneField.disabled = true;
+                    roleField.disabled = true;
                 }
+
+                // Show modal
+                document.getElementById("accountDetailModal").style.display = 'flex';
             })
             .catch(err => {
                 alert(err.message);
@@ -314,6 +587,47 @@
                 alert("Cập nhật thành công!");
                 closeDetailModal();
                 location.reload();
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+
+    function changeStatus(button) {
+        const id = button.getAttribute("data-id");
+
+        fetch('/admin/account/change-status/' + id, {
+            method: 'POST'
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Thay đổi trạng thái thất bại.");
+                }
+                return res.text();
+            })
+            .then(message => {
+                alert(message);
+
+                // Cập nhật trạng thái mới
+                const statusCell = document.getElementById("status-" + id);
+                const currentStatus = button.getAttribute("data-status");
+                let newStatus, newText, newClass;
+
+                if (currentStatus === "Hoạt động") {
+                    newStatus = "Khóa";
+                    newText = "Mở khóa";
+                    newClass = "unban-btn";
+                } else {
+                    newStatus = "Hoạt động";
+                    newText = "Khóa";
+                    newClass = "ban-btn";
+                }
+
+                // Cập nhật DOM
+                statusCell.innerText = newStatus;
+                button.innerText = newText;
+                button.setAttribute("data-status", newStatus);
+                button.className = newClass;
             })
             .catch(err => {
                 alert(err.message);

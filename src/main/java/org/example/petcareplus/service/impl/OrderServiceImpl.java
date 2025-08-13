@@ -1,8 +1,10 @@
 package org.example.petcareplus.service.impl;
 
+import org.example.petcareplus.dto.MonthlyRevenueDTO;
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.entity.OrderItem;
+import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.repository.OrderItemRepository;
 import org.example.petcareplus.repository.OrderRepository;
 import org.example.petcareplus.repository.ProductRepository;
@@ -11,7 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -78,6 +82,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()
@@ -100,8 +106,13 @@ public class OrderServiceImpl implements OrderService {
             }
 
             if (status != null && !status.isBlank()) {
-                predicates = cb.and(predicates,
-                        cb.equal(root.get("status"), status));
+                try {
+                    OrderStatus orderStatus = OrderStatus.valueOf(status);
+                    predicates = cb.and(predicates,
+                            cb.equal(root.get("status"), orderStatus));
+                } catch (IllegalArgumentException ignored) {
+                    // Invalid status value, ignore this filter
+                }
             }
 
             if (startDate != null) {
@@ -123,6 +134,8 @@ public class OrderServiceImpl implements OrderService {
                         order.getAccount() != null ? order.getAccount().getName() : "Unknown",
                         order.getStatus(),
                         order.getTotalPrice(),
+                        order.getShippingFee(),
+                        order.getDiscountAmount(),
                         order.getOrderDate(),
                         order.getPaymentMethod(),
                         order.getDeliverAddress()
@@ -130,4 +143,14 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
+    @Override
+    public List<MonthlyRevenueDTO> getMonthlyRevenue() {
+        return orderRepository.getMonthlyRevenue();
+    }
+
+    @Override
+    public BigDecimal getTotalRevenue() {
+        BigDecimal revenue = orderRepository.getTotalRevenue();
+        return revenue != null ? revenue : BigDecimal.ZERO;
+    }
 }

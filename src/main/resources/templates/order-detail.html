@@ -3,6 +3,54 @@
 <head>
     <title>Order Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .badge {
+            font-size: 0.75em;
+            padding: 0.375em 0.75em;
+            color: black;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: black;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: black;
+        }
+        .badge-secondary {
+            background-color: #6c757d;
+            color: black;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+            color: black;
+        }
+        .badge-primary {
+            background-color: #007bff;
+            color: black;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .price-column {
+        }
+    </style>
 </head>
 <body>
 <div class="container p-3" id="order-detail-content">
@@ -18,22 +66,39 @@
                         <thead class="thead-light">
                         <tr>
                             <th>Product</th>
-                            <th>Price</th>
-                            <th>QTY</th>
-                            <th>Total</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-right">Total</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="item : ${order.orderItems}">
-                            <td th:text="${item.product.name}"></td>
-                            <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 3, 'COMMA')}"></td>
-                            <td th:text="${item.quantity}"></td>
-                            <td th:text="${#numbers.formatDecimal(item.quantity * item.product.price, 0, 'POINT', 3, 'COMMA')}"></td>
+                            <td th:text="${item.product.name}">Product Name</td>
+                            <td class="text-right price-column" th:text="${item.product.price != null ? #numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}">0 đ</td>
+                            <td class="text-center" th:text="${item.quantity}">0</td>
+                            <td class="text-right price-column" th:text="${item.product.price != null ? #numbers.formatDecimal(item.quantity * item.product.price, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}">0 đ</td>
                         </tr>
                         </tbody>
                     </table>
-                    <div class="text-right font-weight-bold">
-                        Total: <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'POINT', 3, 'COMMA')}"></span>
+                    
+                    <!-- Price breakdown -->
+                    <div class="row mt-3">
+                        <div class="col-md-6 offset-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Shipping Fee:</strong></td>
+                                    <td class="text-right price-column" th:text="${order.shippingFee != null ? #numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Discount:</strong></td>
+                                    <td class="text-right price-column text-danger" th:text="${order.discountAmount != null ? #numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td><strong>Total:</strong></td>
+                                    <td class="text-right price-column font-weight-bold" th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,11 +109,17 @@
             <div class="card">
                 <div class="card-header">Customer</div>
                 <div class="card-body">
-                    <p th:text="${order.account.name}"></p>
-                    <p><strong>Ward:</strong> <span th:text="${order.account.profile.ward.name}"></span></p>
-                    <p><strong>District:</strong> <span th:text="${order.account.profile.district.name}"></span></p>
-                    <p><strong>City:</strong> <span th:text="${order.account.profile.city.name}"></span></p>
-                    <p><strong>Phone number:</strong> <span th:text="${order.account.phone}"></span></p>
+                    <p><strong>Name:</strong> <span th:text="${order.account.name}">Customer Name</span></p>
+                    <p><strong>Phone:</strong> <span th:text="${order.account.phone}">Phone Number</span></p>
+                    <p th:if="${order.account.profile != null}">
+                        <strong>Address:</strong> 
+                        <span th:if="${order.account.profile.ward != null}" th:text="${order.account.profile.ward.name}"></span>
+                        <span th:if="${order.account.profile.district != null}" th:text="${', ' + order.account.profile.district.name}"></span>
+                        <span th:if="${order.account.profile.city != null}" th:text="${', ' + order.account.profile.city.name}"></span>
+                    </p>
+                    <p th:unless="${order.account.profile != null}">
+                        <strong>Address:</strong> <span th:text="${order.deliverAddress}">Delivery Address</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -74,12 +145,18 @@
                         <tr th:if="${payment != null}">
                             <td th:text="${payment.paymentId}">1</td>
                             <td th:text="${#temporals.format(payment.createdAt, 'MMM d, yyyy HH:mm:ss')}">---</td>
-                            <td th:text="${payment.status}">---</td>
-                            <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', '.', ' VNĐ')}">---</td>
+                            <td>
+                                <span style="color: #16bf16" th:class="${'badge ' +
+                                               payment.status.name() == 'APPROVED' ? 'badge badge-success' :
+                                               payment.status.name() == 'PENDING' ? 'badge badge-warning' :
+                                               payment.status.name() == 'CANCELLED' ? 'badge badge-danger' : 'badge badge-secondary'}"
+                                      th:text="${payment.status.name()}">---</span>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT') + ' đ'}">---</td>
                             <td th:text="${payment.bankCode}">---</td>
                         </tr>
                         <tr th:unless="${payment != null}">
-                            <td colspan="5" class="text-center">No payment information available.</td>
+                            <td colspan="5" class="text-center text-muted">No payment information available.</td>
                         </tr>
                         </tbody>
                     </table>
@@ -93,15 +170,18 @@
             <div class="card">
                 <div class="card-header">Order Details</div>
                 <div class="card-body">
-                    <form method="post" th:action="@{'/orders/update-status/' + ${order.orderId}}">
+                    <form method="post" th:action="@{'/seller/orders/update-status/' + ${order.orderId}}">
                         <div class="form-group">
-                            <label>Orders Status:</label>
+                            <label>Change Orders Status:</label>
                             <div class="input-group">
                                 <select class="form-control" name="status">
-                                    <option th:selected="${order.status == 'Pending'}">Pending</option>
-                                    <option th:selected="${order.status == 'Completed'}">Completed</option>
-                                    <option th:selected="${order.status == 'Approved'}">Approved</option>
-                                    <option th:selected="${order.status == 'Rejected'}">Rejected</option>
+                                    <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Pending</option>
+                                    <option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Completed</option>
+                                    <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">Processing</option>
+                                    <option value="DELIVERING" th:selected="${order.status.name() == 'DELIVERING'}">Delivering</option>
+                                    <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option>
+                                    <option value="REJECTED" th:selected="${order.status.name() == 'REJECTED'}">Rejected</option>
+                                    <option value="APPROVED" th:selected="${order.status.name() == 'APPROVED'}">Approved</option>
                                 </select>
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-primary">Change</button>

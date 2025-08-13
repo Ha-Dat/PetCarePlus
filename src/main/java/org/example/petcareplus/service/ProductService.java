@@ -1,5 +1,6 @@
 package org.example.petcareplus.service;
 
+import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,4 +35,10 @@ public interface ProductService {
     Product get(Long id);
 
     List<Product> getAllProducts();
+
+    List<CategorySalesDTO> getTotalSoldByEachParentCategory();
+
+    int getTotalUnitsInStock();
+
+    int getTotalUnitsSold();
 }

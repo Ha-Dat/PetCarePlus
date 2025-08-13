@@ -54,6 +54,9 @@
         };
     </script>
     <style>
+        .logo {
+            width: 50px;
+        }
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -74,10 +77,8 @@
     <div class="container flex h-14 items-center max-w-7xl mx-auto px-8">
         <!-- Logo -->
         <div class="mr-4 flex">
-            <a class="mr-6 flex items-center space-x-2" href="/forum">
-                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-                    <span class="text-primary-foreground font-bold text-lg">P</span>
-                </div>
+            <a class="mr-6 flex items-center space-x-2" href="/home">
+                <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
                 <span class="hidden font-bold sm:inline-block text-xl">PetCare+</span>
             </a>
         </div>
@@ -103,12 +104,14 @@
                 <span>Tạo bài</span>
             </a>
 
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+            <a th:if="${session.loggedInUser != null}"
+               href="/customer/profile"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                 </svg>
-            </button>
+            </a>
         </div>
     </div>
 </header>
@@ -123,25 +126,12 @@
                     <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
                         <div class="p-3">
                             <nav class="space-y-1">
-                                <a href="/" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                                         <polyline points="9,22 9,12 15,12 15,22" />
                                     </svg>
                                     Trang chủ
-                                </a>
-                                <a href="/popular" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" />
-                                        <polyline points="16,7 22,7 22,13" />
-                                    </svg>
-                                    Phổ biến
-                                </a>
-                                <a href="/messages" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                                    </svg>
-                                    Tin nhắn
                                 </a>
                             </nav>
                         </div>
@@ -154,14 +144,14 @@
                                 Người dùng
                             </h3>
                             <nav class="space-y-1">
-                                <a href="/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                <a href="/customer/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                         <circle cx="12" cy="7" r="4" />
                                     </svg>
                                     Hồ sơ
                                 </a>
-                                <a href="/my-posts" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                                <a th:href="@{'/forum-my-posts/' + ${session.loggedInUser.accountId}}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                         <polyline points="14,2 14,8 20,8" />
@@ -204,13 +194,13 @@
                         <input type="hidden" name="postId" th:value="${postDTO.postId}" />
                         <!-- Title Input -->
                         <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="title">Tiêu đề</label>
+                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="title">Tiêu đề<span style="color: red">*</span></label>
                             <input name="title" th:value="${postDTO.title}" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" id="title" placeholder="Nhập tiêu đề thú vị và mô tả nội dung" type="text" required/>
                         </div>
 
                         <!-- Content Input -->
                         <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="description">Nội dung</label>
+                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" for="description">Nội dung<span style="color: red">*</span></label>
                             <textarea name="description" th:text="${postDTO.description}" class="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none" id="description" placeholder="Chia sẻ kinh nghiệm, câu chuyện hoặc thông tin hữu ích về thú cưng của bạn..." required></textarea>
                         </div>
 
@@ -221,7 +211,7 @@
                                 <div th:if="${medias != null}">
                                     <div id="image-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
                                         <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_IMAGE'}">
-                                            <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+                                            <img th:src="${media.url}"
                                                  alt="Ảnh hiện tại"
                                                  class="max-w-xs rounded-lg border mb-2"/>
                                             <!-- Thêm input hidden -->
@@ -256,7 +246,7 @@
                                     <div id="video-preview" class="flex-col flex-wrap gap-4 justify-center items-center gap-4 w-fit mx-auto">
                                         <div th:each="media : ${medias}" th:if="${media.mediaCategory?.name() == 'POST_VIDEO'}">
                                             <video controls class="max-w-xs rounded-lg border mb-4"
-                                                   th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"></video>
+                                                   th:src="${media.url}"></video>
                                             <!-- Thêm input hidden -->
                                             <input type="hidden" name="oldVideoUrls" th:value="${media.url}" />
                                         </div>
@@ -369,7 +359,7 @@
                 const files = this.files;
                 imagePreview.innerHTML = "";
 
-                if (files.length > 0) {
+                if (files.length > 0 && files.length <= 3) {
                     imagePlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
@@ -382,7 +372,11 @@
                         imagePreview.appendChild(img);
                     }
                 } else {
-                    imagePlaceholder.style.display = "block"; // Không có file thì hiện lại
+                    alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
+                    this.value = "";
+                    imagePreview.innerHTML = "";
+                    imagePlaceholder.style.display = "block";
+                    return;
                 }
             });
         }
@@ -392,7 +386,7 @@
                 const files = this.files;
                 videoPreview.innerHTML = "";
 
-                if (files.length > 0) {
+                if (files.length > 0 && files.length <= 3) {
                     videoPlaceholder.style.display = "none";
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
@@ -406,7 +400,11 @@
                         videoPreview.appendChild(video);
                     }
                 } else {
-                    videoPlaceholder.style.display = "block"; // Không có file thì hiện lại
+                    alert("Bạn chỉ có thể đăng tối đa 3 video.");
+                    this.value = "";
+                    videoPreview.innerHTML = "";
+                    videoPlaceholder.style.display = "block";
+                    return;
                 }
             });
         }

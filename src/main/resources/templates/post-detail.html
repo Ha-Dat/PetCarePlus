@@ -54,6 +54,9 @@
     };
   </script>
   <style>
+    .logo {
+      width: 50px;
+    }
     .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -75,9 +78,7 @@
     <!-- Logo -->
     <div class="mr-4 flex">
       <a class="mr-6 flex items-center space-x-2" href="/home">
-        <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="text-primary-foreground font-bold text-lg">P</span>
-        </div>
+        <img src="https://webnow.vn/wp-content/uploads/2022/12/929214320db3b555561658be08cc399f.jpg" alt="logo" class="logo"/>
         <span class="hidden font-bold sm:inline-block text-xl">PetCare+</span>
       </a>
     </div>
@@ -108,7 +109,7 @@
 
       <!-- Avatar - Nếu đã đăng nhập thì về /profile -->
       <a th:if="${session.loggedInUser != null}"
-         href="/profile"
+         href="/customer/profile"
          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -139,45 +140,32 @@
           <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="p-3">
               <nav class="space-y-1">
-                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground bg-accent text-accent-foreground">
+                <a href="/forum" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22" />
                   </svg>
                   Trang chủ
                 </a>
-                <a href="/popular" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" />
-                    <polyline points="16,7 22,7 22,13" />
-                  </svg>
-                  Phổ biến
-                </a>
-                <a href="/messages" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  Tin nhắn
-                </a>
               </nav>
             </div>
           </div>
 
           <!-- User Menu -->
-          <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div th:if="@{${session.loggedInUser != null}}" class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="p-3">
               <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                 Người dùng
               </h3>
               <nav class="space-y-1">
-                <a href="/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                <a href="/customer/profile" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
                   Hồ sơ
                 </a>
-                <a href="/my-posts" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                <a th:href="@{'/forum-my-posts/' + ${session.loggedInUser.accountId}}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14,2 14,8 20,8" />
@@ -215,6 +203,8 @@
           <!-- Post Meta -->
           <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
             <span>Đăng bởi [[${post.account.name}]]</span>
+            <span class="opacity-40"
+                  th:text="' ' + ${post.account.role.getValue()}"></span>
             <span>•</span>
             <span>[[${#temporals.format(post.createdAt, 'HH:mm dd/MM/yyyy')}]]</span>
           </div>
@@ -227,10 +217,10 @@
             <!-- Media -->
           <!-- Hiển thị video -->
           <th:block th:each="media : ${post.medias}">
-            <div th:if="${media.mediaCategory.name() == 'VIDEO'}"
+            <div th:if="${media.mediaCategory.name() == 'POST_VIDEO'}"
                  class="mb-3 rounded-md overflow-hidden relative">
               <video controls class="w-full h-auto object-cover">
-                <source th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}" type="video/mp4" />
+                <source th:src="${media.url}" type="video/mp4" />
                 Trình duyệt của bạn không hỗ trợ video.
               </video>
             </div>
@@ -239,9 +229,9 @@
 
           <!-- Hiển thị ảnh -->
           <th:block th:each="media : ${post.medias}">
-            <div th:if="${media.mediaCategory.name() == 'IMAGE'}"
+            <div th:if="${media.mediaCategory.name() == 'POST_IMAGE'}"
                  class="mb-3 rounded-md overflow-hidden max-h-96 relative">
-              <img th:src="@{'https://petcareplus.s3.ap-southeast-2.amazonaws.com/' + ${media.url}}"
+              <img th:src="${media.url}"
                    alt="" class="w-full h-auto object-cover" />
             </div>
           </th:block>
@@ -284,8 +274,33 @@
                 </svg>
               </a>
             </div>
-          </div>
 
+            <!-- Chỉ hiện nếu là chủ bài viết -->
+            <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.account.accountId}"
+               th:href="@{'/update-post/' + ${post.postId}}"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+              <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+              </svg>
+              <span>Sửa</span>
+            </a>
+
+            <a th:if="${session.loggedInUser != null && session.loggedInUser.accountId == post.account.accountId}"
+               th:href="@{'/delete-post/' + ${post.postId}}"
+               onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+              <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-2 14H7L5 6"></path>
+                <path d="M10 11v6"></path>
+                <path d="M14 11v6"></path>
+                <path d="M5 6l1-3h12l1 3"></path>
+              </svg>
+              <span>Xóa</span>
+            </a>
+
+          </div>
         </div>
       </div>
 
@@ -324,11 +339,13 @@
 
               <!-- Comment Content -->
               <div class="flex-1">
-                <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-                <span class="font-medium text-foreground"
-                th:text="'' + ${comment.account.name}">u/username</span>
+                <div class="flex items-center space-x-2 text-sm mb-2">
+                  <span class="font-medium text-foreground"
+                        th:text="${comment.account.name}"></span>
+                  <span class="opacity-40"
+                        th:text="' ' + ${comment.account.role.getValue()}"></span>
                   <span>•</span>
-                  <span th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
+                  <span class="text-muted-foreground" th:text="${#temporals.format(comment.createdAt, 'HH:mm dd/MM/yyyy')}">1 giờ trước</span>
 
                   <!-- nút sửa comment-->
                   <button th:if="${session.loggedInUser != null && session.loggedInUser.accountId == comment.account.accountId}"
@@ -402,6 +419,8 @@
                   <div class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
                     <span class="font-medium text-foreground"
                           th:text="'' + ${reply.account.name}">u/replier</span>
+                    <span class="opacity-40"
+                          th:text="' ' + ${comment.account.role.getValue()}"></span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
 
@@ -469,92 +488,18 @@
             </h3>
           </div>
           <div class="p-6 pt-0 space-y-3">
-            <a href="/post/r1" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Cách chăm sóc chó con tốt nhất năm 2024
-              </h4>
-              <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>2 giờ trước</span>
-                <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>45</span>
-                </div>
-              </div>
-            </a>
+            <a th:each="latestPost : ${latestPosts}"
+               th:href="@{'/post-detail/' + ${latestPost.postId}}"
+               class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
 
-            <a href="/post/r2" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Làm thế nào để tối ưu hóa chế độ ăn cho mèo
-              </h4>
-              <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>3 giờ trước</span>
-                <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>23</span>
-                </div>
-              </div>
-            </a>
+              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2"
+                  th:text="${latestPost.title}">Tiêu đề</h4>
 
-            <a href="/post/r3" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Xây dựng kế hoạch chăm sóc thú cưng toàn diện
-              </h4>
               <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>5 giờ trước</span>
-                <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>67</span>
-                </div>
-              </div>
-            </a>
+                <span th:text="${#temporals.format(latestPost.createdAt, 'HH:mm dd/MM/yyyy')}">Ngày đăng</span>
 
-            <a href="/post/r4" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Hướng dẫn huấn luyện thú cưng cho người mới bắt đầu
-              </h4>
-              <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>8 giờ trước</span>
                 <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>34</span>
-                </div>
-              </div>
-            </a>
-
-            <a href="/post/r5" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Thức ăn khô vs thức ăn ướt: Khi nào dùng loại nào
-              </h4>
-              <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>12 giờ trước</span>
-                <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>89</span>
-                </div>
-              </div>
-            </a>
-
-            <a href="/post/r6" class="block hover:bg-accent/50 rounded-md p-2 -m-2 transition-colors">
-              <h4 class="text-sm font-medium leading-tight mb-2 line-clamp-2">
-                Kinh nghiệm tốt nhất trong việc tắm rửa cho thú cưng
-              </h4>
-              <div class="flex items-center justify-between text-xs text-muted-foreground">
-                <span>1 ngày trước</span>
-                <div class="flex items-center gap-1">
-                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-                  </svg>
-                  <span>56</span>
+                  <span th:text="'Đăng bởi ' + ${latestPost.accountName}">Đăng bởi ...</span>
                 </div>
               </div>
             </a>
@@ -562,6 +507,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/customer")
 public class ProfileController {
 
     @Autowired
@@ -30,8 +30,8 @@ public class ProfileController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("profile")
-    public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean editMode,
+    @GetMapping("/profile")
+    public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean edit,
                               HttpSession session,
                               Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -43,11 +43,11 @@ public class ProfileController {
 
         model.addAttribute("profileDTO", profileDTO);
         model.addAttribute("categories", parentCategories);
-        model.addAttribute("editMode", editMode);
+        model.addAttribute("edit", edit);
         return "profile";
     }
 
-    @GetMapping("/profile/edit-mode")
+    @GetMapping("/profile/edit")
     public String switchToEdit(HttpSession session, Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
@@ -55,19 +55,29 @@ public class ProfileController {
         }
 
         ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
+        List<Category> parentCategories = categoryService.getParentCategory();
 
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("profileDTO", profileDTO);
-        model.addAttribute("editMode", true);
+        model.addAttribute("edit", true);
         return "profile";
     }
 
     @PostMapping("/update")
-    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO,
-                                HttpSession session) {
+    public String updateProfile(@Valid @ModelAttribute("profileDTO") ProfileDTO profileDTO,
+                                BindingResult bindingResult,
+                                HttpSession session,
+                                Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
 
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("edit", true);
+            model.addAttribute("categories", categoryService.getParentCategory());
+            return "profile";
+        }
         profileService.updateProfile(profileDTO, account.getAccountId());
-        return "redirect:/profile";
+        return "redirect:/customer/profile";
     }
+
 }

@@ -7,6 +7,10 @@ import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
 import org.example.petcareplus.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -114,6 +118,7 @@ public class ForumServiceImpl implements ForumService {
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
+        existingPost.setChecked(false);
 
         // Lấy media cũ trong DB
         List<Media> existingMedias = mediaRepository.findByPost_postId(existingPost.getPostId());
@@ -281,6 +286,45 @@ public class ForumServiceImpl implements ForumService {
         }
     }
 
+    @Override
+    public Page<Post> getPostsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postId").ascending());
+        return postRepository.findAll(pageable);
+    }
+
+    @Override
+    public void updatePostStatus(Long postId, boolean status) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            post.setChecked(status);
+            postRepository.save(post);
+        } else {
+            throw new RuntimeException("Không tìm thấy bài viết với ID: " + postId);
+        }
+    }
+
+    @Override
+    public List<Post> findApprovedPosts() {
+        return postRepository.findApprovedPostsOrderByCreatedAtDesc();
+    }
+
+    @Override
+    public List<Post> findPendingPosts() {
+        return postRepository.findByIsCheckedFalse();
+    }
+
+    @Override
+    public List<Post> findTop6NewestPosts() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findRecentPosts(pageable).getContent();
+    }
+
+    @Override
+    public List<Post> findAllByAccountId(Long accountId) {
+        return postRepository.findAllWithMediasByAccountId(accountId);
+    }
+
     //lưu file lên S3
     private String saveFileToS3(MultipartFile file, String folder) {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -299,10 +343,13 @@ public class ForumServiceImpl implements ForumService {
             throw new RuntimeException("Failed to upload to S3", e);
         }
 
-        return key; // Hoặc URL đầy đủ nếu bạn muốn lưu link luôn
+        return "https://petcareplus.s3.ap-southeast-2.amazonaws.com/" + key;
     }
 
-    public void deleteFileFromS3(String key) {
+    private void deleteFileFromS3(String url) {
+        String prefix = "https://petcareplus.s3.ap-southeast-2.amazonaws.com/";
+        String key = url.replace(prefix, "");
+
         s3Client.deleteObject(
                 DeleteObjectRequest.builder()
                         .bucket("petcareplus")

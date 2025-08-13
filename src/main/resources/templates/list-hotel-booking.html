@@ -2,8 +2,10 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý nhân viên</title>
+    <title>Quản lý hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body {
             margin: 0;
@@ -83,7 +85,7 @@
         }
 
         .table-container {
-            width: 180%;
+            width: 190%;
             border-collapse: collapse;
             margin-top: 25px;
             background-color: white;
@@ -342,6 +344,59 @@
                 height: 100px;
             }
         }
+        .filter-button {
+            padding: 6px 12px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-button:hover {
+            background-color: #0056b3;
+        }
+
+        .pet-groomer-info {
+            margin: 18pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .pet-groomer-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pet-groomer-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pet-groomer-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .logout-btn {
+            color: #ff4d4f;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #d9363e;
+        }
     </style>
 </head>
 <body>
@@ -350,20 +405,38 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Groomer Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="list-spa-booking">🧴Spa</a></li>
-            <li class="active"><a href="list-hotel-booking">🏨 Pet Hotel</a></li>
-            <li><a href="#"> Ca làm việc</a></li>
+            <li><a href="/pet-groomer/dashboard">📊 Thống Kê</a></li>
+            <li><a href="/pet-groomer/list-spa-booking">🧴 Spa</a></li>
+            <li class="active"><a href="/pet-groomer/list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
+            <li><a href="#">🛠️ Dịch vụ</a></li>
+            <li><a href="#">📅 Ca làm việc</a></li>
+            <li><a href="/list-pet-profile?from=/pet-groomer/list-hotel-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="pet-groomer-info">
+            <div class="pet-groomer-details">
+                <span class="pet-groomer-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="pet-groomer-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <a href="/logout" class="logout-btn" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </aside>
 
     <!-- Main content -->
     <main class="main-content">
             <h1 class="page-title">Quản lý đơn Pet Hotel</h1>
-            <div class="filters">
-                <label>Từ: <input type="date" value="2021-06-10"></label>
-                <label>Đến: <input type="date" value="2021-10-10"></label>
-            </div>
-
+                <div class="header">
+                    <div class="filters">
+                        <form method="get" th:action="@{/pet-groomer/list-hotel-booking}" style="display: flex; align-items: center;">
+                            <input type="date" name="date" th:value="${selectedDate}">
+                                <button type="submit" class="filter-button">Lọc</button>
+                            <a th:href="@{/pet-groomer/list-hotel-booking}" class="filter-button">Hủy lọc</a>
+                        </form>
+                    </div>
+                </div>
             <!-- Table Container -->
             <div class="table-container">
                 <table class="groomer-hotel-table">
@@ -378,43 +451,46 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="hotelBookings : ${hotelBookings}">
-                        <td th:text="${hotelBookings.hotelBookingId}"></td>
-                        <td th:text="${hotelBookings.bookDate}"></td>
+                    <tr th:each="hotelBooking : ${hotelBookings}">
+                        <td th:text="${hotelBooking.hotelBookingId}"></td>
+                        <td th:text="${hotelBooking.bookDate}"></td>
 
-                        <td th:text="${hotelBookings.status}"></td>
+                        <td th:text="${hotelBooking.status.getValue()}"></td>
                         <!-- Dữ liệu từ khóa ngoại -->
-                        <td th:text="${hotelBookings.petProfile.species}"></td>
-                        <td th:text="${hotelBookings.service.name}"></td>
+                        <td th:text="${hotelBooking.petProfile.species}"></td>
+                        <td th:text="${hotelBooking.service.name}"></td>
                         <td>
                             <div class="action-dropdown">
                                 <button type="button" class="dropdown-toggle">•••</button>
                                 <div class="dropdown-menu">
                                     <button type="button"
                                             class="dropdown-item"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
-                                            th:data-date="${hotelBookings.bookDate}"
-                                            th:data-status="${hotelBookings.status}"
-                                            th:data-service="${hotelBookings.service.name}"
-                                            th:data-pet-image="${hotelBookings.petProfile.image}"
-                                            th:data-pet-name="${hotelBookings.petProfile.name}"
-                                            th:data-pet-species="${hotelBookings.petProfile.species}"
-                                            th:data-pet-breeds="${hotelBookings.petProfile.breeds}"
-                                            th:data-pet-weight="${hotelBookings.petProfile.weight}"
-                                            th:data-account-name="${hotelBookings.petProfile.account.name}"
-                                            th:data-account-phone="${hotelBookings.petProfile.profile.account.phone}"
-                                            th:data-pet-note="${hotelBookings.note}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
+                                            th:data-date="${hotelBooking.bookDate}"
+                                            th:data-status="${hotelBooking.status}"
+                                            th:data-service="${hotelBooking.service.name}"
+
+                                            th:data-pet-image="${hotelBooking.petProfile.medias.get(0).url}"
+                                            th:data-pet-name="${hotelBooking.petProfile.name}"
+                                            th:data-pet-species="${hotelBooking.petProfile.species}"
+                                            th:data-pet-breeds="${hotelBooking.petProfile.breeds}"
+                                            th:data-pet-weight="${hotelBooking.petProfile.weight}"
+                                            th:data-pet-age="${hotelBooking.petProfile.age}"
+
+                                            th:data-account-name="${hotelBooking.petProfile.profile.account.name}"
+                                            th:data-account-phone="${hotelBooking.petProfile.profile.account.phone}"
+                                            th:data-pet-note="${hotelBooking.note}"
                                             onclick="openBookingDetail(this)">
                                         Xem chi tiết
                                     </button>
 
                                     <button class="dropdown-item confirm-btn"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
                                             onclick="acceptBooking(this)">
                                         Duyệt
                                     </button>
                                     <button class="dropdown-item reject-btn"
-                                            th:data-id="${hotelBookings.hotelBookingId}"
+                                            th:data-id="${hotelBooking.hotelBookingId}"
                                             onclick="rejectBooking(this)">
                                         Từ chối
                                     </button>
@@ -429,16 +505,16 @@
                     <div class="pagination">
                         <ul>
                             <li th:if="${currentPage > 0}">
-                                <a th:href="@{'/groomer-hotel-page'(page=${currentPage - 1}, size=8)}">&lt;</a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${currentPage - 1}, size=8)}">&lt;</a>
                             </li>
 
                             <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                 th:classappend="${i == currentPage} ? 'active' : ''">
-                                <a th:href="@{'/groomer-hotel-page'(page=${i}, size=8)}" th:text="${i + 1}"></a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${i}, size=8)}" th:text="${i + 1}"></a>
                             </li>
 
                             <li th:if="${currentPage < totalPages - 1}">
-                                <a th:href="@{'/groomer-hotel-page'(page=${currentPage + 1}, size=8)}">&gt;</a>
+                                <a th:href="@{'/pet-groomer/list-hotel-booking'(page=${currentPage + 1}, size=8)}">&gt;</a>
                             </li>
                         </ul>
                     </div>
@@ -465,6 +541,7 @@
                             <p><strong>Loài:</strong> <span id="popup-species"></span></p>
                             <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
                             <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+                            <p><strong>Tuổi:</strong> <span id="popup-age"></span></p>
                         </div>
                         <hr>
                         <div class="owner-info">
@@ -489,7 +566,7 @@
         }
 
         if (confirm("Bạn có chắc muốn duyệt booking ID " + bookingId + " không?")) {
-            fetch(`/list-hotel-booking/approve-hotel/${bookingId}`, {
+            fetch(`/pet-groomer/list-hotel-booking/approve-hotel/${bookingId}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -508,7 +585,7 @@
         const id = button.dataset.id;
 
         if (confirm("Bạn có chắc muốn từ chối booking ID " + id + " không?")) {
-            fetch(`/list-hotel-booking/reject-hotel/${id}`, {
+            fetch(`/pet-groomer/list-hotel-booking/reject-hotel/${id}`, {
                 method: 'POST'
             })
                 .then(response => response.text())
@@ -534,6 +611,7 @@
         document.getElementById("popup-species").textContent = button.getAttribute("data-pet-species");
         document.getElementById("popup-breed").textContent = button.getAttribute("data-pet-breeds");
         document.getElementById("popup-weight").textContent = button.getAttribute("data-pet-weight");
+        document.getElementById("popup-age").textContent = button.getAttribute("data-pet-age");
 
         document.getElementById("popup-owner").textContent = button.getAttribute("data-account-name");
         document.getElementById("popup-phone").textContent = button.getAttribute("data-account-phone");

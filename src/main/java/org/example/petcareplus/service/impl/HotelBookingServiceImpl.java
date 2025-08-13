@@ -2,6 +2,7 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.repository.HotelBookingRepository;
 import org.example.petcareplus.repository.PetProfileRepository;
 import org.example.petcareplus.repository.ServiceRepository;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +33,7 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 
     @Override
     public Page<HotelBooking> findAll(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("bookDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<HotelBooking> hotelBookings = hotelBookingRepository.findAll(pageable);
         return hotelBookings;
     }
@@ -56,4 +58,28 @@ public class HotelBookingServiceImpl implements HotelBookingService {
         return serviceRepository.findById(id);
     }
 
+    @Override
+    public Page<HotelBooking> findByBookDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable) {
+        return hotelBookingRepository.findByBookDateBetween(startOfDay, endOfDay, pageable);
+    }
+
+    @Override
+    public List<Object[]> getBookingCountByMonthInCurrentYear() {
+        return hotelBookingRepository.getBookingCountByMonthInCurrentYear();
+    }
+
+    @Override
+    public Long getTotalHotelBookings() {
+        return hotelBookingRepository.count();
+    }
+
+    @Override
+    public Long getTotalPendingHotelBooking() {
+        return hotelBookingRepository.countByStatus(BookingStatus.PENDING);
+    }
+
+    @Override
+    public Long getTotalAcceptedHotelBookings() {
+        return hotelBookingRepository.countByStatus(BookingStatus.ACCEPTED);
+    }
 }

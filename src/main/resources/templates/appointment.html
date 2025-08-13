@@ -266,60 +266,65 @@
             color: white;
         }
 
-        /* Detail Button */
-        .detail-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
+        /* Dropdown container */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
             border: none;
-            border-radius: 6px;
+            font-size: 20px;
             cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 140px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border-radius: 8px;
+            padding: 4px 0;
+            overflow: hidden;
+        }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
             font-size: 14px;
-        }
-
-        .detail-btn:hover {
-            background-color: lightgreen;
-        }
-
-        .prescription-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
+            width: 100%;
             border: none;
-            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            text-align: left;
+            transition: background-color 0.2s;
         }
 
-        .prescription-btn:hover {
-            background-color: lightgreen;
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
 
-        .approved-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .approved-btn:hover {
-            background-color: lightgreen;
-        }
-        .disapproved-btn {
-            padding: 8px 14px;
-            background-color: lightgrey;
-            color: black;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .disapproved-btn:hover {
-            background-color: lightgreen;
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
         }
 
         /* Toast thông báo*/

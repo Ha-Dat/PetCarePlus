@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Điều khoản chung - PetCarePlus</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/footer.css}">
+    <style>
+        .terms-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .terms-header {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .terms-header h1 {
+            font-size: 2.5rem;
+            color: #1b5e20;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .terms-header p {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .terms-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .terms-section h2 {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terms-section h3 {
+            color: #2e7d32;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
+        }
+
+        .terms-section p {
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .terms-section ul {
+            color: #333;
+            line-height: 1.7;
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .terms-section li {
+            margin-bottom: 8px;
+        }
+
+        .terms-section ol {
+            color: #333;
+            line-height: 1.7;
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .terms-section ol li {
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .highlight-box h4 {
+            color: #1b5e20;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .highlight-box p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            margin: 5px 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            color: #1976d2;
+            margin: 5px 0;
+        }
+
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .terms-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e8f5e9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .terms-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .terms-card h4 {
+            color: #1b5e20;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terms-card p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .contact-support {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .contact-support h3 {
+            color: #1b5e20;
+            margin-bottom: 20px;
+        }
+
+        .contact-support p {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .contact-support a {
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-support a:hover {
+            text-decoration: underline;
+        }
+
+        .last-updated {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 30px;
+            border: 1px solid #dee2e6;
+        }
+
+        .last-updated p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .terms-header h1 {
+                font-size: 2rem;
+            }
+            
+            .terms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="component/header :: header"></div>
+
+    <div class="terms-container">
+        <!-- Header Section -->
+        <div class="terms-header">
+            <h1>📋 Điều Khoản Chung</h1>
+            <p>Vui lòng đọc kỹ các điều khoản và điều kiện sử dụng dịch vụ của PetCarePlus trước khi sử dụng</p>
+        </div>
+
+        <!-- Điều khoản chung -->
+        <div class="terms-section">
+            <h2>📜 Điều Khoản Chung</h2>
+            <p>Bằng việc sử dụng dịch vụ của PetCarePlus, bạn đồng ý tuân thủ các điều khoản và điều kiện sau đây. Nếu bạn không đồng ý với bất kỳ điều khoản nào, vui lòng không sử dụng dịch vụ của chúng tôi.</p>
+            
+            <div class="highlight-box">
+                <h4>⏰ Cập nhật lần cuối:</h4>
+                <p><strong>Ngày 01/01/2024</strong></p>
+                <p>Phiên bản: 2.0</p>
+            </div>
+        </div>
+
+        <!-- Định nghĩa -->
+        <div class="terms-section">
+            <h2>📖 Định Nghĩa</h2>
+            <p>Trong các điều khoản này, các thuật ngữ sau đây có nghĩa như sau:</p>
+            <ul>
+                <li><strong>"PetCarePlus", "chúng tôi", "công ty":</strong> Chỉ Công ty Cổ phần PetCarePlus Việt Nam</li>
+                <li><strong>"Khách hàng", "bạn", "người dùng":</strong> Chỉ cá nhân hoặc tổ chức sử dụng dịch vụ của PetCarePlus</li>
+                <li><strong>"Dịch vụ":</strong> Chỉ tất cả các dịch vụ mà PetCarePlus cung cấp bao gồm khám chữa bệnh, khách sạn, spa, bán hàng</li>
+                <li><strong>"Website":</strong> Chỉ trang web chính thức của PetCarePlus tại địa chỉ petcareplus.vn</li>
+                <li><strong>"Thú cưng":</strong> Chỉ các động vật được nuôi làm thú cưng như chó, mèo, chim, cá, v.v.</li>
+            </ul>
+        </div>
+
+        <!-- Điều kiện sử dụng -->
+        <div class="terms-section">
+            <h2>✅ Điều Kiện Sử Dụng</h2>
+            <div class="terms-grid">
+                <div class="terms-card">
+                    <h4>👤 Độ tuổi</h4>
+                    <p>Bạn phải từ 18 tuổi trở lên hoặc có sự đồng ý của người giám hộ hợp pháp để sử dụng dịch vụ của chúng tôi.</p>
+                </div>
+                <div class="terms-card">
+                    <h4>📱 Thông tin tài khoản</h4>
+                    <p>Bạn phải cung cấp thông tin chính xác, đầy đủ và cập nhật khi đăng ký tài khoản và sử dụng dịch vụ.</p>
+                </div>
+                <div class="terms-card">
+                    <h4>🔒 Bảo mật</h4>
+                    <p>Bạn có trách nhiệm bảo mật thông tin đăng nhập và không được chia sẻ với người khác.</p>
+                </div>
+                <div class="terms-card">
+                    <h4>📞 Liên lạc</h4>
+                    <p>Bạn phải cung cấp thông tin liên lạc chính xác và có thể liên lạc được trong quá trình sử dụng dịch vụ.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dịch vụ khám chữa bệnh -->
+        <div class="terms-section">
+            <h2>🏥 Điều Khoản Dịch Vụ Khám Chữa Bệnh</h2>
+            <h3>Điều kiện sử dụng dịch vụ thú y:</h3>
+            <ol>
+                <li><strong>Thông tin thú cưng:</strong> Bạn phải cung cấp thông tin chính xác về tình trạng sức khỏe và tiền sử bệnh của thú cưng.</li>
+                <li><strong>Đồng ý điều trị:</strong> Bạn phải ký xác nhận đồng ý với các phương pháp điều trị được đề xuất.</li>
+                <li><strong>Tuân thủ hướng dẫn:</strong> Bạn phải tuân thủ nghiêm ngặt các hướng dẫn chăm sóc sau điều trị.</li>
+                <li><strong>Rủi ro:</strong> Mọi thủ thuật y tế đều có rủi ro, PetCarePlus sẽ thông báo đầy đủ trước khi thực hiện.</li>
+            </ol>
+
+            <div class="warning-box">
+                <h4>⚠️ Lưu ý quan trọng</h4>
+                <p>PetCarePlus không chịu trách nhiệm về các biến chứng phát sinh do khách hàng không tuân thủ hướng dẫn chăm sóc sau điều trị.</p>
+            </div>
+        </div>
+
+        <!-- Dịch vụ khách sạn -->
+        <div class="terms-section">
+            <h2>🏨 Điều Khoản Dịch Vụ Khách Sạn Thú Cưng</h2>
+            <h3>Điều kiện lưu trú:</h3>
+            <ol>
+                <li><strong>Tiêm phòng:</strong> Thú cưng phải được tiêm phòng đầy đủ và có sổ tiêm phòng hợp lệ.</li>
+                <li><strong>Sức khỏe:</strong> Thú cưng phải khỏe mạnh, không mắc bệnh truyền nhiễm.</li>
+                <li><strong>Đồ dùng cá nhân:</strong> Khách hàng có thể mang theo đồ dùng cá nhân của thú cưng.</li>
+                <li><strong>Thời gian đón trả:</strong> Tuân thủ giờ đón trả đã đăng ký.</li>
+            </ol>
+
+            <div class="info-box">
+                <h4>ℹ️ Thông tin bổ sung</h4>
+                <p>PetCarePlus sẽ cung cấp dịch vụ chăm sóc 24/7 và báo cáo tình trạng thú cưng hàng ngày cho chủ nhân.</p>
+            </div>
+        </div>
+
+        <!-- Mua sắm online -->
+        <div class="terms-section">
+            <h2>🛒 Điều Khoản Mua Sắm Online</h2>
+            <h3>Đặt hàng và thanh toán:</h3>
+            <ol>
+                <li><strong>Đặt hàng:</strong> Đơn hàng chỉ được xác nhận khi thanh toán thành công.</li>
+                <li><strong>Giá cả:</strong> Giá hiển thị trên website là giá cuối cùng, đã bao gồm thuế VAT.</li>
+                <li><strong>Thanh toán:</strong> Chấp nhận thanh toán qua thẻ tín dụng, chuyển khoản, tiền mặt.</li>
+                <li><strong>Hủy đơn hàng:</strong> Có thể hủy đơn hàng trong vòng 2 giờ sau khi đặt.</li>
+            </ol>
+
+            <h3>Đổi trả và hoàn tiền:</h3>
+            <ol>
+                <li><strong>Thời gian đổi trả:</strong> 7 ngày kể từ ngày nhận hàng (với sản phẩm không dùng).</li>
+                <li><strong>Điều kiện đổi trả:</strong> Sản phẩm còn nguyên vẹn, chưa sử dụng, còn hạn sử dụng.</li>
+                <li><strong>Hoàn tiền:</strong> Sẽ hoàn tiền trong vòng 3-5 ngày làm việc.</li>
+            </ol>
+        </div>
+
+        <!-- Quyền và nghĩa vụ -->
+        <div class="terms-section">
+            <h2>⚖️ Quyền Và Nghĩa Vụ</h2>
+            
+            <h3>Quyền của khách hàng:</h3>
+            <ul>
+                <li>Được cung cấp dịch vụ chất lượng theo cam kết</li>
+                <li>Được thông tin đầy đủ về dịch vụ và giá cả</li>
+                <li>Được bảo mật thông tin cá nhân</li>
+                <li>Được khiếu nại và yêu cầu bồi thường khi có sai sót</li>
+                <li>Được hủy dịch vụ theo quy định</li>
+            </ul>
+
+            <h3>Nghĩa vụ của khách hàng:</h3>
+            <ul>
+                <li>Cung cấp thông tin chính xác và đầy đủ</li>
+                <li>Thanh toán đầy đủ phí dịch vụ</li>
+                <li>Tuân thủ các quy định của PetCarePlus</li>
+                <li>Không sử dụng dịch vụ cho mục đích bất hợp pháp</li>
+                <li>Bảo vệ tài sản và cơ sở vật chất của PetCarePlus</li>
+            </ul>
+
+            <h3>Quyền của PetCarePlus:</h3>
+            <ul>
+                <li>Từ chối phục vụ khi khách hàng vi phạm điều khoản</li>
+                <li>Thay đổi giá dịch vụ với thông báo trước</li>
+                <li>Thu thập và sử dụng thông tin khách hàng theo quy định</li>
+                <li>Yêu cầu bồi thường thiệt hại do khách hàng gây ra</li>
+            </ul>
+        </div>
+
+        <!-- Bảo mật thông tin -->
+        <div class="terms-section">
+            <h2>🔒 Bảo Mật Thông Tin</h2>
+            <p>PetCarePlus cam kết bảo vệ thông tin cá nhân của khách hàng:</p>
+            <ul>
+                <li><strong>Thu thập thông tin:</strong> Chỉ thu thập thông tin cần thiết cho việc cung cấp dịch vụ</li>
+                <li><strong>Sử dụng thông tin:</strong> Chỉ sử dụng cho mục đích cung cấp dịch vụ và cải thiện chất lượng</li>
+                <li><strong>Bảo vệ thông tin:</strong> Áp dụng các biện pháp bảo mật tiên tiến</li>
+                <li><strong>Chia sẻ thông tin:</strong> Không chia sẻ thông tin với bên thứ ba trừ khi có sự đồng ý</li>
+            </ul>
+
+            <div class="info-box">
+                <h4>ℹ️ Chính sách bảo mật</h4>
+                <p>Để biết thêm chi tiết về chính sách bảo mật, vui lòng tham khảo "Chính sách bảo mật" của chúng tôi.</p>
+            </div>
+        </div>
+
+        <!-- Giới hạn trách nhiệm -->
+        <div class="terms-section">
+            <h2>🚫 Giới Hạn Trách Nhiệm</h2>
+            <p>PetCarePlus sẽ không chịu trách nhiệm trong các trường hợp sau:</p>
+            <ul>
+                <li>Thiệt hại do lỗi của khách hàng hoặc bên thứ ba</li>
+                <li>Thiệt hại do sự kiện bất khả kháng (thiên tai, dịch bệnh, v.v.)</li>
+                <li>Thiệt hại gián tiếp hoặc thiệt hại về lợi nhuận</li>
+                <li>Thiệt hại do khách hàng không tuân thủ hướng dẫn</li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ Giới hạn bồi thường</h4>
+                <p>Mức bồi thường tối đa của PetCarePlus không vượt quá giá trị dịch vụ đã thanh toán.</p>
+            </div>
+        </div>
+
+        <!-- Giải quyết tranh chấp -->
+        <div class="terms-section">
+            <h2>🤝 Giải Quyết Tranh Chấp</h2>
+            <h3>Quy trình giải quyết tranh chấp:</h3>
+            <ol>
+                <li><strong>Thông báo:</strong> Khách hàng phải thông báo tranh chấp trong vòng 30 ngày</li>
+                <li><strong>Thương lượng:</strong> Hai bên sẽ thương lượng để giải quyết</li>
+                <li><strong>Hòa giải:</strong> Nếu không thỏa thuận được, sẽ tiến hành hòa giải</li>
+                <li><strong>Tòa án:</strong> Cuối cùng sẽ giải quyết tại tòa án có thẩm quyền</li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>📞 Liên hệ khiếu nại</h4>
+                <p><strong>Hotline:</strong> 099.999.9999</p>
+                <p><strong>Email:</strong> complaints@petcareplus.vn</p>
+                <p><strong>Thời gian:</strong> 8:00 - 17:00 (Thứ 2 - Thứ 6)</p>
+            </div>
+        </div>
+
+        <!-- Thay đổi điều khoản -->
+        <div class="terms-section">
+            <h2>📝 Thay Đổi Điều Khoản</h2>
+            <p>PetCarePlus có quyền thay đổi các điều khoản này bất cứ lúc nào:</p>
+            <ul>
+                <li><strong>Thông báo:</strong> Sẽ thông báo trước ít nhất 30 ngày</li>
+                <li><strong>Hiệu lực:</strong> Có hiệu lực ngay sau khi đăng tải</li>
+                <li><strong>Tiếp tục sử dụng:</strong> Việc tiếp tục sử dụng dịch vụ đồng nghĩa với việc chấp nhận điều khoản mới</li>
+            </ul>
+        </div>
+
+        <!-- Liên hệ hỗ trợ -->
+        <div class="contact-support">
+            <h3>📞 Cần Hỗ Trợ Về Điều Khoản?</h3>
+            <p>Nếu bạn có bất kỳ thắc mắc nào về điều khoản sử dụng, vui lòng liên hệ:</p>
+            <p><strong>Phòng Pháp chế:</strong> <a href="tel:0999999999">099.999.9999</a></p>
+            <p><strong>Email:</strong> <a href="mailto:legal@petcareplus.vn">legal@petcareplus.vn</a></p>
+            <p><strong>Giờ làm việc:</strong> 8:00 - 17:00 (Thứ 2 - Thứ 6)</p>
+        </div>
+
+        <!-- Cập nhật lần cuối -->
+        <div class="last-updated">
+            <p><strong>Cập nhật lần cuối:</strong> 01/01/2024 | <strong>Phiên bản:</strong> 2.0</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="component/footer :: footer"></div>
+
+    <script th:src="@{js/header.js}"></script>
+</body>
+</html> 

@@ -1,6 +1,7 @@
 package org.example.petcareplus.repository;
 
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.enums.AccountRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     boolean existsByPhone(String phone);
 
+    Long countByRole(AccountRole role);
 }

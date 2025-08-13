@@ -1,5 +1,6 @@
 package org.example.petcareplus.repository;
 
+import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     long countProductsByCategoryId(@Param("categoryId") Long categoryId);
 
     Page<Product> findAll(Pageable pageable);
+
+    @Query("""
+        SELECT c.name, SUM(p.unitSold)
+        FROM Product p
+        JOIN p.category c
+        WHERE c.parent IS NULL
+        GROUP BY c.name
+    """)
+    List<CategorySalesDTO> getTotalSoldByEachParentCategory();
+
+    @Query("SELECT SUM(p.unitInStock) FROM Product p WHERE p.status = org.example.petcareplus.enums.ProductStatus.IN_STOCK")
+    Integer getTotalUnitsInStock();
+
+    @Query("SELECT SUM(p.unitSold) FROM Product p")
+    Integer getTotalUnitsSold();
 }

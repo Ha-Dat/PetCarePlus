@@ -1,11 +1,13 @@
 package org.example.petcareplus.controller;
-
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.repository.CategoryRepository;
 import org.example.petcareplus.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 @Controller
-@RequestMapping("/product-dashboard")
+@RequestMapping("/seller")
 public class ProductDashboardController {
-
     private final ProductService productService;
     private final CategoryRepository categoryRepository;
 
@@ -29,25 +29,26 @@ public class ProductDashboardController {
         this.categoryRepository = categoryRepository;
     }
 
-    @GetMapping
+    @GetMapping("/product-dashboard")
     public String productDashboard(@RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "10") int size,
                                    Model model) {
-        var productPage = productService.findAll(PageRequest.of(page, size));
+        Page<Product> productPage = productService.findAll(PageRequest.of(page, size));
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("productStatus", ProductStatus.values());
         return "product-dashboard.html";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/product-dashboard/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
         productService.deleteById(id);
         return "redirect:/product-dashboard";
     }
 
-    @GetMapping(value = "/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/product-dashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Optional<Product> productOptional = productService.findById(id);
@@ -111,7 +112,7 @@ public class ProductDashboardController {
         return product;
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/product-dashboard/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createProduct(@RequestBody ProductDTO dto) {
         try {
             Product product = convertToProduct(dto, new Product());
@@ -123,7 +124,7 @@ public class ProductDashboardController {
         }
     }
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/product-dashboard/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDTO dto) {
         try {
             Optional<Product> existing = productService.findById(id);

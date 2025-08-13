@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByParentIsNull();
-    List<Category> findAll();
-    void deleteById(Long id);
-    Page<Category> findAll(Pageable pageable);
+
+    List<Category> findByParentCategoryId(Long id);
+
+    Page<Category> findByParentIsNull(Pageable pageable);
 }
