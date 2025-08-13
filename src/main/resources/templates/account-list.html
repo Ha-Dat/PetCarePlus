@@ -441,7 +441,7 @@
                     <input type="password" name="password" required><br><br>
 
                     <label>Vai trò:</label>
-                    <select name="role">
+                    <select id="createRole" name="role">
                         <option th:each="r : ${roles}"
                                 th:value="${r.name()}"
                                 th:text="${r.value}">
@@ -507,6 +507,16 @@
 <script>
     function openCreateModal() {
         document.getElementById('createAccountModal').style.display = 'flex';
+
+        // Ẩn role ADMIN và CUSTOMER
+        const roleSelect = document.querySelector('#createAccountModal select[name="role"]');
+        Array.from(roleSelect.options).forEach(option => {
+            if (option.value.toUpperCase() === "ADMIN" || option.value.toUpperCase() === "CUSTOMER") {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        });
     }
 
     function closeCreateModal() {
