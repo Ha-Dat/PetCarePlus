@@ -37,12 +37,30 @@ public class CartController {
             return ResponseEntity.status(401).body("Bạn cần đăng nhập để mua hàng");
         }
 
+        // Kiểm tra sản phẩm có tồn tại không
+        Optional<Product> productOpt = productService.getProductById(productId);
+        if (productOpt.isEmpty()) {
+            return ResponseEntity.status(400).body("Sản phẩm không tồn tại");
+        }
+
+        Product product = productOpt.get();
+        int unitInStock = product.getUnitInStock();
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
         }
 
-        cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
+        // Tính tổng số lượng hiện tại trong cart
+        int currentQuantityInCart = cart.getOrDefault(productId, 0);
+        int newTotalQuantity = currentQuantityInCart + quantity;
+
+        // Kiểm tra xem tổng số lượng có vượt quá stock không
+        if (newTotalQuantity > unitInStock) {
+            return ResponseEntity.status(400).body("Không đủ hàng trong kho. Số lượng tối đa có thể thêm: " + (unitInStock - currentQuantityInCart));
+        }
+
+        cart.put(productId, newTotalQuantity);
         session.setAttribute("cart", cart);
 
         return ResponseEntity.ok("Đã thêm vào giỏ hàng");
@@ -59,12 +77,30 @@ public class CartController {
             return ResponseEntity.status(401).body("Bạn cần đăng nhập");
         }
 
+        // Kiểm tra sản phẩm có tồn tại không
+        Optional<Product> productOpt = productService.getProductById(productId);
+        if (productOpt.isEmpty()) {
+            return ResponseEntity.status(400).body("Sản phẩm không tồn tại");
+        }
+
+        Product product = productOpt.get();
+        int unitInStock = product.getUnitInStock();
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
         }
 
-        cart.put(productId, cart.getOrDefault(productId, 0) + quantity);
+        // Tính tổng số lượng hiện tại trong cart
+        int currentQuantityInCart = cart.getOrDefault(productId, 0);
+        int newTotalQuantity = currentQuantityInCart + quantity;
+
+        // Kiểm tra xem tổng số lượng có vượt quá stock không
+        if (newTotalQuantity > unitInStock) {
+            return ResponseEntity.status(400).body("Không đủ hàng trong kho. Số lượng tối đa có thể thêm: " + (unitInStock - currentQuantityInCart));
+        }
+
+        cart.put(productId, newTotalQuantity);
         session.setAttribute("cart", cart);
 
         return ResponseEntity.ok().build();
@@ -106,6 +142,24 @@ public class CartController {
         Long productId = ((Number) payload.get("productId")).longValue();
         Integer quantity = (Integer) payload.get("quantity");
 
+        // Kiểm tra sản phẩm có tồn tại không
+        Optional<Product> productOpt = productService.getProductById(productId);
+        if (productOpt.isEmpty()) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Sản phẩm không tồn tại");
+            return ResponseEntity.status(400).body(errorResponse);
+        }
+
+        Product product = productOpt.get();
+        int unitInStock = product.getUnitInStock();
+
+        // Kiểm tra xem số lượng có vượt quá stock không
+        if (quantity > unitInStock) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Không đủ hàng trong kho. Số lượng tối đa: " + unitInStock);
+            return ResponseEntity.status(400).body(errorResponse);
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
@@ -116,9 +170,9 @@ public class CartController {
 
         BigDecimal total = BigDecimal.ZERO;
         for (Map.Entry<Long, Integer> entry : cart.entrySet()) {
-            Product product = productService.getProductById(entry.getKey()).orElse(null);
-            if (product != null) {
-                total = total.add(product.getPrice().multiply(BigDecimal.valueOf(entry.getValue())));
+            Product productInCart = productService.getProductById(entry.getKey()).orElse(null);
+            if (productInCart != null) {
+                total = total.add(productInCart.getPrice().multiply(BigDecimal.valueOf(entry.getValue())));
             }
         }
 
