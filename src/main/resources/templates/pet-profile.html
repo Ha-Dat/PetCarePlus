@@ -308,9 +308,9 @@
 
                         <!-- Tuổi -->
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Tuổi (năm):</label>
+                            <label class="col-sm-3 col-form-label">Tuổi (Tháng):</label>
                             <div class="col-sm-9">
-                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!edit}" class="form-control" min="1" max="50">
+                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!edit}" class="form-control" min="1" max="300">
                             </div>
                         </div>
 
@@ -374,8 +374,8 @@
                     <input type="text" name="name" class="form-control" required>
                 </div>
                 <div class="mb-2">
-                    <label class="form-label">Tuổi (năm):</label>
-                    <input type="number" name="age" class="form-control" required min="1" max="50">
+                    <label class="form-label">Tuổi (Tháng):</label>
+                    <input type="number" name="age" class="form-control" required min="1" max="300">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Loài:</label>

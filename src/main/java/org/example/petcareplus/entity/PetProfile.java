@@ -33,7 +33,7 @@ public class PetProfile {
     private Float weight;
 
     @Min(1)
-    @Max(50)
+    @Max(300)
     private Integer age;
 
     @OneToMany(mappedBy = "petProfile", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -93,11 +93,11 @@ public class PetProfile {
         this.weight = weight;
     }
 
-    public @Min(1) @Max(50) Integer getAge() {
+    public @Min(1) @Max(300) Integer getAge() {
         return age;
     }
 
-    public void setAge(@Min(1) @Max(50) Integer age) {
+    public void setAge(@Min(1) @Max(300) Integer age) {
         this.age = age;
     }
 
