@@ -9,6 +9,10 @@ import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.enums.PromotionStatus;
 import org.example.petcareplus.service.PromotionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,19 +42,26 @@ public class PromotionController {
     }
 
     @GetMapping("/list")
-    public String getAllPromotions(Model model, HttpSession session) {
+    public String getAllPromotions(Model model, HttpSession session,
+                                   @RequestParam(defaultValue = "0") int page,       // số trang, mặc định 0
+                                   @RequestParam(defaultValue = "8") int size        // số phần tử mỗi trang, mặc định 5
+    ) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
         }
 
-        System.out.println(" All promotions: " + promotionService.getAllPromotions());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("promotionId").descending());
+        Page<Promotion> promotionsPage = promotionService.getAllPromotions(pageable);
 
-        List<Promotion> promotions = promotionService.getAllPromotions();
-        model.addAttribute("promotions", promotions);
+        model.addAttribute("promotionsPage", promotionsPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+
         return "promotion-list";
     }
+
 
     @PostMapping("/create")
     public String createPromotion(@RequestParam("title") String title,

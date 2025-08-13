@@ -152,7 +152,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="promo : ${promotions}">
+            <tr th:each="promo : ${promotionsPage}">
                 <td th:text="${promo.promotionId}"></td>
                 <td th:text="${promo.title}"></td>
                 <td th:text="${promo.description}"></td>
@@ -184,6 +184,14 @@
             </tr>
             </tbody>
         </table>
+        <!-- pagination -->
+        <div>
+            <a th:if="${promotionsPage.hasPrevious()}"
+               th:href="@{/seller/promotion/list(page=${promotionsPage.number - 1}, size=${pageSize})}">Previous</a>
+            <span>Page <span th:text="${promotionsPage.number + 1}">1</span> of <span th:text="${promotionsPage.totalPages}">1</span></span>
+            <a th:if="${promotionsPage.hasNext()}"
+               th:href="@{/seller/promotion/list(page=${promotionsPage.number + 1}, size=${pageSize})}">Next</a>
+        </div>
     </main>
 </div>
 
