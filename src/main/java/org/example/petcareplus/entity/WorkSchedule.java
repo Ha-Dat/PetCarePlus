@@ -13,8 +13,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "WorkSchedules")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class WorkSchedule {
 
     @Id
