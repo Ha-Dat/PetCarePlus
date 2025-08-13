@@ -21,15 +21,13 @@ import java.util.Map;
 @RequestMapping("/checkout")
 public class CheckoutController {
 
-    private final AccountService accountService;
     private final ProfileService profileService;
     private final ProductService productService;
     private final OrderService orderService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
 
-    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
-        this.accountService = accountService;
+    public CheckoutController(ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
@@ -128,7 +126,6 @@ public class CheckoutController {
         order.setDiscountAmount(request.getDiscountAmount());
         order.setPromotion(promotion);
         order.setOrderDate(LocalDateTime.now());
-        order.setShippingMethod(request.getShippingMethod());
         order.setShippingFee(null);
 
         // Handle Address & Name & Phone
@@ -225,7 +222,7 @@ public class CheckoutController {
 
         // Tính giảm giá
         BigDecimal discountPercent = promo.getDiscount();
-        BigDecimal discountAmount = subtotal.multiply(discountPercent).divide(BigDecimal.valueOf(100));
+        BigDecimal discountAmount = subtotal.multiply(discountPercent);
         BigDecimal total = subtotal.subtract(discountAmount);
 
         res.put("valid", true);

@@ -15,7 +15,6 @@ public class CheckoutDTO {
     private String address;
     private String ward;
     private String city;
-    private String shippingMethod;
     private String paymentMethod;
     private String couponCode;
     private String note;
@@ -68,14 +67,6 @@ public class CheckoutDTO {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getShippingMethod() {
-        return shippingMethod;
-    }
-
-    public void setShippingMethod(String shippingMethod) {
-        this.shippingMethod = shippingMethod;
     }
 
     public String getPaymentMethod() {

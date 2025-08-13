@@ -86,33 +86,12 @@
                         </div>
                     </div>
 
-                    <!-- Shipping Method -->
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-body">
-                            <h4 class="card-title mb-4">Phương thức vận chuyển</h4>
-
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="shippingMethod"
-                                       id="expressShipping" value="EXPRESS" checked>
-                                <label class="form-check-label" for="expressShipping">
-                                    <strong>Giao hàng nhanh (Hỏa tốc)</strong>
-                                    <p class="text-muted small mb-0">Giao trong 1-2 ngày làm việc</p>
-                                </label>
-                                <span class="float-end fw-bold" id="expressFee">...</span>
-                            </div>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="shippingMethod"
-                                       id="standardShipping" value="STANDARD">
-                                <label class="form-check-label" for="standardShipping">
-                                    <strong>Giao hàng tiêu chuẩn</strong>
-                                    <p class="text-muted small mb-0">Giao trong 3-5 ngày làm việc</p>
-                                </label>
-                                <span class="float-end fw-bold" id="standardFee">...</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="mt-4"></div>
+                    <a href="/view-cart" class="btn btn-secondary w-50 py-3">
+                        Trở lại giỏ hàng
+                    </a>
                 </div>
+
 
                 <!-- Order Summary -->
                 <div class="col-lg-6">
@@ -135,7 +114,7 @@
                                             <span th:text="${entry.value}"></span>
                                         </td>
                                         <td class="text-end">
-                                            <span th:text="${#numbers.formatCurrency(entry.key.price.doubleValue() * entry.value) + ' VND'}"></span>
+                                            <span th:text="${#numbers.formatDecimal(entry.key.price.doubleValue() * entry.value, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -144,7 +123,7 @@
                                         <th>Tạm tính</th>
                                         <td class="text-end" id="subtotal"
                                             th:attr="data-value=${subtotal}"
-                                            th:text="${#numbers.formatCurrency(subtotal.doubleValue()) + 'VND'}"></td>
+                                            th:text="${#numbers.formatDecimal(subtotal.doubleValue(), 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                                     </tr>
                                     <tr id="discountRow" style="display: none;">
                                         <th>Giảm giá</th>
@@ -153,7 +132,7 @@
                                     <tr class="fw-bold">
                                         <th>Tổng cộng</th>
                                         <td class="text-end" id="totalPrice"
-                                            th:text="${#numbers.formatCurrency(subtotal.doubleValue()) + 'VND'}"></td>
+                                            th:text="${#numbers.formatDecimal(subtotal.doubleValue(), 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                                         <input type="hidden" name="totalPrice" th:value="${subtotal}"/>
                                     </tr>
                                     </tfoot>
@@ -210,6 +189,7 @@
                 </div>
             </div>
         </form>
+
     </div>
 </section>
 
