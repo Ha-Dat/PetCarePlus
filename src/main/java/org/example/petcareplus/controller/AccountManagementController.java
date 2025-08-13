@@ -16,10 +16,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/admin/account")
+@RequestMapping("/admin")
 public class AccountManagementController {
 
     private final AccountService accountService;
@@ -28,7 +29,7 @@ public class AccountManagementController {
         this.accountService = accountService;
     }
 
-    @GetMapping()
+    @GetMapping("/account")
     public String getAllAccount(Model model,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size){
@@ -82,6 +83,13 @@ public class AccountManagementController {
         account.setStatus(AccountStatus.ACTIVE);
         accountService.save(account);
         return "redirect:/admin/account";
+    }
+
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhone(@RequestParam String phone) {
+        boolean exists = accountService.isPhoneExists(phone);
+        return Map.of("exists", exists);
     }
 
     @GetMapping("/detail/{id}")
