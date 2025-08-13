@@ -1,48 +1,23 @@
-package org.example.petcareplus.entity;
+package org.example.petcareplus.dto;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.petcareplus.enums.PromotionStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "Promotions")
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Promotion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+public class PromotionDTO {
     private Long promotionId;
-
-    @Column(nullable = false)
     private String title;
-
     private String description;
-
-    @Column(nullable = false, scale = 2)
     private BigDecimal discount;
-
     private LocalDateTime startDate;
-
     private LocalDateTime endDate;
-
-    @Enumerated(EnumType.STRING)
-    private PromotionStatus status;
-
-    @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Media> medias;
-
-    @OneToMany(mappedBy = "promotion")
-    private List<Order> orders;
-
-    //method thêm trong trường hợp lombok không hoạt động
+    private String status;
+    private List<String> mediaUrls;
 
     public Long getPromotionId() {
         return promotionId;
@@ -92,27 +67,19 @@ public class Promotion {
         this.endDate = endDate;
     }
 
-    public PromotionStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(PromotionStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public List<Media> getMedias() {
-        return medias;
+    public List<String> getMediaUrls() {
+        return mediaUrls;
     }
 
-    public void setMedias(List<Media> medias) {
-        this.medias = medias;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
+    public void setMediaUrls(List<String> mediaUrls) {
+        this.mediaUrls = mediaUrls;
     }
 }

@@ -1,5 +1,9 @@
 package org.example.petcareplus.controller;
 
+import jakarta.servlet.http.HttpSession;
+import org.example.petcareplus.dto.PromotionDTO;
+import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.entity.Promotion;
 import org.example.petcareplus.enums.PromotionStatus;
 import org.example.petcareplus.service.PromotionService;
@@ -22,7 +26,15 @@ public class PromotionController {
     }
 
     @GetMapping("/list")
-    public String getAllPromotions(Model model) {
+    public String getAllPromotions(Model model, HttpSession session) {
+
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return "redirect:/login";
+        }
+
+        System.out.println(" All promotions: " + promotionService.getAllPromotions());
+
         List<Promotion> promotions = promotionService.getAllPromotions();
         model.addAttribute("promotions", promotions);
         return "promotion-list";
@@ -31,7 +43,7 @@ public class PromotionController {
     @PostMapping("/create")
     public String createPromotion(@ModelAttribute("promotion") Promotion promotion) {
         promotionService.savePromotion(promotion);
-        return "redirect:/manager/promotion/list";
+        return "redirect:/seller/promotion/list";
     }
 
     @PostMapping("/change-status/{id}")
@@ -55,15 +67,27 @@ public class PromotionController {
 
     @GetMapping("/details/{id}")
     @ResponseBody
-    public ResponseEntity<?> promotionDetails(@PathVariable("id") Long id) {
-
+    public PromotionDTO getPromotionDetails(@PathVariable Long id) {
         Promotion promotion = promotionService.getPromotionById(id);
 
-        if (promotion != null) {
-            return ResponseEntity.ok(promotion);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy.");
-        }
+        System.out.println(" Promotion to get details: " + promotion);
+
+        PromotionDTO dto = new PromotionDTO();
+        dto.setPromotionId(promotion.getPromotionId());
+        dto.setTitle(promotion.getTitle());
+        dto.setDescription(promotion.getDescription());
+        dto.setDiscount(promotion.getDiscount());
+        dto.setStartDate(promotion.getStartDate());
+        dto.setEndDate(promotion.getEndDate());
+        dto.setStatus(promotion.getStatus().name());
+        dto.setMediaUrls(
+                promotion.getMedias()
+                        .stream()
+                        .map(Media::getUrl)
+                        .toList()
+        );
+
+        return dto;
     }
 
 
