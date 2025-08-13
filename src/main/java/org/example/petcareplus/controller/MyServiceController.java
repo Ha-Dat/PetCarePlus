@@ -72,6 +72,6 @@ public class MyServiceController {
         }
 
         bookingService.cancelBookingByTypeAndId(category, bookingId);
-        return "redirect:/my-schedule?type=" + (type == null ? "all" : type) + "&status=" + (status == null ? "all" : status);
+        return "redirect:/customer/my-schedule?type=" + (type == null ? "all" : type) + "&status=" + (status == null ? "all" : status);
     }
 }
