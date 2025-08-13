@@ -65,20 +65,132 @@ public class PetProfileController {
 
     @PostMapping("/customer/pet-profile/edit")
     public String editPetProfile(@RequestParam("petId") Long petId,
-                                 @ModelAttribute PetProfile petProfile) {
-        petProfileService.updatePetProfile(petId, petProfile);
-        return "redirect:/pet-profile?selectedId=" + petId;
+                                 @RequestParam("name") String name,
+                                 @RequestParam("species") String species,
+                                 @RequestParam("breeds") String breeds,
+                                 @RequestParam("age") Integer age,
+                                 @RequestParam("weight") Float weight,
+                                 HttpSession session,
+                                 Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        
+        // Validate dữ liệu
+        if (name == null || name.trim().isEmpty()) {
+            model.addAttribute("error", "Tên không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (species == null || species.trim().isEmpty()) {
+            model.addAttribute("error", "Loài không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (breeds == null || breeds.trim().isEmpty()) {
+            model.addAttribute("error", "Giống không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (name.trim().length() > 50) {
+            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (species.trim().length() > 50) {
+            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (breeds.trim().length() > 50) {
+            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        
+        // Lấy PetProfile hiện tại từ database
+        PetProfile existingPet = petProfileService.findById(petId);
+        if (existingPet != null) {
+            // Cập nhật thông tin
+            existingPet.setName(name.trim());
+            existingPet.setSpecies(species.trim());
+            existingPet.setBreeds(breeds.trim());
+            existingPet.setAge(age);
+            existingPet.setWeight(weight);
+            
+            petProfileService.updatePetProfile(petId, existingPet);
+        }
+        
+        return "redirect:/customer/pet-profile?selectedId=" + petId;
     }
 
     @PostMapping("/customer/pet-profile/add")
-    public String createNewPet(@Valid @ModelAttribute PetProfile petProfile,
-                               BindingResult result,
+    public String createNewPet(@RequestParam("name") String name,
+                               @RequestParam("age") Integer age,
+                               @RequestParam("species") String species,
+                               @RequestParam("breeds") String breeds,
+                               @RequestParam("weight") Float weight,
                                @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                HttpSession session,
                                Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        if (result.hasErrors()) {
+        // Validate dữ liệu
+        if (name == null || name.trim().isEmpty()) {
+            model.addAttribute("error", "Tên không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            model.addAttribute("modalError", true);
+            model.addAttribute("showModal", true);
+            return "pet-profile";
+        }
+        if (species == null || species.trim().isEmpty()) {
+            model.addAttribute("error", "Loài không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            model.addAttribute("modalError", true);
+            return "pet-profile";
+        }
+        if (breeds == null || breeds.trim().isEmpty()) {
+            model.addAttribute("error", "Giống không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            model.addAttribute("modalError", true);
+            return "pet-profile";
+        }
+        if (name.trim().length() > 50) {
+            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            model.addAttribute("modalError", true);
+            return "pet-profile";
+        }
+        if (species.trim().length() > 50) {
+            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", null);
+            model.addAttribute("edit", false);
+            model.addAttribute("modalError", true);
+            return "pet-profile";
+        }
+        if (breeds.trim().length() > 50) {
+            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
             model.addAttribute("selectedPet", null);
             model.addAttribute("edit", false);
@@ -87,20 +199,27 @@ public class PetProfileController {
         }
 
         try {
-            // Assign pet profile to current account
-            petProfile.setProfile(account.getProfile());
-            PetProfile newPet = petProfileService.save(petProfile);
+            // Tạo PetProfile mới
+            PetProfile newPet = new PetProfile();
+            newPet.setName(name.trim());
+            newPet.setSpecies(species.trim());
+            newPet.setBreeds(breeds.trim());
+            newPet.setAge(age);
+            newPet.setWeight(weight);
+            newPet.setProfile(account.getProfile());
+            
+            PetProfile savedPet = petProfileService.save(newPet);
 
             // Handle image upload if provided
             if (imageFile != null && !imageFile.isEmpty()) {
                 try {
-                    petProfileService.uploadPetImage(newPet.getPetProfileId(), imageFile);
+                    petProfileService.uploadPetImage(savedPet.getPetProfileId(), imageFile);
                 } catch (Exception e) {
                     // Log error but don't fail the entire operation
                 }
             }
 
-            return "redirect:/customer/pet-profile?selectedId=" + newPet.getPetProfileId();
+            return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi tạo thú cưng: " + e.getMessage());
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
@@ -132,23 +251,74 @@ public class PetProfileController {
 
     @PostMapping("/customer/pet-profile/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
-                                 @Valid @ModelAttribute PetProfile petProfile,
-                                 BindingResult result,
+                                 @RequestParam("name") String name,
+                                 @RequestParam("species") String species,
+                                 @RequestParam("breeds") String breeds,
+                                 @RequestParam("age") Integer age,
+                                 @RequestParam("weight") Float weight,
                                  @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                  HttpSession session,
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        if (result.hasErrors()) {
-            model.addAttribute("selectedId", petId);
-            model.addAttribute("petProfile", petProfile);
+        // Validate dữ liệu
+        if (name == null || name.trim().isEmpty()) {
+            model.addAttribute("error", "Tên không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (species == null || species.trim().isEmpty()) {
+            model.addAttribute("error", "Loài không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (breeds == null || breeds.trim().isEmpty()) {
+            model.addAttribute("error", "Giống không được để trống");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (name.trim().length() > 50) {
+            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (species.trim().length() > 50) {
+            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
+            model.addAttribute("edit", true);
+            return "pet-profile";
+        }
+        if (breeds.trim().length() > 50) {
+            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
             model.addAttribute("edit", true);
             return "pet-profile";
         }
 
         try {
             if (petId != null) {
-                petProfileService.updatePetProfile(petId, petProfile);
+                // Cập nhật PetProfile hiện tại
+                PetProfile existingPet = petProfileService.findById(petId);
+                if (existingPet != null) {
+                    existingPet.setName(name.trim());
+                    existingPet.setSpecies(species.trim());
+                    existingPet.setBreeds(breeds.trim());
+                    existingPet.setAge(age);
+                    existingPet.setWeight(weight);
+                    
+                    petProfileService.updatePetProfile(petId, existingPet);
+                }
 
                 // Handle image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
@@ -161,8 +331,15 @@ public class PetProfileController {
 
                 return "redirect:/customer/pet-profile?selectedId=" + petId;
             } else {
-                PetProfile newPet = petProfileService.createEmptyPet();
+                // Tạo PetProfile mới
+                PetProfile newPet = new PetProfile();
+                newPet.setName(name.trim());
+                newPet.setSpecies(species.trim());
+                newPet.setBreeds(breeds.trim());
+                newPet.setAge(age);
+                newPet.setWeight(weight);
                 newPet.setProfile(account.getProfile());
+                
                 PetProfile savedPet = petProfileService.save(newPet);
 
                 // Handle image upload if provided
@@ -178,8 +355,8 @@ public class PetProfileController {
             }
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi lưu thông tin thú cưng: " + e.getMessage());
-            model.addAttribute("selectedId", petId);
-            model.addAttribute("petProfile", petProfile);
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
             model.addAttribute("edit", true);
             return "pet-profile";
         }

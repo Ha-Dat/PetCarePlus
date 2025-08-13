@@ -202,6 +202,45 @@
             border-color: #4caf50;
             outline: none;
         }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .modal-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+        }
+        
+        .modal-error i {
+            color: #dc3545;
+        }
+        
+        .modal-error strong {
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -369,9 +408,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <!-- Error Message trong Modal -->
+                <div th:if="${modalError != null and error != null}" class="modal-error">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Lỗi:</strong>
+                    <span th:text="${error}">Error message</span>
+                </div>
+                
                 <div class="mb-2">
                     <label class="form-label">Tên:</label>
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" name="name" class="form-control" required maxlength="50">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Tuổi (Tháng):</label>
@@ -379,11 +425,11 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Loài:</label>
-                    <input type="text" name="species" class="form-control">
+                    <input type="text" name="species" class="form-control" required maxlength="50">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Giống:</label>
-                    <input type="text" name="breeds" class="form-control">
+                    <input type="text" name="breeds" class="form-control" required maxlength="50">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Cân nặng (kg):</label>
@@ -502,6 +548,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const preview = document.getElementById('modalImagePreview');
         preview.style.display = 'none';
     });
+    
+    // Tự động mở modal nếu có lỗi validation
+    const modalError = document.querySelector('[data-bs-target="#addPetModal"]');
+    if (modalError && document.querySelector('.modal-error')) {
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
 });
 </script>
 </body>

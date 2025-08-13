@@ -19,13 +19,19 @@ public class PetProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long petProfileId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Tên không được để trống")
+    @Size(min = 2, max = 50, message = "Tên không được vượt quá 50 ký tự")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Giống không được để trống")
+    @Size(min = 2, max = 50, message = "Giống loài không được vượt quá 50 ký tự")
     private String species;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Loài không được để trống")
+    @Size(min = 2, max = 50, message = "Giống loài không được vượt quá 50 ký tự")
     private String breeds;
 
     @DecimalMin(value = "0.1", message = "Cân nặng phải lớn hơn 0")
