@@ -1,22 +1,16 @@
 package org.example.petcareplus.controller;
 
-import org.example.petcareplus.entity.AppointmentBooking;
-import org.example.petcareplus.entity.Prescription;
 import org.example.petcareplus.entity.WorkSchedule;
 import org.example.petcareplus.entity.WorkScheduleRequest;
 import org.example.petcareplus.enums.RequestType;
 import org.example.petcareplus.service.WorkScheduleRequestService;
 import org.example.petcareplus.service.WorkScheduleService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,29 +23,61 @@ public class ManagerController {
         this.workScheduleRequestService = workScheduleRequestService;
     }
 
-    @GetMapping("/manager")
+    @GetMapping("/manager-dashboard")
     public String showManagerPage(Model model) {
-        // Lấy toàn bộ WorkSchedule
-        List<WorkSchedule> schedules = workScheduleService.findAll();
-
-        // Lấy toàn bộ WorkScheduleRequest
+        // Get all data from services
+        List<WorkSchedule> allSchedules = workScheduleService.findAll();
         List<WorkScheduleRequest> allRequests = workScheduleRequestService.findAll();
 
-        // Lọc các request "Xin nghỉ"
-        List<WorkScheduleRequest> absentRequests = allRequests.stream()
+
+        List<Map<String, String>> absentRequests = allRequests.stream()
                 .filter(r -> r.getRequestType() == RequestType.OFF)
+                .map(r -> Map.of(
+                        "accountName", r.getOriginalSchedule().getAccount().getName(),
+                        "accountPhone", r.getOriginalSchedule().getAccount().getPhone(),
+                        "accountRole", r.getOriginalSchedule().getAccount().getRole().getValue(),
+                        "workDate", r.getOriginalSchedule().getWorkDate().toString(),
+                        "shift", r.getOriginalSchedule().getShift().getValue(),
+                        "shiftName", r.getOriginalSchedule().getShift().name(),
+                        "status", r.getStatus().getValue(),
+                        "reason", r.getReason()
+                ))
                 .collect(Collectors.toList());
 
-        // Lọc các request "Đổi lịch"
-        List<WorkScheduleRequest> shiftChangeRequests = allRequests.stream()
+        List<Map<String, String>> shiftChangeRequests = allRequests.stream()
                 .filter(r -> r.getRequestType() == RequestType.CHANGE)
+                .map(r -> Map.of(
+                        "accountName", r.getOriginalSchedule().getAccount().getName(),
+                        "accountPhone", r.getOriginalSchedule().getAccount().getPhone(),
+                        "accountRole", r.getOriginalSchedule().getAccount().getRole().getValue(),
+                        "workDate", r.getOriginalSchedule().getWorkDate().toString(),
+                        "shift", r.getOriginalSchedule().getShift().getValue(),
+                        "shiftName", r.getOriginalSchedule().getShift().name(),
+                        "status", r.getStatus().getValue(),
+                        "reason", r.getReason(),
+                        "requestDate", r.getRequestedDate().toString(),
+                        "requestShift", r.getRequestedShift().toString()
+                ))
                 .collect(Collectors.toList());
 
-        // Truyền vào view
+        List<Map<String, String>> schedules = allSchedules.stream()
+                .map(r -> Map.of(
+                        "accountName", r.getAccount().getName(),
+                        "accountPhone", r.getAccount().getPhone(),
+                        "accountRole", r.getAccount().getRole().getValue(),
+                        "workDate", r.getWorkDate().toString(),
+                        "shift", r.getShift().getValue(),
+                        "shiftName", r.getShift().name(),
+                        "note", r.getNote(),
+                        "status", r.getStatus().getValue()
+                ))
+                .collect(Collectors.toList());
+
+
         model.addAttribute("schedules", schedules);
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
 
-        return "manager"; // manager.html
+        return "manager.html";
     }
 }

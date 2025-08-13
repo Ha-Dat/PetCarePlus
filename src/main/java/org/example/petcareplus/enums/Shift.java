@@ -8,4 +8,8 @@ public enum Shift {
     Shift(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }
