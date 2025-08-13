@@ -3,6 +3,7 @@ import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
@@ -155,6 +156,7 @@ public class ProductDashboardController {
                 product.getMedias().get(0).setUrl(imageUrl);
             } else {
                 Media media = new Media();
+                media.setMediaCategory(MediaCategory.PRODUCT_IMAGE);
                 media.setUrl(imageUrl);
                 media.setProduct(product);
                 product.setMedias(List.of(media));
@@ -204,6 +206,7 @@ public class ProductDashboardController {
             } else {
                 Media media = new Media();
                 media.setUrl(imageUrl);
+                media.setMediaCategory(MediaCategory.PRODUCT_IMAGE);
                 media.setProduct(product.orElse(null));
                 product.get().setMedias(List.of(media));
             }
