@@ -657,6 +657,7 @@
                   readonly
                   minlength="1"
                   maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -672,6 +673,7 @@
                   readonly
                   minlength="1"
                   maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -687,6 +689,7 @@
                   readonly
                   minlength="1"
                   maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -694,14 +697,14 @@
         <div class="form-group">
           <label for="petBreed">Cân nặng (kg)<span style="color: red">*</span></label>
           <input
-                  type="text"
+                  type="number"
                   id="petWeight"
                   name="petWeight"
                   placeholder="10"
                   required
                   readonly
                   min="1"
-                  max="200"
+                  max="100"
           />
         </div>
 
@@ -709,7 +712,7 @@
         <div class="form-group">
           <label for="petBreed">Tuổi thọ (Tháng)<span style="color: red">*</span></label>
           <input
-                  type="text"
+                  type="number"
                   id="petAge"
                   name="petAge"
                   placeholder="2"
@@ -938,8 +941,8 @@
     }
 
     // Validate cân nặng
-    if (isNaN(petWeight) || petWeight < 1 || petWeight > 200) {
-      alert("Cân nặng phải từ 1 đến 200 kg.");
+    if (isNaN(petWeight) || petWeight < 1 || petWeight > 100) {
+      alert("Cân nặng phải từ 1 đến 100 kg.");
       return false;
     }
 

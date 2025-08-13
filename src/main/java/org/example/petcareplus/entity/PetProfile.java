@@ -35,7 +35,7 @@ public class PetProfile {
     private String breeds;
 
     @DecimalMin(value = "0.1", message = "Cân nặng phải lớn hơn 0")
-    @DecimalMax(value = "200.0", message = "Cân nặng không vượt quá 200kg")
+    @DecimalMax(value = "100.0", message = "Cân nặng không vượt quá 200kg")
     private Float weight;
 
     @Min(1)
