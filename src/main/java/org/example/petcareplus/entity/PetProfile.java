@@ -1,9 +1,7 @@
 package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +28,8 @@ public class PetProfile {
     @Column(nullable = false)
     private String breeds;
 
+    @DecimalMin(value = "0.1", message = "Cân nặng phải lớn hơn 0")
+    @DecimalMax(value = "200.0", message = "Cân nặng không vượt quá 200kg")
     private Float weight;
 
     @Min(1)

@@ -28,7 +28,7 @@ public class OrderController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/list_order")
+    @GetMapping("/customer/list_order")
     public String listOrder(HttpSession session,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
@@ -46,6 +46,6 @@ public class OrderController {
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", orderPage.getTotalPages());
-        return "my-order.html";
+        return "my-order";
     }
 }

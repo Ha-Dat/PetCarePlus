@@ -11,17 +11,7 @@ public interface ProfileService {
 
     Profile getProfileByAccountAccountId(Long accountId);
 
-    List<Profile> getAllProfiles();
-
-    Optional<Profile> getProfileById(Integer id);
-
-    Optional<Profile> getProfileById(Long id);
-
-    Optional<City> findCityById(Long cityId);
-
     Profile save(Profile profile);
-
-    List<City> getAllCities();
 
     ProfileDTO getCurrentProfileByAccountAccountId(Long accountId);
 

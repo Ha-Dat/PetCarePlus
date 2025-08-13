@@ -29,7 +29,7 @@ public class ManagerController {
         this.workScheduleRequestService = workScheduleRequestService;
     }
 
-    @GetMapping("/manager")
+    @GetMapping("/manager/shift-dashboards")
     public String showManagerPage(Model model) {
         // Lấy toàn bộ WorkSchedule
         List<WorkSchedule> schedules = workScheduleService.findAll();

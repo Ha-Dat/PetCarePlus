@@ -304,6 +304,7 @@ public class ForumController {
         List<Post> latestPosts = forumService.findTop6NewestPosts();
         List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
 
+        model.addAttribute("account", account);
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
         model.addAttribute("keyword", keyword);

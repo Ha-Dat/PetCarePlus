@@ -57,6 +57,9 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Media> medias;
 
+    @PrePersist
+    protected void onCreate() {this.createdDate = new Date();}
+
     //method thêm trong trường hợp lombok không hoạt động
     public Long getProductId() {
         return productId;

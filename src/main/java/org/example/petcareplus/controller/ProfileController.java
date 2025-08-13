@@ -3,11 +3,9 @@ package org.example.petcareplus.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.example.petcareplus.dto.ProfileDTO;
-import org.example.petcareplus.entity.City;
-import org.example.petcareplus.entity.Category;
-import org.example.petcareplus.entity.Profile;
-import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.*;
 import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.service.LocationService;
 import org.example.petcareplus.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -29,6 +29,9 @@ public class ProfileController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private LocationService locationService;
 
     @GetMapping("/profile")
     public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean edit,
@@ -56,12 +59,31 @@ public class ProfileController {
 
         ProfileDTO profileDTO = profileService.getCurrentProfileByAccountAccountId(account.getAccountId());
         List<Category> parentCategories = categoryService.getParentCategory();
+        List<City> cities = locationService.getAllCities();
+        List<Ward> wards = locationService.getWardsByCityId(profileDTO.getCityId());
 
+        model.addAttribute("cities", cities);
+        model.addAttribute("wards", wards);
         model.addAttribute("categories", parentCategories);
         model.addAttribute("profileDTO", profileDTO);
         model.addAttribute("edit", true);
         return "profile";
     }
+
+    @GetMapping("/wards")
+    @ResponseBody
+    public List<Map<String, Object>> getWardsByCity(@RequestParam Long cityId) {
+        return locationService.getWardsByCityId(cityId)
+                .stream()
+                .map(w -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("wardId", w.getWardId());
+                    map.put("name", w.getName());
+                    return map;
+                })
+                .toList();
+    }
+
 
     @PostMapping("/update")
     public String updateProfile(@Valid @ModelAttribute("profileDTO") ProfileDTO profileDTO,

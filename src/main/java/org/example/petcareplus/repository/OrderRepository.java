@@ -2,6 +2,7 @@ package org.example.petcareplus.repository;
 
 import org.example.petcareplus.dto.MonthlyRevenueDTO;
 import org.example.petcareplus.entity.Order;
+import org.example.petcareplus.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = org.example.petcareplus.enums.OrderStatus.COMPLETED")
     BigDecimal getTotalRevenue();
+
+    Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable);
+
+    Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable);
 }

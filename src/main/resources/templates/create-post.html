@@ -323,7 +323,7 @@
     if (imageUpload) {
       imageUpload.addEventListener("change", function () {
         const files = this.files;
-        if ((files.length > 0) && (files.length <= 3)) {
+        if ((files.length <= 3)) {
           console.log(`Selected ${files.length} image(s)`);
         } else {
           alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
@@ -338,8 +338,8 @@
 
     if (videoUpload) {
       videoUpload.addEventListener("change", function () {
-        const files = this.files[0];
-        if ((files.length > 0) && (files.length <= 3)) {
+        const files = this.files;
+        if ((files.length <= 3)) {
           console.log(`Selected ${files.length} video(s)`);
         } else {
           alert("Bạn chỉ có thể đăng tối đa 3 video.");

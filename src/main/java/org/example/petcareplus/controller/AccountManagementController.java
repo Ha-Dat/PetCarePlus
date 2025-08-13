@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/account")
 public class AccountManagementController {
 
     private final AccountService accountService;
@@ -28,7 +28,7 @@ public class AccountManagementController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/account")
+    @GetMapping()
     public String getAllAccount(Model model,
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size){

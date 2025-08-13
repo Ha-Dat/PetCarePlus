@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface WardRepository extends JpaRepository<Ward, Long> {
-    List<Ward> findByDistrict_DistrictId(Long districtId);
+    List<Ward> findByCity_CityId(Long cityId);
 }

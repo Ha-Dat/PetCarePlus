@@ -105,7 +105,7 @@ public class    AccountController {
         String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
         account.setOtp(otp);
         account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setStatus(AccountStatus.INACTIVE);
         accountService.save(account);
 
         // Gửi OTP qua SMS hoặc log ra console (tạm thời)
@@ -142,13 +142,13 @@ public class    AccountController {
         account.setPhone(registerDTO.getPhone());
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
         account.setRole(AccountRole.CUSTOMER);
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setStatus(AccountStatus.INACTIVE);
 
         // Sinh OTP
         String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
         account.setOtp(otp);
         account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
-        account.setStatus(AccountStatus.ACTIVE); // chưa kích hoạt
+        account.setStatus(AccountStatus.INACTIVE); // chưa kích hoạt
 
         accountService.save(account);
 
@@ -223,7 +223,7 @@ public class    AccountController {
                 return "redirect:/pet-groomer/dashboard";
             }
             case MANAGER -> {
-                return "redirect:/manager/dashboard";
+                return "redirect:/manager/service-dashboard";
             }
             case CUSTOMER -> {
                 return "redirect:/home";
