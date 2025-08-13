@@ -419,7 +419,7 @@
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
-                            <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                            <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                             <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
@@ -447,7 +447,7 @@
                         </div>
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
-                            <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                            <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                             <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
@@ -499,7 +499,7 @@
                             </div>
                             <div class="product-details">
                                 <h3 th:text="${product.name}" class="product-name"></h3>
-                                <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                                <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                                 <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                             </div>
                             <div class="stars">★★★★★</div>

@@ -425,7 +425,7 @@
                     <label for="qty">Số lượng</label>
                     <input type="number" id="qty" name="qty" min="1" value="1">
                 </div>
-                <div class="status-stock" th:class="${'status-stock ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                <div class="status-stock" th:class="${'status-stock ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                 <div class="unit-stock">
                     <label>Hàng trong kho:</label>
                     <div th:text="${product.unitInStock}"></div>
