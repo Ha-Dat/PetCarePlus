@@ -72,11 +72,11 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public @NotBlank(message = "Họ tên không được để trống") @Length(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự") String getName() {
+    public @NotBlank(message = "Họ tên không được để trống") @Length(min = 2, max = 50, message = "Họ tên phải từ 2 đến 50 ký tự") String getName() {
         return name;
     }
 
-    public void setName(@NotBlank(message = "Họ tên không được để trống") @Length(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự") String name) {
+    public void setName(@NotBlank(message = "Họ tên không được để trống") @Length(min = 2, max = 50, message = "Họ tên phải từ 2 đến 50 ký tự") String name) {
         this.name = name;
     }
 
