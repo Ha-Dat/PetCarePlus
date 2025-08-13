@@ -390,7 +390,7 @@
         <h2 class="sidebar-title">Manager Dashboard</h2>
         <ul class="sidebar-menu">
             <li class="active"><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
-            <li><a href="#">📅 Quản lý ca làm việc</a></li>
+            <li><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
         </ul>
     </aside>
 
@@ -691,25 +691,34 @@
         const categoryEdit = document.getElementById("editServiceCategory");
         const durationEdit = document.getElementById("editServiceDuration");
 
+        function lockDuration(input) {
+            input.value = 60;
+            input.readOnly = true;
+            input.onkeydown = e => e.preventDefault();
+            input.onwheel = e => e.preventDefault();
+        }
+
+        function unlockDuration(input) {
+            input.readOnly = false;
+            input.onkeydown = null;
+            input.onwheel = null;
+        }
+
         function lockIfHotel(categorySelect, durationInput) {
-            if (categorySelect.value === "HOTEL") { // hoặc "Khách sạn thú cưng"
-                durationInput.value = 60;
-                durationInput.readOnly = true; // khóa nhập liệu
-                durationInput.addEventListener('keydown', e => e.preventDefault()); // chặn bàn phím
-                durationInput.addEventListener('wheel', e => e.preventDefault());   // chặn cuộn chuột
-                durationInput.addEventListener('input', e => e.preventDefault());   // chặn thay đổi
+            if (categorySelect.value === "HOTEL") {
+                lockDuration(durationInput);
             } else {
-                durationInput.readOnly = false;
+                unlockDuration(durationInput);
             }
         }
 
-        // Add form: chỉ khi chọn
+        // Add form
         categoryAdd.addEventListener("change", () => lockIfHotel(categoryAdd, durationAdd));
 
-        // Edit form: khi chọn
+        // Edit form
         categoryEdit.addEventListener("change", () => lockIfHotel(categoryEdit, durationEdit));
 
-        // Khi mở modal edit: nếu đã là "Khách sạn thú cưng" thì khóa luôn
+        // Mở modal edit
         window.openEditModal = function (element) {
             const serviceId = element.getAttribute('data-service-id');
             const name = element.getAttribute('data-name');
@@ -723,11 +732,11 @@
             document.getElementById("editServicePrice").value = price;
             document.getElementById("editServiceDuration").value = duration;
 
-            // Khóa nếu đã là Khách sạn thú cưng
+            // Luôn kiểm tra khi mở modal
             lockIfHotel(categoryEdit, durationEdit);
 
             document.getElementById("editServiceModal").style.display = "flex";
-        }
+        };
     });
 
 </script>

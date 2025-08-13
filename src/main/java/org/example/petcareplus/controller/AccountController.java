@@ -223,7 +223,7 @@ public class    AccountController {
                 return "redirect:/pet-groomer/dashboard";
             }
             case MANAGER -> {
-                return "redirect:/manager/dashboard";
+                return "redirect:/manager/service-dashboard";
             }
             case CUSTOMER -> {
                 return "redirect:/home";
