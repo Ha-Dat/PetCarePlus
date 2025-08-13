@@ -22,7 +22,7 @@ public class Account {
     private Long accountId;
 
     @NotBlank(message = "Họ tên không được để trống")
-    @Length(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự")
+    @Length(min = 2, max = 50, message = "Họ tên phải từ 2 đến 50 ký tự")
     private String name;
 
     @NotBlank(message = "Số điện thoại không được để trống")
