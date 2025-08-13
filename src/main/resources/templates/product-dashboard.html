@@ -543,10 +543,10 @@
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/seller/product-dashboard/delete/__${product.productId}__}" method="post"
-                                          th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
+                                          th:action="@{/seller/product-dashboard/switch/__${product.productId}__}" method="post"
+                                          th:onsubmit="'confirmSwitchAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
-                                            🗑️ Xóa
+                                            Đổi trạng thái
                                         </button>
                                     </form>
                                 </div>
@@ -781,6 +781,8 @@
             pad(date.getSeconds());
     }
 
+
+
     function openAddModal() {
         document.getElementById("addProductModal").style.display = "flex";
     }
@@ -904,12 +906,12 @@
         document.getElementById('editProductForm').reset();
     }
 
-    function confirmDeleteAndToast(event, productId) {
+    function confirmSwitchAndToast(event, productId) {
         event.preventDefault(); // Ngăn form submit ngay
 
-        const confirmed = confirm("Bạn có chắc muốn xóa sản phẩm này?");
+        const confirmed = confirm("Bạn có chắc muốn đổi trạng thái sản phẩm này?");
         if (confirmed) {
-            showToast("Xóa sản phẩm thành công", "success");
+            showToast("Thành công", "success");
 
             // Submit form sau khi hiện toast (chờ 500ms)
             setTimeout(() => {
