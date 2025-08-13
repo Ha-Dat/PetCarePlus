@@ -1,5 +1,6 @@
 package org.example.petcareplus.controller;
 
+import jakarta.validation.Valid;
 import org.example.petcareplus.dto.AccountDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.enums.AccountRole;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +63,16 @@ public class AccountManagementController {
     }
 
     @PostMapping("/create")
-    public String createAccount(Account account, Model model) {
+    public String createAccount(@Valid Account account, Model model, BindingResult result) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("error", result.getAllErrors().get(0).getDefaultMessage());
+            model.addAttribute("accounts", accountService.getAllAccount());
+            model.addAttribute("roles", AccountRole.getRoles());
+            model.addAttribute("statuses", AccountStatus.getAllValues());
+            return "account-list";
+        }
+
         if (accountService.isPhoneExists(account.getPhone())) {
             model.addAttribute("error", "Số điện thoại đã có tài khoản!");
             model.addAttribute("accounts", accountService.getAllAccount());
@@ -70,7 +81,7 @@ public class AccountManagementController {
         account.setPassword(PasswordHasher.hash(account.getPassword()));
         account.setStatus(AccountStatus.ACTIVE);
         accountService.save(account);
-        return "redirect:/admin/account/list";
+        return "redirect:/admin/account";
     }
 
     @GetMapping("/detail/{id}")
@@ -86,7 +97,13 @@ public class AccountManagementController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateAccount(@PathVariable("id") Long id, @RequestBody AccountDTO dto) {
+    public ResponseEntity<?> updateAccount(@PathVariable("id") Long id, @RequestBody AccountDTO dto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest()
+                    .body(result.getAllErrors().get(0).getDefaultMessage());
+        }
+
         Optional<Account> account = accountService.getById(id);
         if (account.isPresent()) {
             Account acc = account.get();
@@ -94,6 +111,11 @@ public class AccountManagementController {
             acc.setPhone(dto.getPhone());
             acc.setRole(dto.getRole());
             acc.setStatus(dto.getStatus());
+
+            if (dto.getPassword() != null) {
+                acc.setPassword(PasswordHasher.hash(dto.getPassword()));
+            }
+
             accountService.updateAccount(acc);
             return ResponseEntity.ok().build();
         } else {

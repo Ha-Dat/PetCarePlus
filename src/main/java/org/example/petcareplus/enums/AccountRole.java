@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum AccountRole {
 
-    ADMIN("Admin"), SELLER("Nhân viên bán hàng"),
+    SELLER("Nhân viên bán hàng"), ADMIN("Admin"),
     PET_GROOMER("Nhân viên chăm sóc"), VET("Bác sĩ thú y"),
     MANAGER("Quản lý"), CUSTOMER("Khách hàng");
 

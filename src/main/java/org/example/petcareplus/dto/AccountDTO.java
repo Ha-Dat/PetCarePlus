@@ -11,6 +11,7 @@ public class AccountDTO {
     public Long accountId;
     public String name;
     public String phone;
+    public String password;
     public AccountRole role;
     public AccountStatus status;
 
@@ -21,6 +22,7 @@ public class AccountDTO {
         this.accountId = account.getAccountId();
         this.name = account.getName();
         this.phone = account.getPhone();
+        this.password = account.getPassword();
         this.role = account.getRole();
         this.status = account.getStatus();
     }
@@ -47,6 +49,14 @@ public class AccountDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public AccountRole getRole() {
