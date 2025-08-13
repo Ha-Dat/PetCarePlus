@@ -728,7 +728,7 @@
               <option value="">Chọn loại dịch vụ</option>
               <option th:each="service : ${hotelServices}"
                       th:value="${service.serviceId}"
-                      th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + '/giờ)'}">
+                      th:text="${service.name + ' (' + service.price + 'VND/giờ)'}">
               </option>
             </select>
           </div>
@@ -894,7 +894,7 @@
   function handleSubmit(event) {
     event.preventDefault(); // Ngăn form tự gửi
 
-    const form = document.getElementById('spaBookingForm');
+    const form = document.getElementById('hotelBookingForm');
     const select = document.getElementById('petProfileSelect');
     const petProfileId = select.value;
     const petName = document.getElementById("petName").value.trim();
@@ -948,7 +948,7 @@
       return false;
     }
 
-    form.action = `/spa-booking/book/${petProfileId}`;
+    form.action = `/hotel-booking/book/${petProfileId}`;
     alert('Đặt lịch thành công!');
     form.submit();
   }

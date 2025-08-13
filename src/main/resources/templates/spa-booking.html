@@ -728,7 +728,7 @@
                             <option value="">Chọn loại dịch vụ</option>
                             <option th:each="service : ${spaServices}"
                                     th:value="${service.serviceId}"
-                                    th:text="${service.name + ' (' + #numbers.formatCurrency(service.price)+')'}">
+                                    th:text="${service.name + ' (' + service.price + 'VND)'}">
                             </option>
                         </select>
                     </div>
