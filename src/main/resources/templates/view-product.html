@@ -397,6 +397,26 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Product Status Styles */
+        .product-status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        .status-in-stock {
+            color: #ffffff;
+            background-color: #4caf50;
+        }
+
+        .status-out-of-stock {
+            color: #ffffff;
+            background-color: #ff9800;
+        }
     </style>
 </head>
 <body>
@@ -481,6 +501,8 @@
                                 </div>
                                 <div class="product-details">
                                     <h3 th:text="${result_product.name}" class="product-name"></h3>
+                                    <div class="product-status" th:class="${'product-status ' + (result_product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (result_product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${result_product.status.value}"></div>
+                                    <div class="unit-in-stock" th:attr="data-unit-in-stock=${result_product.unitInStock}" style="display: none;"></div>
                                 </div>
                                 <div class="stars">★★★★★</div>
                                 <div class="price"
@@ -516,6 +538,8 @@
                             </div>
                             <div class="product-details">
                                 <h3 th:text="${product.name}" class="product-name"></h3>
+                                <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                                <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                             </div>
                             <div class="stars">★★★★★</div>
                             <div class="price"
@@ -661,9 +685,26 @@
         buttons.forEach(button => {
             button.addEventListener("click", () => {
                 const productId = button.getAttribute("data-product-id");
+                const quantity = 1;
+
+                // Kiểm tra stock trước khi thêm vào giỏ hàng
+                const productItem = button.closest('.product-item');
+                const unitInStockElement = productItem.querySelector('.unit-in-stock');
+                const unitInStock = parseInt(unitInStockElement?.getAttribute('data-unit-in-stock') || '0');
+                
+                if (unitInStock <= 0) {
+                    showToast("Không đủ hàng trong kho", "warning");
+                    return;
+                }
+
+                if (quantity > unitInStock) {
+                    showToast("Không đủ hàng trong kho", "warning");
+                    return;
+                }
+
                 const params = new URLSearchParams();
                 params.append("productId", productId);
-                params.append("quantity", 1);
+                params.append("quantity", quantity);
 
                 fetch("/add-to-cart", {
                     method: "POST",

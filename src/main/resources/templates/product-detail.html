@@ -243,8 +243,32 @@
         }
 
         .status-stock {
-            color: green;
+            width: 70px;
             font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .status-in-stock {
+            color: #ffffff;
+            background-color: #4caf50;
+        }
+
+        .status-out-of-stock {
+            color: #ffffff;
+            background-color: #ff9800;
+        }
+
+        /* Product Status Styles for featured products */
+        .product-status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 8px 0;
+            font-size: 12px;
         }
 
         .product-title .category {
@@ -401,7 +425,7 @@
                     <label for="qty">Số lượng</label>
                     <input type="number" id="qty" name="qty" min="1" value="1">
                 </div>
-                <div class="status-stock">Còn hàng</div>
+                <div class="status-stock" th:class="${'status-stock ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
                 <div class="unit-stock">
                     <label>Hàng trong kho:</label>
                     <div th:text="${product.unitInStock}"></div>
@@ -451,6 +475,8 @@
                         </div>
                         <div class="product-details">
                             <h3 th:text="${item.name}" class="product-name"></h3>
+                            <div class="product-status" th:class="${'product-status ' + (item.status.name() == 'IN_STOCK' ? 'status-in-stock' : (item.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${item.status.value}"></div>
+                            <div class="unit-in-stock" th:attr="data-unit-in-stock=${item.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
                         <div class="price"
@@ -560,7 +586,19 @@
                     return;
                 }
 
-                const unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
+                // Kiểm tra stock của sản phẩm featured
+                const productItem = btn.closest('.product-item');
+                let unitInStock = 0;
+                
+                if (productItem) {
+                    // Nếu là sản phẩm featured, lấy từ data attribute
+                    const unitInStockElement = productItem.querySelector('.unit-in-stock');
+                    unitInStock = parseInt(unitInStockElement?.getAttribute('data-unit-in-stock') || '0');
+                } else {
+                    // Nếu là sản phẩm chính, lấy từ element có id unitInStock
+                    unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
+                }
+                
                 if (!isNaN(unitInStock) && qty > unitInStock) {
                     showToast("Không đủ hàng trong kho", "warning");
                     return;
