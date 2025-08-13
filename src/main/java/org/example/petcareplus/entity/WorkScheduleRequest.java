@@ -48,5 +48,83 @@ public class WorkScheduleRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScheduleRequestStatus status;
+
+    public WorkScheduleRequest() {
+    }
+
+    public WorkScheduleRequest(Long requestId, Account account, WorkSchedule originalSchedule, RequestType requestType, LocalDate requestedDate, Shift requestedShift, String reason, ScheduleRequestStatus status) {
+        this.requestId = requestId;
+        this.account = account;
+        this.originalSchedule = originalSchedule;
+        this.requestType = requestType;
+        this.requestedDate = requestedDate;
+        this.requestedShift = requestedShift;
+        this.reason = reason;
+        this.status = status;
+    }
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public WorkSchedule getOriginalSchedule() {
+        return originalSchedule;
+    }
+
+    public void setOriginalSchedule(WorkSchedule originalSchedule) {
+        this.originalSchedule = originalSchedule;
+    }
+
+    public RequestType getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
+    }
+
+    public LocalDate getRequestedDate() {
+        return requestedDate;
+    }
+
+    public void setRequestedDate(LocalDate requestedDate) {
+        this.requestedDate = requestedDate;
+    }
+
+    public Shift getRequestedShift() {
+        return requestedShift;
+    }
+
+    public void setRequestedShift(Shift requestedShift) {
+        this.requestedShift = requestedShift;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public ScheduleRequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ScheduleRequestStatus status) {
+        this.status = status;
+    }
 }
 

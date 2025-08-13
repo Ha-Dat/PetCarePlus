@@ -562,10 +562,18 @@
                 const cellId = prefix + day;
                 const cell = document.getElementById(cellId);
 
-                // Giả lập dữ liệu số lượng
-                const workingCount = Math.floor(Math.random() * 10) + 1;    // số nhân viên làm việc 1..10
-                const leaveRequests = Math.floor(Math.random() * 5);       // số đơn xin nghỉ 0..4
-                const shiftChangeRequests = Math.floor(Math.random() * 3); // số đơn đổi lịch 0..2
+                const dateObj = new Date(weekStart);
+                dateObj.setDate(dateObj.getDate() + (day - 1));
+                const dateStr = dateObj.toISOString().split('T')[0];
+
+                // Work schedules count
+                const scheduleCount = 5;
+
+                // Absent request count
+                const offCount = 5;
+
+                // Shift change request count
+                const shiftChangeCount = 5;
 
                 cell.innerHTML = `
 <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
@@ -573,20 +581,20 @@
         onclick="openSchedulesModal(this)"
         style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
     >
-        Làm việc: 42
+        Làm việc: ${scheduleCount}
     </button>
 
     <button
         onclick="openSchedulesModal(this)"
         style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
     >
-        Đơn xin nghỉ: 8
+        Đơn xin nghỉ: ${offCount}
     </button>
     <button
         onclick="openSchedulesModal(this)"
         style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
     >
-        Đơn xin nghỉ: 8
+        Đơn xin nghỉ: ${shiftChangeCount}
     </button>
 </div>
 `;
