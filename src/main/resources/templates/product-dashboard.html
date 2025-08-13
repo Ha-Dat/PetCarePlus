@@ -517,9 +517,9 @@
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
                         <td>
-        <span th:text="${product?.status.getValue()}"
-              th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
-        </span>
+                        <span th:text="${product?.status.getValue()}"
+                        th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
+                        </span>
                         </td>
                         <td th:text="${product?.category?.name}"></td>
                         <td>
@@ -528,15 +528,15 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
                                        th:attr="data-product-id=${product.productId},
-            data-name=${product.name},
-            data-category-id=${product.category.categoryId},
-            data-price=${product.price},
-            data-stock=${product.unitInStock},
-            data-sold=${product.unitSold},
-            data-status=${product.status.name()},
-            data-description=${product.description},
-            data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
-            data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
+                                                data-name=${product.name},
+                                                data-category-id=${product.category.categoryId},
+                                                data-price=${product.price},
+                                                data-stock=${product.unitInStock},
+                                                data-sold=${product.unitSold},
+                                                data-status=${product.status.name()},
+                                                data-description=${product.description},
+                                                data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
+                                                data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
