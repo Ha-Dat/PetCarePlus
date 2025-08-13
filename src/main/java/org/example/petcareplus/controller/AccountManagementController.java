@@ -70,7 +70,7 @@ public class AccountManagementController {
         account.setPassword(PasswordHasher.hash(account.getPassword()));
         account.setStatus(AccountStatus.ACTIVE);
         accountService.save(account);
-        return "redirect:/admin/account/list";
+        return "redirect:/admin/account";
     }
 
     @GetMapping("/detail/{id}")

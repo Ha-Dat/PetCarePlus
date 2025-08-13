@@ -374,7 +374,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="a, aStat : ${accounts}">
+                <tr th:each="a : ${accounts}">
                     <td th:text="${a.accountId}"></td>
                     <td th:text="${a.name}"></td>
                     <td th:text="${a.phone}"></td>
@@ -387,13 +387,14 @@
                                 <button th:onclick="'viewDetail(' + ${a.accountId} + ')'"
                                         class="dropdown-item">Chi tiết</button>
 
-                                <form th:action="@{'/admin/account/change-status/' + ${a.accountId}}" method="post">
-                                    <button type="submit"
-                                            th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
-                                            th:class="'dropdown-item ' + ${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'}"
-                                            onclick="changeStatus(this)">
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        th:data-id="${a.accountId}"
+                                        th:data-status="${a.status.value}"
+                                        th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
+                                        th:class="'dropdown-item ' + (${a.status.value == 'Hoạt động' ? 'ban-btn' : 'unban-btn'})"
+                                        onclick="changeStatus(this)">
+                                </button>
+
                             </div>
                         </div>
                     </td>
@@ -406,15 +407,15 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{'/admin/account/list'(page=${currentPage - 1}, size=${size})}">«</a>
+                        <a th:href="@{'/admin/list'(page=${currentPage - 1}, size=${size})}">«</a>
                     </li>
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:class="${i == currentPage} ? 'active'">
-                        <a th:href="@{'/admin/account/list'(page=${i}, size=${size})}"
+                        <a th:href="@{'/admin/list'(page=${i}, size=${size})}"
                         th:text="${i + 1}"></a>
                     </li>
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{'/admin/account/list'(page=${currentPage + 1}, size=${size})}">»</a>
+                        <a th:href="@{'/admin/list'(page=${currentPage + 1}, size=${size})}">»</a>
                     </li>
                 </ul>
             </div>
@@ -429,7 +430,7 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <form th:action="@{/admin/account/create}" method="post">
+                <form th:action="@{/admin/create}" method="post">
                     <label>Tên:</label>
                     <input type="text" name="name" required><br><br>
 
@@ -441,9 +442,9 @@
 
                     <label>Vai trò:</label>
                     <select name="role">
-                        <option th:each="r : ${roles}"
-                                th:value="${r.name()}"
-                                th:text="${r.value}">
+                        <option th:each="er : ${editableRoles}"
+                                th:value="${er.name()}"
+                                th:text="${er.value}">
                         </option>
                     </select>
                     <br>
@@ -508,7 +509,7 @@
     }
 
     function viewDetail(id) {
-        fetch('/admin/account/detail/' + id)
+        fetch('/admin/detail/' + id)
             .then(res => {
                 if (!res.ok) {
                     throw new Error("Không tìm thấy tài khoản.");
@@ -573,7 +574,7 @@
             status: document.getElementById("status").value
         };
 
-        fetch('/admin/account/update/' + id, {
+        fetch('/admin/update/' + id, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -596,7 +597,7 @@
     function changeStatus(button) {
         const id = button.getAttribute("data-id");
 
-        fetch('/admin/account/change-status/' + id, {
+        fetch('/admin/change-status/' + id, {
             method: 'POST'
         })
             .then(res => {
@@ -611,8 +612,8 @@
                 // Cập nhật trạng thái mới
                 const statusCell = document.getElementById("status-" + id);
                 const currentStatus = button.getAttribute("data-status");
-                let newStatus, newText, newClass;
 
+                let newStatus, newText, newClass;
                 if (currentStatus === "Hoạt động") {
                     newStatus = "Khóa";
                     newText = "Mở khóa";
@@ -623,16 +624,16 @@
                     newClass = "ban-btn";
                 }
 
-                // Cập nhật DOM
                 statusCell.innerText = newStatus;
                 button.innerText = newText;
                 button.setAttribute("data-status", newStatus);
-                button.className = newClass;
+                button.className = "dropdown-item " + newClass;
             })
             .catch(err => {
                 alert(err.message);
             });
     }
+
 </script>
 
 </html>
