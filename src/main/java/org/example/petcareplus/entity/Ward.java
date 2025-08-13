@@ -1,11 +1,11 @@
-package org.example.petcareplus.entity;
+    package org.example.petcareplus.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+    @Entity
 @Table(name = "Wards")
 @Data
 @NoArgsConstructor
@@ -18,8 +18,8 @@ public class Ward {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "district_id")
-    private District district;
+    @JoinColumn(name = "city_id")
+    private City city;
 
     //method thêm trong trường hợp lombok không hoạt động
     public Long getWardId() {
@@ -38,11 +38,11 @@ public class Ward {
         this.name = name;
     }
 
-    public District getDistrict() {
-        return district;
+    public City getCity() {
+        return city;
     }
 
-    public void setDistrict(District district) {
-        this.district = district;
+    public void setCity(City city) {
+        this.city = city;
     }
 }

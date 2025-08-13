@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/service-dashboard")
+@RequestMapping()
 public class ServiceController {
 
     private final ServiceService serviceService;
@@ -24,7 +24,7 @@ public class ServiceController {
         this.serviceService = serviceService;
     }
 
-    @GetMapping
+    @GetMapping("/manager/service-dashboard")
     public String serviceDashboard(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size,
@@ -41,7 +41,7 @@ public class ServiceController {
         return "service-dashboard";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/manager/service-dashboard/create")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createService(@RequestBody Map<String, Object> request) {
         Map<String, Object> response = new HashMap<>();
@@ -74,7 +74,7 @@ public class ServiceController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/manager/service-dashboard/update/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateService(
             @PathVariable Long id,
@@ -112,7 +112,7 @@ public class ServiceController {
         }
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/manager/service-dashboard/delete/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteService(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -131,7 +131,7 @@ public class ServiceController {
         }
     }
 
-    @GetMapping("/service/{id}")
+    @GetMapping("/service-dashboard/service/{id}")
     @ResponseBody
     public ResponseEntity<Service> getServiceById(@PathVariable Long id) {
         return serviceService.findById(id)

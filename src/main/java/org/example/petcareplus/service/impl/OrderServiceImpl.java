@@ -4,6 +4,7 @@ import org.example.petcareplus.dto.MonthlyRevenueDTO;
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.entity.OrderItem;
+import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.repository.OrderItemRepository;
 import org.example.petcareplus.repository.OrderRepository;
@@ -152,5 +153,15 @@ public class OrderServiceImpl implements OrderService {
     public BigDecimal getTotalRevenue() {
         BigDecimal revenue = orderRepository.getTotalRevenue();
         return revenue != null ? revenue : BigDecimal.ZERO;
+    }
+
+    @Override
+    public Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable) {
+        return orderRepository.findByAccount_AccountId(accountId, pageable);
+    }
+
+    @Override
+    public Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable) {
+        return orderRepository.findByAccount_AccountIdAndStatus(accountId, status, pageable);
     }
 }

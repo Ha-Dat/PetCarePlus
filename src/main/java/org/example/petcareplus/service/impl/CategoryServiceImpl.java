@@ -82,6 +82,11 @@ public class CategoryServiceImpl implements CategoryService {
         return true;
     }
 
+    @Override
+    public Category findById(Long id) {
+        return categoryRepository.findById(id).orElse(null);
+    }
+
     private boolean isChildOf(Category child, Category potentialParent) {
         if (potentialParent == null || child == null) return false;
         if (potentialParent.getCategoryId().equals(child.getCategoryId())) return true;

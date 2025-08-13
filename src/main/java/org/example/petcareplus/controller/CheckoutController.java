@@ -5,10 +5,12 @@ import org.example.petcareplus.dto.CheckoutDTO;
 import org.example.petcareplus.entity.*;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.enums.PaymentStatus;
+import org.example.petcareplus.enums.PromotionStatus;
 import org.example.petcareplus.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,9 +39,8 @@ public class CheckoutController {
 
 
     @GetMapping
-    public String showCheckoutPage(Model model, HttpSession session) {
+    public String showCheckoutPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         // Lấy thông tin profile của người dùng
-//        Long id = (Long) session.getAttribute("loggedInUser");
         Account account = (Account) session.getAttribute("loggedInUser");
         Long id = account.getAccountId();
 
@@ -47,6 +48,10 @@ public class CheckoutController {
             return "redirect:/login";
         }
         Profile profile = profileService.getProfileByAccountAccountId(id);
+        if (profile.getCity() == null || profile.getWard() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần cập nhật tỉnh/thành phố và quận/huyện trước khi đặt hàng.");
+            return "redirect:/customer/profile";
+        }
         model.addAttribute("profile", profile);
 
         // Lấy thông tin giỏ hàng
@@ -89,7 +94,6 @@ public class CheckoutController {
     public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request, Model model) throws Exception {
 
         // Check session
-//        Long id = (Long) session.getAttribute("loggedInUser");
         Account account = (Account) session.getAttribute("loggedInUser");
         Long id = account.getAccountId();
         if (id == null) {
@@ -104,9 +108,6 @@ public class CheckoutController {
 
         // Get profile
         Profile profile = profileService.getProfileByAccountAccountId(id);
-
-        // Get account
-//        Account account = accountService.getById(id).get();
 
         // Handle promotion
         Promotion promotion;
@@ -134,14 +135,13 @@ public class CheckoutController {
         if (request.isDifferentAddress()) {
             String toAddress = request.getAddress();
             String toWard = request.getWard();
-            String toDistrict = request.getDistrict();
             String toCity = request.getCity();
 
-            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toDistrict + ", " + toCity);
+            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toCity);
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
         } else {
-            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getDistrict().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
         }
@@ -177,5 +177,62 @@ public class CheckoutController {
                 : "Thanh toán thất bại!");
 
         return "order-success";
+    }
+
+    @PostMapping("/apply-coupon")
+    @ResponseBody
+    public Map<String, Object> applyCoupon(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> res = new HashMap<>();
+
+        String couponCode = payload.get("couponCode") != null
+                ? payload.get("couponCode").toString().trim()
+                : "";
+
+        // Validation backend
+        if (couponCode.isEmpty()) {
+            res.put("valid", false);
+            res.put("message", "Mã giảm giá không được để trống.");
+            return res;
+        }
+        if (couponCode.contains(" ")) {
+            res.put("valid", false);
+            res.put("message", "Mã giảm giá không được chứa khoảng trắng.");
+            return res;
+        }
+
+        BigDecimal subtotal;
+        try {
+            subtotal = new BigDecimal(payload.get("subtotal").toString());
+        } catch (Exception e) {
+            res.put("valid", false);
+            res.put("message", "Giá trị đơn hàng không hợp lệ.");
+            return res;
+        }
+
+        Promotion promo = promotionService.findByTitle(couponCode);
+        if (promo == null) {
+            res.put("valid", false);
+            res.put("message", "Mã giảm giá không tồn tại.");
+            return res;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (promo.getStartDate().isAfter(now) || promo.getEndDate().isBefore(now) || promo.getStatus() != PromotionStatus.ACTIVE) {
+            res.put("valid", false);
+            res.put("message", "Mã giảm giá đã hết hạn hoặc chưa bắt đầu.");
+            return res;
+        }
+
+        // Tính giảm giá
+        BigDecimal discountPercent = promo.getDiscount();
+        BigDecimal discountAmount = subtotal.multiply(discountPercent).divide(BigDecimal.valueOf(100));
+        BigDecimal total = subtotal.subtract(discountAmount);
+
+        res.put("valid", true);
+        res.put("discount", discountAmount);
+        res.put("total", total);
+        res.put("discountFormatted", String.format("%,.0f VND", discountAmount));
+        res.put("totalFormatted", String.format("%,.0f VND", total));
+        return res;
     }
 }

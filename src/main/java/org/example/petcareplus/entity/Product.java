@@ -1,5 +1,6 @@
 package org.example.petcareplus.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public class Product {
     private ProductStatus status;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,6 +56,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Media> medias;
+
+    @PrePersist
+    protected void onCreate() {this.createdDate = new Date();}
 
     //method thêm trong trường hợp lombok không hoạt động
     public Long getProductId() {

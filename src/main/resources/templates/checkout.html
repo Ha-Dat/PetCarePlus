@@ -41,7 +41,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Địa chỉ mặc định</label>
                                 <textarea class="form-control"
-                                          th:text="${profile.ward.name + ', ' + profile.district.name + ', ' + profile.city.name}"
+                                          th:text="${profile.ward.name + ', ' + profile.city.name}"
                                           readonly>
                                 </textarea>
                             </div>
@@ -77,10 +77,6 @@
                                 <div class="mb-3">
                                     <label class="form-label">Phường/Xã</label>
                                     <input type="text" class="form-control" name="ward">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Quận/Huyện</label>
-                                    <input type="text" class="form-control" name="district">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Tỉnh/Thành phố</label>
@@ -147,6 +143,7 @@
                                     <tr>
                                         <th>Tạm tính</th>
                                         <td class="text-end" id="subtotal"
+                                            th:attr="data-value=${subtotal}"
                                             th:text="${#numbers.formatCurrency(subtotal.doubleValue()) + 'VND'}"></td>
                                     </tr>
                                     <tr id="discountRow" style="display: none;">
@@ -219,7 +216,7 @@
 <!-- Footer -->
 <!--<div th:replace="~{fragments/footer :: footer}"></div>-->
 
-<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         // Toggle địa chỉ khác
@@ -261,11 +258,10 @@
                     errors.push("Vui lòng nhập số nhà, tên đường hợp lệ.");
                 }
 
-                // Validate ward, district, city
+                // Validate ward, city
                 const ward = $('input[name="ward"]').val().trim();
-                const district = $('input[name="district"]').val().trim();
                 const city = $('input[name="city"]').val().trim();
-                if (!ward || !district || !city) {
+                if (!ward || !city) {
                     isValid = false;
                     errors.push("Vui lòng nhập đầy đủ phường/xã, quận/huyện và tỉnh/thành phố.");
                 }
@@ -297,6 +293,65 @@
             } else {
                 $('#formErrorAlert').addClass('d-none').html('');
             }
+        });
+    });
+
+    // Coupon
+    $(document).ready(function () {
+        // Sự kiện áp dụng coupon
+        $('#applyCoupon').click(function () {
+            let couponCode = $('#couponCode').val();
+
+            // Trim khoảng trắng 2 đầu
+            let trimmed = couponCode.trim();
+
+            // Kiểm tra rỗng hoặc toàn khoảng trắng
+            if (trimmed.length === 0) {
+                $('#couponMessage').text("Vui lòng nhập mã giảm giá.").css('color', 'red');
+                return;
+            }
+
+            // Kiểm tra chứa khoảng trắng bên trong
+            if (/\s/.test(trimmed)) {
+                $('#couponMessage').text("Mã giảm giá không được chứa khoảng trắng.").css('color', 'red');
+                return;
+            }
+
+            // Nếu hợp lệ, gọi API
+            $.ajax({
+                url: '/checkout/apply-coupon',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    couponCode: trimmed,
+                    subtotal: parseFloat($('#subtotal').attr('data-value'))
+                }),
+                success: function (res) {
+                    if (res.valid) {
+                        $('#discountRow').show();
+                        $('#discountAmount').text('-' + res.discountFormatted);
+                        $('#totalPrice').text(res.totalFormatted);
+                        $('input[name="totalPrice"]').val(res.total);
+                        $('input[name="discountAmount"]').remove();
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'discountAmount',
+                            value: res.discount
+                        }).appendTo('form');
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'couponCode',
+                            value: trimmed
+                        }).appendTo('form');
+                        $('#couponMessage').text("Áp dụng mã giảm giá thành công!").css('color', 'green');
+                    } else {
+                        $('#couponMessage').text(res.message).css('color', 'red');
+                    }
+                },
+                error: function () {
+                    $('#couponMessage').text("Có lỗi xảy ra khi áp dụng mã.").css('color', 'red');
+                }
+            });
         });
     });
 </script>

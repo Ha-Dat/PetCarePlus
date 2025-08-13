@@ -3,6 +3,7 @@ import org.example.petcareplus.dto.MonthlyRevenueDTO;
 import org.example.petcareplus.dto.OrderDTO;
 import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,4 +35,8 @@ public interface OrderService {
     List<MonthlyRevenueDTO> getMonthlyRevenue();
 
     BigDecimal getTotalRevenue();
+
+    Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable);
+
+    Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable);
 }

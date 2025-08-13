@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Nunito", sans-serif;
+            background-color: #f9fbfc;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            background-color: #2ec4b6;
+            color: white;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 17px;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu a:hover {
+            background-color: #28b1a5;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* Nếu bảng rộng hơn container, có thể scroll ngang */
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+            padding: 10px; /* Có thể thêm padding cho đẹp */
+            box-sizing: border-box;
+        }
+
+        .table-container table {
+            width: 100%; /* Cho bảng rộng 100% container */
+            border-collapse: collapse;
+            table-layout: fixed; /* Cố định cột, tránh bảng bị co dãn lệch */
+        }
+
+        .table-container th,
+        .table-container td {
+            padding: 12px 10px;
+            border: 1px solid #ddd;
+            word-wrap: break-word; /* Xuống dòng nếu text quá dài */
+            text-align: center; /* Canh giữa nội dung */
+        }
+
+        /* Tăng chiều cao dòng để bảng nhìn thoáng */
+        .table-container tbody tr td {
+            height: 200px;
+            vertical-align: middle;
+        }
+
+        .product-table th,
+        .product-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-table th {
+            background-color: #e0f7f5;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+        }
+
+        .form-group-full {
+            width: 100%;
+        }
+
+        .image-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .image-input-group input {
+            flex: 1;
+        }
+
+        .upload-btn {
+            padding: 8px;
+            background-color: #2ec4b6;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .btn-primary:hover {
+            background-color: #26b2a5;
+        }
+
+        .btn-secondary:hover {
+            background-color: #aaa;
+        }
+
+        @media (max-width: 640px) {
+            .modal-box {
+                max-width: 90%;
+                padding: 20px;
+            }
+
+            .modal-box input,
+            .modal-box select,
+            .modal-box textarea {
+                font-size: 14px;
+            }
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination ul {
+            list-style: none;
+            display: inline-flex;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .pagination ul li a {
+            padding: 8px 14px;
+            background-color: #e0f7f5;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination ul li a:hover {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        .pagination ul li.active a {
+            background-color: #2ec4b6;
+            color: white;
+        }
+
+        /* Detail Button */
+        .detail-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .detail-btn:hover {
+            background-color: lightgreen;
+        }
+
+        .prescription-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .prescription-btn:hover {
+            background-color: lightgreen;
+        }
+
+        .approved-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .approved-btn:hover {
+            background-color: lightgreen;
+        }
+        .disapproved-btn {
+            padding: 8px 14px;
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .disapproved-btn:hover {
+            background-color: lightgreen;
+        }
+
+        /* Toast thông báo*/
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background-color: #28a745; /* success mặc định */
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: #dc3545; /* màu đỏ */
+        }
+
+        .toast.hidden {
+            display: none;
+        }
+
+        @keyframes fadeInOut {
+            0%   { opacity: 0; transform: translateY(-20px); }
+            10%  { opacity: 1; transform: translateY(0); }
+            90%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .modal-box label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Manager Dashboard</h2>
+        <ul class="sidebar-menu">
+            <li><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
+            <li class="active"><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
+            <li><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">Lịch làm việc</h1>
+        <div class="content">
+            <!-- Table Container -->
+            <div class="table-container">
+                <label for="weekSelect">Tuần: </label>
+                <select id="weekSelect" onchange="onWeekChange()">
+                    <!-- Các option sẽ được thêm tự động bởi JS -->
+                </select>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Ca / Ngày</th>
+                        <th>Thứ 2<br><span id="day1"></span></th>
+                        <th>Thứ 3<br><span id="day2"></span></th>
+                        <th>Thứ 4<br><span id="day3"></span></th>
+                        <th>Thứ 5<br><span id="day4"></span></th>
+                        <th>Thứ 6<br><span id="day5"></span></th>
+                        <th>Thứ 7<br><span id="day6"></span></th>
+                        <th>Chủ Nhật<br><span id="day7"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>Sáng</td><td id="m1"></td><td id="m2"></td><td id="m3"></td><td id="m4"></td><td id="m5"></td><td id="m6"></td><td id="m7"></td></tr>
+                    <tr><td>Chiều</td><td id="a1"></td><td id="a2"></td><td id="a3"></td><td id="a4"></td><td id="a5"></td><td id="a6"></td><td id="a7"></td></tr>
+                    <tr><td>Tối</td><td id="e1"></td><td id="e2"></td><td id="e3"></td><td id="e4"></td><td id="e5"></td><td id="e6"></td><td id="e7"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast hidden">
+    <span id="toastMessage"></span>
+</div>
+
+<!-- Script -->
+<script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toastMessage.innerText = message;
+        toast.className = `toast show ${type}`;
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
+    }
+
+    // Trả về chuỗi ngày tháng dùng hiển thị dd/MM
+    function getDateStr(date) {
+        const dd = String(date.getDate()).padStart(2, '0');
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}`;
+    }
+
+    // Trả về chuỗi yyyy-MM-dd chuẩn cho value của option và làm việc backend
+    function formatDateISO(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // Tính ngày thứ 2 (Monday) đầu tuần chứa ngày date
+    function getMonday(date) {
+        const day = date.getDay();
+        const diff = (day === 0) ? -6 : 1 - day; // Chủ nhật lùi 6 ngày về thứ 2
+        const monday = new Date(date);
+        monday.setDate(date.getDate() + diff);
+        monday.setHours(0,0,0,0);
+        return monday;
+    }
+
+    // Tạo label cho option dropdown dạng: "(dd/MM - dd/MM/yyyy)"
+    function createLabel(mondayDate) {
+        const sunday = new Date(mondayDate);
+        sunday.setDate(mondayDate.getDate() + 6);
+
+        return `(${getDateStr(mondayDate)}  -->  ${getDateStr(sunday)}/${sunday.getFullYear()})`;
+    }
+
+    // Khởi tạo dropdown chọn tuần (20 tuần trước + 5 tuần sau)
+    function initWeekSelect() {
+        const weekSelect = document.getElementById('weekSelect');
+        weekSelect.innerHTML = '';
+
+        const today = new Date();
+        const currentMonday = getMonday(today);
+
+        const weeksBefore = 20;
+        const weeksAfter = 5;
+
+        for(let i = -weeksBefore; i <= weeksAfter; i++) {
+            const monday = new Date(currentMonday);
+            monday.setDate(currentMonday.getDate() + i * 7);
+
+            const option = document.createElement('option');
+            option.value = formatDateISO(monday);
+            option.textContent = createLabel(monday);
+
+            weekSelect.appendChild(option);
+        }
+
+        // Set mặc định là tuần hiện tại
+        weekSelect.value = formatDateISO(currentMonday);
+    }
+
+    function setWeekDates(startDateStr) {
+        const startDate = new Date(startDateStr);
+        for(let i = 0; i < 7; i++) {
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() + i);
+            document.getElementById('day' + (i+1)).innerText = getDateStr(d);
+        }
+    }
+
+    function loadSchedule(weekStart) {
+        // TODO: gọi API backend để lấy dữ liệu lịch tuần bắt đầu từ weekStart
+        for(let day=1; day<=7; day++) {
+            ['m','a','e'].forEach((prefix) => {
+                const cellId = prefix + day;
+                const cell = document.getElementById(cellId);
+
+                const dateObj = new Date(weekStart);
+                dateObj.setDate(dateObj.getDate() + (day - 1));
+                const dateStr = dateObj.toISOString().split('T')[0];
+
+                // Work schedules count
+                const scheduleCount = 5;
+
+                // Absent request count
+                const offCount = 5;
+
+                // Shift change request count
+                const shiftChangeCount = 5;
+
+                cell.innerHTML = `
+<div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Làm việc: ${scheduleCount}
+    </button>
+
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Đơn xin nghỉ: ${offCount}
+    </button>
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Đơn xin nghỉ: ${shiftChangeCount}
+    </button>
+</div>
+`;
+            });
+        }
+    }
+
+    function openSchedulesModal(element) {
+        const name = element.getAttribute('data-name');
+        const species = element.getAttribute('data-species');
+        const age = element.getAttribute('data-age');
+        const image = element.getAttribute('data-image');
+        const breeds = element.getAttribute('data-breeds');
+        const weight = element.getAttribute('data-weight');
+
+        document.getElementById("petName").value = name;
+        document.getElementById("petSpecies").value = species;
+        document.getElementById("petAge").value = age;
+        document.getElementById("petImagePreview").src = image || "";
+        document.getElementById("petBreeds").value = breeds;
+        document.getElementById("petWeight").value = weight;
+        document.getElementById("petProfile").style.display = "flex";
+    }
+
+    function closeSchedulesModal() {
+        document.getElementById("Schedules").style.display = "none";
+    }
+
+    function onWeekChange() {
+        const weekStart = document.getElementById('weekSelect').value;
+        setWeekDates(weekStart);
+        loadSchedule(weekStart);
+    }
+
+    window.onload = () => {
+        initWeekSelect();
+        onWeekChange();
+    };
+
+</script>
+</body>
+</html>

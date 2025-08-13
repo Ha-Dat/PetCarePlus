@@ -1,7 +1,6 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Category;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +16,6 @@ public interface CategoryService {
     boolean deleteCategory(Long categoryId);
 
     boolean updateCategory(Long id, String name, Long parentId);
+
+    Category findById(Long id);
 }
