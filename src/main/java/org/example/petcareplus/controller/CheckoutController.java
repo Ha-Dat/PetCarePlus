@@ -9,6 +9,7 @@ import org.example.petcareplus.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,7 +38,7 @@ public class CheckoutController {
 
 
     @GetMapping
-    public String showCheckoutPage(Model model, HttpSession session) {
+    public String showCheckoutPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         // Lấy thông tin profile của người dùng
 //        Long id = (Long) session.getAttribute("loggedInUser");
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -47,6 +48,10 @@ public class CheckoutController {
             return "redirect:/login";
         }
         Profile profile = profileService.getProfileByAccountAccountId(id);
+        if (profile.getCity() == null || profile.getWard() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần cập nhật tỉnh/thành phố và quận/huyện trước khi đặt hàng.");
+            return "redirect:/customer/profile";
+        }
         model.addAttribute("profile", profile);
 
         // Lấy thông tin giỏ hàng
@@ -134,10 +139,9 @@ public class CheckoutController {
         if (request.isDifferentAddress()) {
             String toAddress = request.getAddress();
             String toWard = request.getWard();
-            String toDistrict = request.getDistrict();
             String toCity = request.getCity();
 
-            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toDistrict + ", " + toCity);
+            order.setDeliverAddress(toAddress + ", " + toWard + ", " + toCity);
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
         } else {

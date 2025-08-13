@@ -105,6 +105,9 @@
     <div class="main-content">
         <h4>Hồ sơ của tôi</h4>
         <hr>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
         <form th:action="@{/customer/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
             <div class="form-section row">
                 <input type="hidden" th:field="*{profileId}" />
