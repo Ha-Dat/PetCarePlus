@@ -30,6 +30,8 @@ public interface OrderService {
 
     Long createOrder(Order order, Map<Long, Integer> orderItems);
 
+    void updateStatus(Long id, OrderStatus status);
+
     Page<OrderDTO> filterOrders(String orderId, String status, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     List<MonthlyRevenueDTO> getMonthlyRevenue();
