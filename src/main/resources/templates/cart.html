@@ -257,7 +257,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="cart-item" th:each="entry : ${cartItems}" th:attr="data-product-id=${entry.key.productId}">
+        <tr class="cart-item" th:each="entry : ${cartItems}" th:attr="data-product-id=${entry.key.productId}, data-unit-in-stock=${entry.key.unitInStock}">
             <td class="product-info">
                     <img class="product-image"
                          th:if="${!#lists.isEmpty(entry.key.medias)}"
@@ -342,7 +342,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId: Number(productId), quantity: newQty })
                 })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status === 400) {
+                            return res.json().then(errorData => {
+                                throw new Error(errorData.error || 'Lỗi cập nhật giỏ hàng');
+                            });
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         const price = parsePrice(priceText.innerText);
                         const newSubtotal = price * newQty;
@@ -355,6 +362,12 @@
                     })
                     .catch(err => {
                         console.error('Lỗi cập nhật giỏ hàng:', err);
+                        showToast(err.message, "warning");
+                        // Khôi phục lại số lượng cũ nếu có lỗi
+                        const currentQty = parseInt(qtyInput.value);
+                        if (newQty > currentQty) {
+                            qtyInput.value = currentQty;
+                        }
                     });
             };
 
@@ -370,6 +383,13 @@
 
             increaseBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyInput.value);
+                const unitInStock = parseInt(item.getAttribute('data-unit-in-stock') || '0');
+                
+                if (qty >= unitInStock) {
+                    showToast("Không đủ hàng trong kho. Số lượng tối đa: " + unitInStock, "warning");
+                    return;
+                }
+                
                 qtyInput.value = ++qty;
                 updateCart(qty);
             });

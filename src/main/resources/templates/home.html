@@ -420,6 +420,7 @@
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
                             <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                            <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
                         <div class="price"
@@ -447,6 +448,7 @@
                         <div class="product-details">
                             <h3 th:text="${product.name}" class="product-name"></h3>
                             <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                            <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
                         <div class="price"
@@ -647,6 +649,10 @@
                         if(res.status === 401){
                             showToast("Bạn phải đăng nhập tài khoản", "warning");
                             setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.status === 400) {
+                            res.text().then(errorMsg => {
+                                showToast(errorMsg, "warning");
+                            });
                         } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                         } else {

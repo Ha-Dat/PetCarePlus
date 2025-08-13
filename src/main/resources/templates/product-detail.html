@@ -243,7 +243,7 @@
         }
 
         .status-stock {
-            width: 70px;
+            width: 75px;
             font-weight: bold;
             padding: 8px 12px;
             border-radius: 6px;
@@ -476,7 +476,6 @@
                         <div class="product-details">
                             <h3 th:text="${item.name}" class="product-name"></h3>
                             <div class="product-status" th:class="${'product-status ' + (item.status.name() == 'IN_STOCK' ? 'status-in-stock' : (item.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${item.status.value}"></div>
-                            <div class="unit-in-stock" th:attr="data-unit-in-stock=${item.unitInStock}" style="display: none;"></div>
                         </div>
                         <div class="stars">★★★★★</div>
                         <div class="price"
@@ -562,6 +561,10 @@
                         if (res.status === 401) {
                             showToast("Bạn phải đăng nhập tài khoản", "warning");
                             setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.status === 400) {
+                            res.text().then(errorMsg => {
+                                showToast(errorMsg, "warning");
+                            });
                         } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                             setTimeout(() => window.location.href = "/view-cart", 1500);
@@ -586,19 +589,7 @@
                     return;
                 }
 
-                // Kiểm tra stock của sản phẩm featured
-                const productItem = btn.closest('.product-item');
-                let unitInStock = 0;
-                
-                if (productItem) {
-                    // Nếu là sản phẩm featured, lấy từ data attribute
-                    const unitInStockElement = productItem.querySelector('.unit-in-stock');
-                    unitInStock = parseInt(unitInStockElement?.getAttribute('data-unit-in-stock') || '0');
-                } else {
-                    // Nếu là sản phẩm chính, lấy từ element có id unitInStock
-                    unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
-                }
-                
+                const unitInStock = parseInt(document.getElementById("unitInStock")?.innerText || "0");
                 if (!isNaN(unitInStock) && qty > unitInStock) {
                     showToast("Không đủ hàng trong kho", "warning");
                     return;
@@ -617,6 +608,10 @@
                         if(res.status === 401){
                             showToast("Bạn phải đăng nhập tài khoản", "warning");
                             setTimeout(() => window.location.href = "/login", 1500);
+                        } else if (res.status === 400) {
+                            res.text().then(errorMsg => {
+                                showToast(errorMsg, "warning");
+                            });
                         } else if (res.ok) {
                             showToast("Đã thêm vào giỏ hàng!");
                         } else {
