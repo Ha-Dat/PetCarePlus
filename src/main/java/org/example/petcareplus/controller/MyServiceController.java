@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/my-schedule")
+@RequestMapping("/customer/my-schedule")
 public class MyServiceController {
 
     private final BookingService bookingService;
