@@ -32,14 +32,8 @@ public class Profile {
     private City city;
 
     @ManyToOne
-    @JoinColumn(name = "district_id")
-    private District district;
-
-    @ManyToOne
     @JoinColumn(name = "ward_id")
     private Ward ward;
-//
-//    private String avatarPath;
 
     @OneToMany(mappedBy = "profile")
     private List<PetProfile> petProfiles;
@@ -69,14 +63,6 @@ public class Profile {
         this.city = city;
     }
 
-    public District getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(District district) {
-        this.district = district;
-    }
-
     public Ward getWard() {
         return ward;
     }
@@ -84,14 +70,6 @@ public class Profile {
     public void setWard(Ward ward) {
         this.ward = ward;
     }
-//
-//    public String getAvatarPath() {
-//        return avatarPath;
-//    }
-//
-//    public void setAvatarPath(String avatarPath) {
-//        this.avatarPath = avatarPath;
-//    }
 
     public List<PetProfile> getPetProfiles() {
         return petProfiles;

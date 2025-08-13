@@ -131,21 +131,21 @@
                 <div class="mb-3 row">
                     <label class="col-sm-3 col-form-label">Tỉnh / Thành phố:</label>
                     <div class="col-sm-9">
-                        <select id="city" name="cityId" th:field="*{cityId}" class="form-select"
-                                th:attr="data-init-city=${cityId}" th:disabled="${!edit}">
-                            <option value="">-- Tỉnh/thành phố --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Quận / Huyện -->
-                <div class="mb-3 row">
-                    <label class="col-sm-3 col-form-label">Quận / Huyện:</label>
-                    <div class="col-sm-9">
-                        <select id="district" name="districtId" th:field="*{districtId}" class="form-select"
-                                th:attr="data-init-district=${districtId}" th:disabled="${!edit}">
-                            <option value="">-- Quận/huyện --</option>
-                        </select>
+                        <th:block th:if="${edit}">
+                            <!-- Khi edit=true -->
+                            <select id="city" name="cityId" th:field="*{cityId}" class="form-select">
+                                <option value="">-- Tỉnh/thành phố --</option>
+                                <option th:each="c : ${cities}"
+                                        th:value="${c.cityId}"
+                                        th:text="${c.name}"
+                                        th:selected="${c.cityId == profileDTO.cityId}">
+                                </option>
+                            </select>
+                        </th:block>
+                        <th:block th:unless="${edit}">
+                            <!-- Khi edit=false -->
+                            <input type="text" class="form-control" th:value="${profileDTO.cityName}" readonly />
+                        </th:block>
                     </div>
                 </div>
 
@@ -153,10 +153,21 @@
                 <div class="mb-3 row">
                     <label class="col-sm-3 col-form-label">Phường / Xã:</label>
                     <div class="col-sm-9">
-                        <select id="ward" name="wardId" th:field="*{wardId}" class="form-select"
-                                th:attr="data-init-ward=${wardId}" th:disabled="${!edit}">
-                            <option value="">-- Phường/xã --</option>
-                        </select>
+                        <th:block th:if="${edit}">
+                            <!-- Khi edit=true -->
+                            <select id="ward" name="wardId" th:field="*{wardId}" class="form-select" th:attr="data-init-ward=${wards}">
+                                <option value="">-- Phường/xã --</option>
+                                <option th:each="w : ${wards}"
+                                        th:value="${w.wardId}"
+                                        th:text="${w.name}"
+                                        th:selected="${w.wardId == profileDTO.wardId}">
+                                </option>
+                            </select>
+                        </th:block>
+                        <th:block th:unless="${edit}">
+                            <!-- Khi edit=false -->
+                            <input type="text" class="form-control" th:value="${profileDTO.wardName}" readonly />
+                        </th:block>
                     </div>
                 </div>
 
@@ -175,91 +186,46 @@
 <div th:insert="component/footer :: footer"></div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const city = document.getElementById("city"),
-            district = document.getElementById("district"),
-            ward = document.getElementById("ward");
+        const citySelect = document.getElementById("city");
+        const wardSelect = document.getElementById("ward");
 
-        loadCities();
-
-        city.addEventListener("change", () => loadDistricts(city.value));
-        district.addEventListener("change", () => loadWards(district.value));
-
-        function loadCities() {
-            city.innerHTML = '<option>-- Đang tải... --</option>';
-
-            fetch("https://provinces.open-api.vn/api/p")
-                .then(res => res.json())
-                .then(data => {
-                    city.innerHTML = '<option value="">-- Tỉnh/thành phố --</option>';
-
-                    const initCity = city.getAttribute("data-init-city");
-                    data.forEach(c => {
-                        const opt = document.createElement("option");
-                        opt.value = c.code;
-                        opt.text = c.name;
-                        if (initCity && initCity == c.code) {
-                            opt.selected = true;
-                            loadDistricts(c.code); // Nếu đã có sẵn city, load luôn district
-                        }
-                        city.appendChild(opt);
-                    });
-                })
-                .catch(error => {
-                    console.error("Lỗi load tỉnh/thành phố:", error);
-                });
+        // Hàm bật/tắt ward theo city
+        function toggleWardDisabled() {
+            wardSelect.disabled = !citySelect.value;
         }
 
-        function loadDistricts(cityCode) {
-            district.innerHTML = '<option>-- Đang tải... --</option>';
-            ward.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
-            if (!cityCode) return;
+        // Khi load trang
+        toggleWardDisabled();
 
-            fetch(`https://provinces.open-api.vn/api/p/${cityCode}?depth=2`)
+        citySelect.addEventListener("change", () => {
+            const cityId = citySelect.value;
+
+            // Bật/tắt select ward
+            toggleWardDisabled();
+
+            wardSelect.innerHTML = '<option value="">-- Đang tải... --</option>';
+
+            if (!cityId) {
+                wardSelect.innerHTML = '<option value="">-- Phường/xã --</option>';
+                return;
+            }
+
+            fetch(`/customer/wards?cityId=${cityId}`)
                 .then(res => res.json())
                 .then(data => {
-                    district.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
-
-                    const initDistrict = district.getAttribute("data-init-district");
-                    data.districts.forEach(d => {
+                    wardSelect.innerHTML = '<option value="">-- Phường/xã --</option>';
+                    data.forEach(w => {
                         const opt = document.createElement("option");
-                        opt.value = d.code;
-                        opt.text = d.name;
-                        if (initDistrict && initDistrict == d.code) {
-                            opt.selected = true;
-                            loadWards(d.code); // Nếu đã có sẵn district, load ward luôn
-                        }
-                        district.appendChild(opt);
+                        opt.value = w.wardId;
+                        opt.textContent = w.name;
+                        wardSelect.appendChild(opt);
                     });
                 })
-                .catch(error => {
-                    console.error("Lỗi load quận/huyện:", error);
+                .catch(err => {
+                    console.error("Lỗi load wards:", err);
+                    wardSelect.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
                 });
-        }
-
-        function loadWards(districtCode) {
-            ward.innerHTML = '<option>-- Đang tải... --</option>';
-            if (!districtCode) return;
-
-            fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-                .then(res => res.json())
-                .then(data => {
-                    ward.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
-
-                    const initWard = ward.getAttribute("data-init-ward");
-                    data.wards.forEach(w => {
-                        const opt = document.createElement("option");
-                        opt.value = w.code;
-                        opt.text = w.name;
-                        if (initWard && initWard == w.code) {
-                            opt.selected = true;
-                        }
-                        ward.appendChild(opt);
-                    });
-                })
-                .catch(error => {
-                    console.error("Lỗi load phường/xã:", error);
-                });
-        }
+        });
     });
 </script>
 </body>
