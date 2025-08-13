@@ -543,7 +543,7 @@
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/seller/productDashboard/delete/__${product.productId}__}" method="post"
+                                          th:action="@{/seller/product-dashboard/delete/__${product.productId}__}" method="post"
                                           th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
                                             🗑️ Xóa
@@ -773,7 +773,7 @@
                 if (res.ok) {
                     closeAddModal();
                     showToast("Thêm sản phẩm thành công!", "success");
-                    setTimeout(() => window.location.href = "/product-dashboard", 1000);
+                    setTimeout(() => window.location.reload(), 1000);
                 } else {
                     showToast("Thêm sản phẩm thất bại!", "error");
                 }

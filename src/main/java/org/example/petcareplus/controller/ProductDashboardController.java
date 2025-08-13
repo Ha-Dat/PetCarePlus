@@ -45,7 +45,7 @@ public class ProductDashboardController {
     @PostMapping("/product-dashboard/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
         productService.deleteById(id);
-        return "redirect:/product-dashboard";
+        return "redirect:/seller/product-dashboard";
     }
 
     @GetMapping(value="/product-dashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
