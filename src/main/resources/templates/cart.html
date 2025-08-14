@@ -6,6 +6,15 @@
     <link rel="stylesheet" th:href="@{css/header.css}">
     <link rel="stylesheet" th:href="@{css/footer.css}">
     <style>
+        .checkout-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .checkout-btn:disabled:hover {
+            background-color: #cccccc;
+        }
         /* Cart */
         .cart-container {
             max-width: 1000px;
@@ -288,8 +297,17 @@
     <div class="action">
         <span>Tổng cộng: <span class="total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
         <div class="cart-actions">
-            <button id="clearCartBtn" class="remove-selected">xóa khỏi giỏ hàng</button>
-            <button class="checkout-btn" onclick="window.location.href='/checkout'">Mua Hàng</button>
+            <button id="clearCartBtn"
+                    th:disabled="${cartItems.isEmpty()}"
+                    class="remove-selected">
+                xóa khỏi giỏ hàng
+            </button>
+            
+            <button class="checkout-btn"
+                    th:disabled="${cartItems.isEmpty()}"
+                    onclick="window.location.href='/checkout'">
+                Mua Hàng
+            </button>
         </div>
     </div>
 </main>
