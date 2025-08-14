@@ -144,10 +144,10 @@
         .modal-box {
             background: white;
             border-radius: 16px;
-            max-width: 600px;
+            max-width: 1200px;
             width: 100%;
-            max-height: 90vh; /* 👈 giới hạn chiều cao */
-            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
+            max-height: 90vh;
+            overflow-y: auto;
             padding: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
@@ -391,13 +391,14 @@
         .modal-box {
             background: white;
             border-radius: 16px;
-            max-width: 600px;
-            width: 100%;
+            max-width: 1200px;
+            width: fit-content;
             max-height: 90vh; /* 👈 giới hạn chiều cao */
             overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
             padding: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
+            collapse: auto;
         }
 
         .modal-box label {
@@ -419,6 +420,25 @@
 
         .modal-box textarea {
             resize: vertical;
+        }
+
+        .action-dropdown {
+            display: inline-block;
+        }
+
+        /* Button 3 chấm */
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -478,6 +498,7 @@
                     <th>Số điện thoại</th>
                     <th>Ghi chú</th>
                     <th>Trạng thái</th>
+                    <th>Chỉnh sửa</th>
                 </tr>
                 </thead>
                 <tbody id="modalScheduleBody">
@@ -503,6 +524,7 @@
                     <th>Số điện thoại</th>
                     <th>Lý do</th>
                     <th>Trạng thái</th>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody id="modalOffRequestBody">
@@ -531,6 +553,7 @@
                     <th>Ngày muốn đổi</th>
                     <th>Ca muốn đổi</th>
                     <th>Trạng thái</th>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody id="modalChangeRequestBody">
@@ -541,6 +564,49 @@
         <div class="modal-actions">
             <button type="button" class="btn btn-secondary" onclick="closeChangeRequestsModal()">Đóng</button>
         </div>
+    </div>
+</div>
+
+<div id="editScheduleModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="editScheduleModalTitle">Chỉnh sửa lịch làm việc:</h2>
+        <form id="editScheduleForm" onsubmit="submitEditSchedule(event)">
+            <input id="editScheduleId" name="editScheduleId">
+            <input id="editAccountId" name="editAccountId">
+                <label for="editScheduleAccountName">Tên nhân viên:</label>
+                <input type="text" id="editScheduleAccountName" name="editScheduleAccountName" readonly>
+
+                <label for="editScheduleWorkDate">Ngày:</label>
+                <div class="date-input">
+                    <input
+                            type="date"
+                            id="editScheduleWorkDate"
+                            name="editScheduleWorkDate"
+                            required
+                    />
+                </div>
+
+                <label for="editScheduleShift">Ca làm *</label>
+                <select id="editScheduleShift" name="editScheduleShift" required>
+                    <option th:each="shi : ${shift}"
+                            th:value="${shi.name()}"
+                            th:text="${shi.value}"></option>
+                </select>
+
+                <label for="editScheduleStatus">Trạng thái *</label>
+                <select id="editScheduleStatus" name="editScheduleStatus" required>
+                    <option th:each="sta : ${scheduleStatus}"
+                            th:value="${sta.name()}"
+                            th:text="${sta.value}"></option>
+                </select>
+            <label for="editScheduleNote">Ghi chú:</label>
+            <textarea id="editScheduleNote" name="editScheduleNote" rows="3"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -743,7 +809,18 @@
             <td>${sche.accountRole}</td>
             <td>${sche.accountPhone}</td>
             <td>${sche.note}</td>
-            <td>${sche.status}</td>
+            <td>${sche.statusName}</td>
+            <td><a data-scheduleId="${sche.scheduleId}"
+            data-accountId="${sche.accountId}"
+   data-accountName="${sche.accountName}"
+   data-workDate="${sche.workDate}"
+   data-shiftName="${sche.shiftName}"
+   data-statusName="${sche.statusName}"
+   data-note="${sche.note}"
+   href="javascript:void(0)"
+   onclick="openEditScheduleModal(this)">
+    •••
+</a></td>
         `;
             tbody.appendChild(tr);
         });
@@ -833,6 +910,57 @@
     function closeOffRequestsModal() {
         document.getElementById('offRequestModal').style.display = 'none';
     }
+
+    function openEditScheduleModal(element) {
+
+        document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
+        document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
+        document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
+        document.getElementById("editScheduleWorkDate").value = element.getAttribute('data-workDate');
+        document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
+        document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
+        document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
+
+
+        document.getElementById("editScheduleModal").style.display = "flex";
+    }
+
+    function closeEditScheduleModal() {
+        document.getElementById('editScheduleModal').style.display = 'none';
+    }
+
+    function submitEditSchedule(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('editScheduleForm');
+        const scheduleId = document.getElementById('editScheduleId').value;
+
+        const data = {
+            note: form.editScheduleNote.value.trim(),
+            status: form.editScheduleStatus.value.trim(),
+            accountId: parseInt(form.editAccountId.value),
+            workDate: form.editScheduleWorkDate.value,
+            shift:form.editScheduleShift.value.trim()
+        };
+
+        fetch(`/manager-dashboard/update/${scheduleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                closeEditScheduleModal();
+                showToast("Cập nhật lịch thành công!", "success");
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast("Cập nhật lịch thất bại!", "error");
+            }
+        }).catch(error => {
+            console.error("Lỗi cập nhật:", error);
+            showToast("Có lỗi xảy ra khi cập nhật!", "error");
+        });
+    }
+
     function onWeekChange() {
         const weekStart = document.getElementById('weekSelect').value;
         setWeekDates(weekStart);
