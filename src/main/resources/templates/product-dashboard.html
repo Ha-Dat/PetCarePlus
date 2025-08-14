@@ -457,7 +457,7 @@
             <li><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
             <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
             <li class="active"><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
-            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/product-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
@@ -489,7 +489,6 @@
                         <th>STT</th>
                         <th>Tên</th>
                         <th>Ảnh</th>
-                        <th>Mô tả</th>
                         <th>Giá</th>
                         <th>Tồn kho</th>
                         <th>Đã bán</th>
@@ -512,7 +511,6 @@
                                  src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
                                  alt="No Image">
                         </td>
-                        <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
@@ -585,7 +583,7 @@
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
             <div>
                 <label for="productName">Tên sản phẩm *</label>
-                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
+                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm" maxlength="50"/>
 
                 <label for="productCategory">Danh mục *</label>
                 <select id="productCategory" name="categoryId" required>
@@ -652,7 +650,7 @@
 
             <div>
                 <label for="editProductName">Tên sản phẩm *</label>
-                <input type="text" id="editProductName" name="name" required>
+                <input type="text" id="editProductName" name="name" required maxlength="50">
 
                 <label for="editProductCategory">Danh mục *</label>
                 <select id="editProductCategory" name="categoryId" required>

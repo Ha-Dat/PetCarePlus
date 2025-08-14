@@ -7,12 +7,14 @@ import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.enums.PaymentStatus;
 import org.example.petcareplus.enums.PromotionStatus;
 import org.example.petcareplus.service.*;
+import org.example.petcareplus.service.impl.ProductServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,15 +23,13 @@ import java.util.Map;
 @RequestMapping("/checkout")
 public class CheckoutController {
 
-    private final AccountService accountService;
     private final ProfileService profileService;
     private final ProductService productService;
     private final OrderService orderService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
 
-    public CheckoutController(AccountService accountService, ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
-        this.accountService = accountService;
+    public CheckoutController(ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
@@ -106,6 +106,12 @@ public class CheckoutController {
             return "redirect:/cart";
         }
 
+        try {
+            // Kiểm tra và trừ số lượng tồn kho trước khi tạo đơn hàng
+            for (Map.Entry<Long, Integer> entry : cart.entrySet()) {
+                productService.decreaseProductQuantity(entry.getKey(), entry.getValue());
+            }
+
         // Get profile
         Profile profile = profileService.getProfileByAccountAccountId(id);
 
@@ -123,27 +129,26 @@ public class CheckoutController {
         order.setPaymentMethod(request.getPaymentMethod());
         order.setNote(request.getNote());
         order.setTotalPrice(request.getTotalPrice());
-
         order.setStatus(OrderStatus.PENDING);
         order.setDiscountAmount(request.getDiscountAmount());
         order.setPromotion(promotion);
         order.setOrderDate(LocalDateTime.now());
-        order.setShippingMethod(request.getShippingMethod());
-        order.setShippingFee(null);
 
         // Handle Address & Name & Phone
         if (request.isDifferentAddress()) {
-            String toAddress = request.getAddress();
-            String toWard = request.getWard();
-            String toCity = request.getCity();
+            String toAddress = cleanInput(request.getAddress());
+            String toWard = cleanInput(request.getWard());
+            String toCity = cleanInput(request.getCity());
 
             order.setDeliverAddress(toAddress + ", " + toWard + ", " + toCity);
             order.setReceiverName(request.getReceiverName());
             order.setReceiverPhone(request.getReceiverPhone());
+            order.setShippingFee(calculateShippingFee(toCity));
         } else {
-            order.setDeliverAddress(request.getAddress() + ", " + profile.getWard().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + " " + profile.getWard().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
+            order.setShippingFee(calculateShippingFee(profile.getCity().getName()));
         }
 
         // Create order
@@ -162,6 +167,13 @@ public class CheckoutController {
 
         // Redirect to order success page
         return "order-success";
+        } catch (ProductServiceImpl.InsufficientStockException e) {
+            // Xử lý khi không đủ hàng
+            return "redirect:/cart?error=" + URLEncoder.encode(e.getMessage(), "UTF-8");
+        } catch (Exception e) {
+            // Xử lý các lỗi khác
+            return "redirect:/cart?error=Có lỗi xảy ra khi tạo đơn hàng";
+        }
     }
 
     @GetMapping("/vnpay-return")
@@ -169,6 +181,9 @@ public class CheckoutController {
         // Lưu Payment từ VNPay callback
         Payment savedPayment = paymentService.savePaymentFromVnPayReturn(params);
         Long orderId = savedPayment.getOrder().getOrderId();
+
+        // Update order status
+        orderService.updateStatus(orderId, OrderStatus.PROCESSING);
 
         model.addAttribute("orderId", orderId);
         model.addAttribute("payment", savedPayment);
@@ -225,7 +240,7 @@ public class CheckoutController {
 
         // Tính giảm giá
         BigDecimal discountPercent = promo.getDiscount();
-        BigDecimal discountAmount = subtotal.multiply(discountPercent).divide(BigDecimal.valueOf(100));
+        BigDecimal discountAmount = subtotal.multiply(discountPercent);
         BigDecimal total = subtotal.subtract(discountAmount);
 
         res.put("valid", true);
@@ -234,5 +249,22 @@ public class CheckoutController {
         res.put("discountFormatted", String.format("%,.0f VND", discountAmount));
         res.put("totalFormatted", String.format("%,.0f VND", total));
         return res;
+    }
+
+    private BigDecimal calculateShippingFee(String city) {
+        if ("Ha Noi".equalsIgnoreCase(city) || "Hà Nội".equalsIgnoreCase(city)) {
+            return BigDecimal.valueOf(15000);
+        }
+        return BigDecimal.valueOf(30000);
+    }
+
+    private String cleanInput(String input) {
+        if (input == null) return "";
+        return input
+                .trim() // bỏ khoảng trắng ở đầu và cuối
+                .replaceAll("^,+", "") // bỏ dấu phẩy ở đầu
+                .replaceAll(",+$", "") // bỏ dấu phẩy ở cuối
+                .trim()
+                .replaceAll("\\s+", " "); // gộp nhiều khoảng trắng thành 1
     }
 }

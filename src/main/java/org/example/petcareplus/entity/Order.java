@@ -48,8 +48,6 @@ public class Order {
     @Column(nullable = false)
     private String paymentMethod;
 
-    private String shippingMethod;
-
     @Column(columnDefinition = "TEXT")
     private String note;
 
@@ -153,14 +151,6 @@ public class Order {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
-    }
-
-    public String getShippingMethod() {
-        return shippingMethod;
-    }
-
-    public void setShippingMethod(String shippingMethod) {
-        this.shippingMethod = shippingMethod;
     }
 
     public String getNote() {

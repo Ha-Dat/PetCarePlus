@@ -6,6 +6,15 @@
     <link rel="stylesheet" th:href="@{css/header.css}">
     <link rel="stylesheet" th:href="@{css/footer.css}">
     <style>
+        .checkout-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .checkout-btn:disabled:hover {
+            background-color: #cccccc;
+        }
         /* Cart */
         .cart-container {
             max-width: 1000px;
@@ -257,7 +266,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="cart-item" th:each="entry : ${cartItems}" th:attr="data-product-id=${entry.key.productId}">
+        <tr class="cart-item" th:each="entry : ${cartItems}" th:attr="data-product-id=${entry.key.productId}, data-unit-in-stock=${entry.key.unitInStock}">
             <td class="product-info">
                     <img class="product-image"
                          th:if="${!#lists.isEmpty(entry.key.medias)}"
@@ -288,8 +297,17 @@
     <div class="action">
         <span>Tổng cộng: <span class="total-amount" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
         <div class="cart-actions">
-            <button id="clearCartBtn" class="remove-selected">xóa khỏi giỏ hàng</button>
-            <button class="checkout-btn" onclick="window.location.href='/checkout'">Mua Hàng</button>
+            <button id="clearCartBtn"
+                    th:disabled="${cartItems.isEmpty()}"
+                    class="remove-selected">
+                xóa khỏi giỏ hàng
+            </button>
+            
+            <button class="checkout-btn"
+                    th:disabled="${cartItems.isEmpty()}"
+                    onclick="window.location.href='/checkout'">
+                Mua Hàng
+            </button>
         </div>
     </div>
 </main>
@@ -342,7 +360,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId: Number(productId), quantity: newQty })
                 })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status === 400) {
+                            return res.json().then(errorData => {
+                                throw new Error(errorData.error || 'Lỗi cập nhật giỏ hàng');
+                            });
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         const price = parsePrice(priceText.innerText);
                         const newSubtotal = price * newQty;
@@ -355,6 +380,12 @@
                     })
                     .catch(err => {
                         console.error('Lỗi cập nhật giỏ hàng:', err);
+                        showToast(err.message, "warning");
+                        // Khôi phục lại số lượng cũ nếu có lỗi
+                        const currentQty = parseInt(qtyInput.value);
+                        if (newQty > currentQty) {
+                            qtyInput.value = currentQty;
+                        }
                     });
             };
 
@@ -370,6 +401,13 @@
 
             increaseBtn.addEventListener('click', () => {
                 let qty = parseInt(qtyInput.value);
+                const unitInStock = parseInt(item.getAttribute('data-unit-in-stock') || '0');
+                
+                if (qty >= unitInStock) {
+                    showToast("Không đủ hàng trong kho. Số lượng tối đa: " + unitInStock, "warning");
+                    return;
+                }
+                
                 qtyInput.value = ++qty;
                 updateCart(qty);
             });

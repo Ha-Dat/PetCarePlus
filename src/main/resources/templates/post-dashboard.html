@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý bài viết</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         /* General styles */
         body {
@@ -136,11 +136,11 @@
             background-color: #f0f0f0;
         }
 
-        /* Dropdown menu */
+        /* Thay đổi phần dropdown menu */
         .dropdown-menu {
-            position: fixed;
-            top: 165px;
-            right: 65px;
+            position: absolute;
+            right: 0;
+            top: 100%;
             min-width: 140px;
             background: white;
             border-radius: 12px;
@@ -150,6 +150,17 @@
             display: none;
             flex-direction: column;
             gap: 3px;
+            margin-top: 5px;
+        }
+
+        /* Thêm phần này để dropdown hiển thị khi hover vào container */
+        .action-dropdown:hover .dropdown-menu {
+            display: flex;
+        }
+
+        /* Đảm bảo dropdown không bị ẩn khi di chuột vào nó */
+        .dropdown-menu:hover {
+            display: flex;
         }
 
         /* Show dropdown on hover */
@@ -463,6 +474,82 @@
             outline: 2px solid #2196F3;
             outline-offset: 2px;
         }
+
+        /* Pending posts notification styles */
+        .pending-notification {
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pending-notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .pending-notification:hover::before {
+            left: 100%;
+        }
+
+        .pending-notification:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.25);
+        }
+
+        .pending-notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pending-notification-icon {
+            width: 24px;
+            height: 24px;
+            color: #f39c12;
+            flex-shrink: 0;
+        }
+
+        .pending-notification-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+
+        .pending-notification-text {
+            color: #856404;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Responsive design for notification */
+        @media (max-width: 768px) {
+            .pending-notification {
+                padding: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .pending-notification-content {
+                gap: 10px;
+            }
+            
+            .pending-notification-text {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -471,23 +558,23 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Manager Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a href="#">📅 Lịch làm việc</a></li>
-            <li><a href="#">👥 Tài khoản nhân viên</a></li>
-            <li class="active"><a href="post-dashboard">📝 Bài viết</a></li>
+            <li><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
+            <li class="active"><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
+            <li><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
         </ul>
     </aside>
 
     <div class="main-content">
         <h1 class="page-title">Quản lý bài viết</h1>
         <!-- Thông báo bài viết chờ duyệt -->
-        <div th:if="${pendingMessage}" class="mb-6">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <div class="flex items-center">
-                    <svg class="h-5 w-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+        <div th:if="${pendingMessage}" class="pending-notification">
+            <div class="pending-notification-content">
+                <span class="pending-notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    <span class="text-yellow-800 font-medium" th:text="${pendingMessage}"></span>
-                </div>
+                </span>
+                <p class="pending-notification-text" th:text="${pendingMessage}"></p>
             </div>
         </div>
 
@@ -529,13 +616,13 @@
                                     Chi tiết
                                 </button>
 
-                                <form th:action="@{'/post-dashboard/approve/' + ${post.postId}}" method="post" style="display: contents;">
-                                    <button type="submit" class="dropdown-item approve" 
+                                <form th:action="@{'/manager/post-dashboard/approve/' + ${post.postId}}" method="post" style="display: contents;">
+                                    <button type="submit" class="dropdown-item approve"
                                             th:disabled="${post.checked}"
                                             th:if="${!post.checked}">Duyệt</button>
                                 </form>
 
-                                <form th:action="@{'/post-dashboard/reject/' + ${post.postId}}" method="post" style="display: contents;">
+                                <form th:action="@{'/manager/post-dashboard/reject/' + ${post.postId}}" method="post" style="display: contents;">
                                     <button type="submit" class="dropdown-item reject"
                                             th:disabled="${post.checked}"
                                             th:if="${!post.checked}"
@@ -553,16 +640,16 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{/post-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                        <a th:href="@{/manager(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                     </li>
 
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active' : ''">
-                        <a th:href="@{/post-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                        <a th:href="@{/manager/post-dashboard(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                     </li>
 
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{/post-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                        <a th:href="@{/manager/post-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                     </li>
                 </ul>
             </div>
@@ -584,62 +671,87 @@
 </div>
 
 <script>
-    // Modal functions
     function showPostDetail(postId) {
-        // Fetch post details via AJAX
-        fetch('/post-dashboard/post/' + postId)
-            .then(response => response.json())
+        // Hiển thị loading state
+        document.getElementById('modalBody').innerHTML = '<p>Đang tải dữ liệu...</p>';
+        document.getElementById('postDetailModal').style.display = 'block';
+
+        fetch('/manager/post-dashboard/post/' + postId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(post => {
-                document.getElementById('modalTitle').textContent = post.title;
-                
+                console.log('Post detail data:', post); // Debug dữ liệu nhận được
+
+                document.getElementById('modalTitle').textContent = post.title || 'Không có tiêu đề';
+
                 let modalBody = document.getElementById('modalBody');
                 modalBody.innerHTML = `
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Tiêu đề:</div>
+                    <div class="post-detail-value">${post.title || 'Không có'}</div>
+                </div>
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Mô tả:</div>
+                    <div class="post-detail-value">${post.description || 'Không có'}</div>
+                </div>
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Người đăng:</div>
+                    <div class="post-detail-value">${post.accountName || 'Không rõ'}</div>
+                </div>
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Ngày tạo:</div>
+                    <div class="post-detail-value">${post.createdAt ? new Date(post.createdAt).toLocaleString('vi-VN') : 'Không rõ'}</div>
+                </div>
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Trạng thái:</div>
+                    <div class="post-detail-value">${post.checked ? 'Đã duyệt' : 'Chờ duyệt'}</div>
+                </div>
+                <div class="post-detail-row">
+                    <div class="post-detail-label">Rating:</div>
+                    <div class="post-detail-value">${post.rating || '0'}</div>
+                </div>
+            `;
+
+                // Xử lý media (ảnh/video)
+                if (post.medias && post.medias.length > 0) {
+                    let mediaHTML = post.medias.map(media => {
+                        if (media.mediaCategory === 'POST_IMAGE') {
+                            return `<img src="${media.url}" alt="Post image" class="post-media-img" />`;
+                        } else if (media.mediaCategory === 'POST_VIDEO') {
+                            return `<video controls class="post-media-video"><source src="${media.url}" type="video/mp4">Trình duyệt không hỗ trợ video.</video>`;
+                        }
+                        return '';
+                    }).join('');
+
+                    modalBody.innerHTML += `
                     <div class="post-detail-row">
-                        <div class="post-detail-label">Tiêu đề:</div>
-                        <div class="post-detail-value">${post.title}</div>
-                    </div>
-                    <div class="post-detail-row">
-                        <div class="post-detail-label">Mô tả:</div>
-                        <div class="post-detail-value">${post.description}</div>
-                    </div>
-                    <div class="post-detail-row">
-                        <div class="post-detail-label">Người đăng:</div>
-                        <div class="post-detail-value">${post.accountName}</div>
-                    </div>
-                    <div class="post-detail-row">
-                        <div class="post-detail-label">Ngày tạo:</div>
-                                                 <div class="post-detail-value">${new Date(post.createdAt).toLocaleString('vi-VN')}</div>
-                    </div>
-                    <div class="post-detail-row">
-                        <div class="post-detail-label">Trạng thái:</div>
-                        <div class="post-detail-value">${post.isChecked ? 'Đã duyệt' : 'Chờ duyệt'}</div>
-                    </div>
-                    <div class="post-detail-row">
-                        <div class="post-detail-label">Rating:</div>
-                        <div class="post-detail-value">${post.rating || 0}</div>
-                    </div>
-                    ${post.medias && post.medias.length > 0 ? `
-                        <div class="post-detail-row">
-                            <div class="post-detail-label">Media:</div>
-                            <div class="post-media">
-                                                                 ${post.medias.map(media => {
-                                     if (media.mediaCategory === 'POST_IMAGE') {
-                                         return `<img src="${media.url}" alt="Post image" />`;
-                                     } else if (media.mediaCategory === 'POST_VIDEO') {
-                                         return `<video controls><source src="${media.url}" type="video/mp4">Your browser does not support the video tag.</video>`;
-                                     }
-                                     return '';
-                                 }).join('')}
-                            </div>
+                        <div class="post-detail-label">Hình ảnh/Video:</div>
+                        <div class="post-media">
+                            ${mediaHTML}
                         </div>
-                    ` : ''}
+                    </div>
                 `;
-                
-                document.getElementById('postDetailModal').style.display = 'block';
+                } else {
+                    modalBody.innerHTML += `
+                    <div class="post-detail-row">
+                        <div class="post-detail-label">Hình ảnh/Video:</div>
+                        <div class="post-detail-value">Không có</div>
+                    </div>
+                `;
+                }
             })
             .catch(error => {
                 console.error('Error fetching post details:', error);
-                alert('Có lỗi xảy ra khi tải chi tiết bài viết');
+                document.getElementById('modalBody').innerHTML = `
+                <div class="error-message">
+                    <p>Có lỗi xảy ra khi tải chi tiết bài viết</p>
+                    <p>${error.message}</p>
+                </div>
+            `;
             });
     }
 
@@ -662,6 +774,36 @@
         if (successToast) successToast.style.display = 'none';
         if (errorToast) errorToast.style.display = 'none';
     }, 3000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+        dropdownToggles.forEach(toggle => {
+            const dropdown = toggle.nextElementSibling;
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Đóng tất cả dropdown khác trước khi mở dropdown hiện tại
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu !== dropdown) {
+                        menu.style.display = 'none';
+                    }
+                });
+                // Toggle dropdown hiện tại
+                dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+            });
+
+            // Đóng dropdown khi click ra ngoài
+            document.addEventListener('click', function() {
+                dropdown.style.display = 'none';
+            });
+
+            // Ngăn dropdown đóng khi click vào nó
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    });
 </script>
 </body>
 </html>

@@ -86,33 +86,12 @@
                         </div>
                     </div>
 
-                    <!-- Shipping Method -->
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-body">
-                            <h4 class="card-title mb-4">Phương thức vận chuyển</h4>
-
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="shippingMethod"
-                                       id="expressShipping" value="EXPRESS" checked>
-                                <label class="form-check-label" for="expressShipping">
-                                    <strong>Giao hàng nhanh (Hỏa tốc)</strong>
-                                    <p class="text-muted small mb-0">Giao trong 1-2 ngày làm việc</p>
-                                </label>
-                                <span class="float-end fw-bold" id="expressFee">...</span>
-                            </div>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="shippingMethod"
-                                       id="standardShipping" value="STANDARD">
-                                <label class="form-check-label" for="standardShipping">
-                                    <strong>Giao hàng tiêu chuẩn</strong>
-                                    <p class="text-muted small mb-0">Giao trong 3-5 ngày làm việc</p>
-                                </label>
-                                <span class="float-end fw-bold" id="standardFee">...</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="mt-4"></div>
+                    <a href="/view-cart" class="btn btn-secondary w-50 py-3">
+                        Trở lại giỏ hàng
+                    </a>
                 </div>
+
 
                 <!-- Order Summary -->
                 <div class="col-lg-6">
@@ -135,7 +114,7 @@
                                             <span th:text="${entry.value}"></span>
                                         </td>
                                         <td class="text-end">
-                                            <span th:text="${#numbers.formatCurrency(entry.key.price.doubleValue() * entry.value) + ' VND'}"></span>
+                                            <span th:text="${#numbers.formatDecimal(entry.key.price.doubleValue() * entry.value, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -144,7 +123,7 @@
                                         <th>Tạm tính</th>
                                         <td class="text-end" id="subtotal"
                                             th:attr="data-value=${subtotal}"
-                                            th:text="${#numbers.formatCurrency(subtotal.doubleValue()) + 'VND'}"></td>
+                                            th:text="${#numbers.formatDecimal(subtotal.doubleValue(), 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                                     </tr>
                                     <tr id="discountRow" style="display: none;">
                                         <th>Giảm giá</th>
@@ -153,7 +132,7 @@
                                     <tr class="fw-bold">
                                         <th>Tổng cộng</th>
                                         <td class="text-end" id="totalPrice"
-                                            th:text="${#numbers.formatCurrency(subtotal.doubleValue()) + 'VND'}"></td>
+                                            th:text="${#numbers.formatDecimal(subtotal.doubleValue(), 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                                         <input type="hidden" name="totalPrice" th:value="${subtotal}"/>
                                     </tr>
                                     </tfoot>
@@ -210,6 +189,7 @@
                 </div>
             </div>
         </form>
+
     </div>
 </section>
 
@@ -235,43 +215,50 @@
             let isValid = true;
             let errors = [];
 
+            // Check giao đến địa chỉ khác
             if ($('#differentAddress').is(':checked')) {
-                // Validate tên người nhận
-                const receiverName = $('input[name="receiverName"]').val().trim();
-                if (receiverName.length < 2) {
+                const receiverName = $('input[name="receiverName"]').val()?.trim() || "";
+                if (receiverName.length === 0) {
+                    isValid = false;
+                    errors.push("Tên người nhận không được để trống.");
+                } else if (receiverName.length < 2) {
                     isValid = false;
                     errors.push("Tên người nhận phải có ít nhất 2 ký tự.");
                 }
 
-                // Validate số điện thoại
-                const receiverPhone = $('input[name="receiverPhone"]').val().trim();
+                const receiverPhone = $('input[name="receiverPhone"]').val()?.trim() || "";
                 const phonePattern = /^(0|\+84)(\d{9})$/;
-                if (!phonePattern.test(receiverPhone)) {
+                if (receiverPhone.length === 0) {
+                    isValid = false;
+                    errors.push("Số điện thoại không được để trống.");
+                } else if (!phonePattern.test(receiverPhone)) {
                     isValid = false;
                     errors.push("Số điện thoại không hợp lệ (VD: 0912345678).");
                 }
 
-                // Validate địa chỉ
-                const deliveryAddress = $('input[name="deliveryAddress"]').val().trim();
-                if (deliveryAddress.length < 3) {
+                const address = $('#differentAddressFields input[name="address"]').val()?.trim() || "";
+                if (address.length === 0) {
                     isValid = false;
                     errors.push("Vui lòng nhập số nhà, tên đường hợp lệ.");
                 }
 
-                // Validate ward, city
-                const ward = $('input[name="ward"]').val().trim();
-                const city = $('input[name="city"]').val().trim();
-                if (!ward || !city) {
+                const ward = $('input[name="ward"]').val()?.trim() || "";
+                if (ward.length === 0) {
                     isValid = false;
-                    errors.push("Vui lòng nhập đầy đủ phường/xã, quận/huyện và tỉnh/thành phố.");
+                    errors.push("Phường/Xã không được để trống.");
+                }
+
+                const city = $('input[name="city"]').val()?.trim() || "";
+                if (city.length === 0) {
+                    isValid = false;
+                    errors.push("Tỉnh/Thành phố không được để trống.");
                 }
 
             } else {
-                // Validate địa chỉ mặc định
-                const defaultAddressDetail = $('#defaultAddressDetail').val().trim();
-                if (defaultAddressDetail.length < 3) {
+                const defaultAddressDetail = $('#defaultAddressDetail').val()?.trim() || "";
+                if (defaultAddressDetail.length === 0) {
                     isValid = false;
-                    errors.push("Vui lòng nhập số nhà, tên đường hợp lệ cho địa chỉ mặc định.");
+                    errors.push("Số nhà, tên đường cho địa chỉ mặc định không được để trống.");
                 }
             }
 
@@ -282,18 +269,15 @@
 
             if (!isValid) {
                 e.preventDefault();
-
-                // Hiển thị lỗi trong alert
                 $('#formErrorAlert')
                     .removeClass('d-none')
                     .html("<strong>Lỗi:</strong><br>" + errors.join("<br>"));
-
-                // Cuộn lên đầu form để thấy thông báo
                 $('html, body').animate({ scrollTop: $('#formErrorAlert').offset().top - 20 }, 300);
             } else {
                 $('#formErrorAlert').addClass('d-none').html('');
             }
         });
+
     });
 
     // Coupon

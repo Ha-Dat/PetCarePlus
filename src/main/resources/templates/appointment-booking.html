@@ -655,6 +655,9 @@
                   placeholder="Tên vật nuôi..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -668,6 +671,9 @@
                   placeholder="Chó, mèo, thỏ, hamster..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -681,6 +687,9 @@
                   placeholder="shiba, mèo ta, chó cỏ..."
                   required
                   readonly
+                  minlength="1"
+                  maxlength="50"
+                  pattern="^[a-zA-Z]+$"
           />
         </div>
 
@@ -688,25 +697,29 @@
         <div class="form-group">
           <label for="petBreed">Cân nặng (kg)<span style="color: red">*</span></label>
           <input
-                  type="text"
+                  type="number"
                   id="petWeight"
                   name="petWeight"
                   placeholder="10"
                   required
                   readonly
+                  min="1"
+                  max="100"
           />
         </div>
 
         <!-- Pet Age -->
         <div class="form-group">
-          <label for="petBreed">Tuổi thọ (năm)<span style="color: red">*</span></label>
+          <label for="petBreed">Tuổi thọ (Tháng)<span style="color: red">*</span></label>
           <input
-                  type="text"
+                  type="number"
                   id="petAge"
                   name="petAge"
                   placeholder="2"
                   required
                   readonly
+                  min="1"
+                  max="300"
           />
         </div>
 
@@ -718,7 +731,7 @@
               <option value="">Chọn loại dịch vụ</option>
               <option th:each="service : ${appointmentServices}"
                       th:value="${service.serviceId}"
-                      th:text="${service.name + ' (' + #numbers.formatCurrency(service.price) + ')'}">
+                      th:text="${service.name + ' (' + service.price + 'VND)'}">
               </option>
             </select>
           </div>
@@ -887,11 +900,18 @@
     const form = document.getElementById('appointmentBookingForm');
     const select = document.getElementById('petProfileSelect');
     const petProfileId = select.value;
+    const petName = document.getElementById("petName").value.trim();
+    const petSpecies = document.getElementById("petSpecies").value.trim();
+    const petBreed = document.getElementById("petBreed").value.trim();
+    const petWeight = parseFloat(document.getElementById("petWeight").value.trim());
+    const petAge = parseInt(document.getElementById("petAge").value.trim());
+
 
     if (!petProfileId) {
       alert('Vui lòng chọn vật nuôi!');
       return;
     }
+
 
     const bookDateInput = document.getElementById('bookDate');
     const selectedDate = new Date(bookDateInput.value);
@@ -902,10 +922,41 @@
       return;
     }
 
+    // Validate tên vật nuôi
+    if (petName.length < 1 || petName.length > 50) {
+      alert("Tên vật nuôi phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate loài
+    if (petSpecies.length < 1 || petSpecies.length > 50) {
+      alert("Tên loài phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate giống
+    if (petBreed.length < 1 || petBreed.length > 50) {
+      alert("Tên giống phải từ 1 đến 50 ký tự.");
+      return false;
+    }
+
+    // Validate cân nặng
+    if (isNaN(petWeight) || petWeight < 1 || petWeight > 100) {
+      alert("Cân nặng phải từ 1 đến 100 kg.");
+      return false;
+    }
+
+    // Validate tuổi
+    if (isNaN(petAge) || petAge < 1 || petAge > 300) {
+      alert("Tuổi vật nuôi phải từ 1 đến 300 tháng.");
+      return false;
+    }
+
     form.action = `/appointment-booking/book/${petProfileId}`;
     alert('Đặt lịch thành công!');
     form.submit();
   }
+
 
 
   // Fill pet info

@@ -249,7 +249,7 @@
             <li class="active"><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
             <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
             <li><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
-            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/order-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
@@ -333,11 +333,11 @@
                 <tr th:each="order : ${orders}">
                     <td th:text="${order.orderId}">#876364</td>
                     <td th:text="${order.customerName}">Tên khách</td>
-                    <td th:text="${order.status}">Pending</td>
+                    <td th:text="${order.status.getValue()}">Pending</td>
                     <td class="price-column total-price" th:text="${order.formattedTotalPrice}">xxx.xxx đ</td>
                     <td>
                         <button class="btn btn-sm btn-primary" th:attr="data-id=${order.orderId}" onclick="loadOrderDetail(this)">
-                            View
+                            Chi tiết
                         </button>
                         <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/seller/orders/approve/' + ${order.orderId}}"
@@ -400,6 +400,7 @@
             url: "/seller/orders/detail/" + orderId,
             method: "GET",
             success: function (data) {
+                console.log(orderId)
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, "text/html");
                 const content = doc.querySelector("#order-detail-content");

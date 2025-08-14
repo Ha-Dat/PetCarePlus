@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +51,21 @@ public class ProductController {
         }
 
         Page<Product> productPage = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+        
+        // Lọc bỏ sản phẩm không hoạt động
+        List<Product> activeProducts = productPage.getContent().stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .toList();
+        
         List<Product> resultSearch = new ArrayList<>();
         if (searchkeyword != null && !searchkeyword.trim().isEmpty()) {
-            resultSearch = productService.findByNameContainingIgnoreCase(searchkeyword.trim());
+            resultSearch = productService.findByNameContainingIgnoreCase(searchkeyword.trim())
+                    .stream()
+                    .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                    .toList();
         }
 
-        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("products", activeProducts);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("categories", categoryService.getParentCategory());
@@ -75,7 +85,14 @@ public class ProductController {
         List<Product> top9Products = productService.getTop9Products();
 
         if (productOptional.isPresent()) {
-            model.addAttribute("product", productOptional.get());
+            Product product = productOptional.get();
+            
+            // Kiểm tra nếu sản phẩm không hoạt động thì ẩn
+            if (product.getStatus() == ProductStatus.INACTIVE) {
+                return "error/404";
+            }
+            
+            model.addAttribute("product", product);
             model.addAttribute("categories", parentCategories);
             model.addAttribute("top9Products", top9Products);
             return "product-detail";

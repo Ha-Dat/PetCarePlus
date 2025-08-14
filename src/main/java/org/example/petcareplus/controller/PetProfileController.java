@@ -62,51 +62,6 @@ public class PetProfileController {
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         
-        // Validate dữ liệu
-        if (name == null || name.trim().isEmpty()) {
-            model.addAttribute("error", "Tên không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (species == null || species.trim().isEmpty()) {
-            model.addAttribute("error", "Loài không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (breeds == null || breeds.trim().isEmpty()) {
-            model.addAttribute("error", "Giống không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (name.trim().length() > 50) {
-            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (species.trim().length() > 50) {
-            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (breeds.trim().length() > 50) {
-            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        
         // Lấy PetProfile hiện tại từ database
         PetProfile existingPet = petProfileService.findById(petId);
         if (existingPet != null) {
@@ -133,58 +88,6 @@ public class PetProfileController {
                                HttpSession session,
                                Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-
-        // Validate dữ liệu
-        if (name == null || name.trim().isEmpty()) {
-            model.addAttribute("error", "Tên không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            model.addAttribute("showModal", true);
-            return "pet-profile";
-        }
-        if (species == null || species.trim().isEmpty()) {
-            model.addAttribute("error", "Loài không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
-        if (breeds == null || breeds.trim().isEmpty()) {
-            model.addAttribute("error", "Giống không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
-        if (name.trim().length() > 50) {
-            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
-        if (species.trim().length() > 50) {
-            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
-        if (breeds.trim().length() > 50) {
-            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
 
         try {
             // Tạo PetProfile mới
@@ -246,51 +149,6 @@ public class PetProfileController {
                                  HttpSession session,
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
-
-        // Validate dữ liệu
-        if (name == null || name.trim().isEmpty()) {
-            model.addAttribute("error", "Tên không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (species == null || species.trim().isEmpty()) {
-            model.addAttribute("error", "Loài không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (breeds == null || breeds.trim().isEmpty()) {
-            model.addAttribute("error", "Giống không được để trống");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (name.trim().length() > 50) {
-            model.addAttribute("error", "Tên không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (species.trim().length() > 50) {
-            model.addAttribute("error", "Loài không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-        if (breeds.trim().length() > 50) {
-            model.addAttribute("error", "Giống không được vượt quá 50 ký tự");
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", petProfileService.findById(petId));
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
 
         try {
             if (petId != null) {

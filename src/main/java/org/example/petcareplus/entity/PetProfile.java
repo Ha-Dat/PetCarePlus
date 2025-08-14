@@ -35,11 +35,11 @@ public class PetProfile {
     private String breeds;
 
     @DecimalMin(value = "0.1", message = "Cân nặng phải lớn hơn 0")
-    @DecimalMax(value = "200.0", message = "Cân nặng không vượt quá 200kg")
+    @DecimalMax(value = "100.0", message = "Cân nặng không vượt quá 200kg")
     private Float weight;
 
     @Min(1)
-    @Max(50)
+    @Max(300)
     private Integer age;
 
     @OneToMany(mappedBy = "petProfile", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -99,11 +99,11 @@ public class PetProfile {
         this.weight = weight;
     }
 
-    public @Min(1) @Max(50) Integer getAge() {
+    public @Min(1) @Max(300) Integer getAge() {
         return age;
     }
 
-    public void setAge(@Min(1) @Max(50) Integer age) {
+    public void setAge(@Min(1) @Max(300) Integer age) {
         this.age = age;
     }
 
