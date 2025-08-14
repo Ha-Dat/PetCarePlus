@@ -1,5 +1,6 @@
 package org.example.petcareplus.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.ProductRepository;
@@ -106,5 +107,28 @@ public class ProductServiceImpl implements ProductService {
     public int getTotalUnitsSold() {
         Integer total = productRepository.getTotalUnitsSold();
         return total != null ? total : 0;
+    }
+
+    @Override
+    public void decreaseProductQuantity(Long productId, int quantity) throws InsufficientStockException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        if (product.getUnitInStock() < quantity) {
+            throw new InsufficientStockException(
+                    "Không đủ hàng trong kho. Sản phẩm: " + product.getName() +
+                            ", Số lượng tồn: " + product.getUnitInStock() +
+                            ", Số lượng yêu cầu: " + quantity
+            );
+        }
+
+        product.setUnitInStock(product.getUnitInStock() - quantity);
+        productRepository.save(product);
+    }
+
+    public class InsufficientStockException extends Exception {
+        public InsufficientStockException(String message) {
+            super(message);
+        }
     }
 }
