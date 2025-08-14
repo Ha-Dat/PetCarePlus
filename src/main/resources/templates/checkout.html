@@ -24,12 +24,6 @@
                 <div class="col-lg-6">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <!-- Thêm nút quay lại ở đây -->
-                            <div class="mb-4">
-                                <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
-                                    <i class="bi bi-arrow-left"></i> Quay lại
-                                </button>
-                            </div>
                             <h4 class="card-title mb-4">Thông tin giao hàng</h4>
                             <div id="formErrorAlert" class="alert alert-danger d-none" role="alert"></div>
 
@@ -344,18 +338,6 @@
             });
         });
     });
-    // Hàm quay lại trang trước
-    function goBack() {
-        // Lưu giỏ hàng tạm thời (nếu cần)
-        if (confirm('Bạn có muốn quay lại trang trước?')) {
-            window.history.back();
-        }
-    }
-
-    // Hoặc có thể chuyển hướng cụ thể về trang giỏ hàng
-    function goToCart() {
-        window.location.href = '/cart'; // Điều chỉnh URL theo route của bạn
-    }
 </script>
 </body>
 </html>
