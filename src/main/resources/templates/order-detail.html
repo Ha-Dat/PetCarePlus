@@ -179,7 +179,7 @@
                                             th:selected="${order.status.name() == 'PENDING'}">Đang chờ</option>
 
                                     <option value="PROCESSING"
-                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PROCESSING'}"
+                                            th:if="${order.status.name() == 'APPROVED' or order.status.name() == 'PROCESSING'}"
                                             th:selected="${order.status.name() == 'PROCESSING'}">Đang xử lý</option>
 
                                     <option value="DELIVERING"
@@ -190,10 +190,6 @@
                                             th:if="${order.status.name() == 'DELIVERING' or order.status.name() == 'COMPLETED'}"
                                             th:selected="${order.status.name() == 'COMPLETED'}">Đã hoàn thành</option>
 
-                                    <option value="CANCELLED"
-                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PROCESSING'}"
-                                            th:selected="${order.status.name() == 'CANCELLED'}">Đã hủy</option>
-
                                     <option value="REJECTED"
                                             th:if="${order.status.name() == 'PENDING'}"
                                             th:selected="${order.status.name() == 'REJECTED'}">Từ chối</option>
@@ -201,6 +197,8 @@
                                     <option value="APPROVED"
                                             th:if="${order.status.name() == 'PENDING' or order.status.name() == 'APPROVED'}"
                                             th:selected="${order.status.name() == 'APPROVED'}">Duyệt</option>
+
+                                    <option value="CANCELLED" th:if="${order.status.name() == 'CANCELLED'}">Đã hủy</option>
 
                                     <option value="REJECTED" th:if="${order.status.name() == 'REJECTED'}">Từ chối</option>
                                 </select>
