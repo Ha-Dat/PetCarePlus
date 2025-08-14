@@ -2,6 +2,7 @@ package org.example.petcareplus.service;
 
 import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.service.impl.ProductServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,4 +42,6 @@ public interface ProductService {
     int getTotalUnitsInStock();
 
     int getTotalUnitsSold();
+
+    void decreaseProductQuantity(Long productId, int quantity) throws ProductServiceImpl.InsufficientStockException;
 }

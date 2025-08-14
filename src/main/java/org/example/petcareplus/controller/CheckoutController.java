@@ -7,12 +7,14 @@ import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.enums.PaymentStatus;
 import org.example.petcareplus.enums.PromotionStatus;
 import org.example.petcareplus.service.*;
+import org.example.petcareplus.service.impl.ProductServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,6 +106,12 @@ public class CheckoutController {
             return "redirect:/cart";
         }
 
+        try {
+            // Kiểm tra và trừ số lượng tồn kho trước khi tạo đơn hàng
+            for (Map.Entry<Long, Integer> entry : cart.entrySet()) {
+                productService.decreaseProductQuantity(entry.getKey(), entry.getValue());
+            }
+
         // Get profile
         Profile profile = profileService.getProfileByAccountAccountId(id);
 
@@ -159,6 +167,13 @@ public class CheckoutController {
 
         // Redirect to order success page
         return "order-success";
+        } catch (ProductServiceImpl.InsufficientStockException e) {
+            // Xử lý khi không đủ hàng
+            return "redirect:/cart?error=" + URLEncoder.encode(e.getMessage(), "UTF-8");
+        } catch (Exception e) {
+            // Xử lý các lỗi khác
+            return "redirect:/cart?error=Có lỗi xảy ra khi tạo đơn hàng";
+        }
     }
 
     @GetMapping("/vnpay-return")
