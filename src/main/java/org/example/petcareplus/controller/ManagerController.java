@@ -3,12 +3,11 @@ package org.example.petcareplus.controller;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.dto.WorkScheduleDTO;
+import org.example.petcareplus.entity.AppointmentBooking;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.entity.WorkSchedule;
 import org.example.petcareplus.entity.WorkScheduleRequest;
-import org.example.petcareplus.enums.RequestType;
-import org.example.petcareplus.enums.ScheduleStatus;
-import org.example.petcareplus.enums.Shift;
+import org.example.petcareplus.enums.*;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.service.WorkScheduleRequestService;
 import org.example.petcareplus.service.WorkScheduleService;
@@ -16,10 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -46,8 +42,9 @@ public class ManagerController {
 
 
         List<Map<String, String>> absentRequests = allRequests.stream()
-                .filter(r -> r.getRequestType() == RequestType.OFF)
+                .filter(r -> r.getRequestType() == RequestType.OFF && r.getStatus() == ScheduleRequestStatus.PENDING)
                 .map(r -> Map.of(
+                        "requestId", r.getRequestId().toString(),
                         "accountName", r.getOriginalSchedule().getAccount().getName(),
                         "accountPhone", r.getOriginalSchedule().getAccount().getPhone(),
                         "accountRole", r.getOriginalSchedule().getAccount().getRole().getValue(),
@@ -60,13 +57,13 @@ public class ManagerController {
                 .collect(Collectors.toList());
 
         List<Map<String, String>> shiftChangeRequests = allRequests.stream()
-                .filter(r -> r.getRequestType() == RequestType.CHANGE)
+                .filter(r -> r.getRequestType() == RequestType.CHANGE && r.getStatus() == ScheduleRequestStatus.PENDING)
                 .map(r -> Map.of(
+                        "requestId", r.getRequestId().toString(),
                         "accountName", r.getOriginalSchedule().getAccount().getName(),
                         "accountPhone", r.getOriginalSchedule().getAccount().getPhone(),
                         "accountRole", r.getOriginalSchedule().getAccount().getRole().getValue(),
                         "workDate", r.getOriginalSchedule().getWorkDate().toString(),
-                        "shift", r.getOriginalSchedule().getShift().getValue(),
                         "shiftName", r.getOriginalSchedule().getShift().name(),
                         "status", r.getStatus().getValue(),
                         "reason", r.getReason(),
@@ -128,5 +125,37 @@ public class ManagerController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to update schedule: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/manager-dashboard/approve/{id}")
+    public String approveRequest(@PathVariable("id") Long id) {
+        Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
+        if (existing.isPresent()) {
+            WorkScheduleRequest sche = existing.get();
+            sche.setStatus(ScheduleRequestStatus.APPROVED);
+            WorkSchedule workSchedule = workScheduleService.findById(sche.getOriginalSchedule().getScheduleId()).get();
+            if(sche.getRequestType() == RequestType.CHANGE) {
+                workSchedule.setWorkDate(sche.getRequestedDate());
+                workSchedule.setShift(sche.getRequestedShift());
+            } else {
+                workSchedule.setStatus(ScheduleStatus.LEAVE_APPROVED);
+            }
+            workScheduleService.save(workSchedule);
+            workScheduleRequestService.save(sche);
+            return "redirect:/manager-dashboard"; // This tells Spring to redirect
+        }
+        return "redirect:/manager-dashboard?error=true"; // or some error page
+    }
+
+    @PostMapping("/manager-dashboard/disapprove/{id}")
+    public String disapproveRequest(@PathVariable("id") Long id) {
+        Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
+        if (existing.isPresent()) {
+            WorkScheduleRequest sche = existing.get();
+            sche.setStatus(ScheduleRequestStatus.REJECTED);
+            workScheduleRequestService.save(sche);
+            return "redirect:/manager-dashboard";
+        }
+        return "redirect:/manager-dashboard?error=true";
     }
 }

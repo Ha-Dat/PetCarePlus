@@ -571,8 +571,8 @@
     <div class="modal-box">
         <h2 id="editScheduleModalTitle">Chỉnh sửa lịch làm việc:</h2>
         <form id="editScheduleForm" onsubmit="submitEditSchedule(event)">
-            <input id="editScheduleId" name="editScheduleId">
-            <input id="editAccountId" name="editAccountId">
+            <input type="hidden" id="editScheduleId" name="editScheduleId">
+            <input type="hidden" id="editAccountId" name="editAccountId">
                 <label for="editScheduleAccountName">Tên nhân viên:</label>
                 <input type="text" id="editScheduleAccountName" name="editScheduleAccountName" readonly>
 
@@ -861,6 +861,22 @@
             <td>${sche.requestDate}</td>
             <td>${sche.requestShift}</td>
             <td>${sche.status}</td>
+            <td><!-- Chấp nhận -->
+                            <form
+                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
+                                <button type="submit" class="approved-btn">Chấp nhận</button>
+                            </form>
+
+                            <!-- Không chấp nhận -->
+                            <form
+                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
+                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
+                            </form>
+            </td>
         `;
             tbody.appendChild(tr);
         });
@@ -899,6 +915,22 @@
             <td>${sche.accountPhone}</td>
             <td>${sche.reason}</td>
             <td>${sche.status}</td>
+            <td><!-- Chấp nhận -->
+                            <form
+                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
+                                <button type="submit" class="approved-btn">Chấp nhận</button>
+                            </form>
+
+                            <!-- Không chấp nhận -->
+                            <form
+                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
+                                  method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
+                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
+                            </form>
+            </td>
         `;
             tbody.appendChild(tr);
         });
