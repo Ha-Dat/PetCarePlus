@@ -28,7 +28,7 @@ public class OrderController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/customer/list_order")
+    @GetMapping("/customer/list-order")
     public String listOrder(HttpSession session,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,

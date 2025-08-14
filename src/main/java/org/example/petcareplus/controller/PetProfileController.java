@@ -2,27 +2,18 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.entity.Category;
-import jakarta.validation.Valid;
-import org.example.petcareplus.entity.HotelBooking;
+
 import org.example.petcareplus.entity.PetProfile;
-import org.example.petcareplus.service.CategoryService;
+
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -32,8 +23,7 @@ public class PetProfileController {
     @Autowired
     private PetProfileService petProfileService;
 
-    @Autowired
-    private CategoryService categoryService;
+
 
     @GetMapping("/customer/pet-profile")
     public String showPetProfilePage(Model model,
@@ -46,7 +36,6 @@ public class PetProfileController {
         }
 
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         PetProfile selectedPet = null;
 
@@ -58,7 +47,6 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", false);
         return "pet-profile";
     }
@@ -236,7 +224,6 @@ public class PetProfileController {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         if (account == null) {
             return "redirect:/login";
@@ -244,7 +231,6 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", true);
         return "pet-profile";
     }
