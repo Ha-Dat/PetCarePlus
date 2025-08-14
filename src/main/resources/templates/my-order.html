@@ -188,7 +188,6 @@
   <div class="sidebar">
     <ul>
       <li><a href="/customer/profile">Hồ Sơ</a></li>
-      <li><a href="/customer/address">Địa chỉ</a></li>
       <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
       <li><a href="/customer/pet-profile">Hồ Sơ thú cưng</a></li>
       <li><a href="/customer/list_order" class="active">Đơn mua</a></li>
@@ -200,12 +199,20 @@
     <!-- Tabs -->
     <div class="order-tabs">
       <div class="tab-list">
-        <button class="tab active" onclick="setActiveTab(this, 'all')">Tất cả</button>
-        <button class="tab" onclick="setActiveTab(this, 'processing')">Đang xử lý</button>
-        <button class="tab" onclick="setActiveTab(this, 'shipping')">Chờ giao hàng</button>
-        <button class="tab" onclick="setActiveTab(this, 'completed')">Hoàn thành</button>
-        <button class="tab" onclick="setActiveTab(this, 'cancelled')">Đã hủy</button>
-        <button class="tab" onclick="setActiveTab(this, 'refund')">Trả hàng/Hoàn tiền</button>
+        <button class="tab ${currentStatus == null || currentStatus.isEmpty() ? 'active' : ''}"
+                onclick="filterOrders('')">Tất cả</button>
+        <button class="tab ${currentStatus == 'PENDING' ? 'active' : ''}"
+                onclick="filterOrders('PENDING')">Chờ duyệt</button>
+        <button class="tab ${currentStatus == 'APPROVED' ? 'active' : ''}"
+                onclick="filterOrders('APPROVED')">Đã duyệt</button>
+        <button class="tab ${currentStatus == 'PROCESSING' ? 'active' : ''}"
+                onclick="filterOrders('PROCESSING')">Đang xử lý</button>
+        <button class="tab ${currentStatus == 'DELIVERING' ? 'active' : ''}"
+                onclick="filterOrders('DELIVERING')">Đang giao</button>
+        <button class="tab ${currentStatus == 'COMPLETED' ? 'active' : ''}"
+                onclick="filterOrders('COMPLETED')">Hoàn thành</button>
+        <button class="tab ${currentStatus == 'CANCELLED' ? 'active' : ''}"
+                onclick="filterOrders('CANCELLED')">Đã Hủy</button>
       </div>
     </div>
 
@@ -227,7 +234,15 @@
         <tr th:each="order, iStat : ${orders}">
           <td th:text="${currentPage * size + iStat.index + 1}"></td>
           <td>
-            <span th:text="${order.status}"></span>
+            <span th:text="${order.status.getValue()}"></span>
+            <!-- Thêm nút hủy cho đơn PENDING -->
+            <div th:if="${order.status.name() == 'PENDING'}" class="mt-2">
+              <form th:action="@{/customer/orders/{orderId}/cancel(orderId=${order.orderId})}"
+                    method="post"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
+                <button type="submit" class="btn btn-sm btn-danger">Hủy đơn</button>
+              </form>
+            </div>
           </td>
           <td colspan="4">
             <table class="inner-table">
@@ -268,9 +283,14 @@
 </body>
 <script th:src="@{js/header.js}"></script>
 <script>
-  function setActiveTab(button, status) {
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    button.classList.add('active');
+  function filterOrders(status) {
+    // Tạo URL mới với tham số status
+    const url = new URL(window.location.href);
+    url.searchParams.set('status', status);
+    url.searchParams.set('page', '0'); // Reset về trang đầu tiên
+
+    // Chuyển hướng
+    window.location.href = url.toString();
   }
 </script>
 </html>

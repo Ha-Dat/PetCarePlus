@@ -93,7 +93,6 @@
     <div class="sidebar">
         <ul>
             <a th:href="@{/customer/profile}" class="active">Hồ Sơ</a>
-            <a th:href="@{/customer/address}">Địa chỉ</a>
             <a th:href="@{/customer/change-password}">Đổi mật khẩu</a>
             <a th:href="@{/customer/pet-profile}">Hồ Sơ thú cưng</a>
             <a th:href="@{/customer/list_order}">Đơn mua</a>
@@ -176,11 +175,11 @@
 
                 <!-- Nút điều hướng -->
                 <div class="text-end mt-4">
-                    <a th:href="@{/customer/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
+                    <a th:if="${edit}" th:href="@{/customer/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
 
                     <button th:if="${edit}" type="submit" class="btn btn-success btn-custom">Lưu</button>
 
-                    <a th:href="@{/customer/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
+                    <a th:if="${!edit}" th:href="@{/customer/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
                 </div>
             </div>
         </form>
