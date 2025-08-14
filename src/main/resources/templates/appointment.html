@@ -418,19 +418,19 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Doctor Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a th:href="@{/appointment/approved}">Appointment sắp tới</a></li>
-            <li><a th:href="@{/appointment/pending}">Appointment chờ duyệt</a></li>
-            <li><a th:href="@{/appointment/history}">Lịch sử appointment</a></li>
+            <li><a th:href="@{/vet/appointment/pending}">Lịch khám chờ duyệt</a></li>
+            <li><a th:href="@{/vet/appointment/approved}">Lịch khám đã duyệt</a></li>
+            <li><a th:href="@{/vet/appointment/history}">Lịch khám từ chối</a></li>
         </ul>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
-        <h1 class="page-title" th:if="${mode == 'approved'}">Appointment sắp tới</h1>
-        <h1 class="page-title" th:if="${mode == 'pending'}">Appointment chờ duyệt</h1>
-        <h1 class="page-title" th:if="${mode == 'history'}">Lịch sử appointment</h1>
+        <h1 class="page-title" th:if="${mode == 'pending'}">Lịch khám chờ duyệt</h1>
+        <h1 class="page-title" th:if="${mode == 'approved'}">Lịch khám đã duyệt</h1>
+        <h1 class="page-title" th:if="${mode == 'history'}">Lịch khám từ chối</h1>
         <label th:if="${mode == 'history'}">Tra bằng tên thú cưng:</label>
-        <form th:action="@{/appointment/search}" method="post" th:if="${mode == 'history'}">
+        <form th:action="@{/vet/appointment/search}" method="post" th:if="${mode == 'history'}">
             <input class="search-pet" type="text">
             <button class="search-btn" type="submit">Tra</button>
         </form>
@@ -486,7 +486,7 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
 
                             <!-- Chấp nhận -->
                             <form th:if="${mode == 'pending'}"
-                                  th:action="@{/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
+                                  th:action="@{/vet/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
                                 <button type="submit" class="approved-btn">Chấp nhận</button>
@@ -494,7 +494,7 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
 
                             <!-- Không chấp nhận -->
                             <form th:if="${mode == 'pending'}"
-                                  th:action="@{/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                  th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
                                 <button type="submit" class="disapproved-btn">Không chấp nhận</button>
@@ -511,16 +511,16 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
                 <div class="pagination">
                     <ul>
                         <li th:if="${currentPage > 0}">
-                            <a th:href="@{/appointment/approved(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                            <a th:href="@{/vet/appointment/approved(page=${currentPage - 1}, size=${size})}">&laquo;</a>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active'">
-                            <a th:href="@{/appointment/approved(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                            <a th:href="@{/vet/appointment/approved(page=${i}, size=${size})}" th:text="${i + 1}"></a>
                         </li>
 
                         <li th:if="${currentPage < totalPages - 1}">
-                            <a th:href="@{/appointment/approved(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                            <a th:href="@{/vet/appointment/approved(page=${currentPage + 1}, size=${size})}">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -642,7 +642,7 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
             prescriptionNote: form.prescriptionNote.value
         };
 
-        fetch('/appointment/createPrescription', {
+        fetch('/vet/appointment/createPrescription', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -653,7 +653,7 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
                 if (res.ok) {
                     closePrescriptionModal();
                     showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
-                    setTimeout(() => window.location.href = "/appointment/approved", 1000);
+                    setTimeout(() => window.location.href = "/vet/appointment/approved", 1000);
                 } else {
                     return res.text().then(message => {
                         showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
