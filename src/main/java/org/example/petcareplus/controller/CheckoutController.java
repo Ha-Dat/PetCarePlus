@@ -145,7 +145,8 @@ public class CheckoutController {
             order.setReceiverPhone(request.getReceiverPhone());
             order.setShippingFee(calculateShippingFee(toCity));
         } else {
-            order.setDeliverAddress(request.getAddress() + " " + profile.getWard().getName() + ", " + profile.getCity().getName());
+            String toAddress = cleanInput(request.getAddress());
+            order.setDeliverAddress(toAddress + ", " + profile.getWard().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
             order.setShippingFee(calculateShippingFee(profile.getCity().getName()));
