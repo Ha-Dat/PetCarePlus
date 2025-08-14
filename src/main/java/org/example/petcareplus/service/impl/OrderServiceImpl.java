@@ -76,6 +76,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public void updateStatus(Long id, OrderStatus status) {
+        Order order = orderRepository.findById(id).get();
+        order.setStatus(status);
+        orderRepository.save(order);
+    }
+
+    @Override
     public Page<OrderDTO> findAllDTO(Pageable pageable) {
         return orderRepository.findAll(pageable).map(order ->
                 new OrderDTO(
