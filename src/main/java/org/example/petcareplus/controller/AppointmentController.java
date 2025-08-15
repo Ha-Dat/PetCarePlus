@@ -130,14 +130,20 @@ public class AppointmentController {
         Page<AppointmentBooking> approvedPage = appointmentService.getApprovedAppointments(PageRequest.of(page, size));
 
         // ✅ This must return a List
-        List<Prescription> prescriptions = prescriptionService.findAll();
+        List<Prescription> AllPrescriptions = prescriptionService.findAll();
 
-        // ✅ Build a map of appointmentId -> prescription
-        Map<Long, Prescription> prescriptionMap = prescriptions.stream()
-                .collect(Collectors.toMap(p -> p.getAppointment().getAppointmentBookingId(), Function.identity()));
+        List<Map<String, String>> prescriptions = AllPrescriptions.stream()
+                .map(p -> Map.of(
+                        "appointmentId", p.getAppointment().getAppointmentBookingId().toString(),
+                        "prescriptionId", p.getPrescriptionId().toString(),
+                        "prescriptionDrugName", p.getDrugName(),
+                        "prescriptionAmount", p.getAmount(),
+                        "prescriptionNote", p.getNote()
+                ))
+                .collect(Collectors.toList());
 
         model.addAttribute("appointments", approvedPage.getContent());
-        model.addAttribute("prescriptionMap", prescriptionMap);
+        model.addAttribute("prescriptions", prescriptions);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
@@ -201,38 +207,38 @@ public class AppointmentController {
         return "redirect:/vet/appointment/pending?error=true";
     }
 
-    @PostMapping("/vet/appointment/createPrescription")
-    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
-        Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
-
-        if (optionalAppointment.isEmpty()) {
-            return ResponseEntity.badRequest().body("Appointment not found.");
-        }
-
-        AppointmentBooking appointment = optionalAppointment.get();
-
-        // Chỉ cho phép tạo đơn thuốc nếu service category là APPOINTMENT
-        if (appointment.getService() == null ||
-                appointment.getService().getServiceCategory() != ServiceCategory.APPOINTMENT) {
-            return ResponseEntity.badRequest().body("Không thể tạo đơn thuốc cho dịch vụ không phải loại 'appointment'.");
-        }
-
-        // Check if prescription already exists
-        Optional<Prescription> optionalPrescription = Optional.ofNullable(prescriptionService.findByAppointmentId(dto.getAppointmentId()));
-
-        Prescription prescription;
-        if (optionalPrescription.isPresent()) {
-            // Update existing prescription
-            prescription = optionalPrescription.get();
-            prescription.setPrescriptionNote(dto.getPrescriptionNote());
-        } else {
-            // Create new prescription
-            prescription = new Prescription();
-            prescription.setPrescriptionNote(dto.getPrescriptionNote());
-            prescription.setAppointment(appointment);
-        }
-
-        prescriptionService.save(prescription);
-        return ResponseEntity.ok("Thêm đơn thuốc thành công.");
-    }
+//    @PostMapping("/vet/appointment/createPrescription")
+//    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
+//        Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
+//
+//        if (optionalAppointment.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Appointment not found.");
+//        }
+//
+//        AppointmentBooking appointment = optionalAppointment.get();
+//
+//        // Chỉ cho phép tạo đơn thuốc nếu service category là APPOINTMENT
+//        if (appointment.getService() == null ||
+//                appointment.getService().getServiceCategory() != ServiceCategory.APPOINTMENT) {
+//            return ResponseEntity.badRequest().body("Không thể tạo đơn thuốc cho dịch vụ không phải loại 'appointment'.");
+//        }
+//
+//        // Check if prescription already exists
+//        Optional<Prescription> optionalPrescription = Optional.ofNullable(prescriptionService.findByAppointmentId(dto.getAppointmentId()));
+//
+//        Prescription prescription;
+//        if (optionalPrescription.isPresent()) {
+//            // Update existing prescription
+//            prescription = optionalPrescription.get();
+//            prescription.setNote(dto.getPrescriptionNote());
+//        } else {
+//            // Create new prescription
+//            prescription = new Prescription();
+//            prescription.setNote(dto.getPrescriptionNote());
+//            prescription.setAppointment(appointment);
+//        }
+//
+//        prescriptionService.save(prescription);
+//        return ResponseEntity.ok("Thêm đơn thuốc thành công.");
+//    }
 }

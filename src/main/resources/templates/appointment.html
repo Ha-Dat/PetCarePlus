@@ -556,12 +556,8 @@
                                     <!-- Nút Đơn thuốc -->
                                     <a class="dropdown-item prescription-btn"
                                        th:if="${mode == 'approved'}"
-                                       th:attr="data-appointment-id=${appointment.appointmentBookingId},
-               data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
-                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
-                : 'Chưa có đơn thuốc'}"
                                        href="javascript:void(0)"
-                                       onclick="openPrescriptionModal(this)">
+                                       th:onclick="'openPrescriptionListModal(' + ${appointment.appointmentBookingId} + ')'">
                                         Đơn thuốc
                                     </a>
 
@@ -646,31 +642,60 @@
     </div>
 </div>
 
-<!-- Prescription Modal -->
-<div id="prescription_modal" class="modal-overlay" style="display: none;">
+<div id="prescriptionListModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>
+        <h2 id="prescriptionListModalTitle">Đơn thuốc:</h2>
         <div class="modal-content">
-            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">
-                <input id="appointmentId" type="hidden" />
-
-                <div class="form-group">
-                    <textarea id="prescriptionNote" rows="4" required></textarea>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Áp dụng</button>
-                </div>
-            </form>
+            <table class="product-table" id="modalPrescriptionListTable">
+                <thead>
+                <tr>
+                    <th>Tên thuốc</th>
+                    <th>Số lượng</th>
+                    <th>Cách dùng</th>
+                </tr>
+                </thead>
+                <tbody id="modalPrescriptionListBody">
+                <!-- JS will populate rows here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closePrescriptionListModal()">Đóng</button>
         </div>
     </div>
 </div>
+
+<!--&lt;!&ndash; Prescription Modal &ndash;&gt;-->
+<!--<div id="prescription_modal" class="modal-overlay" style="display: none;">-->
+<!--    <div class="modal-box">-->
+<!--        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>-->
+<!--        <div class="modal-content">-->
+<!--            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">-->
+<!--                <input id="appointmentId" type="hidden" />-->
+
+<!--                <div class="form-group">-->
+<!--                    <textarea id="prescriptionNote" rows="4" required></textarea>-->
+<!--                </div>-->
+
+<!--                <div class="modal-actions">-->
+<!--                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>-->
+<!--                    <button type="submit" class="btn btn-primary">Áp dụng</button>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 <!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
 </div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Convert Java objects to JavaScript format
+    const prescriptions = /*[[${prescriptions}]]*/ [];
+</script>
 
 <!-- Script -->
 <script>
@@ -726,47 +751,77 @@
         document.getElementById('bookingDetailModal').style.display = 'none';
     }
 
-    function openPrescriptionModal(element) {
-        document.getElementById("prescription_modal").style.display = "flex";
-        document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
-        document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
+    // function openPrescriptionModal(element) {
+    //     document.getElementById("prescription_modal").style.display = "flex";
+    //     document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
+    //     document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
+    // }
+    //
+    // function closePrescriptionModal() {
+    //     document.getElementById("prescription_modal").style.display = "none";
+    // }
+    //
+    // function submitPrescriptionModal(event) {
+    //     event.preventDefault();
+    //
+    //     const form = document.getElementById('createPrescriptionForm');
+    //     const data = {
+    //         appointmentId: parseInt(form.appointmentId.value),
+    //         prescriptionNote: form.prescriptionNote.value
+    //     };
+    //
+    //     fetch('/vet/appointment/createPrescription', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(data)
+    //     })
+    //         .then(res => {
+    //             if (res.ok) {
+    //                 closePrescriptionModal();
+    //                 showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
+    //                 setTimeout(() => window.location.href = "/vet/appointment/approved", 1000);
+    //             } else {
+    //                 return res.text().then(message => {
+    //                     showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
+    //                 });
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error("Lỗi khi gửi API:", error);
+    //             showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+    //         });
+    // }
+
+    function openPrescriptionListModal(appointmentId) {
+        const modal = document.getElementById('prescriptionListModal');
+        const tbody = document.getElementById('modalPrescriptionListBody');
+
+        // Clear previous rows
+        tbody.innerHTML = '';
+
+        const filteredPrescriptions = prescriptions.filter(p =>
+            p.appointmentId === appointmentId.toString()
+        );
+
+        // Populate table
+        filteredPrescriptions.forEach(pre => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${pre.prescriptionDrugName}</td>
+            <td>${pre.prescriptionAmount}</td>
+            <td>${pre.prescriptionNote}</td>
+        `;
+            tbody.appendChild(tr);
+        });
+
+        // Show modal
+        modal.style.display = 'flex';
     }
 
-    function closePrescriptionModal() {
-        document.getElementById("prescription_modal").style.display = "none";
-    }
-
-    function submitPrescriptionModal(event) {
-        event.preventDefault();
-
-        const form = document.getElementById('createPrescriptionForm');
-        const data = {
-            appointmentId: parseInt(form.appointmentId.value),
-            prescriptionNote: form.prescriptionNote.value
-        };
-
-        fetch('/vet/appointment/createPrescription', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => {
-                if (res.ok) {
-                    closePrescriptionModal();
-                    showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
-                    setTimeout(() => window.location.href = "/vet/appointment/approved", 1000);
-                } else {
-                    return res.text().then(message => {
-                        showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi khi gửi API:", error);
-                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
-            });
+    function closePrescriptionListModal() {
+        document.getElementById('prescriptionListModal').style.display = 'none';
     }
 
     document.querySelectorAll('.action-dropdown').forEach(dropdown => {
