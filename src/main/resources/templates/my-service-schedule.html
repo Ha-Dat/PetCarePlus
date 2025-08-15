@@ -129,11 +129,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul class="list-unstyled">
-            <li><a href="/customer/profile">Hồ Sơ</a></li>
-            <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
-            <li><a href="/customer/pet-profile">Hồ Sơ thú cưng</a></li>
-            <li><a href="/customer/list-order">Đơn mua</a></li>
-            <li><a href="/customer/my-schedule" class="active">Lịch</a></li>
+                            <li><a href="/profile">Hồ Sơ</a></li>
+                <li><a href="/change-password">Đổi mật khẩu</a></li>
+                <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
+                <li><a href="/list-order">Đơn mua</a></li>
+                <li><a href="/my-schedule" class="active">Lịch</a></li>
         </ul>
     </div>
 
@@ -309,7 +309,7 @@
         let bookingType = String($(this).data("type") || "").toUpperCase(); // đảm bảo UPPER
 
         $.ajax({
-            url: `/customer/my-schedule/detail/${bookingType}/${bookingId}`,
+                            url: `/my-schedule/detail/${bookingType}/${bookingId}`,
             type: "GET",
             success: function (res) {
                 $("#detailBookingId").val(res.bookingId);
@@ -347,7 +347,7 @@
         if (!confirm("Bạn có chắc muốn hủy lịch này không?")) return;
 
         $.ajax({
-            url: `/customer/my-schedule/cancel/${bookingType}/${bookingId}`,
+                            url: `/my-schedule/cancel/${bookingType}/${bookingId}`,
             type: "POST",
             success: function (res) {
                 alert(res.message);
@@ -385,7 +385,7 @@
         };
 
         $.ajax({
-            url: `/customer/my-schedule/update`,
+                            url: `/my-schedule/update`,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(data),

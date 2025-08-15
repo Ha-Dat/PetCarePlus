@@ -92,11 +92,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <a th:href="@{/customer/profile}" class="active">Hồ Sơ</a>
-            <a th:href="@{/customer/change-password}">Đổi mật khẩu</a>
-            <a th:href="@{/customer/pet-profile}">Hồ Sơ thú cưng</a>
-            <a th:href="@{/customer/list-order}">Đơn mua</a>
-            <a th:href="@{/customer/my-schedule}">Lịch</a>
+                            <a th:href="@{/profile}" class="active">Hồ Sơ</a>
+                <a th:href="@{/change-password}">Đổi mật khẩu</a>
+                <a th:href="@{/pet-profile}">Hồ Sơ thú cưng</a>
+                <a th:href="@{/list-order}">Đơn mua</a>
+                <a th:href="@{/my-schedule}">Lịch</a>
         </ul>
     </div>
 
@@ -107,7 +107,7 @@
         <div th:if="${errorMessage}" class="alert alert-danger">
             <span th:text="${errorMessage}"></span>
         </div>
-        <form th:action="@{/customer/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
+                    <form th:action="@{/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
             <div class="form-section row">
                 <input type="hidden" th:field="*{profileId}" />
                 <!-- Họ tên -->
@@ -175,11 +175,11 @@
 
                 <!-- Nút điều hướng -->
                 <div class="text-end mt-4">
-                    <a th:if="${edit}" th:href="@{/customer/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
+                    <a th:if="${edit}" th:href="@{/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
 
                     <button th:if="${edit}" type="submit" class="btn btn-success btn-custom">Lưu</button>
 
-                    <a th:if="${!edit}" th:href="@{/customer/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
+                    <a th:if="${!edit}" th:href="@{/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
                 </div>
             </div>
         </form>
@@ -212,7 +212,7 @@
                 return;
             }
 
-            fetch(`/customer/wards?cityId=${cityId}`)
+            fetch(`/wards?cityId=${cityId}`)
                 .then(res => res.json())
                 .then(data => {
                     wardSelect.innerHTML = '<option value="">-- Phường/xã --</option>';

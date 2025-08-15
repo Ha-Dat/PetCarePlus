@@ -50,7 +50,7 @@ public class CheckoutController {
         Profile profile = profileService.getProfileByAccountAccountId(id);
         if (profile.getCity() == null || profile.getWard() == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần cập nhật tỉnh/thành phố và quận/huyện trước khi đặt hàng.");
-            return "redirect:/customer/profile";
+            return "redirect:/profile";
         }
         model.addAttribute("profile", profile);
 

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/customer")
+// Bỏ /customer khỏi URL mapping
 public class ProfileController {
 
     @Autowired
@@ -102,7 +102,7 @@ public class ProfileController {
             return "profile";
         }
         profileService.updateProfile(profileDTO, account.getAccountId());
-        return "redirect:/customer/profile";
+        return "redirect:/profile";
     }
 
     @GetMapping("/change-password")

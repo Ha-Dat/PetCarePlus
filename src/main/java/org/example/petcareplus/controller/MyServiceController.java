@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/customer/my-schedule")
+@RequestMapping("/my-schedule")
 public class MyServiceController {
 
     private final BookingService bookingService;

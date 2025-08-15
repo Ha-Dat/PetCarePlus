@@ -187,11 +187,11 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <ul>
-      <li><a href="/customer/profile">Hồ Sơ</a></li>
-      <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
-      <li><a href="/customer/pet-profile">Hồ Sơ thú cưng</a></li>
-      <li><a href="/customer/list-order" class="active">Đơn mua</a></li>
-      <li><a href="/customer/my-schedule">Lịch</a></li>
+                      <li><a href="/profile">Hồ Sơ</a></li>
+                <li><a href="/change-password">Đổi mật khẩu</a></li>
+                <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
+                <li><a href="/list-order" class="active">Đơn mua</a></li>
+                <li><a href="/my-schedule">Lịch</a></li>
     </ul>
   </div>
 
@@ -237,7 +237,7 @@
             <span th:text="${order.status.getValue()}"></span>
             <!-- Thêm nút hủy cho đơn PENDING -->
             <div th:if="${order.status.name() == 'PENDING'}" class="mt-2">
-              <form th:action="@{/customer/orders/{orderId}/cancel(orderId=${order.orderId})}"
+              <form th:action="@{/orders/{orderId}/cancel(orderId=${order.orderId})}"
                     method="post"
                     onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
                 <button type="submit" class="btn btn-sm btn-danger">Hủy đơn</button>
@@ -265,15 +265,15 @@
 
       <!-- Pagination -->
       <div class="pagination">
-        <a th:if="${currentPage > 0}" th:href="@{'/customer/list_order'(page=${currentPage - 1})}">Previous</a>
+                    <a th:if="${currentPage > 0}" th:href="@{'/list_order'(page=${currentPage - 1})}">Previous</a>
         <span th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-      <a th:href="@{'/customer/list_order'(page=${pageNum})}"
+              <a th:href="@{'/list_order'(page=${pageNum})}"
          th:text="${pageNum + 1}"
          th:classappend="${pageNum == currentPage} ? ' active-page' : ''"
          class="page-number">
       </a>
     </span>
-        <a th:if="${currentPage + 1 < totalPages}" th:href="@{'/customer/list_order'(page=${currentPage + 1})}">Next</a>
+                    <a th:if="${currentPage + 1 < totalPages}" th:href="@{'/list_order'(page=${currentPage + 1})}">Next</a>
       </div>
     </div>
     </div>
