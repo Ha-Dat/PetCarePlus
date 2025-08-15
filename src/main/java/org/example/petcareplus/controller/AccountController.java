@@ -118,6 +118,7 @@ public class    AccountController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute("registerDTO") @Valid RegisterDTO registerDTO,
+                           RedirectAttributes redirectAttributes,
                            BindingResult result,
                            HttpSession session,
                            Model model) {
@@ -136,27 +137,15 @@ public class    AccountController {
             return "register";
         }
 
-        // Tạo tài khoản với trạng thái PENDING
+        // Tạo tài khoản với trạng thái ACTIVE (không cần OTP verification)
         Account account = new Account();
         account.setName(registerDTO.getName());
         account.setPhone(registerDTO.getPhone());
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
         account.setRole(AccountRole.CUSTOMER);
-        account.setStatus(AccountStatus.INACTIVE);
-
-        // Sinh OTP
-        String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
-        account.setOtp(otp);
-        account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
-        account.setStatus(AccountStatus.INACTIVE); // chưa kích hoạt
+        account.setStatus(AccountStatus.ACTIVE); // Kích hoạt ngay lập tức
 
         accountService.save(account);
-
-        // Log OTP ra console (tạm thời)
-        System.out.println("OTP của bạn là: " + otp);
-
-        // Lưu vào session để verify
-        session.setAttribute("loggedInUser", account.getAccountId());
 
         // Tạo hồ sơ người dùng nếu chưa có
         Profile existingProfile = accountService.getProfileByAccountAccountId(account.getAccountId());
@@ -165,7 +154,10 @@ public class    AccountController {
             existingProfile.setAccount(account);
         }
         accountService.profileSave(existingProfile);
-        return "redirect:/verify";
+
+        // Chuyển về trang login với thông báo thành công
+        redirectAttributes.addFlashAttribute("message", "Đăng ký thành công! Hãy đăng nhập.");
+        return "redirect:/login";
     }
 
     @PostMapping("/login")
@@ -251,5 +243,21 @@ public class    AccountController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    /**
+     * Hiển thị trang reset password
+     */
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(Model model) {
+        return "reset-password";
+    }
+
+    /**
+     * Hiển thị trang quên mật khẩu
+     */
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm(Model model) {
+        return "forgot-password";
     }
 }
