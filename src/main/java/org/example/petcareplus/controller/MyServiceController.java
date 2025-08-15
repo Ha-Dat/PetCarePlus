@@ -105,18 +105,11 @@ public class MyServiceController {
     @ResponseBody
     public List<Map<String, String>> getServicesByType(@PathVariable String type) {
         // Gọi service lấy danh sách dịch vụ từ DB
-        System.out.println(" Type from client: " + type);
-
-        List<Map<String, String>> services = serviceService.findByServiceCategory(ServiceCategory.valueOf(type))
-                .stream()
-                .map(s -> Map.of("name", s.getName()))
-                .toList();
-
-        System.out.println( " Services from type: " + services);
-
         return serviceService.findByServiceCategory(ServiceCategory.valueOf(type))
                 .stream()
-                .map(s -> Map.of("name", s.getName()))
+                .map(s -> Map.of("name", s.getName(),
+                        "price", s.getPrice().toString()
+                ))
                 .toList();
     }
 }

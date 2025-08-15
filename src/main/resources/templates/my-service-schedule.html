@@ -332,7 +332,7 @@
                     success: function (services) {
                         let serviceOptions = services.map(s => ({
                             id: s.name,
-                            text: s.name
+                            text: `${s.name} (${Number(s.price).toLocaleString('vi-VN')}VND)`
                         }));
                         $('#detailServiceNameSelect').select2({
                             data: serviceOptions,
@@ -425,7 +425,20 @@
                 $('#detailServiceTypeSelect').val(res.serviceCategory).trigger('change');
 
                 setTimeout(() => {
-                    $('#detailServiceNameSelect').append(new Option(res.serviceName, res.serviceName, true, true)).trigger('change');
+                    $.ajax({
+                        url: `/my-schedule/services/by-type/${res.serviceCategory}`,
+                        type: 'GET',
+                        success: function (services) {
+                            let match = services.find(s => s.name === res.serviceName);
+                            let displayName = match
+                                ? `${match.name} (${Number(match.price).toLocaleString('vi-VN')}₫)`
+                                : res.serviceName;
+
+                            $('#detailServiceNameSelect').append(
+                                new Option(displayName, res.serviceName, true, true)
+                            ).trigger('change');
+                        }
+                    });
                 }, 300);
 
                 if (res.status !== "PENDING") {
