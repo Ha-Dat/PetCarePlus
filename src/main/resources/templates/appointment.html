@@ -286,47 +286,9 @@
         .dropdown-toggle:hover {
             background-color: #f0f0f0;
         }
-
-        /* Dropdown menu */
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #fff;
-            min-width: 140px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            z-index: 100;
-            border-radius: 8px;
-            padding: 4px 0;
-            overflow: hidden;
+        .table-container {
+            overflow: visible;
         }
-
-        /* Các item trong menu */
-        .dropdown-menu .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            text-decoration: none;
-            background-color: white;
-            color: #333;
-            font-size: 14px;
-            width: 100%;
-            border: none;
-            cursor: pointer;
-            text-align: left;
-            transition: background-color 0.2s;
-        }
-
-        /* Hover hiệu ứng */
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .action-dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
         /* Toast thông báo*/
         .toast {
             position: fixed;
@@ -477,10 +439,10 @@
             right: 0;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
             z-index: 1;
             border-radius: 4px;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .action-dropdown:hover .dropdown-menu {
