@@ -84,6 +84,187 @@
         .btn-custom:hover {
             background-color: #388e3c;
         }
+
+        /* ========================
+           TABS STYLING
+        ======================== */
+        
+        /* Tabs dịch vụ */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .tabs a {
+            padding: 12px 24px;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 14px;
+        }
+
+        .tabs a:hover {
+            background-color: #e9ecef;
+            color: #495057;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs a.active {
+            background-color: #2ec4b6;
+            color: white;
+            border-color: #2ec4b6;
+            box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+        }
+
+        /* Tabs trạng thái */
+        .status-tabs {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .status-tabs .nav-tabs {
+            border-bottom: none;
+            gap: 10px;
+        }
+
+        .status-tabs .nav-item {
+            margin-bottom: 0;
+        }
+
+        .status-tabs .nav-link {
+            border: none;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 14px;
+        }
+
+        .status-tabs .nav-link:hover {
+            background-color: #e9ecef;
+            color: #495057;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-tabs .nav-link.active {
+            background-color: #2ec4b6;
+            color: white;
+            border-color: #2ec4b6;
+            box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+        }
+
+        /* Table styling */
+        .schedule-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .schedule-table .table {
+            margin-bottom: 0;
+        }
+
+        .schedule-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+            padding: 15px;
+        }
+
+        .schedule-table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .schedule-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background-color: #d1edff;
+            color: #0c5460;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-cancelled {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        /* Action buttons */
+        .action-link {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .action-link:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .tabs a {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .status-tabs .nav-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .status-tabs .nav-link {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,59 +299,69 @@
         </div>
 
         <!-- Tabs trạng thái -->
-        <ul class="nav nav-tabs mb-3">
-            <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Chờ duyệt')}"
-                   th:classappend="${selectedStatus}=='Chờ duyệt' ? 'active' : ''">Chờ duyệt</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Đã duyệt')}"
-                   th:classappend="${selectedStatus}=='Đã duyệt' ? 'active' : ''">Đã duyệt</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Từ chối')}"
-                   th:classappend="${selectedStatus}=='Từ chối' ? 'active' : ''">Từ chối</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Hủy')}"
-                   th:classappend="${selectedStatus}=='Hủy' ? 'active' : ''">Hủy</a>
-            </li>
-        </ul>
+        <div class="status-tabs">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Chờ duyệt')}"
+                       th:classappend="${selectedStatus}=='Chờ duyệt' ? 'active' : ''">Chờ duyệt</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Đã duyệt')}"
+                       th:classappend="${selectedStatus}=='Đã duyệt' ? 'active' : ''">Đã duyệt</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Từ chối')}"
+                       th:classappend="${selectedStatus}=='Từ chối' ? 'active' : ''">Từ chối</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Hủy')}"
+                       th:classappend="${selectedStatus}=='Hủy' ? 'active' : ''">Hủy</a>
+                </li>
+            </ul>
+        </div>
 
         <!-- Bảng lịch -->
-        <table class="table table-bordered bg-white">
-            <thead class="table-light">
-            <tr>
-                <th>Thú cưng</th>
-                <th>Dịch vụ</th>
-                <th>Thời gian</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="s : ${schedules}">
-                <td th:text="${s.petName}"></td>
-                <td th:text="${s.serviceCategory.value}"></td>
-                <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${s.status.value}"></td>
-                <td>
-                    <span th:if="${s.status.value == 'Chờ duyệt'}">
-                        <a th:href="@{'/customer/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
-                           class="text-danger"
-                           onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
-                            <i class="fas fa-times-circle"></i> Hủy
-                        </a>
-                    </span>
-                    <span th:if="${s.status.value != 'Chờ duyệt'}">—</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="schedule-table">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Thú cưng</th>
+                    <th>Dịch vụ</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${schedules}">
+                    <td th:text="${s.petName}"></td>
+                    <td th:text="${s.serviceCategory.value}"></td>
+                    <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <span th:class="'status-badge ' + 
+                                     (${s.status.value == 'Chờ duyệt'} ? 'status-pending' : 
+                                     (${s.status.value == 'Đã duyệt'} ? 'status-approved' : 
+                                     (${s.status.value == 'Từ chối'} ? 'status-rejected' : 'status-cancelled')))"
+                              th:text="${s.status.value}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${s.status.value == 'Chờ duyệt'}">
+                            <a th:href="@{'/customer/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
+                               class="action-link"
+                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
+                                <i class="fas fa-times-circle"></i> Hủy
+                            </a>
+                        </span>
+                        <span th:if="${s.status.value != 'Chờ duyệt'}" class="text-muted">—</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <div th:insert="component/footer :: footer"></div>
