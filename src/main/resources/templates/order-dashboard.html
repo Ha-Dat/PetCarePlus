@@ -249,7 +249,7 @@
             <li class="active"><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
             <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
             <li><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
-            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/order-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
@@ -304,7 +304,6 @@
             </div>
         </div>
         <form class="order-filter-form" method="get" th:action="@{/seller/order-dashboard}">
-            <input type="text" class="form-control" placeholder="Order ID" name="orderId" th:value="${orderId}">
             <select class="form-select" name="status">
                 <option value="">Status</option>
                 <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
@@ -334,11 +333,11 @@
                 <tr th:each="order : ${orders}">
                     <td th:text="${order.orderId}">#876364</td>
                     <td th:text="${order.customerName}">Tên khách</td>
-                    <td th:text="${order.status}">Pending</td>
+                    <td th:text="${order.status.getValue()}">Pending</td>
                     <td class="price-column total-price" th:text="${order.formattedTotalPrice}">xxx.xxx đ</td>
                     <td>
                         <button class="btn btn-sm btn-primary" th:attr="data-id=${order.orderId}" onclick="loadOrderDetail(this)">
-                            View
+                            Chi tiết
                         </button>
                         <a th:if="${order.status == 'PENDING'}"
                            th:href="@{'/seller/orders/approve/' + ${order.orderId}}"
@@ -351,6 +350,32 @@
                 </tr>
                 </tbody>
             </table>
+            <!-- Pagination -->
+            <div class="pagination mt-4">
+                <ul class="pagination">
+                    <!-- Nút Previous -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/seller/order-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                    </li>
+
+                    <!-- Danh sách trang -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/seller/order-dashboard(page=${i}, size=${size})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Nút Next -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/seller/order-dashboard(page=${currentPage + 1}, size=${size})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 </div>
@@ -375,6 +400,7 @@
             url: "/seller/orders/detail/" + orderId,
             method: "GET",
             success: function (data) {
+                console.log(orderId)
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, "text/html");
                 const content = doc.querySelector("#order-detail-content");

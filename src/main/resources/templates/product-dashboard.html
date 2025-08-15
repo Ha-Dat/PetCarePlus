@@ -457,7 +457,7 @@
             <li><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
             <li><a href="/seller/category-dashboard">📂 Danh mục</a></li>
             <li class="active"><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
-            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/product-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
@@ -489,7 +489,6 @@
                         <th>STT</th>
                         <th>Tên</th>
                         <th>Ảnh</th>
-                        <th>Mô tả</th>
                         <th>Giá</th>
                         <th>Tồn kho</th>
                         <th>Đã bán</th>
@@ -512,14 +511,13 @@
                                  src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
                                  alt="No Image">
                         </td>
-                        <td th:text="${product?.description}"></td>
                         <td th:text="${#numbers.formatDecimal(product?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${product?.unitInStock}"></td>
                         <td th:text="${product?.unitSold}"></td>
                         <td>
-        <span th:text="${product?.status}"
-              th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
-        </span>
+                        <span th:text="${product?.status.getValue()}"
+                        th:classappend="${product?.status?.name() == 'ACTIVE'} ? 'status-badge status-active' : 'status-badge status-inactive'">
+                        </span>
                         </td>
                         <td th:text="${product?.category?.name}"></td>
                         <td>
@@ -528,15 +526,15 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
                                        th:attr="data-product-id=${product.productId},
-            data-name=${product.name},
-            data-category-id=${product.category.categoryId},
-            data-price=${product.price},
-            data-stock=${product.unitInStock},
-            data-sold=${product.unitSold},
-            data-status=${product.status.name()},
-            data-description=${product.description},
-            data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
-            data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
+                                                data-name=${product.name},
+                                                data-category-id=${product.category.categoryId},
+                                                data-price=${product.price},
+                                                data-stock=${product.unitInStock},
+                                                data-sold=${product.unitSold},
+                                                data-status=${product.status.name()},
+                                                data-description=${product.description},
+                                                data-createdDate=${#dates.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')},
+                                                data-image=${(product.medias != null and !#lists.isEmpty(product.medias)) ? product.medias[0].url : ''}"
                                        href="javascript:void(0)"
                                        onclick="openEditModal(this)">
                                         🖊️ Chỉnh sửa
@@ -581,11 +579,11 @@
     <div class="modal-box">
         <h2 id="modalTitle">Thêm sản phẩm mới</h2>
 
-        <form id="createProductForm" onsubmit="submitCreateProduct(event)">
+        <form id="createProductForm" enctype="multipart/form-data" onsubmit="submitCreateProduct(event)">
             <input type="hidden" id="productId" name="productId" th:value="${product?.productId}">
             <div>
                 <label for="productName">Tên sản phẩm *</label>
-                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm"/>
+                <input type="text" id="productName" name="name" required placeholder="Nhập tên sản phẩm" maxlength="50"/>
 
                 <label for="productCategory">Danh mục *</label>
                 <select id="productCategory" name="categoryId" required>
@@ -652,7 +650,7 @@
 
             <div>
                 <label for="editProductName">Tên sản phẩm *</label>
-                <input type="text" id="editProductName" name="name" required>
+                <input type="text" id="editProductName" name="name" required maxlength="50">
 
                 <label for="editProductCategory">Danh mục *</label>
                 <select id="editProductCategory" name="categoryId" required>
@@ -688,7 +686,7 @@
 
             <div>
                 <label for="editProductImage">Ảnh:</label>
-                <input type="file" name="imageFile" id="editProductImage" class="form-control mb-2" accept="image/*" onchange="addProductImagePreviewImage(this)">
+                <input type="file" name="imageFile" id="editProductImage" class="form-control mb-2" accept="image/*" onchange="editProductImagePreviewImage(this)">
                 <div id="editProductImagePreview" class="mt-2" style="display: none;">
                     <img id="editProductImagePreviewImg" src="" alt="Preview" style="max-width: 120px; max-height: 120px; border: 2px solid #4caf50;">
                 </div>
@@ -781,8 +779,6 @@
             pad(date.getSeconds());
     }
 
-
-
     function openAddModal() {
         document.getElementById("addProductModal").style.display = "flex";
     }
@@ -810,27 +806,11 @@
         event.preventDefault();
 
         const form = document.getElementById('createProductForm');
-
-        const data = {
-            name: form.name.value.trim(),
-            description: form.description.value.trim(),
-            price: parseFloat(form.price.value),
-            unitInStock: parseInt(form.unitInStock.value),
-            unitSold: parseInt(form.unitSold.value) || 0,
-            status: form.status.value,
-            medias: [{
-                url: form.image.value.trim()
-            }],
-            categoryId: parseInt(form.categoryId.value),
-            createdDate: formatDateToYMDHMS(new Date())
-        };
+        const formData = new FormData(form); // Lấy cả text + file
 
         fetch('/seller/product-dashboard/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            body: formData
         })
             .then(res => {
                 if (res.ok) {
@@ -867,38 +847,25 @@
         event.preventDefault();
 
         const form = document.getElementById('editProductForm');
-        const productId = document.getElementById('editProductId').value;
+        const formData = new FormData(form); // chứa cả text và file
 
-        const data = {
-            name: form.name.value.trim(),
-            description: form.description.value.trim(),
-            price: parseFloat(form.price.value),
-            unitInStock: parseInt(form.unitInStock.value),
-            unitSold: parseInt(form.unitSold.value) || 0,
-            status: form.status.value,
-            categoryId: parseInt(form.categoryId.value),
-            createdDate: form.createdDate.value,
-            medias: [{
-                url: form.image.value.trim()
-            }]
-        };
-
-        fetch(`/seller/product-dashboard/update/${productId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.ok) {
-                closeEditModal();
-                showToast("Cập nhật sản phẩm thành công!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast("Cập nhật sản phẩm thất bại!", "error");
-            }
-        }).catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast("Có lỗi xảy ra khi cập nhật!", "error");
-        });
+        fetch('/seller/product-dashboard/update', {
+            method: 'POST', // hoặc PUT nếu backend hỗ trợ
+            body: formData
+        })
+            .then(res => {
+                if (res.ok) {
+                    closeEditModal();
+                    showToast("Cập nhật sản phẩm thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Cập nhật sản phẩm thất bại!", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+            });
     }
 
     function closeEditModal() {

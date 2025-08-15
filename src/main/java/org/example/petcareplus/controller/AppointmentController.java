@@ -121,7 +121,7 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/appointment/approved")
+    @GetMapping("/vet/appointment/approved")
     public String approvedPage(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size,
                                Model model) {
@@ -142,10 +142,10 @@ public class AppointmentController {
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
         model.addAttribute("mode", "approved");
-        return "appointment.html";
+        return "appointment";
     }
 
-    @GetMapping("/appointment/pending")
+    @GetMapping("/vet/appointment/pending")
     public String pendingPage(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
                               Model model) {
@@ -158,50 +158,50 @@ public class AppointmentController {
         model.addAttribute("size", size);
         model.addAttribute("totalPages", pendingPage.getTotalPages());
         model.addAttribute("mode", "pending");
-        return "appointment.html";
+        return "appointment";
     }
 
-    @GetMapping("/appointment/history")
+    @GetMapping("/vet/appointment/history")
     public String historyPage(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
                               Model model) {
         if (page < 0) page = 0;
 
         Page<AppointmentBooking> historyPage = appointmentService.getHistoryAppointments(PageRequest.of(page, size));
-
+        
         model.addAttribute("appointments", historyPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", historyPage.getTotalPages());
         model.addAttribute("mode", "history");
-        return "appointment.html";
+        return "appointment";
     }
 
-    @PostMapping("/appointment/approve/{id}")
+    @PostMapping("/vet/appointment/approve/{id}")
     public String approveAppointment(@PathVariable("id") Long id) {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
         if (appointmentBooking.isPresent()) {
             AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.ACCEPTED);
             appointmentService.save(appointment);
-            return "redirect:/appointment/approved"; // This tells Spring to redirect
+            return "redirect:/vet/appointment/approved"; // This tells Spring to redirect
         }
-        return "redirect:/appointment/pending?error=true"; // or some error page
+        return "redirect:/vet/appointment/pending?error=true"; // or some error page
     }
 
-    @PostMapping("/appointment/disapprove/{id}")
+    @PostMapping("/vet/appointment/disapprove/{id}")
     public String disapproveAppointment(@PathVariable("id") Long id) {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
         if (appointmentBooking.isPresent()) {
             AppointmentBooking appointment = appointmentBooking.get();
             appointment.setStatus(BookingStatus.REJECTED);
             appointmentService.save(appointment);
-            return "redirect:/appointment/pending";
+            return "redirect:/vet/appointment/pending";
         }
-        return "redirect:/appointment/pending?error=true";
+        return "redirect:/vet/appointment/pending?error=true";
     }
 
-    @PostMapping("/appointment/createPrescription")
+    @PostMapping("/vet/appointment/createPrescription")
     public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
         Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
 

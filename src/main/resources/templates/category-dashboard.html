@@ -665,7 +665,7 @@
             <li><a href="/seller/order-dashboard">🛒 Đơn hàng</a></li>
             <li class="active"><a href="/seller/category-dashboard">📂 Danh mục</a></li>
             <li><a href="/seller/product-dashboard">📦 Sản phẩm</a></li>
-            <li><a href="#">🏷️ Khuyến mại</a></li>
+            <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/category-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
@@ -720,7 +720,7 @@
                                             <button type="button" class="dropdown-item"
                                                     th:attr="data-id=${parentCat.categoryId}, data-name=${parentCat.name}, data-parent=0"
                                                     onclick="handleOpenEditModal(this)">🖊️ Sửa</button>
-                                            <form th:action="@{/category/delete}" method="post">
+                                            <form th:action="@{/seller/category/delete}" method="post">
                                                 <input type="hidden" name="categoryId" th:value="${parentCat.categoryId}" />
                                                 <button type="submit" class="dropdown-item delete-btn"
                                                         onclick="return confirm('Bạn có chắc chắn muốn xóa?')">🗑️ Xóa</button>
@@ -768,7 +768,7 @@
                                                 <button type="button" class="dropdown-item"
                                                         th:attr="data-id=${childCat.categoryId}, data-name=${childCat.name}, data-parent=${childCat.parent.categoryId}"
                                                         onclick="handleOpenEditModal(this)">🖊️ Sửa</button>
-                                                <form th:action="@{/category/delete}" method="post">
+                                                <form th:action="@{/seller/category/delete}" method="post">
                                                     <input type="hidden" name="categoryId" th:value="${childCat.categoryId}" />
                                                     <button type="submit" class="dropdown-item delete-btn"
                                                             onclick="return confirm('Bạn có chắc chắn muốn xóa?')">🗑️ Xóa</button>
@@ -813,7 +813,7 @@
                                                         <button type="button" class="dropdown-item"
                                                                 th:attr="data-id=${grandCat.categoryId}, data-name=${grandCat.name}, data-parent=${grandCat.parent.categoryId}"
                                                                 onclick="handleOpenEditModal(this)">🖊️ Sửa</button>
-                                                        <form th:action="@{/category/delete}" method="post">
+                                                        <form th:action="@{/seller/category/delete}" method="post">
                                                             <input type="hidden" name="categoryId" th:value="${grandCat.categoryId}" />
                                                             <button type="submit" class="dropdown-item delete-btn"
                                                                     onclick="return confirm('Bạn có chắc chắn muốn xóa?')">🗑️ Xóa</button>
@@ -861,7 +861,7 @@
 <div class="modal-overlay" id="addCategoryModal">
     <div class="modal-box">
         <h2>Thêm danh mục</h2>
-        <form action="/category/save" method="post">
+        <form action="/seller/category/save" method="post">
             <label>Tên danh mục:</label>
             <input type="text" name="name" id="name" required>
 
@@ -885,7 +885,7 @@
 <div class="modal-overlay" id="editCategoryModal">
     <div class="modal-box">
         <h2>Sửa danh mục</h2>
-        <form action="/category/update" method="post">
+        <form action="/seller/category/update" method="post">
             <input type="hidden" name="categoryId" id="editCategoryId" />
 
             <label>Tên danh mục:</label>

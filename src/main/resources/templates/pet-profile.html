@@ -202,6 +202,45 @@
             border-color: #4caf50;
             outline: none;
         }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .modal-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+        }
+        
+        .modal-error i {
+            color: #dc3545;
+        }
+        
+        .modal-error strong {
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -210,11 +249,10 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <a th:href="@{/customer/profile}" class="active">Hồ Sơ</a>
-            <a th:href="@{/customer/address}">Địa chỉ</a>
+            <a th:href="@{/customer/profile}">Hồ Sơ</a>
             <a th:href="@{/customer/change-password}">Đổi mật khẩu</a>
-            <a th:href="@{/customer/pet-profile}">Hồ Sơ thú cưng</a>
-            <a th:href="@{/customer/list_order}">Đơn mua</a>
+            <a th:href="@{/customer/pet-profile}" class="active">Hồ Sơ thú cưng</a>
+            <a th:href="@{/customer/list-order}">Đơn mua</a>
             <a th:href="@{/customer/my-schedule}">Lịch</a>
         </ul>
     </div>
@@ -229,18 +267,7 @@
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <span th:text="${error}">Error message</span>
             </div>
-            
-            <!-- Thông tin tổng quan -->
-            <div th:if="${selectedPet != null}" class="alert alert-info">
-                <strong>Thông tin hiện tại:</strong> 
-                <span th:text="${selectedPet.name}">Tên</span> - 
-                <span th:text="${selectedPet.species}">Loài</span> 
-                <span th:if="${selectedPet.breeds != null}">(<span th:text="${selectedPet.breeds}">Giống</span>)</span>
-                <span th:if="${selectedPet.age != null}">, <span th:text="${selectedPet.age}">Tuổi</span> tuổi</span>
-                <span th:if="${selectedPet.weight != null}">, <span th:text="${selectedPet.weight}">Cân nặng</span> kg</span>
-            </div>
 
-            
             <!-- Nếu có thú cưng -->
             <div th:if="${#lists.size(petProfiles) > 0}">
                 <!-- Dropdown chọn thú cưng -->
@@ -303,15 +330,20 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Tên:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="name" th:value="${selectedPet.name}" th:attr="readonly=${!edit}" class="form-control">
+                                <input type="text" name="name" th:value="${selectedPet.name}" th:attr="readonly=${!edit}" class="form-control"
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                       required
+                                       minlength="1"
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
                         <!-- Tuổi -->
                         <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label">Tuổi (năm):</label>
+                            <label class="col-sm-3 col-form-label">Tuổi (Tháng):</label>
                             <div class="col-sm-9">
-                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!edit}" class="form-control" min="1" max="50">
+                                <input type="number" name="age" th:value="${selectedPet.age}" th:readonly="${!edit}" class="form-control" required min="1" max="300">
                             </div>
                         </div>
 
@@ -319,7 +351,11 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Loài:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="species" th:value="${selectedPet.species}" th:readonly="${!edit}" class="form-control">
+                                <input type="text" name="species" th:value="${selectedPet.species}" th:readonly="${!edit}" class="form-control" required
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                       minlength="1"
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
@@ -327,7 +363,11 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Giống:</label>
                             <div class="col-sm-9">
-                                <input type="text" name="breeds" th:value="${selectedPet.breeds}" th:readonly="${!edit}" class="form-control">
+                                <input type="text" name="breeds" th:value="${selectedPet.breeds}" th:readonly="${!edit}" class="form-control" required
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                       minlength="1"
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
@@ -335,7 +375,9 @@
                         <div class="mb-3 row">
                             <label class="col-sm-3 col-form-label">Cân nặng (kg):</label>
                             <div class="col-sm-9">
-                                <input type="number" name="weight" th:value="${selectedPet.weight}" th:readonly="${!edit}" class="form-control" step="0.1" min="0">
+                                <input type="number" name="weight" min="1" max="100" step="0.1"
+                                       th:value="${selectedPet.weight}" th:readonly="${!edit}"
+                                       class="form-control" required>
                             </div>
                         </div>
                     </div>
@@ -368,25 +410,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <!-- Error Message trong Modal -->
+                <div th:if="${modalError != null and error != null}" class="modal-error">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Lỗi:</strong>
+                    <span th:text="${error}">Error message</span>
+                </div>
+                
                 <div class="mb-2">
                     <label class="form-label">Tên:</label>
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" name="name" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label">Tuổi (năm):</label>
-                    <input type="number" name="age" class="form-control" required min="1" max="50">
+                    <label class="form-label">Tuổi (Tháng):</label>
+                    <input type="number" name="age" class="form-control" required min="1" max="300">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Loài:</label>
-                    <input type="text" name="species" class="form-control">
+                    <input type="text" name="species" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Giống:</label>
-                    <input type="text" name="breeds" class="form-control">
+                    <input type="text" name="breeds" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cẩu, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Cân nặng (kg):</label>
-                    <input type="number" name="weight" class="form-control" step="0.1" min="0">
+                    <input type="number" name="weight" class="form-control" step="0.1" required max="100">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Ảnh:</label>
@@ -410,7 +465,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-function previewImage(input) {
+
+    function previewImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('imagePreview');
     const previewImg = document.getElementById('previewImg');
@@ -488,6 +544,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const preview = document.getElementById('modalImagePreview');
         preview.style.display = 'none';
     });
+    
+    // Tự động mở modal nếu có lỗi validation
+    const modalError = document.querySelector('[data-bs-target="#addPetModal"]');
+    if (modalError && document.querySelector('.modal-error')) {
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
 });
 </script>
 </body>

@@ -3,6 +3,8 @@ package org.example.petcareplus.service.impl;
 import org.example.petcareplus.entity.Promotion;
 import org.example.petcareplus.repository.PromotionRepository;
 import org.example.petcareplus.service.PromotionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,4 +42,15 @@ public class PromotionServiceImpl implements PromotionService {
     public Promotion getPromotionById(Long id) {
         return promotionRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public Promotion getPromotionWithMedias(Long id) {
+        return promotionRepository.getPromotionWithMedias(id);
+    }
+
+    @Override
+    public Page<Promotion> getAllPromotions(Pageable pageable) {
+        return promotionRepository.findAll(pageable);
+    }
+
 }

@@ -114,7 +114,6 @@
                     <p th:if="${order.account.profile != null}">
                         <strong>Address:</strong> 
                         <span th:if="${order.account.profile.ward != null}" th:text="${order.account.profile.ward.name}"></span>
-                        <span th:if="${order.account.profile.district != null}" th:text="${', ' + order.account.profile.district.name}"></span>
                         <span th:if="${order.account.profile.city != null}" th:text="${', ' + order.account.profile.city.name}"></span>
                     </p>
                     <p th:unless="${order.account.profile != null}">
@@ -150,7 +149,7 @@
                                                payment.status.name() == 'APPROVED' ? 'badge badge-success' :
                                                payment.status.name() == 'PENDING' ? 'badge badge-warning' :
                                                payment.status.name() == 'CANCELLED' ? 'badge badge-danger' : 'badge badge-secondary'}"
-                                      th:text="${payment.status.name()}">---</span>
+                                      th:text="${payment.status.getValue()}">---</span>
                             </td>
                             <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT') + ' đ'}">---</td>
                             <td th:text="${payment.bankCode}">---</td>
@@ -175,15 +174,36 @@
                             <label>Change Orders Status:</label>
                             <div class="input-group">
                                 <select class="form-control" name="status">
-                                    <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Pending</option>
-                                    <option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Completed</option>
-                                    <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">Processing</option>
-                                    <option value="DELIVERING" th:selected="${order.status.name() == 'DELIVERING'}">Delivering</option>
-                                    <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option>
-                                    <option value="REJECTED" th:selected="${order.status.name() == 'REJECTED'}">Rejected</option>
-                                    <option value="APPROVED" th:selected="${order.status.name() == 'APPROVED'}">Approved</option>
+                                    <option value="PENDING"
+                                            th:if="${order.status.name() == 'PENDING'}"
+                                            th:selected="${order.status.name() == 'PENDING'}">Đang chờ</option>
+
+                                    <option value="PROCESSING"
+                                            th:if="${order.status.name() == 'APPROVED' or order.status.name() == 'PROCESSING'}"
+                                            th:selected="${order.status.name() == 'PROCESSING'}">Đang xử lý</option>
+
+                                    <option value="DELIVERING"
+                                            th:if="${order.status.name() == 'PROCESSING' or order.status.name() == 'DELIVERING'}"
+                                            th:selected="${order.status.name() == 'DELIVERING'}">Đang giao</option>
+
+                                    <option value="COMPLETED"
+                                            th:if="${order.status.name() == 'DELIVERING' or order.status.name() == 'COMPLETED'}"
+                                            th:selected="${order.status.name() == 'COMPLETED'}">Đã hoàn thành</option>
+
+                                    <option value="REJECTED"
+                                            th:if="${order.status.name() == 'PENDING'}"
+                                            th:selected="${order.status.name() == 'REJECTED'}">Từ chối</option>
+
+                                    <option value="APPROVED"
+                                            th:if="${order.status.name() == 'PENDING' or order.status.name() == 'APPROVED'}"
+                                            th:selected="${order.status.name() == 'APPROVED'}">Duyệt</option>
+
+                                    <option value="CANCELLED" th:if="${order.status.name() == 'CANCELLED'}">Đã hủy</option>
+
+                                    <option value="REJECTED" th:if="${order.status.name() == 'REJECTED'}">Từ chối</option>
                                 </select>
-                                <div class="input-group-append">
+
+                                <div th:disabled="${order.status.name() == 'REJECTED'}" class="input-group-append">
                                     <button type="submit" class="btn btn-primary">Change</button>
                                 </div>
                             </div>

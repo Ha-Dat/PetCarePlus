@@ -74,8 +74,8 @@ public class PetProfileServiceImpl implements PetProfileService {
         PetProfile pet = new PetProfile();
         pet.setName("Thú cưng mới");
         pet.setAge(1);
-        pet.setSpecies("");
-        pet.setBreeds("");
+        pet.setSpecies("Chưa xác định");
+        pet.setBreeds("Chưa xác định");
         pet.setWeight(0.0f);
         return pet;
     }

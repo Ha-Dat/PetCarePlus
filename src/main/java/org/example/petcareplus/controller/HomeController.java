@@ -3,6 +3,7 @@ package org.example.petcareplus.controller;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.entity.Promotion;
+import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.example.petcareplus.service.PromotionService;
@@ -31,13 +32,19 @@ public class HomeController {
 
     @GetMapping("/home")
     public String Viewhome(Model model) {
-        List<Product> getTop5ProductByCreateDate = productService.getTop5ByOrderByCreatedDateDesc();
-        List<Product> product = productService.getAllProducts();
+        List<Product> getTop5ProductByCreateDate = productService.getTop5ByOrderByCreatedDateDesc()
+                .stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .toList();
+        List<Product> AllProduct = productService.getAllProducts()
+                .stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .toList();
 
         List<Category> parentCategories = categoryService.getParentCategory();
 
         model.addAttribute("getTop5ProductByCreateDate", getTop5ProductByCreateDate);
-        model.addAttribute("product", product);
+        model.addAttribute("product", AllProduct);
         model.addAttribute("categories", parentCategories);
         return "home";
     }

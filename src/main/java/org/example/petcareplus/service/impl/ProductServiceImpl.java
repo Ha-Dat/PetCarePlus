@@ -1,17 +1,25 @@
 package org.example.petcareplus.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.petcareplus.dto.CategorySalesDTO;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.repository.ProductRepository;
 import org.example.petcareplus.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,9 +27,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    @Autowired
+    public ProductServiceImpl(ProductRepository productRepository) {this.productRepository = productRepository;}
 
 
     @Override
@@ -61,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product save(Product product) {
+
         return productRepository.save(product);
     }
 
@@ -99,5 +107,28 @@ public class ProductServiceImpl implements ProductService {
     public int getTotalUnitsSold() {
         Integer total = productRepository.getTotalUnitsSold();
         return total != null ? total : 0;
+    }
+
+    @Override
+    public void decreaseProductQuantity(Long productId, int quantity) throws InsufficientStockException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        if (product.getUnitInStock() < quantity) {
+            throw new InsufficientStockException(
+                    "Không đủ hàng trong kho. Sản phẩm: " + product.getName() +
+                            ", Số lượng tồn: " + product.getUnitInStock() +
+                            ", Số lượng yêu cầu: " + quantity
+            );
+        }
+
+        product.setUnitInStock(product.getUnitInStock() - quantity);
+        productRepository.save(product);
+    }
+
+    public class InsufficientStockException extends Exception {
+        public InsufficientStockException(String message) {
+            super(message);
+        }
     }
 }

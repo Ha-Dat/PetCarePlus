@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"wards", "profiles"})
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,7 @@ public class City {
     private String name;
 
     @OneToMany(mappedBy = "city")
-    private List<District> districts;
+    private List<Ward> wards;
 
     @OneToMany(mappedBy = "city")
     private List<Profile> profiles;
@@ -44,12 +46,12 @@ public class City {
         this.name = name;
     }
 
-    public List<District> getDistricts() {
-        return districts;
+    public List<Ward> getWards() {
+        return wards;
     }
 
-    public void setDistricts(List<District> districts) {
-        this.districts = districts;
+    public void setWards(List<Ward> wards) {
+        this.wards = wards;
     }
 
     public List<Profile> getProfiles() {

@@ -46,4 +46,9 @@ public class ServiceServiceImpl implements ServiceService {
     public void deleteService(Long id) {
         serviceRepository.deleteById(id);
     }
+
+    @Override
+    public List<org.example.petcareplus.entity.Service> findAll() {
+        return serviceRepository.findAll();
+    }
 }

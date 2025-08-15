@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/post-dashboard")
+@RequestMapping("/manager/post-dashboard")
 public class PostDashboardController {
 
     @Autowired
@@ -74,7 +74,7 @@ public class PostDashboardController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi duyệt bài viết: " + e.getMessage());
         }
-        return "redirect:/post-dashboard";
+        return "redirect:/manager/post-dashboard";
     }
 
     @PostMapping("/reject/{postId}")
@@ -85,7 +85,7 @@ public class PostDashboardController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi từ chối bài viết: " + e.getMessage());
         }
-        return "redirect:/post-dashboard";
+        return "redirect:/manager/post-dashboard";
     }
 
     @GetMapping("/pending")

@@ -2,27 +2,18 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.entity.Category;
-import jakarta.validation.Valid;
-import org.example.petcareplus.entity.HotelBooking;
+
 import org.example.petcareplus.entity.PetProfile;
-import org.example.petcareplus.service.CategoryService;
+
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -32,8 +23,7 @@ public class PetProfileController {
     @Autowired
     private PetProfileService petProfileService;
 
-    @Autowired
-    private CategoryService categoryService;
+
 
     @GetMapping("/customer/pet-profile")
     public String showPetProfilePage(Model model,
@@ -46,7 +36,6 @@ public class PetProfileController {
         }
 
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         PetProfile selectedPet = null;
 
@@ -58,49 +47,70 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", false);
         return "pet-profile";
     }
 
     @PostMapping("/customer/pet-profile/edit")
     public String editPetProfile(@RequestParam("petId") Long petId,
-                                 @ModelAttribute PetProfile petProfile) {
-        petProfileService.updatePetProfile(petId, petProfile);
-        return "redirect:/pet-profile?selectedId=" + petId;
+                                 @RequestParam("name") String name,
+                                 @RequestParam("species") String species,
+                                 @RequestParam("breeds") String breeds,
+                                 @RequestParam("age") Integer age,
+                                 @RequestParam("weight") Float weight,
+                                 HttpSession session,
+                                 Model model) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        
+        // Lấy PetProfile hiện tại từ database
+        PetProfile existingPet = petProfileService.findById(petId);
+        if (existingPet != null) {
+            // Cập nhật thông tin
+            existingPet.setName(name.trim());
+            existingPet.setSpecies(species.trim());
+            existingPet.setBreeds(breeds.trim());
+            existingPet.setAge(age);
+            existingPet.setWeight(weight);
+            
+            petProfileService.updatePetProfile(petId, existingPet);
+        }
+        
+        return "redirect:/customer/pet-profile?selectedId=" + petId;
     }
 
     @PostMapping("/customer/pet-profile/add")
-    public String createNewPet(@Valid @ModelAttribute PetProfile petProfile,
-                               BindingResult result,
+    public String createNewPet(@RequestParam("name") String name,
+                               @RequestParam("age") Integer age,
+                               @RequestParam("species") String species,
+                               @RequestParam("breeds") String breeds,
+                               @RequestParam("weight") Float weight,
                                @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                HttpSession session,
                                Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        if (result.hasErrors()) {
-            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
-            model.addAttribute("selectedPet", null);
-            model.addAttribute("edit", false);
-            model.addAttribute("modalError", true);
-            return "pet-profile";
-        }
-
         try {
-            // Assign pet profile to current account
-            petProfile.setProfile(account.getProfile());
-            PetProfile newPet = petProfileService.save(petProfile);
+            // Tạo PetProfile mới
+            PetProfile newPet = new PetProfile();
+            newPet.setName(name.trim());
+            newPet.setSpecies(species.trim());
+            newPet.setBreeds(breeds.trim());
+            newPet.setAge(age);
+            newPet.setWeight(weight);
+            newPet.setProfile(account.getProfile());
+            
+            PetProfile savedPet = petProfileService.save(newPet);
 
             // Handle image upload if provided
             if (imageFile != null && !imageFile.isEmpty()) {
                 try {
-                    petProfileService.uploadPetImage(newPet.getPetProfileId(), imageFile);
+                    petProfileService.uploadPetImage(savedPet.getPetProfileId(), imageFile);
                 } catch (Exception e) {
                     // Log error but don't fail the entire operation
                 }
             }
 
-            return "redirect:/customer/pet-profile?selectedId=" + newPet.getPetProfileId();
+            return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi tạo thú cưng: " + e.getMessage());
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
@@ -117,7 +127,6 @@ public class PetProfileController {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         if (account == null) {
             return "redirect:/login";
@@ -125,30 +134,35 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", true);
         return "pet-profile";
     }
 
     @PostMapping("/customer/pet-profile/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
-                                 @Valid @ModelAttribute PetProfile petProfile,
-                                 BindingResult result,
+                                 @RequestParam("name") String name,
+                                 @RequestParam("species") String species,
+                                 @RequestParam("breeds") String breeds,
+                                 @RequestParam("age") Integer age,
+                                 @RequestParam("weight") Float weight,
                                  @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                  HttpSession session,
                                  Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
-        if (result.hasErrors()) {
-            model.addAttribute("selectedId", petId);
-            model.addAttribute("petProfile", petProfile);
-            model.addAttribute("edit", true);
-            return "pet-profile";
-        }
-
         try {
             if (petId != null) {
-                petProfileService.updatePetProfile(petId, petProfile);
+                // Cập nhật PetProfile hiện tại
+                PetProfile existingPet = petProfileService.findById(petId);
+                if (existingPet != null) {
+                    existingPet.setName(name.trim());
+                    existingPet.setSpecies(species.trim());
+                    existingPet.setBreeds(breeds.trim());
+                    existingPet.setAge(age);
+                    existingPet.setWeight(weight);
+                    
+                    petProfileService.updatePetProfile(petId, existingPet);
+                }
 
                 // Handle image upload if provided
                 if (imageFile != null && !imageFile.isEmpty()) {
@@ -161,8 +175,15 @@ public class PetProfileController {
 
                 return "redirect:/customer/pet-profile?selectedId=" + petId;
             } else {
-                PetProfile newPet = petProfileService.createEmptyPet();
+                // Tạo PetProfile mới
+                PetProfile newPet = new PetProfile();
+                newPet.setName(name.trim());
+                newPet.setSpecies(species.trim());
+                newPet.setBreeds(breeds.trim());
+                newPet.setAge(age);
+                newPet.setWeight(weight);
                 newPet.setProfile(account.getProfile());
+                
                 PetProfile savedPet = petProfileService.save(newPet);
 
                 // Handle image upload if provided
@@ -178,8 +199,8 @@ public class PetProfileController {
             }
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi lưu thông tin thú cưng: " + e.getMessage());
-            model.addAttribute("selectedId", petId);
-            model.addAttribute("petProfile", petProfile);
+            model.addAttribute("petProfiles", petProfileService.findByAccount(account));
+            model.addAttribute("selectedPet", petProfileService.findById(petId));
             model.addAttribute("edit", true);
             return "pet-profile";
         }

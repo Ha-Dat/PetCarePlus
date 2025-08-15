@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum AccountStatus {
 
-    ACTIVE("Hoạt động"), BANNED("Khóa");
+    ACTIVE("Hoạt động"), BANNED("Khóa"), INACTIVE("Chưa kích hoạt");
 
     private final String value;
 
