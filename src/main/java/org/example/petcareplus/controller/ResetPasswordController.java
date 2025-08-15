@@ -71,22 +71,6 @@ public class ResetPasswordController {
     }
 
     /**
-     * Verify OTP reset password (không cần thiết nữa)
-     */
-    @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyResetPasswordOtp(@RequestParam String phoneNumber, @RequestParam String otp) {
-        // Luôn return success vì không cần OTP
-        log.info("🔍 OTP verification skipped for phone: {} (no OTP required)", phoneNumber);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "OTP verification skipped (no OTP required)");
-        response.put("phoneNumber", phoneNumber);
-
-        return ResponseEntity.ok(response);
-    }
-
-    /**
      * Reset password
      */
     @PostMapping("/reset")

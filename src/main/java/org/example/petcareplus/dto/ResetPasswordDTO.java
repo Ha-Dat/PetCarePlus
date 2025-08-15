@@ -18,7 +18,10 @@ public class ResetPasswordDTO {
     private String phoneNumber;
 
     @NotBlank(message = "Mật khẩu mới không được để trống")
-    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6-100 ký tự")
+    @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,50}$",
+            message = "Mật khẩu phải có ít nhất 8 và ít hơn 50 ký tự, gồm chữ hoa, chữ thường, số và không chứa khoảng trắng"
+    )
     private String newPassword;
 
     @NotBlank(message = "Xác nhận mật khẩu không được để trống")
