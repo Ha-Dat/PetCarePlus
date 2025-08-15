@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Doctor dashboard</title>
     <style>
         body {
@@ -23,7 +24,7 @@
             max-width: 230px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
+            height: 94.5vh;
             top: 0;
             left: 0;
             padding: 20px;
@@ -276,84 +277,141 @@
         .dropdown-toggle {
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             padding: 6px 10px;
             border-radius: 6px;
             transition: background-color 0.2s;
+            color: #333;
         }
 
         .dropdown-toggle:hover {
             background-color: #f0f0f0;
         }
 
-        /* Dropdown menu */
         .dropdown-menu {
             display: none;
             position: absolute;
             right: 0;
+            top: 100%;
             background-color: #fff;
             min-width: 140px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            z-index: 100;
+            z-index: 9999;
             border-radius: 8px;
             padding: 4px 0;
-            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            white-space: nowrap;
+            margin-top: 2px;
         }
 
-        /* Các item trong menu */
-        .dropdown-menu .dropdown-item {
+        /* Ensure dropdown shows below by default */
+        .action-dropdown .dropdown-menu {
+            top: 100%;
+            bottom: auto;
+            margin-top: 2px;
+            margin-bottom: 0;
+        }
+
+        /* Ensure dropdown shows to the left when near right edge */
+        .action-dropdown.right-edge .dropdown-menu {
+            right: auto;
+            left: 0;
+        }
+
+        /* Ensure dropdown is always visible */
+        .dropdown-menu {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Auto-adjust dropdown position based on available space */
+        .action-dropdown:hover .dropdown-menu {
+            display: block !important;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        /* Animation for dropdown appearance */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ensure dropdown is always on top */
+        .action-dropdown {
+            position: relative;
+        }
+
+        .action-dropdown .dropdown-menu {
+            position: relative;
+            z-index: 9999;
+            pointer-events: auto;
+        }
+
+        /* Ensure action column has enough space */
+        .product-table td:last-child {
+            min-width: 60px;
+            width: auto;
+            white-space: nowrap;
+            overflow: visible;
+            position: relative;
+        }
+
+        .dropdown-item {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 10px 16px;
-            text-decoration: none;
-            background-color: white;
-            color: #333;
-            font-size: 14px;
             width: 100%;
+            font-size: 14px;
+            color: #333;
+            background: none;
             border: none;
-            cursor: pointer;
             text-align: left;
+            cursor: pointer;
             transition: background-color 0.2s;
         }
 
-        /* Hover hiệu ứng */
-        .dropdown-menu .dropdown-item:hover {
+        .dropdown-item:hover {
             background-color: #f8f9fa;
         }
 
-        .action-dropdown:hover .dropdown-menu {
-            display: block;
+        .dropdown-item.delete-btn {
+            color: #dc3545;
+            font-weight: 500;
         }
 
-        /* Toast thông báo*/
+        .dropdown-item.delete-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        /* Toast styles */
         .toast {
             position: fixed;
             top: 20px;
-            right: 30px;
-            background-color: #28a745; /* success mặc định */
-            color: white;
+            right: 20px;
             padding: 14px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.3s, transform 0.3s;
+            color: white;
+            font-weight: bold;
             z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeInOut 3s ease forwards;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        .toast.success {
+            background-color: #28a745;
         }
 
         .toast.error {
-            background-color: #dc3545; /* màu đỏ */
-        }
-
-        .toast.hidden {
-            display: none;
+            background-color: #dc3545;
         }
 
         @keyframes fadeInOut {
@@ -363,52 +421,130 @@
             100% { opacity: 0; transform: translateY(-20px); }
         }
 
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
+        .toast.hidden {
             display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 20px;
         }
 
-        .modal-box {
-            background: white;
-            border-radius: 16px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh; /* 👈 giới hạn chiều cao */
-            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
-            padding: 30px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            box-sizing: border-box;
-        }
-
-        .modal-box label {
-            font-weight: 600;
-            margin-top: 10px;
+        .toast.show {
             display: block;
         }
 
-        .modal-box input,
-        .modal-box select,
-        .modal-box textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
+        /* Search form styles */
+        .search-pet {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 14px;
         }
 
-        .modal-box textarea {
-            resize: vertical;
+        .search-btn {
+            padding: 8px 16px;
+            background-color: #2ec4b6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-btn:hover {
+            background-color: #26b2a5;
+        }
+
+        /* Button styles */
+        .detail-btn, .prescription-btn, .approved-btn, .disapproved-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .detail-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .detail-btn:hover {
+            background-color: #138496;
+        }
+
+        .prescription-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .prescription-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .approved-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .approved-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .disapproved-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .disapproved-btn:hover {
+            background-color: #c82333;
+        }
+
+        .vet-info {
+            margin:25pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .vet-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vet-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .vet-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            color: #1e7e34;
+        }
+
+        .logout-btn {
+            color: #dc3545;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #c82333;
         }
     </style>
 </head>
@@ -418,10 +554,32 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Doctor Dashboard</h2>
         <ul class="sidebar-menu">
-            <li><a th:href="@{/vet/appointment/pending}">Lịch khám chờ duyệt</a></li>
-            <li><a th:href="@{/vet/appointment/approved}">Lịch khám đã duyệt</a></li>
-            <li><a th:href="@{/vet/appointment/history}">Lịch khám từ chối</a></li>
+            <li th:classappend="${mode == 'pending'} ? 'active' : ''">
+                <a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a>
+            </li>
+            <li th:classappend="${mode == 'approved'} ? 'active' : ''">
+                <a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a>
+            </li>
+            <li th:classappend="${mode == 'history'} ? 'active' : ''">
+                <a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a>
+            </li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="vet-info">
+            <div class="vet-details">
+                <span class="vet-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="vet-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <div class="vet-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -665,6 +823,21 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
                 showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
             });
     }
+
+    // Add active class to current menu item
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                menuItems.forEach(li => li.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+            });
+        });
+    });
 </script>
+
 </body>
 </html>
