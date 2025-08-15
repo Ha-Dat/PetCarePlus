@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -177,4 +178,16 @@ public class HotelBookingController {
     }
 
 
+    @PostMapping("/pet-groomer/list-hotel-booking/complete-hotel/{id}")
+    @ResponseBody
+    public ResponseEntity<String> completeBooking(@PathVariable("id") Long id) {
+        Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
+        if (bookingOpt.isPresent()) {
+            HotelBooking booking = bookingOpt.get();
+            booking.setStatus(BookingStatus.COMPLETED); // hoặc giá trị phù hợp
+            hotelBookingService.save(booking);
+            return ResponseEntity.ok("Xác nhận hoàn thành đơn thành công!");
+        }
+        return ResponseEntity.status(404).body("Không tìm thấy đơn.");
+    }
 }

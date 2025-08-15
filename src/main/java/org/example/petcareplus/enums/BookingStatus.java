@@ -1,7 +1,7 @@
 package org.example.petcareplus.enums;
 
 public enum BookingStatus {
-    PENDING("Chờ duyệt"), ACCEPTED("Đã duyệt"), REJECTED("Từ chối"), CANCELLED("Hủy");
+    PENDING("Chờ duyệt"), ACCEPTED("Đã duyệt"), REJECTED("Từ chối"), CANCELLED("Hủy"), COMPLETED("Hoàn thành");
 
     private final String value;
 
