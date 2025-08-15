@@ -7,11 +7,6 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <style>
-        .nav-link.active {
-            background-color: #4caf50;
-            color: #fff !important;
-        }
-
         .sidebar {
             width: 220px;
             background-color: #ffffff;
@@ -86,6 +81,7 @@
         .btn-custom:hover {
             background-color: #388e3c;
         }
+
         /* Thêm style cho các nút filter */
         .btn-outline-success.filter-type {
             margin-right: 8px;
@@ -129,11 +125,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul class="list-unstyled">
-                            <li><a href="/profile">Hồ Sơ</a></li>
-                <li><a href="/change-password">Đổi mật khẩu</a></li>
-                <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
-                <li><a href="/list-order">Đơn mua</a></li>
-                <li><a href="/my-schedule" class="active">Lịch</a></li>
+            <li><a href="/profile">Hồ Sơ</a></li>
+            <li><a href="/change-password">Đổi mật khẩu</a></li>
+            <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
+            <li><a href="/list-order">Đơn mua</a></li>
+            <li><a href="/my-schedule" class="active">Lịch</a></li>
         </ul>
     </div>
 
@@ -182,26 +178,26 @@
             <tbody id="schedule-table">
             <tr th:each="s : ${myServices}"
                 th:attr="data-id=${s.bookingId}"
-                th:data-type="${s.serviceCategory.getValue()}"
-            th:data-status="${s.status.getValue()}">
-            <td th:text="${s.petName}"></td>
-            <td th:text="${s.serviceName}"></td>
-            <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
-            <td class="col-status" th:text="${s.status.value}"></td>
-            <td>
-                <button class="btn btn-sm btn-info detail-btn"
-                        th:if="${s.status.name() == 'PENDING'}"
-                        th:data-id="${s.bookingId}"
-                        th:data-type="${s.serviceCategory.name()}">
-                    Chi tiết
-                </button>
-                <button class="btn btn-sm btn-danger cancel-btn"
-                        th:if="${s.status.name() == 'PENDING'}"
-                        th:data-id="${s.bookingId}"
-                        th:data-type="${s.serviceCategory.name()}">
-                    Hủy
-                </button>
-            </td>
+                th:data-type="${s.serviceCategory.name()}"
+                th:data-status="${s.status.name()}">
+                <td th:text="${s.petName}"></td>
+                <td th:text="${s.serviceName}"></td>
+                <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="col-status" th:text="${s.status.value}"></td>
+                <td>
+                    <button class="btn btn-sm btn-info detail-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Chi tiết
+                    </button>
+                    <button class="btn btn-sm btn-danger cancel-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Hủy
+                    </button>
+                </td>
             </tr>
             </tbody>
 
@@ -266,6 +262,19 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    const serviceCategoryMap = {
+        SPA: "Spa",
+        HOTEL: "Khách sạn thú cưng",
+        APPOINTMENT: "Khám bệnh"
+    };
+
+    const bookingStatusMap = {
+        PENDING: "Chờ duyệt",
+        ACCEPTED: "Đã duyệt",
+        REJECTED: "Từ chối",
+        CANCELLED: "Hủy"
+    };
+
     // Set minimum date to today
     document.addEventListener("DOMContentLoaded", () => {
         const now = new Date();
@@ -321,20 +330,23 @@
 
     $(document).on("click", ".detail-btn", function () {
         let bookingId = $(this).data("id");
-        let bookingType = String($(this).data("type") || "").toUpperCase(); // đảm bảo UPPER
+        let bookingType = String($(this).data("type") || "").toUpperCase();
 
         $.ajax({
-                            url: `/my-schedule/detail/${bookingType}/${bookingId}`,
+            url: `/my-schedule/detail/${bookingType}/${bookingId}`,
             type: "GET",
             success: function (res) {
                 $("#detailBookingId").val(res.bookingId);
-                $("#detailBookingType").val(res.serviceCategory); // "SPA/HOTEL/APPOINTMENT"
+                $("#detailBookingType").val(res.serviceCategory);
 
                 $("#detailPetName").val(res.petName);
                 $("#detailServiceName").val(res.serviceName);
-                $("#detailServiceType").val(res.serviceCategory);
+
+                // Dịch enum sang tiếng Việt
+                $("#detailServiceType").val(serviceCategoryMap[res.serviceCategory] || res.serviceCategory);
                 $("#detailBookDate").val(formatDateForInput(res.bookDate));
-                $("#detailStatus").val(res.status);
+                $("#detailStatus").val(bookingStatusMap[res.status] || res.status);
+
                 $("#detailNote").val(res.note || "");
 
                 if (res.status !== "PENDING") {
@@ -362,7 +374,7 @@
         if (!confirm("Bạn có chắc muốn hủy lịch này không?")) return;
 
         $.ajax({
-                            url: `/my-schedule/cancel/${bookingType}/${bookingId}`,
+            url: `/my-schedule/cancel/${bookingType}/${bookingId}`,
             type: "POST",
             success: function (res) {
                 alert(res.message);
@@ -375,6 +387,7 @@
 
                 // Ẩn các nút hành động
                 $row.find(".cancel-btn, .detail-btn").remove();
+                location.reload();
             },
             error: function () {
                 alert("Có lỗi xảy ra khi hủy lịch.");
@@ -400,7 +413,7 @@
         };
 
         $.ajax({
-                            url: `/my-schedule/update`,
+            url: `/my-schedule/update`,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -413,6 +426,7 @@
                 $row.find("td:nth-child(2)").text(data.serviceName);
                 $row.find(".col-time").text(new Date(data.bookDate).toLocaleString("vi-VN"));
                 $row.find(".col-status").text("Chờ duyệt");
+                location.reload();
             },
             error: function () {
                 alert("Không thể cập nhật lịch.");
