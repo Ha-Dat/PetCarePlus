@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý đơn hàng</title>
+    <title>Thống kê</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,53 +16,6 @@
         .dashboard {
             display: flex;
             height: 100vh;
-        }
-
-        /* Wrapper for the filter form */
-        .order-filter-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-            background: #f9fafb;
-            padding: 16px 20px;
-            border-radius: 12px;
-            align-items: flex-end;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-        }
-
-        /* Form inputs */
-        .order-filter-form input,
-        .order-filter-form select {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            width: 180px;
-            background-color: #ffffff;
-            transition: border-color 0.2s ease-in-out;
-        }
-
-        .order-filter-form input:focus,
-        .order-filter-form select:focus {
-            border-color: #4f46e5; /* Soft blue border */
-            outline: none;
-        }
-
-        /* Button style */
-        .order-filter-form .btn {
-            padding: 8px 16px;
-            background-color: #4f46e5;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .order-filter-form .btn:hover {
-            background-color: #4338ca;
-            cursor: pointer;
         }
 
         /* Sidebar */
@@ -124,83 +77,162 @@
             margin-top: 20px;
         }
 
-        .btn-approve {
-            background-color: #10B981;
-            color: white;
+        /* Stats cards */
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .filter-box input,
-        .filter-box select {
-            height: 38px;
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .stats-card .card-title {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-card .card-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2ec4b6;
+            margin: 0;
+        }
+
+        /* Stats row styling */
+        .stats-row {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+        }
+
+        .stats-col {
+            width: 22% !important;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-col {
+                width: 100% !important;
+            }
+        }
+
+        /* Chart containers */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Seller info section */
+        .seller-info {
+            margin: 12pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .seller-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seller-name {
+            color: #1f2937;
+            font-weight: bold;
             font-size: 14px;
         }
 
-        .filter-box .btn {
-            height: 38px;
+        .seller-role {
+            font-size: 12px;
+            color: #777;
         }
 
-        .btn-danger {
-            background-color: #EF4444;
-            color: white;
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
         }
 
-        /* Product table */
-        .table-container {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            background-color: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        .home-btn:hover {
+            color: #1e7e34;
         }
 
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .order-table th,
-        .order-table td {
-            text-align: left;
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .order-table td img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-        }
-
-        .order-table th {
-            background-color: #e0f7f5;
-            color: #333;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .price-column {
-            text-align: right;
-        }
-
-        .discount-amount {
+        .logout-btn {
             color: #dc3545;
+            font-size: 18px;
+            text-decoration: none;
         }
 
-        .shipping-fee {
-            color: #6c757d;
+        .logout-btn:hover {
+            color: #c82333;
         }
 
-        .total-price {
-            font-weight: bold;
-            color: #198754;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 20px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .stats-card {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Custom scrollbar */
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: #2ec4b6;
+            border-radius: 10px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #28b1a5;
         }
     </style>
 </head>
+
 <body>
 <div class="dashboard">
     <!-- Sidebar -->
@@ -214,74 +246,79 @@
             <li><a href="/seller/promotion/list">🏷️ Khuyến mại</a></li>
             <li><a href="/list-pet-profile?from=/seller/order-dashboard">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="seller-info">
+            <div class="seller-details">
+                <span class="seller-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="seller-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <div class="seller-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
     </aside>
 
     <div class="main-content">
         <h1 class="page-title">Thống kê và quản lý bán hàng</h1>
-        <!-- Hàng biểu đồ -->
-        <div class="row">
-            <div class="col-md-9">
-                <div id="chart_div" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+
+        <!-- Hàng thống kê -->
+        <div class="row mb-4 stats-row">
+            <div class="col-md-2 stats-col">
+                <div class="stats-card">
+                    <h5 class="card-title">Tổng sản phẩm tồn kho</h5>
+                    <h3 class="card-text" th:text="${totalUnitsInStock}">0</h3>
+                </div>
             </div>
-
-            <div class="col-md-3 d-flex flex-column justify-content-between align-items-center" style="height: 350px;">
-                <div class="card w-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Tổng sản phẩm tồn kho</h5>
-                        <h3 class="card-text" th:text="${totalUnitsInStock}">0</h3>
-                    </div>
+            <div class="col-md-2 stats-col">
+                <div class="stats-card">
+                    <h5 class="card-title">Tổng sản phẩm đã bán</h5>
+                    <h3 class="card-text" th:text="${totalUnitsSold}">0</h3>
                 </div>
-
-                <div class="card w-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Tổng sản phẩm đã bán</h5>
-                        <h3 class="card-text" th:text="${totalUnitsSold}">0</h3>
-                    </div>
-                </div>
-
-                <div class="card w-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Tổng doanh thu</h5>
-                        <h3 class="card-text" th:text="${totalRevenue} +' '+đ">0</h3>
-                    </div>
+            </div>
+            <div class="col-md-2 stats-col">
+                <div class="stats-card">
+                    <h5 class="card-title">Tổng doanh thu</h5>
+                    <h3 class="card-text" th:text="${totalRevenue} +' '+đ">0</h3>
                 </div>
             </div>
         </div>
 
+        <!-- Biểu đồ -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="chart-title">Doanh thu theo tháng trong năm nay</h5>
+                    <div id="chart_div" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+                </div>
+            </div>
 
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="chart-title">Sản phẩm bán chạy theo danh mục</h5>
+                    <div id="barchart_values" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biểu đồ doanh thu theo danh mục -->
         <div class="row">
             <div class="col-md-12">
-                <div id="barchart_values" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden; margin-top: 20px"></div>
+                <div class="chart-container">
+                    <h5 class="chart-title">Phân tích doanh thu theo danh mục sản phẩm</h5>
+                    <div id="category_revenue_chart" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script th:inline="javascript">
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-            ['Category', 'Số sản phẩm đã bán'],
-            /*[# th:each="item : ${stats}"]*/
-            ['[[${item.categoryName}]]', [[${item.totalSold}]]],
-            /*[/]*/
-        ]);
-
-        var options = {
-            title: "Tổng sản phẩm bán được theo Danh Mục",
-            bar: {groupWidth: "95%"},
-            legend: { position: "none" }
-        };
-
-        var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
-        chart.draw(data, options);
-    }
-</script>
-
 <script th:inline="javascript">
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
@@ -298,12 +335,81 @@
             title: 'Doanh thu theo tháng trong năm nay',
             hAxis: {title: 'Tháng', titleTextStyle: {color: '#333'}},
             vAxis: {minValue: 0},
-            legend: { position: "none" }
+            legend: { position: "none" },
+            colors: ['#2ec4b6'],
+            backgroundColor: 'transparent'
         };
 
         var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
         chart.draw(data, options);
     }
+</script>
+
+<script th:inline="javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawBarChart);
+
+    function drawBarChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Category', 'Số sản phẩm đã bán'],
+            /*[# th:each="item : ${stats}"]*/
+            ['[[${item.categoryName}]]', [[${item.totalSold}]]],
+            /*[/]*/
+        ]);
+
+        var options = {
+            title: "Tổng sản phẩm bán được theo Danh Mục",
+            bar: {groupWidth: "95%"},
+            legend: { position: "none" },
+            colors: ['#2ec4b6'],
+            backgroundColor: 'transparent'
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById('barchart_values'));
+        chart.draw(data, options);
+    }
+</script>
+
+<script th:inline="javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawCategoryRevenueChart);
+
+    function drawCategoryRevenueChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Danh mục', 'Doanh thu'],
+            ['Thức ăn', 12000000],
+            ['Đồ chơi', 8000000],
+            ['Vật dụng', 15000000],
+            ['Thuốc', 5000000],
+            ['Dịch vụ', 25000000]
+        ]);
+
+        var options = {
+            title: 'Doanh thu theo danh mục sản phẩm',
+            legend: { position: 'right' },
+            colors: ['#2ec4b6', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'],
+            backgroundColor: 'transparent'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('category_revenue_chart'));
+        chart.draw(data, options);
+    }
+</script>
+
+<script>
+    // Add active class to current menu item
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                menuItems.forEach(li => li.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+            });
+        });
+    });
 </script>
 </body>
 </html>

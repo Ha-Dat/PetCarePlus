@@ -26,8 +26,8 @@
             max-width: 270px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
-            top: 0;
+            height: 94.3vh;
+            margin-top: -17px;
             left: 0;
             padding: 38px 20px 20px 20px;
             transition: width 0.3s ease;
@@ -618,7 +618,7 @@
         }
 
         .seller-info {
-            margin: 18pc 0 10px 0;
+            margin: 13pc 0 10px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -644,14 +644,24 @@
             color: #777;
         }
 
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            color: #1e7e34;
+        }
+
         .logout-btn {
-            color: #ff4d4f;
+            color: #dc3545;
             font-size: 18px;
             text-decoration: none;
         }
 
         .logout-btn:hover {
-            color: #d9363e;
+            color: #c82333;
         }
     </style>
 </head>
@@ -675,9 +685,14 @@
                 <span class="seller-name" th:text="${session.loggedInUser.getName()}">Name</span>
                 <span class="seller-role" th:text="${session.loggedInUser.getRole()}">Role</span>
             </div>
-            <a href="/logout" class="logout-btn" title="Đăng xuất">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+            <div class="seller-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
         </div>
     </aside>
 

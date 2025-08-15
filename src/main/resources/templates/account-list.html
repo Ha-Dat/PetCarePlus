@@ -356,12 +356,14 @@
                 <span class="admin-name" th:text="${session.loggedInUser.getName()}">Name</span>
                 <span class="admin-role" th:text="${session.loggedInUser.getRole()}">Role</span>
             </div>
-            <a href="/home" class="home-btn" title="Home">
-                <i class="fas fa-home"></i>
-            </a>
-            <a href="/logout" class="logout-btn" title="Đăng xuất">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+            <div class="admin-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
         </div>
     </aside>
 
