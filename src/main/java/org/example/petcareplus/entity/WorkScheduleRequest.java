@@ -21,10 +21,6 @@ public class WorkScheduleRequest {
     private Long requestId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private WorkSchedule originalSchedule;
 
@@ -50,9 +46,8 @@ public class WorkScheduleRequest {
     public WorkScheduleRequest() {
     }
 
-    public WorkScheduleRequest(Long requestId, Account account, WorkSchedule originalSchedule, RequestType requestType, LocalDate requestedDate, Shift requestedShift, String reason, ScheduleRequestStatus status) {
+    public WorkScheduleRequest(Long requestId, WorkSchedule originalSchedule, RequestType requestType, LocalDate requestedDate, Shift requestedShift, String reason, ScheduleRequestStatus status) {
         this.requestId = requestId;
-        this.account = account;
         this.originalSchedule = originalSchedule;
         this.requestType = requestType;
         this.requestedDate = requestedDate;
@@ -67,14 +62,6 @@ public class WorkScheduleRequest {
 
     public void setRequestId(Long requestId) {
         this.requestId = requestId;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 
     public WorkSchedule getOriginalSchedule() {

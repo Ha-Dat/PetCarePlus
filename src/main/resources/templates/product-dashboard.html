@@ -541,10 +541,10 @@
                                     </a>
 
                                     <form th:id="'deleteForm-' + ${product.productId}"
-                                          th:action="@{/seller/product-dashboard/delete/__${product.productId}__}" method="post"
-                                          th:onsubmit="'confirmDeleteAndToast(event, ' + ${product.productId} + '); return false;'">
+                                          th:action="@{/seller/product-dashboard/switch/__${product.productId}__}" method="post"
+                                          th:onsubmit="'confirmSwitchAndToast(event, ' + ${product.productId} + '); return false;'">
                                         <button type="submit" class="dropdown-item delete-btn">
-                                            🗑️ Xóa
+                                            Đổi trạng thái
                                         </button>
                                     </form>
                                 </div>
@@ -827,7 +827,6 @@
             });
     }
 
-
     function openEditModal(element) {
         document.getElementById("editProductId").value = element.getAttribute('data-product-id');
         document.getElementById("editProductName").value = element.getAttribute('data-name');
@@ -869,18 +868,17 @@
             });
     }
 
-
     function closeEditModal() {
         document.getElementById('editProductModal').style.display = 'none';
         document.getElementById('editProductForm').reset();
     }
 
-    function confirmDeleteAndToast(event, productId) {
+    function confirmSwitchAndToast(event, productId) {
         event.preventDefault(); // Ngăn form submit ngay
 
-        const confirmed = confirm("Bạn có chắc muốn xóa sản phẩm này?");
+        const confirmed = confirm("Bạn có chắc muốn đổi trạng thái sản phẩm này?");
         if (confirmed) {
-            showToast("Xóa sản phẩm thành công", "success");
+            showToast("Thành công", "success");
 
             // Submit form sau khi hiện toast (chờ 500ms)
             setTimeout(() => {
