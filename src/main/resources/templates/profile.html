@@ -84,6 +84,23 @@
         .btn-custom:hover {
             background-color: #388e3c;
         }
+
+        /* Style cho form khi ở chế độ view (không edit) */
+        .form-section.view-mode {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-section.view-mode input[readonly],
+        .form-section.view-mode select[disabled] {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: default;
+        }
+
+        .form-section.view-mode label {
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -108,7 +125,7 @@
             <span th:text="${errorMessage}"></span>
         </div>
                     <form th:action="@{/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
-            <div class="form-section row">
+            <div class="form-section row" th:classappend="${!edit} ? 'view-mode' : ''">
                 <input type="hidden" th:field="*{profileId}" />
                 <!-- Họ tên -->
                 <div class="mb-3 row">
@@ -123,8 +140,7 @@
                 <div class="mb-3 row">
                     <label class="col-sm-3 col-form-label">Số điện thoại:</label>
                     <div class="col-sm-9">
-                        <input type="text" th:field="*{phone}" class="form-control"
-                               th:readonly="${!edit}" />
+                        <input type="text" th:field="*{phone}" class="form-control" readonly />
                         <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></div>
                     </div>
                 </div>
