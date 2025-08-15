@@ -2,8 +2,10 @@ package org.example.petcareplus.controller;
 
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.entity.ProductFeedback;
 import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.service.CategoryService;
+import org.example.petcareplus.service.ProductFeedbackService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,9 @@ public class ProductController {
 
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private ProductFeedbackService productFeedbackService;
 
     @GetMapping("/view-product")
     public String viewAllProducts(
@@ -92,9 +97,29 @@ public class ProductController {
                 return "error/404";
             }
             
+            // Lấy feedback data
+            List<ProductFeedback> feedbacks = productFeedbackService.getFeedbacksByProductId(productId);
+            Double averageRating = productFeedbackService.getAverageRatingByProductId(productId);
+            long totalFeedbacks = productFeedbackService.getFeedbackCountByProductId(productId);
+            
+            // Tính số lượng feedback theo từng rating
+            long rating5Count = productFeedbackService.getFeedbackCountByProductIdAndRating(productId, 5);
+            long rating4Count = productFeedbackService.getFeedbackCountByProductIdAndRating(productId, 4);
+            long rating3Count = productFeedbackService.getFeedbackCountByProductIdAndRating(productId, 3);
+            long rating2Count = productFeedbackService.getFeedbackCountByProductIdAndRating(productId, 2);
+            long rating1Count = productFeedbackService.getFeedbackCountByProductIdAndRating(productId, 1);
+            
             model.addAttribute("product", product);
             model.addAttribute("categories", parentCategories);
             model.addAttribute("top9Products", top9Products);
+            model.addAttribute("feedbacks", feedbacks);
+            model.addAttribute("averageRating", averageRating != null ? averageRating : 0.0);
+            model.addAttribute("totalFeedbacks", totalFeedbacks);
+            model.addAttribute("rating5Count", rating5Count);
+            model.addAttribute("rating4Count", rating4Count);
+            model.addAttribute("rating3Count", rating3Count);
+            model.addAttribute("rating2Count", rating2Count);
+            model.addAttribute("rating1Count", rating1Count);
             return "product-detail";
         } else {
             return "error/404";

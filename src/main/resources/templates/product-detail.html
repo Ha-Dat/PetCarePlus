@@ -389,6 +389,519 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Product Feedback Styles */
+        .product-feedback {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .feedback-header h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .add-feedback-form {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-feedback-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #ff8c42, #ff6b35);
+        }
+
+        .add-feedback-form h4 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .add-feedback-form h4::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b35, #ff8c42);
+            border-radius: 2px;
+        }
+
+        .feedback-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .rating-input, .comment-input {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rating-input {
+            grid-column: 1;
+        }
+
+        .comment-input {
+            grid-column: 2;
+            grid-row: 1 / span 2;
+        }
+
+        .rating-input label, .comment-input label {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 8px;
+            justify-content: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+
+        .star-rating label.star {
+            font-size: 32px;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .star-rating label.star:hover,
+        .star-rating label.star:hover ~ label.star,
+        .star-rating input[type="radio"]:checked ~ label.star {
+            color: #ffc107;
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+        }
+
+        .comment-input textarea {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 80px;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .comment-input textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.15), 0 8px 25px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .comment-input textarea::placeholder {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .button-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .submit-feedback {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-feedback:hover::before {
+            left: 100%;
+        }
+
+        .submit-feedback:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .submit-feedback:active {
+            transform: translateY(-1px);
+        }
+
+        .test-controller {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .test-controller:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        /* Responsive cho form */
+        @media (max-width: 768px) {
+            .feedback-form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .rating-input, .comment-input {
+                grid-column: 1;
+            }
+            
+            .comment-input {
+                grid-row: auto;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .feedback-summary {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #e9ecef;
+        }
+
+        .rating-overview {
+            text-align: center;
+            min-width: 200px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .average-rating {
+            margin-bottom: 20px;
+        }
+
+        .rating-number {
+            font-size: 56px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .rating-stars {
+            margin-top: 15px;
+        }
+
+        .rating-stars .star {
+            font-size: 28px;
+            color: #ddd;
+            margin: 0 3px;
+            transition: all 0.3s ease;
+        }
+
+        .rating-stars .star.filled {
+            color: #ffc107;
+            transform: scale(1.1);
+        }
+
+        .total-feedback {
+            font-size: 16px;
+            color: #7f8c8d;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .rating-breakdown {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 15px;
+        }
+
+        .rating-label {
+            min-width: 35px;
+            font-size: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .rating-progress {
+            flex: 1;
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+        }
+
+        .rating-count {
+            min-width: 45px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .feedback-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .filter-btn.active {
+            background-color: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .feedback-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .feedback-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .feedback-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .feedback-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .feedback-author {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .feedback-date {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .feedback-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .feedback-rating .star {
+            font-size: 18px;
+            color: #ddd;
+        }
+
+        .feedback-rating .star.filled {
+            color: #ffc107;
+        }
+
+        .feedback-comment {
+            color: #555;
+            line-height: 1.5;
+            font-size: 14px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #ff6b35;
+            margin-top: 5px;
+        }
+
+        .feedback-comment:empty {
+            display: none;
+        }
+
+        .no-feedback {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .feedback-summary {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .rating-overview {
+                min-width: auto;
+            }
+
+            .feedback-filters {
+                justify-content: center;
+            }
+
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .feedback-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .feedback-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .feedback-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .feedback-rating {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -458,6 +971,99 @@
             </p>
         </section>
 
+        <!-- Product Feedback Section -->
+        <section class="product-feedback">
+            <div class="feedback-header">
+                <h3>Đánh giá sản phẩm</h3>
+                
+                <!-- Add Feedback Form -->
+                <div class="add-feedback-form">
+                    <h4>Thêm đánh giá của bạn</h4>
+                    <form id="feedbackForm" class="feedback-form">
+                        <input type="hidden" id="productId" th:value="${product.productId}">
+                        <div class="rating-input">
+                            <label>Đánh giá:</label>
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5">
+                                <label for="star5" class="star">★</label>
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4" class="star">★</label>
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3" class="star">★</label>
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2" class="star">★</label>
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1" class="star">★</label>
+                            </div>
+                        </div>
+                                                 <div class="comment-input">
+                             <label for="comment">Nhận xét (tùy chọn):</label>
+                             <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này... (để trống nếu chỉ muốn đánh giá bằng sao)"></textarea>
+                         </div>
+                        <div class="button-group">
+                            <button type="submit" class="submit-feedback">Gửi đánh giá</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="feedback-summary">
+                    <div class="rating-overview">
+                        <div class="average-rating">
+                            <span class="rating-number" th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</span>
+                            <div class="rating-stars">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                      th:class="${i <= averageRating ? 'star filled' : 'star'}">★</span>
+                            </div>
+                        </div>
+                        <div class="total-feedback" th:text="${totalFeedbacks} + ' đánh giá'">0 đánh giá</div>
+                    </div>
+                    <div class="rating-breakdown">
+                        <div class="rating-bar" th:each="i : ${#numbers.sequence(5, 1, -1)}">
+                            <span class="rating-label" th:text="${i} + '★'">5★</span>
+                            <div class="rating-progress">
+                                <div class="progress-bar" 
+                                     th:style="'width: ' + ${totalFeedbacks > 0 ? (i == 5 ? rating5Count : i == 4 ? rating4Count : i == 3 ? rating3Count : i == 2 ? rating2Count : rating1Count) * 100 / totalFeedbacks : 0} + '%;'"
+                                     th:if="${totalFeedbacks > 0}"></div>
+                            </div>
+                            <span class="rating-count" 
+                                  th:text="${i == 5 ? rating5Count : i == 4 ? rating4Count : i == 3 ? rating3Count : i == 2 ? rating2Count : rating1Count}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-filters">
+                <button class="filter-btn active" data-rating="all">Tất cả</button>
+                <button class="filter-btn" data-rating="5">5★</button>
+                <button class="filter-btn" data-rating="4">4★</button>
+                <button class="filter-btn" data-rating="3">3★</button>
+                <button class="filter-btn" data-rating="2">2★</button>
+                <button class="filter-btn" data-rating="1">1★</button>
+            </div>
+
+            <div class="feedback-list" th:if="${!#lists.isEmpty(feedbacks)}">
+                <div class="feedback-item" th:each="feedback : ${feedbacks}" th:data-rating="${feedback.rating}">
+                    <div class="feedback-avatar">
+                        <span th:text="${feedback.account.name != null ? feedback.account.name.substring(0, 1).toUpperCase() : 'U'}">U</span>
+                    </div>
+                                     <div class="feedback-content">
+                     <div class="feedback-info">
+                         <span class="feedback-author" th:text="${feedback.account.name}">Username</span>
+                         <div class="feedback-rating">
+                             <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                   th:class="${i <= feedback.rating ? 'star filled' : 'star'}">★</span>
+                         </div>
+                         <span class="feedback-date" th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}">01/01/2024</span>
+                     </div>
+                     <div class="feedback-comment" th:if="${feedback.comment != null && feedback.comment.trim() != ''}" th:text="${feedback.comment}">Comment</div>
+                 </div>
+                </div>
+            </div>
+
+            <div class="no-feedback" th:if="${#lists.isEmpty(feedbacks)}">
+                <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+            </div>
+        </section>
+
         <section class="featured">
             <h2>Sản phẩm nổi bật khác</h2>
             <div class="product-row">
@@ -504,6 +1110,82 @@
         formQtyInput.value = qtyInput.value;
     });
 
+         // Thêm feedback mới vào UI
+     function addFeedbackToUI(feedback) {
+         console.log('=== addFeedbackToUI called ===');
+         console.log('Feedback to add:', feedback);
+         
+         const feedbackList = document.querySelector('.feedback-list');
+         console.log('Feedback list element:', feedbackList);
+         
+         if (!feedbackList) {
+             console.error('Feedback list not found!');
+             return;
+         }
+
+         const feedbackItem = document.createElement('div');
+         feedbackItem.className = 'feedback-item';
+         feedbackItem.setAttribute('data-rating', feedback.rating);
+
+         const currentDate = new Date().toLocaleDateString('vi-VN');
+         
+         // Xử lý comment - chỉ hiển thị khi có nội dung thực sự
+         const commentText = feedback.comment && feedback.comment.trim() !== '' ? feedback.comment : '';
+         
+         // Xử lý account name an toàn
+         const accountName = feedback.account && feedback.account.name ? feedback.account.name : 'User';
+         const accountInitial = accountName.charAt(0).toUpperCase();
+         
+         feedbackItem.innerHTML = `
+             <div class="feedback-avatar">
+                 <span>${accountInitial}</span>
+             </div>
+             <div class="feedback-content">
+                 <div class="feedback-info">
+                     <span class="feedback-author">${accountName}</span>
+                     <div class="feedback-rating">
+                         ${generateStars(feedback.rating)}
+                     </div>
+                     <span class="feedback-date">${currentDate}</span>
+                 </div>
+                 ${commentText ? `<div class="feedback-comment">${commentText}</div>` : ''}
+             </div>
+         `;
+
+         // Thêm vào đầu danh sách
+         console.log('Inserting feedback item into list...');
+         feedbackList.insertBefore(feedbackItem, feedbackList.firstChild);
+         console.log('Feedback item inserted successfully!');
+         
+         // Cập nhật số lượng feedback
+         updateFeedbackCount();
+         console.log('Feedback count updated!');
+     }
+
+    // Tạo HTML cho stars
+    function generateStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += `<span class="star ${i <= rating ? 'filled' : ''}">★</span>`;
+        }
+        return stars;
+    }
+
+    // Cập nhật số lượng feedback
+    function updateFeedbackCount() {
+        const totalFeedbackElement = document.querySelector('.total-feedback');
+        if (totalFeedbackElement) {
+            const currentCount = parseInt(totalFeedbackElement.textContent.match(/\d+/)[0]);
+            totalFeedbackElement.textContent = (currentCount + 1) + ' đánh giá';
+        }
+    }
+
+    // Cập nhật feedback summary (có thể mở rộng sau)
+    function updateFeedbackSummary() {
+        // TODO: Cập nhật rating trung bình và breakdown
+        // Có thể gọi API để lấy dữ liệu mới
+    }
+
     // Hiện toast thông báo
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
@@ -529,6 +1211,115 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        // --- Product Feedback Filter ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const feedbackItems = document.querySelectorAll('.feedback-item');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                const rating = btn.getAttribute('data-rating');
+                
+                feedbackItems.forEach(item => {
+                    if (rating === 'all' || item.getAttribute('data-rating') === rating) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // --- Product Feedback Form ---
+        const feedbackForm = document.getElementById('feedbackForm');
+        if (feedbackForm) {
+            feedbackForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                                 const productId = document.getElementById('productId').value;
+                 const rating = document.querySelector('input[name="rating"]:checked')?.value;
+                 let comment = document.getElementById('comment').value.trim();
+                 
+                 if (!rating) {
+                     showToast('Vui lòng chọn số sao đánh giá', 'warning');
+                     return;
+                 }
+                 
+                                  // Comment không bắt buộc, có thể để trống
+                 if (!comment || comment.trim() === '') {
+                     comment = ''; // Gửi chuỗi rỗng nếu không có comment
+                 }
+                 
+                 console.log('Comment after processing:', comment);
+                 console.log('Comment type:', typeof comment);
+                 console.log('Comment length:', comment.length);
+                 
+                 // Gửi feedback
+                 const params = new URLSearchParams();
+                 params.append('productId', productId);
+                 params.append('rating', rating);
+                 params.append('comment', comment);
+                 
+                 console.log('Sending feedback with params:', params.toString());
+                
+                fetch('/feedback/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                })
+                .then(res => {
+                    console.log('Response status:', res.status);
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                                 .then(data => {
+                     console.log('=== AJAX Response ===');
+                     console.log('Response data:', data);
+                     console.log('Feedback object:', data.feedback);
+                     console.log('Feedback type:', typeof data.feedback);
+                     console.log('Feedback keys:', Object.keys(data.feedback || {}));
+                     console.log('Comment value:', data.feedback?.comment);
+                     console.log('Comment type:', typeof data.feedback?.comment);
+                     console.log('Comment length:', data.feedback?.comment?.length);
+                     
+                     if (data.success) {
+                         showToast(data.message, 'success');
+                         // Reset form
+                         feedbackForm.reset();
+                         // Cập nhật UI động thay vì reload trang
+                         if (data.feedback) {
+                             console.log('Adding feedback to UI...');
+                             addFeedbackToUI(data.feedback);
+                             updateFeedbackSummary();
+                             console.log('Feedback added to UI successfully!');
+                         } else {
+                             console.log('No feedback data received, reloading page...');
+                             setTimeout(() => window.location.reload(), 1000);
+                         }
+                     } else {
+                         showToast(data.message, 'error');
+                     }
+                 })
+                                 .catch((error) => {
+                     console.error('Error:', error);
+                     
+                     // Kiểm tra nếu response không phải JSON
+                     if (error.message.includes('Unexpected token') || error.message.includes('JSON')) {
+                         console.error('Response is not valid JSON. This might be an HTML error page.');
+                         showToast('Có lỗi xảy ra: Server trả về response không hợp lệ. Vui lòng thử lại sau.', 'error');
+                     } else {
+                         showToast('Có lỗi xảy ra khi gửi đánh giá: ' + error.message, 'error');
+                     }
+                 });
+            });
+        }
+
         // --- 1. Mua ngay ---
         const detailBtn = document.getElementById("detailAddToCartBtn");
         if (detailBtn) {
