@@ -19,4 +19,5 @@ public interface ServiceService {
 
     void deleteService(Long id);
 
+    List<Service> findAll();
 }

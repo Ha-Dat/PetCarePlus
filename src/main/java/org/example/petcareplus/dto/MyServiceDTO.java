@@ -1,10 +1,12 @@
 package org.example.petcareplus.dto;
 
+import lombok.NoArgsConstructor;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.enums.ServiceCategory;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
 public class MyServiceDTO {
 
     private Long bookingId;
@@ -13,17 +15,16 @@ public class MyServiceDTO {
     private ServiceCategory serviceCategory;
     private LocalDateTime bookDate;
     private BookingStatus status;
+    private String note;
 
-    public MyServiceDTO() {
-    }
-
-    public MyServiceDTO(Long bookingId, String petName, String serviceName, ServiceCategory serviceCategory, LocalDateTime bookDate, BookingStatus status) {
+    public MyServiceDTO(Long bookingId, String petName, String serviceName, ServiceCategory serviceCategory, LocalDateTime bookDate, BookingStatus status, String note) {
         this.bookingId = bookingId;
         this.petName = petName;
         this.serviceName = serviceName;
         this.serviceCategory = serviceCategory;
         this.bookDate = bookDate;
         this.status = status;
+        this.note = note;
     }
 
     public Long getBookingId() {
@@ -72,5 +73,13 @@ public class MyServiceDTO {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

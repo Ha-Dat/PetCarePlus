@@ -2,38 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Hồ sơ của tôi</title>
+    <title>Lịch đặt dịch vụ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href="@{css/header.css}">
-    <link rel="stylesheet" th:href="@{css/footer.css}">
+
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
     <style>
-        /* ========================
-           PROFILE BODY
-        ======================== */
+        .nav-link.active {
+            background-color: #4caf50;
+            color: #fff !important;
+        }
+
         .sidebar {
             width: 220px;
-            background-color: #ffffff;
+            background-color: #fff;
             border-right: 1px solid #ddd;
             padding: 30px 20px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar a {
-            color: #333;
-            font-weight: 500;
-            text-decoration: none;
-            display: block;
-            padding: 10px 0;
-            transition: color 0.3s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #4caf50;
         }
 
         .main-content {
@@ -42,56 +26,62 @@
             background-color: #f8f9fa;
         }
 
-        .form-section {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
-            display: flex;
-            align-items: center;
-        }
-
-        .avatar-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #4caf50;
-        }
-
-        .form-label {
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #4caf50;
-            outline: none;
-        }
-
         .btn-custom {
             background-color: #4caf50;
-            color: white;
+            color: #fff;
             padding: 8px 20px;
             border-radius: 20px;
             border: none;
             font-weight: bold;
-            transition: background-color 0.3s;
-            margin-right: 10px;
         }
 
         .btn-custom:hover {
             background-color: #388e3c;
         }
+        /* Thêm style cho các nút filter */
+        .btn-outline-success.filter-type {
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+        }
+
+        .btn-outline-success.filter-type.active {
+            background-color: #4caf50;
+            color: white !important;
+        }
+
+        /* Style cho tab filter trạng thái */
+        .nav-tabs .nav-link {
+            color: #495057;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: #4caf50;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #4caf50;
+            color: white !important;
+            border: none;
+        }
+
+        /* Hiệu ứng hover cho các hàng trong bảng */
+        .table tbody tr:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
     </style>
 </head>
 <body>
 <div th:insert="component/header :: header"></div>
+
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-        <ul>
+        <ul class="list-unstyled">
             <li><a href="/customer/profile">Hồ Sơ</a></li>
             <li><a href="/customer/address">Địa chỉ</a></li>
             <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
@@ -101,80 +91,278 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+    <div class="container mt-4">
         <h4>Lịch đặt dịch vụ</h4>
         <hr>
 
-        <!-- Tabs dịch vụ -->
-        <div class="tabs">
-            <a th:href="@{/customer/my-schedule(type='all')}"
-               th:classappend="${selectedType}=='Tất cả' ? 'active' : ''">Tất cả</a>
-            <a th:href="@{/customer/my-schedule(type='Spa')}"
-               th:classappend="${selectedType}=='Spa' ? 'active' : ''">Spa</a>
-            <a th:href="@{/customer/my-schedule(type='Khám bệnh')}"
-               th:classappend="${selectedType}=='Khám bệnh' ? 'active' : ''">Khám bệnh</a>
-            <a th:href="@{/customer/my-schedule(type='Khách sạn thú cưng')}"
-               th:classappend="${selectedType}=='Khách sạn thú cưng' ? 'active' : ''">Khách sạn thú cưng</a>
+        <!-- Filter loại dịch vụ -->
+        <div class="mb-3">
+            <button class="btn btn-outline-success filter-type active" data-type="ALL">Tất cả</button>
+            <button class="btn btn-outline-success filter-type" data-type="SPA">Spa</button>
+            <button class="btn btn-outline-success filter-type" data-type="HOTEL">Khách sạn thú cưng</button>
+            <button class="btn btn-outline-success filter-type" data-type="APPOINTMENT">Khám bệnh</button>
         </div>
 
-        <!-- Tabs trạng thái -->
-        <ul class="nav nav-tabs mb-3">
+        <!-- Filter trạng thái -->
+        <ul class="nav nav-tabs mb-3" id="statusFilter">
             <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Chờ duyệt')}"
-                   th:classappend="${selectedStatus}=='Chờ duyệt' ? 'active' : ''">Chờ duyệt</a>
+                <a class="nav-link active" data-status="ALL" href="#">Tất cả</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Đã duyệt')}"
-                   th:classappend="${selectedStatus}=='Đã duyệt' ? 'active' : ''">Đã duyệt</a>
+                <a class="nav-link" data-status="PENDING" href="#">Chờ duyệt</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Từ chối')}"
-                   th:classappend="${selectedStatus}=='Từ chối' ? 'active' : ''">Từ chối</a>
+                <a class="nav-link" data-status="ACCEPTED" href="#">Đã duyệt</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link"
-                   th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Hủy')}"
-                   th:classappend="${selectedStatus}=='Hủy' ? 'active' : ''">Hủy</a>
+                <a class="nav-link" data-status="REJECTED" href="#">Từ chối</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="CANCELLED" href="#">Hủy</a>
             </li>
         </ul>
 
-        <!-- Bảng lịch -->
-        <table class="table table-bordered bg-white">
+        <!-- Bảng -->
+        <table class="table table-bordered bg-white align-middle">
             <thead class="table-light">
             <tr>
                 <th>Thú cưng</th>
                 <th>Dịch vụ</th>
                 <th>Thời gian</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th style="width: 220px;">Hành động</th>
             </tr>
             </thead>
-            <tbody>
-            <tr th:each="s : ${schedules}">
+            <tbody id="schedule-table">
+            <tr th:each="s : ${myServices}"
+                th:attr="data-id=${s.bookingId}"
+                th:data-type="${s.serviceCategory}"
+                th:data-status="${s.status}"
+            >
                 <td th:text="${s.petName}"></td>
-                <td th:text="${s.serviceCategory.value}"></td>
-                <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${s.status.value}"></td>
+                <td th:text="${s.serviceName}"></td>
+                <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="col-status" th:text="${s.status.value}"></td>
                 <td>
-                    <span th:if="${s.status.value == 'Chờ duyệt'}">
-                        <a th:href="@{'/customer/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
-                           class="text-danger"
-                           onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
-                            <i class="fas fa-times-circle"></i> Hủy
-                        </a>
-                    </span>
-                    <span th:if="${s.status.value != 'Chờ duyệt'}">—</span>
+                    <button class="btn btn-sm btn-info detail-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceName}">
+                        Chi tiết
+                    </button>
+                    <button class="btn btn-sm btn-danger cancel-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceName}">
+                        Hủy
+                    </button>
                 </td>
             </tr>
             </tbody>
         </table>
+
+        <!-- Modal Chi tiết -->
+        <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form id="bookingDetailForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chi tiết lịch đặt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="detailBookingId">
+                            <input type="hidden" id="detailBookingType">
+
+                            <div class="mb-3">
+                                <label class="form-label">Thú cưng</label>
+                                <input type="text" class="form-control" id="detailPetName" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Dịch vụ</label>
+                                <input type="text" class="form-control" id="detailServiceName">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Loại dịch vụ</label>
+                                <input type="text" class="form-control" id="detailServiceType" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Ngày đặt</label>
+                                <input type="datetime-local" class="form-control" id="detailBookDate">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <input type="text" class="form-control" id="detailStatus" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="detailNote" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-success" id="saveDetailBtn">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 <div th:insert="component/footer :: footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let selectedType = "ALL";
+        let selectedStatus = "ALL";
+
+        // Filter theo loại dịch vụ
+        $(".filter-type").click(function () {
+            $(".filter-type").removeClass("active");
+            $(this).addClass("active");
+            selectedType = $(this).data("type");
+            filterTable();
+        });
+
+        // Filter theo trạng thái
+        $("#statusFilter .nav-link").click(function (e) {
+            e.preventDefault();
+            $("#statusFilter .nav-link").removeClass("active");
+            $(this).addClass("active");
+            selectedStatus = $(this).data("status");
+            filterTable();
+        });
+
+        function filterTable() {
+            $("#schedule-table tr").each(function () {
+                let type = $(this).data("type");
+                let status = $(this).data("status");
+
+                let matchType = (selectedType === "ALL" || selectedType === type);
+                let matchStatus = (selectedStatus === "ALL" || selectedStatus === status);
+
+                if (matchType && matchStatus) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+
+    $(document).on("click", ".cancel-btn", function () {
+        let $btn = $(this);
+        let bookingId = $btn.data("id");
+        let bookingType = $btn.data("type");
+
+        if (!confirm("Bạn có chắc muốn hủy lịch này không?")) return;
+
+        $.ajax({
+            url: `/customer/my-schedule/cancel/${bookingType}/${bookingId}`,
+            type: "POST",
+            success: function (res) {
+                alert(res.message);
+
+                // Tìm đúng row
+                let $row = $btn.closest("tr");
+
+                // Đổi trạng thái
+                $row.find(".col-status").text("Hủy");
+
+                // Thêm style màu xám
+                $row.addClass("table-secondary");
+
+                // Ẩn nút Hủy
+                $btn.remove();
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi hủy lịch.");
+            }
+        });
+    });
+
+    $(document).on("click", ".detail-btn", function () {
+        let bookingId = $(this).data("id");
+        let bookingType = $(this).data("type");
+
+        $.ajax({
+            url: `/customer/my-schedule/detail/${bookingType}/${bookingId}`,
+            type: "GET",
+            success: function (res) {
+                $("#detailBookingId").val(res.bookingId);
+                $("#detailBookingType").val(res.serviceCategory);
+
+                $("#detailPetName").val(res.petName);
+                $("#detailServiceName").val(res.serviceName);
+                $("#detailServiceType").val(res.serviceCategory);
+                $("#detailBookDate").val(formatDateForInput(res.bookDate));
+                $("#detailStatus").val(res.status);
+                $("#detailNote").val(res.note || "");
+
+                // Nếu không phải PENDING thì disable tất cả input (trừ petName & status vốn readonly sẵn)
+                if (res.status !== "PENDING") {
+                    console.log(res.status);
+                    $("#bookingDetailForm input, #bookingDetailForm textarea").prop("disabled", true);
+                    $("#saveDetailBtn").hide();
+                } else {
+                    $("#bookingDetailForm input, #bookingDetailForm textarea").prop("disabled", false);
+                    $("#detailPetName, #detailStatus, #detailServiceType").prop("disabled", true);
+                    $("#saveDetailBtn").show();
+                }
+
+                $("#bookingDetailModal").modal("show");
+            },
+            error: function () {
+                alert("Không thể lấy thông tin chi tiết.");
+            }
+        });
+    });
+
+    function formatDateForInput(dateTime) {
+        let dt = new Date(dateTime);
+        return dt.toISOString().slice(0, 16);
+    }
+
+    $("#bookingDetailForm").submit(function (e) {
+        e.preventDefault();
+
+        let data = {
+            bookingId: $("#detailBookingId").val(),
+            serviceName: $("#detailServiceName").val(),
+            bookDate: $("#detailBookDate").val(),
+            note: $("#detailNote").val(),
+            serviceCategory: $("#detailBookingType").val()
+        };
+
+        $.ajax({
+            url: `/customer/my-schedule/update`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (res) {
+                alert(res.message);
+                $("#bookingDetailModal").modal("hide");
+
+                // Cập nhật ngay bảng
+                let $row = $(`#schedule-table tr[data-id='${data.bookingId}']`);
+                $row.find("td:nth-child(2)").text(data.serviceName);
+                $row.find(".col-time").text(new Date(data.bookDate).toLocaleString("vi-VN"));
+                $row.find(".col-status").text("Chờ duyệt");
+            },
+            error: function () {
+                alert("Không thể cập nhật lịch.");
+            }
+        });
+    });
+
+</script>
 </body>
-<script th:src="@{js/header.js}"></script>
 </html>
