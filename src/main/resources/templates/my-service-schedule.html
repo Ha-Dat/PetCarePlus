@@ -182,29 +182,29 @@
             <tbody id="schedule-table">
             <tr th:each="s : ${myServices}"
                 th:attr="data-id=${s.bookingId}"
-                th:data-type="${s.serviceCategory}"
-                th:data-status="${s.status}"
-            >
-                <td th:text="${s.petName}"></td>
-                <td th:text="${s.serviceName}"></td>
-                <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
-                <td class="col-status" th:text="${s.status.value}"></td>
-                <td>
-                    <button class="btn btn-sm btn-info detail-btn"
-                            th:if="${s.status.name() == 'PENDING'}"
-                            th:data-id="${s.bookingId}"
-                            th:data-type="${s.serviceName}">
-                        Chi tiết
-                    </button>
-                    <button class="btn btn-sm btn-danger cancel-btn"
-                            th:if="${s.status.name() == 'PENDING'}"
-                            th:data-id="${s.bookingId}"
-                            th:data-type="${s.serviceName}">
-                        Hủy
-                    </button>
-                </td>
+                th:data-type="${s.serviceCategory.name()}"
+            th:data-status="${s.status.name()}">
+            <td th:text="${s.petName}"></td>
+            <td th:text="${s.serviceName}"></td>
+            <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+            <td class="col-status" th:text="${s.status.value}"></td>
+            <td>
+                <button class="btn btn-sm btn-info detail-btn"
+                        th:if="${s.status.name() == 'PENDING'}"
+                        th:data-id="${s.bookingId}"
+                        th:data-type="${s.serviceCategory.name()}">
+                    Chi tiết
+                </button>
+                <button class="btn btn-sm btn-danger cancel-btn"
+                        th:if="${s.status.name() == 'PENDING'}"
+                        th:data-id="${s.bookingId}"
+                        th:data-type="${s.serviceCategory.name()}">
+                    Hủy
+                </button>
+            </td>
             </tr>
             </tbody>
+
         </table>
 
         <!-- Modal Chi tiết -->
@@ -304,47 +304,16 @@
         }
     });
 
-    $(document).on("click", ".cancel-btn", function () {
-        let $btn = $(this);
-        let bookingId = $btn.data("id");
-        let bookingType = $btn.data("type");
-
-        if (!confirm("Bạn có chắc muốn hủy lịch này không?")) return;
-
-        $.ajax({
-            url: `/customer/my-schedule/cancel/${bookingType}/${bookingId}`,
-            type: "POST",
-            success: function (res) {
-                alert(res.message);
-
-                // Tìm đúng row
-                let $row = $btn.closest("tr");
-
-                // Đổi trạng thái
-                $row.find(".col-status").text("Hủy");
-
-                // Thêm style màu xám
-                $row.addClass("table-secondary");
-
-                // Ẩn nút Hủy
-                $btn.remove();
-            },
-            error: function () {
-                alert("Có lỗi xảy ra khi hủy lịch.");
-            }
-        });
-    });
-
     $(document).on("click", ".detail-btn", function () {
         let bookingId = $(this).data("id");
-        let bookingType = $(this).data("type");
+        let bookingType = String($(this).data("type") || "").toUpperCase(); // đảm bảo UPPER
 
         $.ajax({
             url: `/customer/my-schedule/detail/${bookingType}/${bookingId}`,
             type: "GET",
             success: function (res) {
                 $("#detailBookingId").val(res.bookingId);
-                $("#detailBookingType").val(res.serviceCategory);
+                $("#detailBookingType").val(res.serviceCategory); // "SPA/HOTEL/APPOINTMENT"
 
                 $("#detailPetName").val(res.petName);
                 $("#detailServiceName").val(res.serviceName);
@@ -353,9 +322,7 @@
                 $("#detailStatus").val(res.status);
                 $("#detailNote").val(res.note || "");
 
-                // Nếu không phải PENDING thì disable tất cả input (trừ petName & status vốn readonly sẵn)
                 if (res.status !== "PENDING") {
-                    console.log(res.status);
                     $("#bookingDetailForm input, #bookingDetailForm textarea").prop("disabled", true);
                     $("#saveDetailBtn").hide();
                 } else {
@@ -371,6 +338,35 @@
             }
         });
     });
+
+    $(document).on("click", ".cancel-btn", function () {
+        let $btn = $(this);
+        let bookingId = $btn.data("id");
+        let bookingType = String($btn.data("type") || "").toUpperCase(); // đảm bảo UPPER
+
+        if (!confirm("Bạn có chắc muốn hủy lịch này không?")) return;
+
+        $.ajax({
+            url: `/customer/my-schedule/cancel/${bookingType}/${bookingId}`,
+            type: "POST",
+            success: function (res) {
+                alert(res.message);
+                let $row = $btn.closest("tr");
+                $row.find(".col-status").text("Hủy");
+                $row.addClass("table-secondary");
+
+                // Cập nhật luôn data-status để filter hoạt động đúng
+                $row.attr("data-status", "CANCELLED");
+
+                // Ẩn các nút hành động
+                $row.find(".cancel-btn, .detail-btn").remove();
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi hủy lịch.");
+            }
+        });
+    });
+
 
     function formatDateForInput(dateTime) {
         let dt = new Date(dateTime);

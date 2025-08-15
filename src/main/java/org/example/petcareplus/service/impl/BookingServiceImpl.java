@@ -22,12 +22,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookingServiceImpl implements BookingService {
+
     private final AppointmentRepository appointmentRepository;
     private final SpaBookingRepository spaBookingRepository;
     private final HotelBookingRepository hotelBookingRepository;
     private final ServiceRepository serviceRepository;
 
-    public BookingServiceImpl(AppointmentRepository appointmentRepository, SpaBookingRepository spaBookingRepository, HotelBookingRepository hotelBookingRepository, ServiceRepository serviceRepository) {
+    public BookingServiceImpl(AppointmentRepository appointmentRepository,
+                              SpaBookingRepository spaBookingRepository,
+                              HotelBookingRepository hotelBookingRepository,
+                              ServiceRepository serviceRepository) {
         this.appointmentRepository = appointmentRepository;
         this.spaBookingRepository = spaBookingRepository;
         this.hotelBookingRepository = hotelBookingRepository;
@@ -43,7 +47,6 @@ public class BookingServiceImpl implements BookingService {
     public List<MyServiceDTO> filterMyServices(Long profileId, String type, String status) {
         List<MyServiceDTO> result = new ArrayList<>();
 
-        // Filter theo loại dịch vụ
         if ("all".equalsIgnoreCase(type) || "APPOINTMENT".equalsIgnoreCase(type)) {
             result.addAll(filterAppointments(profileId, status));
         }
@@ -54,93 +57,32 @@ public class BookingServiceImpl implements BookingService {
             result.addAll(filterHotelBookings(profileId, status));
         }
 
-        // Sắp xếp theo thời gian đặt
         result.sort((a, b) -> b.getBookDate().compareTo(a.getBookDate()));
-
         return result;
     }
 
     private List<MyServiceDTO> filterAppointments(Long profileId, String status) {
-        List<AppointmentBooking> appointments;
-
         if ("all".equalsIgnoreCase(status)) {
-            appointments = appointmentRepository.findByProfileId(profileId);
-        } else {
-            BookingStatus bookingStatus = BookingStatus.fromValue(status);
-            appointments = appointmentRepository.findByProfileIdAndStatus(profileId, bookingStatus);
+            return appointmentRepository.findByProfileId(profileId);
         }
-
-        return appointments.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        BookingStatus bookingStatus = BookingStatus.fromValue(status);
+        return appointmentRepository.findByProfileIdAndStatus(profileId, bookingStatus);
     }
 
     private List<MyServiceDTO> filterSpaBookings(Long profileId, String status) {
-        List<SpaBooking> spaBookings;
-
         if ("all".equalsIgnoreCase(status)) {
-            spaBookings = spaBookingRepository.findByProfileId(profileId);
-        } else {
-            BookingStatus bookingStatus = BookingStatus.fromValue(status);
-            spaBookings = spaBookingRepository.findByProfileIdAndStatus(profileId, bookingStatus);
+            return spaBookingRepository.findByProfileId(profileId);
         }
-
-        return spaBookings.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        BookingStatus bookingStatus = BookingStatus.fromValue(status);
+        return spaBookingRepository.findByProfileIdAndStatus(profileId, bookingStatus);
     }
 
     private List<MyServiceDTO> filterHotelBookings(Long profileId, String status) {
-        List<HotelBooking> hotelBookings;
-
         if ("all".equalsIgnoreCase(status)) {
-            hotelBookings = hotelBookingRepository.findByProfileId(profileId);
-        } else {
-            BookingStatus bookingStatus = BookingStatus.fromValue(status);
-            hotelBookings = hotelBookingRepository.findByProfileIdAndStatus(profileId, bookingStatus);
+            return hotelBookingRepository.findByProfileId(profileId);
         }
-
-        return hotelBookings.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private MyServiceDTO convertToDTO(Object booking) {
-        if (booking instanceof AppointmentBooking) {
-            AppointmentBooking apt = (AppointmentBooking) booking;
-            return new MyServiceDTO(
-                    apt.getAppointmentBookingId(),
-                    apt.getPetProfile().getName(),
-                    ServiceCategory.APPOINTMENT.getValue(),
-                    ServiceCategory.APPOINTMENT,
-                    apt.getBookDate(),
-                    apt.getStatus(),
-                    apt.getNote()
-            );
-        } else if (booking instanceof SpaBooking) {
-            SpaBooking spa = (SpaBooking) booking;
-            return new MyServiceDTO(
-                    spa.getSpaBookingId(),
-                    spa.getPetProfile().getName(),
-                    ServiceCategory.SPA.getValue(),
-                    ServiceCategory.SPA,
-                    spa.getBookDate(),
-                    spa.getStatus(),
-                    spa.getNote()
-            );
-        } else if (booking instanceof HotelBooking) {
-            HotelBooking hotel = (HotelBooking) booking;
-            return new MyServiceDTO(
-                    hotel.getHotelBookingId(),
-                    hotel.getPetProfile().getName(),
-                    ServiceCategory.HOTEL.getValue(),
-                    ServiceCategory.HOTEL,
-                    hotel.getBookDate(),
-                    hotel.getStatus(),
-                    hotel.getNote()
-            );
-        }
-        throw new IllegalArgumentException("Invalid booking type");
+        BookingStatus bookingStatus = BookingStatus.fromValue(status);
+        return hotelBookingRepository.findByProfileIdAndStatus(profileId, bookingStatus);
     }
 
     @Override
@@ -188,22 +130,50 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public MyServiceDTO getBookingDetail(String type, Long id, Long profileId) {
+        // Lấy detail vẫn phải load entity vì cần validate profileId
         switch (type.toUpperCase()) {
             case "SPA":
                 return spaBookingRepository.findById(id)
                         .filter(spa -> spa.getPetProfile().getProfile().getProfileId().equals(profileId))
-                        .map(this::convertToDTO)
+                        .map(s -> new MyServiceDTO(
+                                s.getSpaBookingId(),
+                                s.getPetProfile().getName(),
+                                s.getService().getName(),
+                                s.getService().getServiceCategory(),
+                                s.getBookDate(),
+                                s.getStatus(),
+                                s.getNote()
+                        ))
                         .orElse(null);
+
             case "HOTEL":
                 return hotelBookingRepository.findById(id)
                         .filter(hotel -> hotel.getPetProfile().getProfile().getProfileId().equals(profileId))
-                        .map(this::convertToDTO)
+                        .map(h -> new MyServiceDTO(
+                                h.getHotelBookingId(),
+                                h.getPetProfile().getName(),
+                                h.getService().getName(),
+                                h.getService().getServiceCategory(),
+                                h.getBookDate(),
+                                h.getStatus(),
+                                h.getNote()
+                        ))
                         .orElse(null);
+
             case "APPOINTMENT":
                 return appointmentRepository.findById(id)
                         .filter(apt -> apt.getPetProfile().getProfile().getProfileId().equals(profileId))
-                        .map(this::convertToDTO)
+                        .map(a -> new MyServiceDTO(
+                                a.getAppointmentBookingId(),
+                                a.getPetProfile().getName(),
+                                a.getService().getName(),
+                                a.getService().getServiceCategory(),
+                                a.getBookDate(),
+                                a.getStatus(),
+                                a.getNote()
+                        ))
                         .orElse(null);
+
             default:
                 return null;
         }
@@ -212,63 +182,60 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public void updateBooking(MyServiceDTO updated) {
-        if (updated.getServiceCategory() == ServiceCategory.SPA) {
-            SpaBooking spa = spaBookingRepository.findById(updated.getBookingId())
-                    .orElseThrow(() -> new RuntimeException("Spa booking not found"));
-            spa.setBookDate(updated.getBookDate());
-            spa.setNote(updated.getNote());
-            // Không cho đổi petName và status
-            // Service chỉ thay đổi nếu cần (thông qua ID hoặc name)
-            if (updated.getServiceName() != null) {
-                org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
-                        .orElseThrow(() -> new RuntimeException("Service not found"));
-                spa.setService(service);
+        switch (updated.getServiceCategory()) {
+            case SPA -> {
+                SpaBooking spa = spaBookingRepository.findById(updated.getBookingId())
+                        .orElseThrow(() -> new RuntimeException("Spa booking not found"));
+                spa.setBookDate(updated.getBookDate());
+                spa.setNote(updated.getNote());
+                if (updated.getServiceName() != null) {
+                    org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
+                            .orElseThrow(() -> new RuntimeException("Service not found"));
+                    spa.setService(service);
+                }
+                spaBookingRepository.save(spa);
             }
-            spaBookingRepository.save(spa);
-        }
-        else if (updated.getServiceCategory() == ServiceCategory.HOTEL) {
-            HotelBooking hotel = hotelBookingRepository.findById(updated.getBookingId())
-                    .orElseThrow(() -> new RuntimeException("Hotel booking not found"));
-            hotel.setBookDate(updated.getBookDate());
-            hotel.setNote(updated.getNote());
-            if (updated.getServiceName() != null) {
-                org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
-                        .orElseThrow(() -> new RuntimeException("Service not found"));
-                hotel.setService(service);
+            case HOTEL -> {
+                HotelBooking hotel = hotelBookingRepository.findById(updated.getBookingId())
+                        .orElseThrow(() -> new RuntimeException("Hotel booking not found"));
+                hotel.setBookDate(updated.getBookDate());
+                hotel.setNote(updated.getNote());
+                if (updated.getServiceName() != null) {
+                    org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
+                            .orElseThrow(() -> new RuntimeException("Service not found"));
+                    hotel.setService(service);
+                }
+                hotelBookingRepository.save(hotel);
             }
-            hotelBookingRepository.save(hotel);
-        }
-        else if (updated.getServiceCategory() == ServiceCategory.APPOINTMENT) {
-            AppointmentBooking apt = appointmentRepository.findById(updated.getBookingId())
-                    .orElseThrow(() -> new RuntimeException("Appointment booking not found"));
-            apt.setBookDate(updated.getBookDate());
-            apt.setNote(updated.getNote());
-            if (updated.getServiceName() != null) {
-                org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
-                        .orElseThrow(() -> new RuntimeException("Service not found"));
-                apt.setService(service);
+            case APPOINTMENT -> {
+                AppointmentBooking apt = appointmentRepository.findById(updated.getBookingId())
+                        .orElseThrow(() -> new RuntimeException("Appointment booking not found"));
+                apt.setBookDate(updated.getBookDate());
+                apt.setNote(updated.getNote());
+                if (updated.getServiceName() != null) {
+                    org.example.petcareplus.entity.Service service = serviceRepository.findByName(updated.getServiceName())
+                            .orElseThrow(() -> new RuntimeException("Service not found"));
+                    apt.setService(service);
+                }
+                appointmentRepository.save(apt);
             }
-            appointmentRepository.save(apt);
         }
     }
 
     @Override
     public boolean isPending(ServiceCategory category, Long bookingId) {
-        switch (category) {
-            case SPA:
-                return spaBookingRepository.findById(bookingId)
-                        .map(b -> b.getStatus() == BookingStatus.PENDING)
-                        .orElse(false);
-            case HOTEL:
-                return hotelBookingRepository.findById(bookingId)
-                        .map(b -> b.getStatus() == BookingStatus.PENDING)
-                        .orElse(false);
-            case APPOINTMENT:
-                return appointmentRepository.findById(bookingId)
-                        .map(b -> b.getStatus() == BookingStatus.PENDING)
-                        .orElse(false);
-            default:
-                return false;
-        }
+        return switch (category) {
+            case SPA -> spaBookingRepository.findById(bookingId)
+                    .map(b -> b.getStatus() == BookingStatus.PENDING)
+                    .orElse(false);
+            case HOTEL -> hotelBookingRepository.findById(bookingId)
+                    .map(b -> b.getStatus() == BookingStatus.PENDING)
+                    .orElse(false);
+            case APPOINTMENT -> appointmentRepository.findById(bookingId)
+                    .map(b -> b.getStatus() == BookingStatus.PENDING)
+                    .orElse(false);
+        };
     }
 }
+
+

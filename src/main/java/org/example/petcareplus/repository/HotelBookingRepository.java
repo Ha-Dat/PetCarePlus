@@ -22,21 +22,41 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
     List<HotelBooking> findAll();
 
     @Query("""
-                        SELECT h FROM HotelBooking h
-                        JOIN Service s on h.service.serviceId = s.serviceId
-                        JOIN PetProfile p on h.petProfile.petProfileId = p.petProfileId
-                        JOIN Profile pr on p.profile.profileId= pr.profileId
-                        WHERE pr.profileId = :profileId
-            """)
-    List<HotelBooking> findByProfileId(Long profileId);
+        SELECT DISTINCT new org.example.petcareplus.dto.MyServiceDTO(
+            hb.hotelBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            hb.bookDate,
+            hb.status,
+            hb.note
+        )
+        FROM HotelBooking hb
+        JOIN hb.service s
+        JOIN hb.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
+    """)
+    List<MyServiceDTO> findByProfileId(Long profileId);
 
     @Query("""
-                        SELECT h FROM HotelBooking h
-                        JOIN PetProfile p on h.petProfile.petProfileId = p.petProfileId
-                        JOIN Profile pr on p.profile.profileId= pr.profileId
-                        WHERE pr.profileId = :profileId and h.status = "PENDING"
-            """)
-    List<HotelBooking> findByProfileIdAndStatus(Long profileId, BookingStatus status);
+        SELECT new org.example.petcareplus.dto.MyServiceDTO(
+            hb.hotelBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            hb.bookDate,
+            hb.status,
+            hb.note
+        )
+        FROM HotelBooking hb
+        JOIN hb.service s
+        JOIN hb.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
+        AND hb.status = :status
+    """)
+    List<MyServiceDTO> findByProfileIdAndStatus(Long profileId, BookingStatus status);
 
     @Query("SELECT h FROM HotelBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
     Page<HotelBooking> findByBookDateBetween(@Param("start") LocalDateTime start,

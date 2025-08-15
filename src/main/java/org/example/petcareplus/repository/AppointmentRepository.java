@@ -21,22 +21,41 @@ public interface AppointmentRepository extends JpaRepository<AppointmentBooking,
     Page<AppointmentBooking> findByStatusIgnoreCase(String status, Pageable pageable);
 
     @Query("""
-            SELECT ab
-            FROM AppointmentBooking ab
-            JOIN Service s on ab.service.serviceId = s.serviceId
-            JOIN PetProfile p on ab.petProfile.petProfileId = p.petProfileId
-            JOIN Profile pr on p.profile.profileId = pr.profileId
-            WHERE pr.profileId = :profileId
-            """)
-    List<AppointmentBooking> findByProfileId(Long profileId);
+        SELECT DISTINCT new org.example.petcareplus.dto.MyServiceDTO(
+            ab.appointmentBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            ab.bookDate,
+            ab.status,
+            ab.note
+        )
+        FROM AppointmentBooking ab
+        JOIN ab.service s
+        JOIN ab.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
+    """)
+    List<MyServiceDTO> findByProfileId(Long profileId);
 
     @Query("""
-            SELECT ab FROM AppointmentBooking ab
-            JOIN PetProfile p on ab.petProfile.petProfileId = p.petProfileId
-            JOIN Profile pr on p.profile.profileId= pr.profileId
-            WHERE pr.profileId = :profileId and ab.status = "PENDING"
-            """)
-    List<AppointmentBooking> findByProfileIdAndStatus(Long profileId, BookingStatus status);
+        SELECT new org.example.petcareplus.dto.MyServiceDTO(
+            ab.appointmentBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            ab.bookDate,
+            ab.status,
+            ab.note
+        )
+        FROM AppointmentBooking ab
+        JOIN ab.petProfile p
+        JOIN p.profile pr
+        JOIN ab.service s
+        WHERE pr.profileId = :profileId
+        AND ab.status = :status
+    """)
+    List<MyServiceDTO> findByProfileIdAndStatus(Long profileId, BookingStatus status);
 
     Page<AppointmentBooking> findByStatus(BookingStatus status, Pageable pageable);
 }

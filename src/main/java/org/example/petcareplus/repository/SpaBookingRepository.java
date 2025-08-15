@@ -20,21 +20,41 @@ import java.util.List;
 public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
 
     @Query("""
-        SELECT sb FROM SpaBooking sb
-        JOIN Service s on sb.service.serviceId = s.serviceId
-        JOIN PetProfile p on sb.petProfile.petProfileId = p.petProfileId
-        JOIN Profile pr on p.profile.profileId= pr.profileId
+        SELECT DISTINCT new org.example.petcareplus.dto.MyServiceDTO(
+            sb.spaBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            sb.bookDate,
+            sb.status,
+            sb.note
+        )
+        FROM SpaBooking sb
+        JOIN sb.service s
+        JOIN sb.petProfile p
+        JOIN p.profile pr
         WHERE pr.profileId = :profileId
-        """)
-    List<SpaBooking> findByProfileId(Long profileId);
+    """)
+    List<MyServiceDTO> findByProfileId(Long profileId);
 
     @Query("""
-        SELECT sb FROM SpaBooking sb
-        JOIN PetProfile p on sb.petProfile.petProfileId = p.petProfileId
-        JOIN Profile pr on p.profile.profileId= pr.profileId
-        WHERE pr.profileId = :profileId AND sb.status = "PENDING"
-        """)
-    List<SpaBooking> findByProfileIdAndStatus(Long profileId, BookingStatus status);
+        SELECT new org.example.petcareplus.dto.MyServiceDTO(
+            sb.spaBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            sb.bookDate,
+            sb.status,
+            sb.note
+        )
+        FROM SpaBooking sb
+        JOIN sb.service s
+        JOIN sb.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
+        AND sb.status = :status
+    """)
+    List<MyServiceDTO> findByProfileIdAndStatus(Long profileId, BookingStatus status);
 
     @Query("SELECT h FROM SpaBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
     Page<SpaBooking> findByBookDateBetween(@Param("start") LocalDateTime start,
