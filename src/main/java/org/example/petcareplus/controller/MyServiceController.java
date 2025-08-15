@@ -5,6 +5,7 @@ import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.BookingService;
+import org.example.petcareplus.service.ServiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,11 @@ import java.util.Map;
 public class MyServiceController {
 
     private final BookingService bookingService;
+    private final ServiceService serviceService;
 
-    public MyServiceController(BookingService bookingService) {
+    public MyServiceController(BookingService bookingService, ServiceService serviceService) {
         this.bookingService = bookingService;
+        this.serviceService = serviceService;
     }
 
     @GetMapping
@@ -98,4 +101,15 @@ public class MyServiceController {
         }
     }
 
+    @GetMapping("/services/by-type/{type}")
+    @ResponseBody
+    public List<Map<String, String>> getServicesByType(@PathVariable String type) {
+        // Gọi service lấy danh sách dịch vụ từ DB
+        return serviceService.findByServiceCategory(ServiceCategory.valueOf(type))
+                .stream()
+                .map(s -> Map.of("name", s.getName(),
+                        "price", s.getPrice().toString()
+                ))
+                .toList();
+    }
 }
