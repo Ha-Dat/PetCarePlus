@@ -88,13 +88,15 @@
             margin-top: 25px;
             background-color: white;
             border-radius: 12px;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
         }
 
         .product-table {
             width: 100%;
             border-collapse: collapse;
+            position: relative;
+            z-index: 1;
         }
 
         .product-table th,
@@ -111,6 +113,13 @@
 
         tr:hover {
             background-color: #f9f9f9;
+        }
+
+        /* Đảm bảo tất cả các element trong table không đè lên dropdown */
+        .product-table th,
+        .product-table td {
+            position: relative;
+            z-index: 1;
         }
 
         .modal-overlay {
@@ -271,6 +280,7 @@
         .action-dropdown {
             position: relative;
             display: inline-block;
+            z-index: 10001;
         }
 
         /* Button 3 chấm */
@@ -295,9 +305,9 @@
             right: 0;
             top: 100%;
             background-color: #fff;
-            min-width: 140px;
+            min-width: 160px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
+            z-index: 10000;
             border-radius: 8px;
             padding: 4px 0;
             border: 1px solid #e0e0e0;
@@ -317,6 +327,15 @@
         .action-dropdown.right-edge .dropdown-menu {
             right: auto;
             left: 0;
+        }
+
+        /* Responsive dropdown positioning */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                right: auto;
+                left: 0;
+                min-width: 140px;
+            }
         }
 
         /* Ensure dropdown is always visible */
@@ -343,15 +362,28 @@
             }
         }
 
+        /* Thêm transition để dropdown mượt mà hơn */
+        .dropdown-menu {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
         /* Ensure dropdown is always on top */
         .action-dropdown {
             position: relative;
         }
 
         .action-dropdown .dropdown-menu {
-            position: relative;
-            z-index: 9999;
+            position: absolute;
+            z-index: 10000;
             pointer-events: auto;
+            /* Đảm bảo dropdown không bị cắt */
+            clip: auto;
+            overflow: visible;
+        }
+
+        /* Đảm bảo dropdown menu có thể hover để giữ mở */
+        .action-dropdown .dropdown-menu:hover {
+            display: block !important;
         }
 
         /* Ensure action column has enough space */
@@ -361,6 +393,7 @@
             white-space: nowrap;
             overflow: visible;
             position: relative;
+            z-index: 10002;
         }
 
         .dropdown-item {
@@ -376,6 +409,12 @@
             text-align: left;
             cursor: pointer;
             transition: background-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
         }
 
         .dropdown-item:hover {
@@ -616,47 +655,60 @@
                         <td th:text="${appointment.note}"></td>
                         <td th:text="${appointment.status}"></td>
                         <td>
-                            <a class="detail-btn"
-                               th:attr="data-name=${appointment.petProfile.name},
-            data-species=${appointment.petProfile.species},
-            data-breeds=${appointment.petProfile.breeds},
-            data-weight=${appointment.petProfile.weight},
-            data-age=${appointment.petProfile.age},
-            data-image=${(appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias))
-                          ? appointment.petProfile.medias[0].url
-                          : ''}"
-                               href="javascript:void(0)"
-                               onclick="openPetProfileModal(this)">
-                                Chi tiết
-                            </a>
-
-
-                            <a class="prescription-btn"
-                               th:if="${mode == 'approved'}"
-                               th:attr="data-appointment-id=${appointment.appointmentBookingId},
-data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
-                                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
-                                : 'Chưa có đơn thuốc'}"
-                               href="javascript:void(0)"
-                               onclick="openPrescriptionModal(this)">
-                                Đơn thuốc
-                            </a>
-
-                            <!-- Chấp nhận -->
-                            <form th:if="${mode == 'pending'}"
-                                  th:action="@{/vet/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
-
-                            <!-- Không chấp nhận -->
-                            <form th:if="${mode == 'pending'}"
-                                  th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
+                            <!-- Dropdown cho thao tác -->
+                            <div class="action-dropdown">
+                                <button class="dropdown-toggle" title="Thao tác">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <!-- Button Chi tiết luôn hiển thị -->
+                                    <button class="dropdown-item" 
+                                            th:attr="data-name=${appointment.petProfile.name},
+                                            data-species=${appointment.petProfile.species},
+                                            data-breeds=${appointment.petProfile.breeds},
+                                            data-weight=${appointment.petProfile.weight},
+                                            data-age=${appointment.petProfile.age},
+                                            data-image=${(appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias))
+                                                          ? appointment.petProfile.medias[0].url
+                                                          : ''}"
+                                            onclick="openPetProfileModal(this)">
+                                        <i class="fas fa-info-circle"></i> Chi tiết
+                                    </button>
+                                    
+                                    <!-- Button Đơn thuốc chỉ hiển thị ở trang approved -->
+                                    <button th:if="${mode == 'approved'}" 
+                                            class="dropdown-item"
+                                            th:attr="data-appointment-id=${appointment.appointmentBookingId},
+                                            data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
+                                                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
+                                                : 'Chưa có đơn thuốc'}"
+                                            onclick="openPrescriptionModal(this)">
+                                        <i class="fas fa-prescription"></i> Đơn thuốc
+                                    </button>
+                                    
+                                    <!-- Button Chấp nhận chỉ hiển thị ở trang pending -->
+                                    <form th:if="${mode == 'pending'}"
+                                          th:action="@{/vet/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
+                                          method="post"
+                                          style="margin: 0; padding: 0;"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-check"></i> Chấp nhận
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Button Không chấp nhận chỉ hiển thị ở trang pending -->
+                                    <form th:if="${mode == 'pending'}"
+                                          th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                          method="post"
+                                          style="margin: 0; padding: 0;"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                        <button type="submit" class="dropdown-item delete-btn">
+                                            <i class="fas fa-times"></i> Không chấp nhận
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(appointments)}">
@@ -835,6 +887,13 @@ data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
                 // Add active class to clicked item
                 this.classList.add('active');
             });
+        });
+
+        // Đóng dropdown khi click ra ngoài (để tránh dropdown bị mắc kẹt)
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-dropdown')) {
+                // Không cần làm gì vì dropdown sẽ tự động đóng khi không hover
+            }
         });
     });
 </script>

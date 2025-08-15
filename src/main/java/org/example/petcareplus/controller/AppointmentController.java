@@ -29,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
+
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
