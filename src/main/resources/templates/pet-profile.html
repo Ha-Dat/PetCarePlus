@@ -331,10 +331,11 @@
                             <label class="col-sm-3 col-form-label">Tên:</label>
                             <div class="col-sm-9">
                                 <input type="text" name="name" th:value="${selectedPet.name}" th:attr="readonly=${!edit}" class="form-control"
-                                       pattern="^[a-zA-Z]+$"
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
                                        required
                                        minlength="1"
-                                       maxlength="50">
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
@@ -351,9 +352,10 @@
                             <label class="col-sm-3 col-form-label">Loài:</label>
                             <div class="col-sm-9">
                                 <input type="text" name="species" th:value="${selectedPet.species}" th:readonly="${!edit}" class="form-control" required
-                                       pattern="^[a-zA-Z]+$"
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
                                        minlength="1"
-                                       maxlength="50">
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
@@ -362,9 +364,10 @@
                             <label class="col-sm-3 col-form-label">Giống:</label>
                             <div class="col-sm-9">
                                 <input type="text" name="breeds" th:value="${selectedPet.breeds}" th:readonly="${!edit}" class="form-control" required
-                                       pattern="^[a-zA-Z]+$"
+                                       pattern="^[a-zA-ZÀ-ỹ\s]+$"
                                        minlength="1"
-                                       maxlength="50">
+                                       maxlength="50"
+                                       title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                             </div>
                         </div>
 
@@ -416,7 +419,9 @@
                 
                 <div class="mb-2">
                     <label class="form-label">Tên:</label>
-                    <input type="text" name="name" class="form-control" required maxlength="50" pattern="^[a-zA-Z]+$">
+                    <input type="text" name="name" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Tuổi (Tháng):</label>
@@ -424,11 +429,15 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Loài:</label>
-                    <input type="text" name="species" class="form-control" required maxlength="50" pattern="^[a-zA-Z]+$">
+                    <input type="text" name="species" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Giống:</label>
-                    <input type="text" name="breeds" class="form-control" required maxlength="50" pattern="^[a-zA-Z]+$">
+                    <input type="text" name="breeds" class="form-control" required maxlength="50" 
+                           pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                           title="Chỉ cho phép nhập chữ cẩu, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Cân nặng (kg):</label>
