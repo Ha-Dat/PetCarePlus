@@ -4,17 +4,15 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.enums.ServiceCategory;
-import org.example.petcareplus.service.AppointmentService;
 import org.example.petcareplus.service.BookingService;
-import org.example.petcareplus.service.HotelBookingService;
-import org.example.petcareplus.service.SpaBookingService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/customer/my-schedule")
@@ -27,51 +25,77 @@ public class MyServiceController {
     }
 
     @GetMapping
-    public String viewMyService(@RequestParam(value = "type", required = false) String type,
-                                @RequestParam(value = "status", required = false) String status,
-                                Model model, HttpSession session) {
-
-        if (session.getAttribute("loggedInUser") == null) {
-            return "redirect:/login";
-        }
-
+    public String viewMyService(Model model, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
-        Long id = account.getAccountId();
+        if (account == null) return "redirect:/login";
 
-        List<MyServiceDTO> schedules = bookingService.getMyServices(id);
-
-        // Filter theo service
-        if (type != null && !type.equals("all")) {
-            schedules = schedules.stream()
-                    .filter(e -> e.getServiceCategory().getValue().equalsIgnoreCase(type))
-                    .toList();
-        }
-
-        // Filter theo status
-        if (status != null && !status.isEmpty()) {
-            schedules = schedules.stream()
-                    .filter(e -> e.getStatus().getValue().equalsIgnoreCase(status))
-                    .toList();
-        }
-
-        model.addAttribute("schedules", schedules);
-        model.addAttribute("selectedType", type == null ? "all" : type);
-        model.addAttribute("selectedStatus", status == null ? "all" : status);
-
+        List<MyServiceDTO> myServices = bookingService.getMyServices(account.getProfile().getProfileId());
+        model.addAttribute("myServices", myServices);
         return "my-service-schedule";
     }
 
-    @GetMapping("/cancel")
-    public String cancelBooking(@RequestParam("id") Long bookingId,
-                                @RequestParam("category") String category,
-                                @RequestParam(value = "type", required = false) String type,
-                                @RequestParam(value = "status", required = false) String status,
-                                HttpSession session) {
-        if (session.getAttribute("loggedInUser") == null) {
-            return "redirect:/login";
+    @PostMapping("/cancel/{type}/{id}")
+    @ResponseBody
+    public ResponseEntity<?> cancelBooking(@PathVariable String type,
+                                           @PathVariable Long id,
+                                           HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập."));
         }
 
-        bookingService.cancelBookingByTypeAndId(category, bookingId);
-        return "redirect:/customer/my-schedule?type=" + (type == null ? "all" : type) + "&status=" + (status == null ? "all" : status);
+        boolean success = bookingService.cancelBooking(type, id, account.getProfile().getProfileId());
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "Hủy lịch thành công."));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Không thể hủy lịch này."));
+        }
     }
+
+    @GetMapping("/detail/{type}/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getBookingDetail(@PathVariable String type,
+                                              @PathVariable Long id,
+                                              HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập."));
+        }
+
+        MyServiceDTO detail = bookingService.getBookingDetail(type, id, account.getProfile().getProfileId());
+        if (detail != null) {
+            return ResponseEntity.ok(detail);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "Không tìm thấy lịch đặt."));
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public ResponseEntity<?> updateBooking(@RequestBody MyServiceDTO dto) {
+        try {
+            // Kiểm tra booking có tồn tại và status PENDING
+            boolean canUpdate = bookingService.isPending(dto.getServiceCategory(), dto.getBookingId());
+            if (!canUpdate) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "message", "Chỉ có thể chỉnh sửa khi booking ở trạng thái Pending"
+                ));
+            }
+
+            bookingService.updateBooking(dto);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Cập nhật booking thành công"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "message", "Có lỗi xảy ra khi cập nhật booking",
+                    "error", e.getMessage()
+            ));
+        }
+    }
+
 }

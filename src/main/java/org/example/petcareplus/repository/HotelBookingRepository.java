@@ -3,10 +3,12 @@ package org.example.petcareplus.repository;
 import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.enums.BookingStatus;
+import org.example.petcareplus.enums.ServiceCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,17 +22,42 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
     List<HotelBooking> findAll();
 
     @Query("""
-        SELECT new org.example.petcareplus.dto.MyServiceDTO(
-            h.hotelBookingId ,p.name, s.name, s.serviceCategory, h.bookDate, h.status
+        SELECT DISTINCT new org.example.petcareplus.dto.MyServiceDTO(
+            hb.hotelBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            hb.bookDate,
+            hb.status,
+            hb.note
         )
-        FROM HotelBooking h
-        JOIN h.petProfile p
-        JOIN p.profile pf
-        JOIN pf.account acc
-        JOIN h.service s
-        WHERE s.serviceCategory = 'HOTEL' AND acc.accountId = :accountId
+        FROM HotelBooking hb
+        JOIN hb.service s
+        JOIN hb.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
     """)
-    List<MyServiceDTO> findHotelBookingsByAccountId(@Param("accountId") Long accountId);
+    List<MyServiceDTO> findByProfileId(Long profileId);
+
+    @Query("""
+        SELECT new org.example.petcareplus.dto.MyServiceDTO(
+            hb.hotelBookingId,
+            p.name,
+            s.name,
+            s.serviceCategory,
+            hb.bookDate,
+            hb.status,
+            hb.note
+        )
+        FROM HotelBooking hb
+        JOIN hb.service s
+        JOIN hb.petProfile p
+        JOIN p.profile pr
+        WHERE pr.profileId = :profileId
+        AND hb.status = :status
+    """)
+    List<MyServiceDTO> findByProfileIdAndStatus(Long profileId, BookingStatus status);
+
     @Query("SELECT h FROM HotelBooking h WHERE h.bookDate >= :start AND h.bookDate < :end")
     Page<HotelBooking> findByBookDateBetween(@Param("start") LocalDateTime start,
                                              @Param("end") LocalDateTime end,

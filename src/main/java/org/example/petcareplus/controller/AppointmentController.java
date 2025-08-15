@@ -113,7 +113,7 @@ public class AppointmentController {
             booking.setService(service.get());
 
             appointmentService.save(booking);
-            return "redirect:/vet/appointment-booking-form";
+            return "redirect:/appointment-booking-form";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
