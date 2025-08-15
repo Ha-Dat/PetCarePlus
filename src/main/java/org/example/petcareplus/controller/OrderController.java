@@ -97,12 +97,12 @@ public class OrderController {
             // Kiểm tra xem đơn hàng thuộc về người dùng hiện tại và có trạng thái PENDING không
             if (!order.getAccount().getAccountId().equals(account.getAccountId())) {
                 redirectAttributes.addFlashAttribute("error", "Bạn không có quyền hủy đơn hàng này");
-                return "redirect:/customer/list_order";
+                return "redirect:/customer/list-order";
             }
 
             if (order.getStatus() != OrderStatus.PENDING) {
                 redirectAttributes.addFlashAttribute("error", "Chỉ có thể hủy đơn hàng ở trạng thái Chờ duyệt");
-                return "redirect:/customer/list_order";
+                return "redirect:/customer/list-order";
             }
 
             // Cập nhật trạng thái đơn hàng
@@ -114,6 +114,6 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
 
-        return "redirect:/customer/list_order";
+        return "redirect:/customer/list-order";
     }
 }
