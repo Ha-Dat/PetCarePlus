@@ -471,7 +471,7 @@
                   </div>
 
                   <!-- Nội dung Reply -->
-                  <p class="text-sm mb-3 break-words whitespace-pre-line max-w-[70ch]" th:text="${reply.comment}">
+                  <p class="text-sm mb-3 break-words whitespace-pre-line max-w-[80ch]" th:text="${reply.comment}">
                     Nội dung trả lời...
                   </p>
 
