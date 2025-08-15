@@ -371,7 +371,7 @@
 
                 // Ẩn các nút hành động
                 $row.find(".cancel-btn, .detail-btn").remove();
-                window.location.reload();
+                location.reload();
             },
             error: function () {
                 alert("Có lỗi xảy ra khi hủy lịch.");
@@ -410,6 +410,7 @@
                 $row.find("td:nth-child(2)").text(data.serviceName);
                 $row.find(".col-time").text(new Date(data.bookDate).toLocaleString("vi-VN"));
                 $row.find(".col-status").text("Chờ duyệt");
+                location.reload();
             },
             error: function () {
                 alert("Không thể cập nhật lịch.");
