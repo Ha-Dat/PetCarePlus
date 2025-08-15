@@ -118,6 +118,13 @@ public class ServiceController {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            // Kiểm tra xem có thể xóa service không
+            if (!serviceService.canDeleteService(id)) {
+                response.put("success", false);
+                response.put("message", "Dịch vụ này đã có người đặt, không thể xóa");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             serviceService.deleteService(id);
             
             response.put("success", true);
@@ -131,10 +138,28 @@ public class ServiceController {
         }
     }
 
+    @GetMapping("/manager/service-dashboard/check-delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkServiceDeletable(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Map<String, Object> bookingInfo = serviceService.getServiceBookingInfo(id);
+            response.put("success", true);
+            response.put("data", bookingInfo);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi kiểm tra dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     @GetMapping("/service-dashboard/service/{id}")
     @ResponseBody
     public ResponseEntity<Service> getServiceById(@PathVariable Long id) {
-        return serviceService.findById(id)
+        return serviceService.getServiceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

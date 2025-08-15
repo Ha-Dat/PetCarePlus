@@ -88,13 +88,15 @@
             margin-top: 25px;
             background-color: white;
             border-radius: 12px;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
         }
 
         .service-table {
             width: 100%;
             border-collapse: collapse;
+            position: relative;
+            z-index: 1;
         }
 
         .service-table th,
@@ -102,6 +104,8 @@
             text-align: left;
             padding: 12px 15px;
             border-bottom: 1px solid #ddd;
+            position: relative;
+            z-index: 1;
         }
 
         .service-table th {
@@ -260,6 +264,7 @@
         .action-dropdown {
             position: relative;
             display: inline-block;
+            z-index: 10001;
         }
 
         /* Button 3 chấm */
@@ -282,13 +287,19 @@
             display: none;
             position: absolute;
             right: 0;
+            top: 100%;
             background-color: #fff;
-            min-width: 140px;
+            min-width: 160px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            z-index: 100;
+            z-index: 10000;
             border-radius: 8px;
             padding: 4px 0;
-            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            white-space: nowrap;
+            margin-top: 2px;
+            /* Đảm bảo dropdown không bị cắt */
+            clip: auto;
+            overflow: visible;
         }
 
         /* Các item trong menu */
@@ -318,6 +329,16 @@
             display: block;
         }
 
+        /* Ensure action column has enough space */
+        .service-table td:last-child {
+            min-width: 60px;
+            width: auto;
+            white-space: nowrap;
+            overflow: visible;
+            position: relative;
+            z-index: 10002;
+        }
+
         /* Delete button style */
         .delete-btn {
             color: #dc3545;
@@ -326,6 +347,51 @@
 
         .delete-btn:hover {
             background-color: #ffe5e5;
+        }
+
+        /* Đảm bảo dropdown menu có thể hover để giữ mở */
+        .action-dropdown .dropdown-menu:hover {
+            display: block !important;
+        }
+
+        /* Tạo vùng hover liên tục cho dropdown menu */
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+        }
+
+        /* Đảm bảo dropdown không bị cắt bởi bất kỳ container nào */
+        .action-dropdown,
+        .action-dropdown .dropdown-menu {
+            isolation: isolate;
+        }
+
+        /* Animation for dropdown appearance */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Thêm transition để dropdown mượt mà hơn */
+        .dropdown-menu {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* Auto-adjust dropdown position based on available space */
+        .action-dropdown:hover .dropdown-menu {
+            display: block !important;
+            animation: fadeIn 0.2s ease-in-out;
         }
 
         /* Toast thông báo*/
@@ -342,6 +408,8 @@
             transform: translateY(-20px);
             transition: opacity 0.3s, transform 0.3s;
             z-index: 1001;
+            max-width: 400px;
+            word-wrap: break-word;
         }
 
         .toast.show {
@@ -351,6 +419,11 @@
 
         .toast.error {
             background-color: #dc3545;
+        }
+
+        .toast.warning {
+            background-color: #ffc107;
+            color: #212529;
         }
 
         .toast.hidden {
@@ -381,6 +454,34 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -402,7 +503,11 @@
             + Thêm dịch vụ
         </button>
 
-        <div>
+        <div th:if="${#lists.isEmpty(services)}" style="text-align: center; margin: 40px 0;">
+            <p style="font-size: 18px; color: #666;">Chưa có dịch vụ nào. Hãy thêm dịch vụ đầu tiên!</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(services)}">
             <!-- Table Container -->
             <div class="table-container">
                 <table class="service-table">
@@ -417,9 +522,19 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr th:if="${#lists.isEmpty(services)}">
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            <p>Không có dịch vụ nào được tìm thấy.</p>
+                        </td>
+                    </tr>
                     <tr th:each="service, stat : ${services}">
                         <td th:text="${currentPage * size + stat.index + 1}"></td>
-                        <td th:text="${service?.name}"></td>
+                        <td>
+                            <div class="tooltip">
+                                <span th:text="${service?.name}"></span>
+                                <span class="tooltiptext" th:text="'Nhấp vào menu để xem thông tin chi tiết về dịch vụ ' + ${service?.name}"></span>
+                            </div>
+                        </td>
                         <td th:text="${service?.serviceCategory?.value}"></td>
                         <td th:text="${#numbers.formatDecimal(service?.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
                         <td th:text="${service?.duration}"></td>
@@ -438,6 +553,11 @@
                                         🖊️ Chỉnh sửa
                                     </a>
 
+                                    <button type="button" class="dropdown-item"
+                                            th:onclick="'checkServiceInfo(' + ${service.serviceId} + ')'">
+                                        ℹ️ Thông tin
+                                    </button>
+
                                     <button type="button" class="dropdown-item delete-btn"
                                             th:onclick="'confirmDeleteAndToast(' + ${service.serviceId} + ')'">
                                         🗑️ Xóa
@@ -452,6 +572,10 @@
                     <ul>
                         <li th:if="${currentPage > 0}">
                             <a th:href="@{/manager/service-dashboard(page=${currentPage - 1}, size=${size})}">&laquo;</a>
+                        </li>
+
+                        <li th:if="${totalPages == 0}">
+                            <span>Không có trang nào</span>
                         </li>
 
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
@@ -565,10 +689,13 @@
         toast.className = `toast show ${type}`;
         toast.classList.remove('hidden');
 
+        // Tự động ẩn toast sau 5 giây nếu là warning (để người dùng có thời gian đọc)
+        const duration = type === 'warning' ? 5000 : 3000;
+        
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.classList.add('hidden'), 300);
-        }, 3000);
+        }, duration);
     }
 
     function submitCreateService(event) {
@@ -662,28 +789,95 @@
     function confirmDeleteAndToast(serviceId) {
         const confirmed = confirm("Bạn có chắc muốn xóa dịch vụ này?");
         if (confirmed) {
-            fetch(`/manager/service-dashboard/delete/${serviceId}`, {
-                method: 'POST',
+            // Kiểm tra xem có thể xóa service không trước
+            fetch(`/manager/service-dashboard/check-delete/${serviceId}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast(data.message, "success");
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+            .then(checkData => {
+                if (checkData.success) {
+                    const bookingInfo = checkData.data;
+                    if (bookingInfo.canDelete) {
+                        // Nếu có thể xóa thì tiến hành xóa
+                        performDeleteService(serviceId);
+                    } else {
+                        // Nếu không thể xóa thì hiển thị thông báo chi tiết
+                        let message = "Dịch vụ này đã có người đặt, không thể xóa. ";
+                        if (bookingInfo.hasSpaBookings) {
+                            message += "Có đặt lịch spa. ";
+                        }
+                        if (bookingInfo.hasHotelBookings) {
+                            message += "Có đặt khách sạn. ";
+                        }
+                        if (bookingInfo.hasAppointmentBookings) {
+                            message += "Có đặt lịch hẹn. ";
+                        }
+                        showToast(message, "warning");
+                    }
                 } else {
-                    showToast(data.message, "error");
+                    showToast("Lỗi khi kiểm tra dịch vụ: " + checkData.message, "error");
                 }
             })
             .catch(error => {
-                console.error("Lỗi khi xóa dịch vụ:", error);
-                showToast("Có lỗi xảy ra khi xóa dịch vụ!", "error");
+                console.error("Lỗi khi kiểm tra dịch vụ:", error);
+                showToast("Có lỗi xảy ra khi kiểm tra dịch vụ!", "error");
             });
         }
+    }
+
+    function performDeleteService(serviceId) {
+        fetch(`/manager/service-dashboard/delete/${serviceId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, "success");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showToast(data.message, "error");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi khi xóa dịch vụ:", error);
+            showToast("Có lỗi xảy ra khi xóa dịch vụ!", "error");
+        });
+    }
+
+    function checkServiceInfo(serviceId) {
+        fetch(`/manager/service-dashboard/check-delete/${serviceId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const bookingInfo = data.data;
+                let message = "Thông tin dịch vụ:\n";
+                message += "• Có đặt lịch spa: " + (bookingInfo.hasSpaBookings ? "Có" : "Không") + "\n";
+                message += "• Có đặt khách sạn: " + (bookingInfo.hasHotelBookings ? "Có" : "Không") + "\n";
+                message += "• Có đặt lịch hẹn: " + (bookingInfo.hasAppointmentBookings ? "Có" : "Không") + "\n";
+                message += "• Có thể xóa: " + (bookingInfo.canDelete ? "Có" : "Không");
+                
+                alert(message);
+            } else {
+                showToast("Lỗi khi lấy thông tin dịch vụ: " + data.message, "error");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi khi lấy thông tin dịch vụ:", error);
+            showToast("Có lỗi xảy ra khi lấy thông tin dịch vụ!", "error");
+        });
     }
     document.addEventListener("DOMContentLoaded", () => {
         const categoryAdd = document.getElementById("serviceCategory");

@@ -44,4 +44,7 @@ public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
     List<Object[]> getBookingCountByMonthInCurrentYear();
 
     long countByStatus(BookingStatus status);
+
+    // Kiểm tra xem có booking nào đang sử dụng service không
+    boolean existsByServiceServiceId(Long serviceId);
 }
