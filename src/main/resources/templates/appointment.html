@@ -630,11 +630,6 @@
         <h1 class="page-title" th:if="${mode == 'pending'}">Lịch khám chờ duyệt</h1>
         <h1 class="page-title" th:if="${mode == 'approved'}">Lịch khám đã duyệt</h1>
         <h1 class="page-title" th:if="${mode == 'history'}">Lịch khám từ chối</h1>
-        <label th:if="${mode == 'history'}">Tra bằng tên thú cưng:</label>
-        <form th:action="@{/vet/appointment/search}" method="post" th:if="${mode == 'history'}">
-            <input class="search-pet" type="text">
-            <button class="search-btn" type="submit">Tra</button>
-        </form>
         <div class="content">
             <!-- Table Container -->
             <div class="table-container">
