@@ -54,35 +54,11 @@ public class ProductDashboardController {
         return "product-dashboard";
     }
 
-    @PostMapping(value = "/product-dashboard/switch/{id}")
-    public String switchStatusProduct(@PathVariable Long id) {
-        try {
-            Optional<Product> existing = productService.findById(id);
-            if (existing.isEmpty()) {
-                return "redirect:/product-dashboard";
-            }
-
-            Product updatedProduct = existing.get();
-
-            if (updatedProduct.getStatus() != ProductStatus.INACTIVE) {
-                updatedProduct.setStatus(ProductStatus.INACTIVE);
-            } else if (updatedProduct.getUnitInStock() == 0) {
-                updatedProduct.setStatus(ProductStatus.OUT_OF_STOCK);
-            } else {
-                updatedProduct.setStatus(ProductStatus.IN_STOCK);
-            }
-
-            productService.save(updatedProduct);
-            return "redirect:/seller/product-dashboard";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Optionally log and show error
-            return "redirect:/product-dashboard?error";
-        }
+    @PostMapping("/product-dashboard/delete/{id}")
+    public String delete(@PathVariable("id") Long id) {
+        productService.deleteById(id);
+        return "redirect:/seller/product-dashboard";
     }
-
-
 
     @GetMapping(value="/product-dashboard/edit/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

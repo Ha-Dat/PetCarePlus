@@ -108,9 +108,4 @@ public class ServiceServiceImpl implements ServiceService {
     public List<org.example.petcareplus.entity.Service> findActiveByServiceCategory(ServiceCategory serviceCategory) {
         return serviceRepository.findByServiceCategoryAndStatus(serviceCategory, ServiceStatus.ACTIVE);
     }
-
-    @Override
-    public List<org.example.petcareplus.entity.Service> findAll() {
-        return serviceRepository.findAll();
-    }
 }

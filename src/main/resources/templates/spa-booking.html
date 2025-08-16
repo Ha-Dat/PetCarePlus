@@ -657,7 +657,7 @@
                             readonly
                             minlength="1"
                             maxlength="50"
-                            pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                            pattern="^[a-zA-Z]+$"
                     />
                 </div>
 
@@ -673,7 +673,7 @@
                             readonly
                             minlength="1"
                             maxlength="50"
-                            pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                            pattern="^[a-zA-Z]+$"
                     />
                 </div>
 
@@ -689,7 +689,7 @@
                             readonly
                             minlength="1"
                             maxlength="50"
-                            pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                            pattern="^[a-zA-Z]+$"
                     />
                 </div>
 
@@ -882,10 +882,8 @@
     // Set minimum date to today
     document.addEventListener("DOMContentLoaded", () => {
         const now = new Date();
-        // Thêm 2 giờ (7200000 milliseconds)
-        const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-        const offset = twoHoursLater.getTimezoneOffset();
-        const localDatetime = new Date(twoHoursLater.getTime() - offset * 60000)
+        const offset = now.getTimezoneOffset();
+        const localDatetime = new Date(now.getTime() - offset * 60000)
             .toISOString()
             .slice(0, 16);
 
@@ -918,19 +916,8 @@
         const selectedDate = new Date(bookDateInput.value);
         const now = new Date();
 
-        // Thêm 2 giờ vào thời gian hiện tại
-        const minimumBookingTime = new Date(now.getTime() + 2 * 60 * 60 * 1000 - 1 * 60 * 1000);
-
-        // Kiểm tra thời gian đặt lịch
-        if (selectedDate < minimumBookingTime) {
-            const minTimeString = minimumBookingTime.toLocaleString('vi-VN', {
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            alert(`Bạn chỉ có thể đặt lịch sau 2 giờ kể từ bây giờ. Thời gian sớm nhất có thể đặt là: ${minTimeString}`);
+        if (selectedDate < now) {
+            alert('Không được chọn thời gian trong quá khứ!');
             return;
         }
 
@@ -977,7 +964,7 @@
         const selectedValue = select.value;
 
         if (selectedValue === "create") {
-            window.location.href = "/pet-profile";
+            window.location.href = "/customer/pet-profile";
             return;
         }
 

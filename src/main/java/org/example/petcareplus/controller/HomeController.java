@@ -36,6 +36,10 @@ public class HomeController {
                 .stream()
                 .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
                 .toList();
+        List<Product> top3BestSellingProducts = productService.getTop3BestSellingProducts()
+                .stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .toList();
         List<Product> AllProduct = productService.getAllProducts()
                 .stream()
                 .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
@@ -44,6 +48,7 @@ public class HomeController {
         List<Category> parentCategories = categoryService.getParentCategory();
 
         model.addAttribute("getTop5ProductByCreateDate", getTop5ProductByCreateDate);
+        model.addAttribute("top3BestSellingProducts", top3BestSellingProducts);
         model.addAttribute("product", AllProduct);
         model.addAttribute("categories", parentCategories);
         return "home";

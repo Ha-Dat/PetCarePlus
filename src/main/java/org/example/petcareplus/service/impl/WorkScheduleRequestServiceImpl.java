@@ -1,6 +1,5 @@
 package org.example.petcareplus.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.example.petcareplus.entity.WorkScheduleRequest;
 import org.example.petcareplus.repository.WorkScheduleRequestRepository;
 import org.example.petcareplus.service.WorkScheduleRequestService;
@@ -36,14 +35,5 @@ public class WorkScheduleRequestServiceImpl implements WorkScheduleRequestServic
     @Override
     public Optional<WorkScheduleRequest> findById(Long id) {
         return workScheduleRequestRepository.findById(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        if (workScheduleRequestRepository.existsById(id)) {
-            workScheduleRequestRepository.deleteById(id);
-        } else {
-            throw new EntityNotFoundException("WorkScheduleRequest not found with id: " + id);
-        }
     }
 }

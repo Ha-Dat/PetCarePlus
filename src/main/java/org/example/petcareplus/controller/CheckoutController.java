@@ -53,7 +53,7 @@ public class CheckoutController {
         Profile profile = profileService.getProfileByAccountAccountId(id);
         if (profile.getCity() == null || profile.getWard() == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần cập nhật tỉnh/thành phố và quận/huyện trước khi đặt hàng.");
-            return "redirect:/profile";
+            return "redirect:/customer/profile";
         }
         model.addAttribute("profile", profile);
 
@@ -151,8 +151,7 @@ public class CheckoutController {
             order.setReceiverPhone(request.getReceiverPhone());
             order.setShippingFee(calculateShippingFee(toCity));
         } else {
-            String toAddress = cleanInput(request.getAddress());
-            order.setDeliverAddress(toAddress + ", " + profile.getWard().getName() + ", " + profile.getCity().getName());
+            order.setDeliverAddress(request.getAddress() + " " + profile.getWard().getName() + ", " + profile.getCity().getName());
             order.setReceiverName(profile.getAccount().getName());
             order.setReceiverPhone(account.getPhone());
             order.setShippingFee(calculateShippingFee(profile.getCity().getName()));

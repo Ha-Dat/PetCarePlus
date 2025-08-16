@@ -8,8 +8,4 @@ public enum ScheduleRequestStatus {
     ScheduleRequestStatus(String value) {
         this.value = value;
     }
-
-    public String getValue() {
-        return value;
-    }
 }

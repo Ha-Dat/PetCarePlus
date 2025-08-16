@@ -1,6 +1,5 @@
 package org.example.petcareplus.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.Account;
@@ -120,7 +119,7 @@ public class ForumController {
 
     // Hiển thị form update
     @GetMapping("/update-post/{postId}")
-    public String updatePostForm(HttpServletRequest request ,@PathVariable Long postId, Model model, HttpSession session) {
+    public String updatePostForm(@PathVariable Long postId, Model model, HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
 
@@ -128,27 +127,6 @@ public class ForumController {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         PostDTO postDTO = new PostDTO(post);
 
-        String requestURI = request.getRequestURI();
-
-        model.addAttribute("requestURI", requestURI);
-        model.addAttribute("postDTO", postDTO);
-        model.addAttribute("medias", post.getMedias());
-        return "update-post"; // Tên file HTML form update
-    }
-
-    // Hiển thị form update
-    @GetMapping("/update-my-post/{postId}")
-    public String updateMyPostForm(HttpServletRequest request, @PathVariable Long postId, Model model, HttpSession session) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-
-        Post post = forumService.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-        PostDTO postDTO = new PostDTO(post);
-
-        String requestURI = request.getRequestURI();
-
-        model.addAttribute("requestURI", requestURI);
         model.addAttribute("postDTO", postDTO);
         model.addAttribute("medias", post.getMedias());
         return "update-post"; // Tên file HTML form update
@@ -156,16 +134,9 @@ public class ForumController {
 
     // Xử lý POST update
     @PostMapping(value = "/update-post", consumes = {"multipart/form-data"})
-    public String updatePost(@ModelAttribute PostDTO postDTO, HttpSession session, @RequestParam String requestURI) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-        forumService.updatePost(postDTO, account.getAccountId());
-
-        if(requestURI.contains("update-my-post")){
-            return "redirect:/forum-my-posts/" + account.getAccountId();
-        } else {
-            return "redirect:/forum";
-        }
+    public String updatePost(@ModelAttribute PostDTO postDTO) {
+        forumService.updatePost(postDTO);
+        return "redirect:/forum";
     }
 
     // xử lý Post delete
@@ -175,14 +146,6 @@ public class ForumController {
         if (account == null) return "redirect:/login";
         forumService.deletePostById(postId);
         return "redirect:/forum";
-    }
-
-    @GetMapping("/delete-my-post/{postId}")
-    public String deleteMyPost(@PathVariable Long postId, HttpSession session) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-        forumService.deletePostById(postId);
-        return "redirect:/forum-my-posts/" + account.getAccountId();
     }
 
     @PostMapping("/post-detail/{postId}/comment")

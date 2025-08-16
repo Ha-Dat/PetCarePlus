@@ -85,6 +85,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if (profile.getAccount() != null) {
             profile.getAccount().setName(profileDTO.getName());
+            profile.getAccount().setPhone(profileDTO.getPhone());
         }
 
         cityRepository.findById(profileDTO.getCityId()).ifPresent(profile::setCity);

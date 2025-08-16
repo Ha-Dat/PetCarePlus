@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import org.example.petcareplus.enums.BookingStatus;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "appointment_bookings")
@@ -39,9 +37,6 @@ public class AppointmentBooking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private Service service;
-
-    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Prescription> prescriptions = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

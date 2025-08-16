@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface ServiceRepository extends JpaRepository<org.example.petcareplus.entity.Service, Long> {
 
@@ -22,5 +20,4 @@ public interface ServiceRepository extends JpaRepository<org.example.petcareplus
     
     List<org.example.petcareplus.entity.Service> findByServiceCategoryAndStatus(ServiceCategory serviceCategory, ServiceStatus status);
 
-    Optional<Service> findByName(String name);
 }
