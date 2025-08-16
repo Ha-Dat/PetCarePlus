@@ -125,7 +125,7 @@ public class PromotionController {
         dto.setDiscount(promotion.getDiscount());
         dto.setStartDate(promotion.getStartDate());
         dto.setEndDate(promotion.getEndDate());
-        dto.setStatus(promotion.getStatus().getValue());
+        dto.setStatus(promotion.getStatus().name());
         dto.setMediaUrls(
                 promotion.getMedias()
                         .stream()
@@ -134,6 +134,42 @@ public class PromotionController {
         );
 
         return dto;
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public ResponseEntity<?> updatePromotion(@RequestParam("promotionId") Long id,
+                                             @RequestParam("title") String title,
+                                             @RequestParam("description") String description,
+                                             @RequestParam("discount") BigDecimal discount,
+                                             @RequestParam("startDate") LocalDateTime startDate,
+                                             @RequestParam("endDate") LocalDateTime endDate,
+                                             @RequestParam("status") PromotionStatus status,
+                                             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+
+        Promotion promotion = promotionService.getPromotionById(id);
+        if (promotion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy khuyến mãi.");
+        }
+
+        promotion.setTitle(title);
+        promotion.setDescription(description);
+        promotion.setDiscount(discount.divide(BigDecimal.valueOf(100)));
+        promotion.setStartDate(startDate);
+        promotion.setEndDate(endDate);
+        promotion.setStatus(status);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String url = saveFileToS3(imageFile, "upload/promotions/");
+            Media media = new Media();
+            media.setMediaCategory(MediaCategory.PROMOTION_IMAGE);
+            media.setUrl(url);
+            media.setPromotion(promotion);
+            promotion.setMedias(List.of(media));
+        }
+
+        promotionService.updatePromotion(promotion);
+        return ResponseEntity.ok("Cập nhật thành công");
     }
 
     //lưu file lên S3
