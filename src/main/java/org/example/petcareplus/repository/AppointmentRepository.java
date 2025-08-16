@@ -58,4 +58,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentBooking,
     List<MyServiceDTO> findByProfileIdAndStatus(Long profileId, BookingStatus status);
 
     Page<AppointmentBooking> findByStatus(BookingStatus status, Pageable pageable);
+
+    // Kiểm tra xem có booking nào đang sử dụng service không
+    boolean existsByServiceServiceId(Long serviceId);
 }

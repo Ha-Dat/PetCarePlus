@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
+
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -64,14 +65,14 @@ public class AppointmentController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("appointmentBooking", new AppointmentBooking()); // model binding
-        model.addAttribute("appointmentServices", serviceService.findByServiceCategory(ServiceCategory.APPOINTMENT));
+        model.addAttribute("appointmentServices", serviceService.findActiveByServiceCategory(ServiceCategory.APPOINTMENT));
         model.addAttribute("categories", parentCategories);
         return "appointment-booking";
     }
 
     @ModelAttribute("services")
     public List<Service> getServiceOptions() {
-        return serviceService.findByServiceCategory(ServiceCategory.APPOINTMENT);
+        return serviceService.findActiveByServiceCategory(ServiceCategory.APPOINTMENT);
     }
 
 

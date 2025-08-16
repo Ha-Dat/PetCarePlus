@@ -37,7 +37,33 @@
                     <div class="user-dropdown">
                         <button class="user-btn" style="background: #4caf50;" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
                         <div class="dropdown-content">
-                            <a href="/profile">Trang cá nhân</a>
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).CUSTOMER}"
+                               href="/customer/profile" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Trang cá nhân
+                            </a>
+
+                            <!-- Dashboard button - chỉ hiển thị cho các role không phải CUSTOMER -->
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).SELLER}"
+                               href="/seller/dashboard" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).PET_GROOMER}"
+                               href="/pet-groomer/dashboard" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).ADMIN}"
+                               href="/admin/dashboard" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).VET}"
+                               href="/vet/appointment/pending" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).MANAGER}"
+                               href="/manager/service-dashboard" class="dashboard-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+
                             <a href="/logout">Đăng xuất</a>
                         </div>
                     </div>

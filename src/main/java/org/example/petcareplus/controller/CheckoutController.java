@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -28,13 +29,15 @@ public class CheckoutController {
     private final OrderService orderService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
+    private final CategoryService categoryService;
 
-    public CheckoutController(ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService) {
+    public CheckoutController(ProfileService profileService, ProductService productService, OrderService orderService, PromotionService promotionService, PaymentService paymentService, CategoryService categoryService) {
         this.profileService = profileService;
         this.productService = productService;
         this.orderService = orderService;
         this.promotionService = promotionService;
         this.paymentService = paymentService;
+        this.categoryService = categoryService;
     }
 
 
@@ -84,6 +87,9 @@ public class CheckoutController {
             });
         }
 
+        List<Category> parentCategories = categoryService.getParentCategory();
+
+        model.addAttribute("categories", parentCategories);
         model.addAttribute("cartItems", cartProductItems);
         model.addAttribute("subtotal", subtotal);
 
