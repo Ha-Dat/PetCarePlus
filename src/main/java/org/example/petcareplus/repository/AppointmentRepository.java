@@ -61,4 +61,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentBooking,
 
     // Kiểm tra xem có booking nào đang sử dụng service không
     boolean existsByServiceServiceId(Long serviceId);
+
+    // Tìm tất cả booking theo petProfileId
+    List<AppointmentBooking> findByPetProfile_petProfileId(Long petProfileId);
 }

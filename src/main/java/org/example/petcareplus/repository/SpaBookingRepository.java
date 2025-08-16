@@ -72,4 +72,7 @@ public interface SpaBookingRepository extends JpaRepository<SpaBooking, Long> {
 
     // Kiểm tra xem có booking nào đang sử dụng service không
     boolean existsByServiceServiceId(Long serviceId);
+
+    // Tìm tất cả booking theo petProfileId
+    List<SpaBooking> findByPetProfile_petProfileId(Long petProfileId);
 }

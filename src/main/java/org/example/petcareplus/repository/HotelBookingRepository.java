@@ -74,4 +74,7 @@ public interface HotelBookingRepository extends JpaRepository<HotelBooking, Long
 
     // Kiểm tra xem có booking nào đang sử dụng service không
     boolean existsByServiceServiceId(Long serviceId);
+
+    // Tìm tất cả booking theo petProfileId
+    List<HotelBooking> findByPetProfile_petProfileId(Long petProfileId);
 }
