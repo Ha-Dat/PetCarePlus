@@ -84,6 +84,23 @@
         .btn-custom:hover {
             background-color: #388e3c;
         }
+
+        /* Style cho form khi ở chế độ view (không edit) */
+        .form-section.view-mode {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-section.view-mode input[readonly],
+        .form-section.view-mode select[disabled] {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: default;
+        }
+
+        .form-section.view-mode label {
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -92,11 +109,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <a th:href="@{/customer/profile}" class="active">Hồ Sơ</a>
-            <a th:href="@{/customer/change-password}">Đổi mật khẩu</a>
-            <a th:href="@{/customer/pet-profile}">Hồ Sơ thú cưng</a>
-            <a th:href="@{/customer/list_order}">Đơn mua</a>
-            <a th:href="@{/customer/my-schedule}">Lịch</a>
+                            <a th:href="@{/profile}" class="active">Hồ Sơ</a>
+                <a th:href="@{/change-password}">Đổi mật khẩu</a>
+                <a th:href="@{/pet-profile}">Hồ Sơ thú cưng</a>
+                <a th:href="@{/list-order}">Đơn mua</a>
+                <a th:href="@{/my-schedule}">Lịch</a>
         </ul>
     </div>
 
@@ -107,8 +124,8 @@
         <div th:if="${errorMessage}" class="alert alert-danger">
             <span th:text="${errorMessage}"></span>
         </div>
-        <form th:action="@{/customer/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
-            <div class="form-section row">
+                    <form th:action="@{/update}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
+            <div class="form-section row" th:classappend="${!edit} ? 'view-mode' : ''">
                 <input type="hidden" th:field="*{profileId}" />
                 <!-- Họ tên -->
                 <div class="mb-3 row">
@@ -123,8 +140,7 @@
                 <div class="mb-3 row">
                     <label class="col-sm-3 col-form-label">Số điện thoại:</label>
                     <div class="col-sm-9">
-                        <input type="text" th:field="*{phone}" class="form-control"
-                               th:readonly="${!edit}" />
+                        <input type="text" th:field="*{phone}" class="form-control" readonly />
                         <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></div>
                     </div>
                 </div>
@@ -175,11 +191,11 @@
 
                 <!-- Nút điều hướng -->
                 <div class="text-end mt-4">
-                    <a th:if="${edit}" th:href="@{/customer/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
+                    <a th:if="${edit}" th:href="@{/profile}" class="btn btn-secondary btn-custom">Quay lại</a>
 
                     <button th:if="${edit}" type="submit" class="btn btn-success btn-custom">Lưu</button>
 
-                    <a th:if="${!edit}" th:href="@{/customer/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
+                    <a th:if="${!edit}" th:href="@{/profile/edit}" class="btn btn-primary btn-custom">Chỉnh sửa</a>
                 </div>
             </div>
         </form>
@@ -212,7 +228,7 @@
                 return;
             }
 
-            fetch(`/customer/wards?cityId=${cityId}`)
+            fetch(`/wards?cityId=${cityId}`)
                 .then(res => res.json())
                 .then(data => {
                     wardSelect.innerHTML = '<option value="">-- Phường/xã --</option>';

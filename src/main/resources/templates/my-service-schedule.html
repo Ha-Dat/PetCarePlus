@@ -371,39 +371,39 @@
             </li>
         </ul>
 
-            <!-- Bảng -->
-            <table class="table table-bordered bg-white align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>Thú cưng</th>
-                    <th>Dịch vụ</th>
-                    <th>Thời gian</th>
-                    <th>Trạng thái</th>
-                    <th style="width: 220px;">Hành động</th>
-                </tr>
+        <!-- Bảng lịch -->
+        <div class="schedule-table">
+            <table class="table">
+                <thead>
+                <!--                <tr>-->
+                <!--                    <th>Thú cưng</th>-->
+                <!--                    <th>Dịch vụ</th>-->
+                <!--                    <th>Thời gian</th>-->
+                <!--                    <th>Trạng thái</th>-->
+                <!--                    <th>Hành động</th>-->
+                <!--                </tr>-->
                 </thead>
-                <tbody id="schedule-table">
-                <tr th:each="s : ${schedules}"
-                    th:attr="data-id=${s.bookingId}"
-                    th:data-type="${s.serviceCategory.name()}"
-                    th:data-status="${s.status.name()}">
+                <tbody>
+                <tr th:each="s : ${schedules}">
                     <td th:text="${s.petName}"></td>
-                    <td th:text="${s.serviceName}"></td>
-                    <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="col-status" th:text="${s.status.value}"></td>
+                    <td th:text="${s.serviceCategory.value}"></td>
+                    <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
                     <td>
-                        <button class="btn btn-sm btn-info detail-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Chi tiết
-                        </button>
-                        <button class="btn btn-sm btn-danger cancel-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Hủy
-                        </button>
+                        <span th:class="'status-badge ' +
+                                     (${s.status.value == 'Chờ duyệt'} ? 'status-pending' :
+                                     (${s.status.value == 'Đã duyệt'} ? 'status-approved' :
+                                     (${s.status.value == 'Từ chối'} ? 'status-rejected' : 'status-cancelled')))"
+                              th:text="${s.status.value}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${s.status.value == 'Chờ duyệt'}">
+                            <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
+                               class="action-link"
+                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
+                                <i class="fas fa-times-circle"></i> Hủy
+                            </a>
+                        </span>
+                        <span th:if="${s.status.value != 'Chờ duyệt'}" class="text-muted">—</span>
                     </td>
                 </tr>
                 </tbody>

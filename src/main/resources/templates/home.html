@@ -89,35 +89,35 @@
         }
 
         /* Brand Logos */
-        .best-products {
+        .brand-logos {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            background: linear-gradient(to right, #fff5e1, #ffe9c7);
             padding: 30px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin: 40px 10px;
         }
 
-        .best-products > div {
+        .brand-logos > div {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .best-products h2 {
+        .brand-logos h2 {
             font-size: 24px;
             color: #333;
             margin-bottom: 8px;
         }
 
-        .best-products p {
+        .brand-logos p {
             color: #666;
             font-size: 16px;
             margin: 0;
         }
 
-        .best-products img {
+        .brand-logos img {
             width: 180px;
             height: auto;
             margin: 0 20px;
@@ -127,73 +127,16 @@
             padding: 10px;
         }
 
-        .best-products img:hover {
+        .brand-logos img:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .best-products-images {
+        .brand-logos-images {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 30px;
-        }
-
-        /* Best Selling Products Styling */
-        .best-selling-product {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            min-width: 250px;
-            text-align: center;
-        }
-
-        .best-selling-product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .best-selling-product .product-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .best-selling-product .product-image {
-            width: 200px;
-            max-width: 200px;
-            height: 180px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            object-fit: cover;
-        }
-
-        .best-selling-product .product-info {
-            text-align: center;
-        }
-
-        .best-selling-product .product-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin: 10px 0 8px 0;
-            line-height: 1.3;
-        }
-
-        .best-selling-product .product-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin: 8px 0;
-        }
-
-        .best-selling-product .product-sold {
-            font-size: 14px;
-            color: #666;
-            margin: 5px 0;
-            font-style: italic;
         }
 
         /* Main Section Breadcrumb */
@@ -523,29 +466,15 @@
         </section>
     </div>
 
-    <section class="best-products">
+    <section class="brand-logos">
         <div>
-            <h2>Top 3 Sản phẩm bán chạy nhất</h2>
-            <p>Những sản phẩm được yêu thích nhất</p>
+            <h2>Thương hiệu</h2>
+            <p>Top các thương hiệu hàng đầu</p>
         </div>
-        <div class="best-products-images">
-            <div th:each="product, iterStat : ${top3BestSellingProducts}" th:if="${iterStat.index < 3}" class="best-selling-product">
-                <a th:href="@{/product-detail(productId=${product.productId})}" class="product-link">
-                    <img th:if="${!#lists.isEmpty(product.medias)}"
-                         th:src="@{${product.medias[0].url}}"
-                         th:alt="${product.name}"
-                         class="product-image">
-                    <img th:if="${#lists.isEmpty(product.medias)}"
-                         src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
-                         th:alt="${product.name}"
-                         class="product-image">
-                    <div class="product-info">
-                        <h4 th:text="${product.name}" class="product-name"></h4>
-                        <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></p>
-                        <p class="product-sold" th:text="'Đã bán: ' + ${product.unitSold} + ' sản phẩm'"></p>
-                    </div>
-                </a>
-            </div>
+        <div class="brand-logos-images">
+            <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Me-o">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Royal Canin">
+            <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Nutrience">
         </div>
     </section>
 
