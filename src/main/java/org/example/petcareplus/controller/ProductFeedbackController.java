@@ -80,16 +80,18 @@ public class ProductFeedbackController {
             Product product = productOpt.get();
             
             // Kiểm tra xem user đã mua sản phẩm này chưa
-            if (!hasUserPurchasedProduct(account.getAccountId(), productId)) {
+            int purchaseCount = getUserPurchaseCount(account.getAccountId(), productId);
+            if (purchaseCount == 0) {
                 response.put("success", false);
                 response.put("message", "Bạn phải mua sản phẩm này trước khi đánh giá");
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Kiểm tra xem user đã feedback cho sản phẩm này chưa
-            if (hasUserAlreadyFeedback(account.getAccountId(), productId)) {
+            // Kiểm tra xem user đã feedback bao nhiêu lần
+            int feedbackCount = getUserFeedbackCount(account.getAccountId(), productId);
+            if (feedbackCount >= purchaseCount) {
                 response.put("success", false);
-                response.put("message", "Bạn đã đánh giá sản phẩm này rồi");
+                response.put("message", "Bạn đã đánh giá đủ số lần mua sản phẩm này");
                 return ResponseEntity.badRequest().body(response);
             }
             
@@ -139,12 +141,13 @@ public class ProductFeedbackController {
     }
     
     /**
-     * Kiểm tra xem user đã mua sản phẩm này chưa
+     * Đếm số lần user đã mua sản phẩm này
      */
-    private boolean hasUserPurchasedProduct(Long accountId, Long productId) {
+    private int getUserPurchaseCount(Long accountId, Long productId) {
         try {
             // Lấy tất cả order của user
             List<Order> userOrders = orderService.findOrdersByAccountId(accountId);
+            int count = 0;
             
             for (Order order : userOrders) {
                 // Chỉ xét những order đã hoàn thành
@@ -152,29 +155,29 @@ public class ProductFeedbackController {
                     // Kiểm tra từng item trong order
                     for (OrderItem item : order.getOrderItems()) {
                         if (item.getProduct().getProductId().equals(productId)) {
-                            return true; // User đã mua sản phẩm này
+                            count += item.getQuantity(); // Cộng số lượng mua
                         }
                     }
                 }
             }
-            return false;
+            return count;
         } catch (Exception e) {
-            System.out.println("Error checking purchase status: " + e.getMessage());
-            return false;
+            System.out.println("Error checking purchase count: " + e.getMessage());
+            return 0;
         }
     }
     
     /**
-     * Kiểm tra xem user đã feedback cho sản phẩm này chưa
+     * Đếm số lần user đã feedback cho sản phẩm này
      */
-    private boolean hasUserAlreadyFeedback(Long accountId, Long productId) {
+    private int getUserFeedbackCount(Long accountId, Long productId) {
         try {
             // Kiểm tra xem đã có feedback nào của user này cho sản phẩm này chưa
             List<ProductFeedback> existingFeedbacks = productFeedbackService.findByProductIdAndAccountId(productId, accountId);
-            return !existingFeedbacks.isEmpty();
+            return existingFeedbacks.size();
         } catch (Exception e) {
-            System.out.println("Error checking existing feedback: " + e.getMessage());
-            return false;
+            System.out.println("Error checking feedback count: " + e.getMessage());
+            return 0;
         }
     }
     

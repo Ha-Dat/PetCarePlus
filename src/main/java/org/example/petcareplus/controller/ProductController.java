@@ -122,14 +122,18 @@ public class ProductController {
             Account currentUser = (Account) session.getAttribute("loggedInUser");
             boolean canFeedback = false;
             boolean hasAlreadyFeedback = false;
+            int purchaseCount = 0;
+            int feedbackCount = 0;
             
             if (currentUser != null) {
-                // Kiểm tra xem user đã mua sản phẩm này chưa
-                canFeedback = hasUserPurchasedProduct(currentUser.getAccountId(), productId);
+                // Đếm số lần user đã mua sản phẩm này
+                purchaseCount = getUserPurchaseCount(currentUser.getAccountId(), productId);
+                canFeedback = purchaseCount > 0;
                 
-                // Kiểm tra xem user đã feedback cho sản phẩm này chưa
+                // Đếm số lần user đã feedback cho sản phẩm này
                 if (canFeedback) {
-                    hasAlreadyFeedback = !productFeedbackService.findByProductIdAndAccountId(productId, currentUser.getAccountId()).isEmpty();
+                    feedbackCount = getUserFeedbackCount(currentUser.getAccountId(), productId);
+                    hasAlreadyFeedback = feedbackCount >= purchaseCount;
                 }
             }
             
@@ -147,6 +151,8 @@ public class ProductController {
             model.addAttribute("canFeedback", canFeedback);
             model.addAttribute("hasAlreadyFeedback", hasAlreadyFeedback);
             model.addAttribute("currentUser", currentUser);
+            model.addAttribute("purchaseCount", purchaseCount);
+            model.addAttribute("feedbackCount", feedbackCount);
             return "product-detail";
         } else {
             return "error/404";
@@ -154,12 +160,13 @@ public class ProductController {
     }
     
     /**
-     * Kiểm tra xem user đã mua sản phẩm này chưa
+     * Đếm số lần user đã mua sản phẩm này
      */
-    private boolean hasUserPurchasedProduct(Long accountId, Long productId) {
+    private int getUserPurchaseCount(Long accountId, Long productId) {
         try {
             // Lấy tất cả order của user
             List<Order> userOrders = orderService.findOrdersByAccountId(accountId);
+            int count = 0;
             
             for (Order order : userOrders) {
                 // Chỉ xét những order đã hoàn thành
@@ -167,15 +174,30 @@ public class ProductController {
                     // Kiểm tra từng item trong order
                     for (OrderItem item : order.getOrderItems()) {
                         if (item.getProduct().getProductId().equals(productId)) {
-                            return true; // User đã mua sản phẩm này
+                            count += item.getQuantity(); // Cộng số lượng mua
                         }
                     }
                 }
             }
-            return false;
+            return count;
         } catch (Exception e) {
-            System.out.println("Error checking purchase status: " + e.getMessage());
-            return false;
+            System.out.println("Error checking purchase count: " + e.getMessage());
+            return 0;
+        }
+    }
+    
+    /**
+     * Đếm số lần user đã feedback cho sản phẩm này
+     */
+    private int getUserFeedbackCount(Long accountId, Long productId) {
+        try {
+            // Kiểm tra xem đã có feedback nào của user này cho sản phẩm này chưa
+            List<ProductFeedback> existingFeedbacks = productFeedbackService.findByProductIdAndAccountId(productId, accountId);
+            return existingFeedbacks.size();
+        } catch (Exception e) {
+            System.out.println("Error checking feedback count: " + e.getMessage());
+            return 0;
         }
     }
 }
+

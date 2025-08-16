@@ -1023,7 +1023,14 @@
                 <!-- Message for users who already feedback -->
                 <div class="already-feedback-message" th:if="${hasAlreadyFeedback}">
                     <p style="color: #2e7d32; font-style: italic; text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
-                        Cảm ơn bạn đã đánh giá sản phẩm này!
+                        Cảm ơn bạn đã đánh giá sản phẩm này! Bạn đã mua <span th:text="${purchaseCount}">0</span> lần và đã đánh giá <span th:text="${feedbackCount}">0</span> lần.
+                    </p>
+                </div>
+                
+                <!-- Message for users who can still feedback -->
+                <div class="can-feedback-message" th:if="${canFeedback && !hasAlreadyFeedback}">
+                    <p style="color: #2e7d32; font-style: italic; text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        Bạn đã mua sản phẩm này <span th:text="${purchaseCount}">0</span> lần và đã đánh giá <span th:text="${feedbackCount}">0</span> lần. Bạn còn <span th:text="${purchaseCount - feedbackCount}">0</span> lần đánh giá nữa.
                     </p>
                 </div>
                 <div class="feedback-summary">
@@ -1319,10 +1326,24 @@
                              feedbackFormContainer.style.display = 'none';
                          }
                          
+                         // Ẩn message "có thể feedback"
+                         const canFeedbackMessage = document.querySelector('.can-feedback-message');
+                         if (canFeedbackMessage) {
+                             canFeedbackMessage.style.display = 'none';
+                         }
+                         
                          // Hiển thị message đã feedback
                          const alreadyFeedbackMessage = document.querySelector('.already-feedback-message');
                          if (alreadyFeedbackMessage) {
                              alreadyFeedbackMessage.style.display = 'block';
+                             // Cập nhật thông tin số lần mua và feedback
+                             const purchaseCountSpan = alreadyFeedbackMessage.querySelector('span:nth-child(1)');
+                             const feedbackCountSpan = alreadyFeedbackMessage.querySelector('span:nth-child(2)');
+                             if (purchaseCountSpan && feedbackCountSpan) {
+                                 const currentPurchaseCount = parseInt(purchaseCountSpan.textContent);
+                                 const currentFeedbackCount = parseInt(feedbackCountSpan.textContent);
+                                 feedbackCountSpan.textContent = currentFeedbackCount + 1;
+                             }
                          } else {
                              // Tạo message nếu chưa có
                              const messageDiv = document.createElement('div');
