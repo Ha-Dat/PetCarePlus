@@ -518,33 +518,37 @@
 <div id="promotionDetailModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
         <h2>Chi tiết khuyến mãi</h2>
-        <form id="promotionDetailForm">
-            <input type="hidden" id="detailId">
+        <form id="promotionDetailForm" enctype="multipart/form-data">
+            <input type="hidden" id="detailId" name="promotionId">
 
             <label for="detailTitle">Mã<span style="color: red">*</span>:</label>
-            <input type="text" id="detailTitle" readonly>
+            <input type="text" id="detailTitle" name="title" required maxlength="20" pattern="[A-Za-z0-9]+">
 
             <label for="detailDescription">Mô tả:<span style="color: red">*</span></label>
-            <textarea id="detailDescription" rows="3" readonly></textarea>
+            <textarea id="detailDescription" name="description" rows="3" required maxlength="200"></textarea>
 
             <label for="detailDiscount">Giảm giá (%):<span style="color: red">*</span></label>
-            <input type="text" id="detailDiscount" readonly>
+            <input type="number" id="detailDiscount" name="discount" min="1" max="100" required>
 
             <label for="detailStart">Ngày bắt đầu:<span style="color: red">*</span></label>
-            <input type="text" id="detailStart" readonly>
+            <input type="datetime-local" id="detailStart" name="startDate" required>
 
             <label for="detailEnd">Ngày kết thúc:<span style="color: red">*</span></label>
-            <input type="text" id="detailEnd" readonly>
+            <input type="datetime-local" id="detailEnd" name="endDate" required>
 
             <label for="detailStatus">Trạng thái:<span style="color: red">*</span></label>
-            <input type="text" id="detailStatus" readonly>
+            <select id="detailStatus" name="status" required>
+                <option value="ACTIVE">Đang hoạt động</option>
+                <option value="INACTIVE">Ngừng hoạt động</option>
+            </select>
 
             <label>Hình ảnh:</label>
-            <div id="detailImages" class="image-preview">
-            </div>
+            <input type="file" name="imageFile" id="editImageFile" accept="image/*" onchange="previewEditImage(this)">
+            <div id="detailImages" class="mt-2"></div>
 
             <div class="modal-actions">
                 <button type="button" class="btn cancel" onclick="closeDetailModal()">Đóng</button>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
             </div>
         </form>
     </div>
@@ -596,7 +600,7 @@
     function openCreateModal() {
         document.getElementById("promotionCreateModal").style.display = "flex";
     }
-    
+
     function closeCreateModal() {
         document.getElementById("promotionCreateModal").style.display = "none";
     }
@@ -610,6 +614,8 @@
         }
     });
 
+    let originalStartDate = null;
+
     function viewDetails(el) {
         const id = el.getAttribute("data-id");
         fetch(`/seller/promotion/details/${id}`)
@@ -619,19 +625,26 @@
                 document.getElementById("detailTitle").value = data.title;
                 document.getElementById("detailDescription").value = data.description;
 
-                // Format discount: từ 0.2 => 20%
                 let discountValue = parseFloat(data.discount);
-                if (discountValue < 1) {
-                    discountValue = discountValue * 100;
-                }
-                document.getElementById("detailDiscount").value = discountValue + "%";
+                if (discountValue < 1) discountValue = discountValue * 100;
+                document.getElementById("detailDiscount").value = discountValue;
 
-                // Format date
-                document.getElementById("detailStart").value = formatDateTime(data.startDate);
-                document.getElementById("detailEnd").value = formatDateTime(data.endDate);
+                // Convert date về local datetime-local format
+                const startLocal = toDatetimeLocal(data.startDate);
+                const endLocal = toDatetimeLocal(data.endDate);
+
+                document.getElementById("detailStart").value = startLocal;
+                document.getElementById("detailEnd").value = endLocal;
 
                 document.getElementById("detailStatus").value = data.status;
 
+                // Lưu lại start date gốc (Date object)
+                originalStartDate = new Date(data.startDate);
+
+                // Reset min
+                applyStartDateMin();
+
+                // Load ảnh
                 const imagesContainer = document.getElementById("detailImages");
                 imagesContainer.innerHTML = "";
                 if (data.mediaUrls && data.mediaUrls.length > 0) {
@@ -650,16 +663,77 @@
             });
     }
 
-    // Hàm format datetime: "2025-07-01T00:00:00" => "01/07/2025 00:00"
-    function formatDateTime(dateTimeStr) {
-        const dateObj = new Date(dateTimeStr);
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const year = dateObj.getFullYear();
-        const hours = String(dateObj.getHours()).padStart(2, '0');
-        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    // Hàm set min start date theo rule
+    function applyStartDateMin() {
+        const startInput = document.getElementById("detailStart");
+        const endInput = document.getElementById("detailEnd");
+
+        const now = new Date();
+        const tzOffset = now.getTimezoneOffset() * 60000;
+        const localNowStr = new Date(now - tzOffset).toISOString().slice(0,16);
+
+        if (originalStartDate >= now) {
+            // Nếu start date gốc ở tương lai → không cho nhỏ hơn hiện tại
+            startInput.min = localNowStr;
+        } else {
+            // Nếu start date gốc ở quá khứ → không cho nhỏ hơn start date gốc
+            startInput.min = toDatetimeLocal(originalStartDate.toISOString());
+        }
+
+        // End date luôn >= start date
+        startInput.addEventListener("change", () => {
+            endInput.min = startInput.value;
+            if (endInput.value && endInput.value < startInput.value) {
+                endInput.value = startInput.value;
+            }
+        });
+
+        endInput.addEventListener("change", () => {
+            if (endInput.value < startInput.value) {
+                alert("Ngày kết thúc không được sớm hơn ngày bắt đầu!");
+                endInput.value = startInput.value;
+            }
+        });
     }
+
+    function toDatetimeLocal(dateStr) {
+        const date = new Date(dateStr);
+        const off = date.getTimezoneOffset();
+        const local = new Date(date - off*60000);
+        return local.toISOString().slice(0,16);
+    }
+
+    function previewEditImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const previewDiv = document.getElementById("detailImages");
+        previewDiv.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = "120px";
+        img.style.maxHeight = "120px";
+        img.style.border = "2px solid #4caf50";
+        previewDiv.appendChild(img);
+    }
+
+    // Submit form update
+    document.getElementById("promotionDetailForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch("/seller/promotion/update", {
+            method: "POST",
+            body: formData
+        }).then(res => {
+            if (res.ok) {
+                alert("Cập nhật thành công!");
+                location.reload();
+            } else {
+                alert("Có lỗi khi cập nhật!");
+            }
+        });
+    });
 
     function closeDetailModal() {
         document.getElementById("promotionDetailModal").style.display = "none";
