@@ -97,7 +97,7 @@ public class StaffScheduleController {
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
 
-        return "schedule.html";
+        return "schedule";
     }
 
 
