@@ -332,11 +332,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul class="list-unstyled">
-            <li><a href="/customer/profile">Hồ Sơ</a></li>
-            <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
-            <li><a href="/customer/pet-profile">Hồ Sơ thú cưng</a></li>
-            <li><a href="/customer/list-order">Đơn mua</a></li>
-            <li><a href="/customer/my-schedule" class="active">Lịch</a></li>
+                    <li><a href="/profile">Hồ Sơ</a></li>
+        <li><a href="/change-password">Đổi mật khẩu</a></li>
+        <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
+        <li><a href="/list-order">Đơn mua</a></li>
+        <li><a href="/my-schedule" class="active">Lịch</a></li>
         </ul>
     </div>
 
@@ -404,7 +404,7 @@
                     </td>
                     <td>
                         <span th:if="${s.status.value == 'Chờ duyệt'}">
-                            <a th:href="@{'/customer/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
+                            <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
                                class="action-link"
                                onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
                                 <i class="fas fa-times-circle"></i> Hủy

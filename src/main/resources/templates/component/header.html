@@ -38,7 +38,7 @@
                         <button class="user-btn" style="background: #4caf50;" th:text="${'Chào, ' + session.loggedInUser.getName()}"></button>
                         <div class="dropdown-content">
                             <a th:if="${session.loggedInUser.role == T(org.example.petcareplus.enums.AccountRole).CUSTOMER}"
-                               href="/customer/profile" class="dashboard-link">
+                               href="/profile" class="dashboard-link">
                                 <i class="fas fa-tachometer-alt"></i> Trang cá nhân
                             </a>
 
