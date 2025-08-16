@@ -2,26 +2,26 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.example.petcareplus.dto.ChangePasswordDTO;
 import org.example.petcareplus.dto.ProfileDTO;
 import org.example.petcareplus.entity.*;
-import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.LocationService;
 import org.example.petcareplus.service.ProfileService;
-import org.example.petcareplus.util.PasswordHasher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
-// Bỏ /customer khỏi URL mapping
+@RequestMapping("/customer")
 public class ProfileController {
 
     @Autowired
@@ -32,9 +32,6 @@ public class ProfileController {
 
     @Autowired
     private LocationService locationService;
-
-    @Autowired
-    private AccountService accountService;
 
     @GetMapping("/profile")
     public String viewProfile(@RequestParam(value = "edit", defaultValue = "false") boolean edit,
@@ -102,44 +99,7 @@ public class ProfileController {
             return "profile";
         }
         profileService.updateProfile(profileDTO, account.getAccountId());
-        return "redirect:/profile";
+        return "redirect:/customer/profile";
     }
 
-    @GetMapping("/change-password")
-    public String showChangePassword(Model model, HttpSession session) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-        model.addAttribute("changePasswordDTO", new ChangePasswordDTO());
-        return "change-password";
-    }
-
-    @PostMapping("/change-password")
-    public String changePassword(@ModelAttribute("changePasswordDTO") @Valid ChangePasswordDTO changePasswordDTO,
-                                 BindingResult bindingResult,
-                                 HttpSession session,
-                                 Model model) {
-        Account account = (Account) session.getAttribute("loggedInUser");
-        if (account == null) return "redirect:/login";
-
-        if (bindingResult.hasErrors()) {
-            return "change-password"; // Giữ lại các giá trị đã nhập
-        }
-
-        if (!account.getPassword().equals(PasswordHasher.hash(changePasswordDTO.getOldPassword()))) {
-            model.addAttribute("error", "Mật khẩu cũ không chính xác.");
-            return "change-password";
-        }
-        if (!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword())) {
-            model.addAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không khớp nhau.");
-            return "change-password";
-        }
-        if(changePasswordDTO.getOldPassword().equals(changePasswordDTO.getNewPassword())) {
-            model.addAttribute("error", "Mật khẩu mới phải khác mật khẩu cũ.");
-            return "change-password";
-        }
-        account.setPassword(PasswordHasher.hash(changePasswordDTO.getNewPassword()));
-        accountService.save(account);
-        model.addAttribute("success", "Đổi mật khẩu thành công!");
-        return "change-password";
-    }
 }

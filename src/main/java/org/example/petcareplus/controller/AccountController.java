@@ -43,10 +43,81 @@ public class    AccountController {
         model.addAttribute("registerDTO", new RegisterDTO());
         return "register";
     }
-    
+
+    @GetMapping("/verify")
+    public String showVerifyPage() {
+        return "verify";
+    }
+
+    @PostMapping("/verify")
+    public String verifyOtp(@RequestParam("otp") String otpInput,
+                            RedirectAttributes redirectAttributes,
+                            HttpSession session,
+                            Model model) {
+        Long accountId = (Long) session.getAttribute("loggedInUser");
+        if (accountId == null) return "redirect:/login";
+
+        Optional<Account> accountOpt = accountService.findById(accountId);
+        if (accountOpt.isEmpty()) return "redirect:/login";
+
+        Account account = accountOpt.get();
+
+        if (account.getOtp() == null || account.getOtpExpiry() == null ||
+                account.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            model.addAttribute("error", "Mã OTP đã hết hạn. Vui lòng gửi lại.");
+            return "verify";
+        }
+
+        if (!account.getOtp().equals(otpInput)) {
+            model.addAttribute("error", "Mã OTP không chính xác.");
+            return "verify";
+        }
+
+        // Nếu đúng thì ACTIVE và xóa OTP
+        account.setStatus(AccountStatus.ACTIVE);
+        account.setOtp(null);
+        account.setOtpExpiry(null);
+        accountService.save(account);
+
+        session.removeAttribute("loggedInUser");
+        redirectAttributes.addFlashAttribute("message", "Đăng ký thành công! Hãy đăng nhập.");
+
+        return "redirect:/login";
+    }
+
+    @GetMapping("/resend-otp")
+    public String resendOtp(HttpSession session, RedirectAttributes redirectAttributes) {
+        Long accountId = (Long) session.getAttribute("loggedInUser");
+        if (accountId == null) return "redirect:/login";
+
+        Optional<Account> accountOpt = accountService.findById(accountId);
+        if (accountOpt.isEmpty()) return "redirect:/login";
+
+        Account account = accountOpt.get();
+
+        // Tạo OTP mới
+        String newOtp = String.format("%06d", (int)(Math.random() * 1_000_000));
+        account.setOtp(newOtp);
+        account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+
+        accountService.save(account);
+
+        String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
+        account.setOtp(otp);
+        account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        account.setStatus(AccountStatus.INACTIVE);
+        accountService.save(account);
+
+        // Gửi OTP qua SMS hoặc log ra console (tạm thời)
+        System.out.println("Mã OTP mới của bạn: " + newOtp);
+
+        redirectAttributes.addFlashAttribute("message", "Mã OTP đã được gửi lại.");
+        return "redirect:/verify";
+    }
+
+
     @PostMapping("/register")
     public String register(@ModelAttribute("registerDTO") @Valid RegisterDTO registerDTO,
-                           RedirectAttributes redirectAttributes,
                            BindingResult result,
                            HttpSession session,
                            Model model) {
@@ -65,15 +136,27 @@ public class    AccountController {
             return "register";
         }
 
-        // Tạo tài khoản với trạng thái ACTIVE (không cần OTP verification)
+        // Tạo tài khoản với trạng thái PENDING
         Account account = new Account();
         account.setName(registerDTO.getName());
         account.setPhone(registerDTO.getPhone());
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
         account.setRole(AccountRole.CUSTOMER);
-        account.setStatus(AccountStatus.ACTIVE); // Kích hoạt ngay lập tức
+        account.setStatus(AccountStatus.INACTIVE);
+
+        // Sinh OTP
+        String otp = String.format("%06d", (int)(Math.random() * 1_000_000));
+        account.setOtp(otp);
+        account.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        account.setStatus(AccountStatus.INACTIVE); // chưa kích hoạt
 
         accountService.save(account);
+
+        // Log OTP ra console (tạm thời)
+        System.out.println("OTP của bạn là: " + otp);
+
+        // Lưu vào session để verify
+        session.setAttribute("loggedInUser", account.getAccountId());
 
         // Tạo hồ sơ người dùng nếu chưa có
         Profile existingProfile = accountService.getProfileByAccountAccountId(account.getAccountId());
@@ -82,10 +165,7 @@ public class    AccountController {
             existingProfile.setAccount(account);
         }
         accountService.profileSave(existingProfile);
-
-        // Chuyển về trang login với thông báo thành công
-        redirectAttributes.addFlashAttribute("message", "Đăng ký thành công! Hãy đăng nhập.");
-        return "redirect:/login";
+        return "redirect:/verify";
     }
 
     @PostMapping("/login")
@@ -171,21 +251,5 @@ public class    AccountController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
-    }
-
-    /**
-     * Hiển thị trang reset password
-     */
-    @GetMapping("/reset-password")
-    public String showResetPasswordForm(Model model) {
-        return "reset-password";
-    }
-
-    /**
-     * Hiển thị trang quên mật khẩu
-     */
-    @GetMapping("/forgot-password")
-    public String showForgotPasswordForm(Model model) {
-        return "forgot-password";
     }
 }

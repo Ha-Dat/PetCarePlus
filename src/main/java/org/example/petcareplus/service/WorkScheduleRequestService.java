@@ -19,6 +19,4 @@ public interface WorkScheduleRequestService {
     WorkScheduleRequest save(WorkScheduleRequest workScheduleRequest);
 
     Optional<WorkScheduleRequest> findById(Long id);
-
-    void deleteById(Long id);
 }

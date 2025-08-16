@@ -17,21 +17,21 @@ public class Prescription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long prescriptionId;
 
-    @Column(name = "drug_name" , nullable = false)
-    private String drugName;
+    private String prescriptionNote;
 
-    @Column(nullable = false)
-    private String amount;
-
-    @Column(nullable = false)
-    private String note;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "appointment_id", unique = true, nullable = false)
     private AppointmentBooking appointment;
 
     public void setAppointment(AppointmentBooking appointment) {
-        this.appointment = appointment;
+        // Business rule: only allow linking to appointments with service category APPOINTMENT
+        if (appointment != null &&
+                appointment.getService() != null &&
+                appointment.getService().getServiceCategory() == ServiceCategory.APPOINTMENT) {
+            this.appointment = appointment;
+        } else {
+            throw new IllegalArgumentException("Prescription can only be linked to appointments with service category APPOINTMENT.");
+        }
     }
 
     public Long getPrescriptionId() {
@@ -42,28 +42,12 @@ public class Prescription {
         this.prescriptionId = prescriptionId;
     }
 
-    public String getDrugName() {
-        return drugName;
+    public String getPrescriptionNote() {
+        return prescriptionNote;
     }
 
-    public void setDrugName(String drugName) {
-        this.drugName = drugName;
-    }
-
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
+    public void setPrescriptionNote(String prescriptionNote) {
+        this.prescriptionNote = prescriptionNote;
     }
 
     public AppointmentBooking getAppointment() {

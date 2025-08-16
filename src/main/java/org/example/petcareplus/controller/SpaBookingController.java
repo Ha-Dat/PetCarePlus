@@ -104,20 +104,6 @@ public class SpaBookingController {
         return "Không tìm thấy lịch";
     }
 
-    @PostMapping("/pet-groomer/list-spa-booking/complete-spa/{id}")
-    @ResponseBody
-    public String completeSpaBooking(@PathVariable("id") Long id){
-        Optional<SpaBooking> booking = spaBookingService.findById(id);
-        if (booking.isPresent()) {
-            SpaBooking spaBooking = booking.get();
-            spaBooking.setStatus(BookingStatus.COMPLETED);
-            spaBookingService.save(spaBooking);
-            return "Xác nhận hoàn thành đơn thành công!";
-        }
-        return "Không tìm thấy lịch";
-    }
-
-
     @GetMapping("/spa-booking-form")
     public String showSpaBookingForm(HttpSession session, Model model) {
         List<Category> parentCategories = categoryService.getParentCategory();

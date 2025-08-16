@@ -497,23 +497,15 @@
                                     Xem chi tiết
                                 </button>
 
-                                <button th:if="${spaBooking.status.name() == 'PENDING'}"
-                                        class="dropdown-item confirm-btn"
+                                <button class="dropdown-item confirm-btn"
                                         th:data-id="${spaBooking.spaBookingId}"
                                         onclick="acceptBooking(this)">
                                     Duyệt
                                 </button>
-                                <button th:if="${spaBooking.status.name() == 'PENDING'}"
-                                        class="dropdown-item reject-btn"
+                                <button class="dropdown-item reject-btn"
                                         th:data-id="${spaBooking.spaBookingId}"
                                         onclick="rejectBooking(this)">
                                     Từ chối
-                                </button>
-                                <button th:if="${spaBooking.status.name() == 'ACCEPTED'}"
-                                        class="dropdown-item reject-btn" style="color: #007bff"
-                                        th:data-id="${spaBooking.spaBookingId}"
-                                        onclick="completeBooking(this)">
-                                    Hoàn Thành
                                 </button>
                             </div>
                         </div>
@@ -618,25 +610,6 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert("Có lỗi xảy ra khi từ chối.");
-                });
-        }
-    }
-
-    function completeBooking(button) {
-        const id = button.dataset.id;
-
-        if (confirm("Bạn có chắc muốn hoàn thành booking ID " + id + " không?")) {
-            fetch(`/pet-groomer/list-spa-booking/complete-spa/${id}`, {
-                method: 'POST'
-            })
-                .then(response => response.text())
-                .then(data => {
-                    alert(data);
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi hoàn thành.");
                 });
         }
     }

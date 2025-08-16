@@ -1,8 +1,6 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.*;
@@ -15,14 +13,11 @@ import org.example.petcareplus.repository.PetProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -119,7 +114,7 @@ public class AppointmentController {
             booking.setService(service.get());
 
             appointmentService.save(booking);
-            return "redirect:/appointment-booking-form";
+            return "redirect:/vet/appointment-booking-form";
 
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi đặt lịch: " + e.getMessage());
@@ -136,20 +131,14 @@ public class AppointmentController {
         Page<AppointmentBooking> approvedPage = appointmentService.getApprovedAppointments(PageRequest.of(page, size));
 
         // ✅ This must return a List
-        List<Prescription> AllPrescriptions = prescriptionService.findAll();
+        List<Prescription> prescriptions = prescriptionService.findAll();
 
-        List<Map<String, String>> prescriptions = AllPrescriptions.stream()
-                .map(p -> Map.of(
-                        "appointmentId", p.getAppointment().getAppointmentBookingId().toString(),
-                        "prescriptionId", p.getPrescriptionId().toString(),
-                        "prescriptionDrugName", p.getDrugName(),
-                        "prescriptionAmount", p.getAmount(),
-                        "prescriptionNote", p.getNote()
-                ))
-                .collect(Collectors.toList());
+        // ✅ Build a map of appointmentId -> prescription
+        Map<Long, Prescription> prescriptionMap = prescriptions.stream()
+                .collect(Collectors.toMap(p -> p.getAppointment().getAppointmentBookingId(), Function.identity()));
 
         model.addAttribute("appointments", approvedPage.getContent());
-        model.addAttribute("prescriptions", prescriptions);
+        model.addAttribute("prescriptionMap", prescriptionMap);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", approvedPage.getTotalPages());
@@ -201,34 +190,6 @@ public class AppointmentController {
         return "redirect:/vet/appointment/pending?error=true"; // or some error page
     }
 
-    @GetMapping("/vet/appointment/completed")
-    public String completedPage(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size,
-                                Model model) {
-        if (page < 0) page = 0;
-
-        Page<AppointmentBooking> completedAppointments = appointmentService.getCompletedAppointments(PageRequest.of(page, size));
-
-        model.addAttribute("appointments", completedAppointments.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("size", size);
-        model.addAttribute("totalPages", completedAppointments.getTotalPages());
-        model.addAttribute("mode", "completed");
-        return "appointment"; // Sử dụng cùng template như các trang khác
-    }
-
-    @PostMapping("/vet/appointment/complete/{id}")
-    public String completeAppointment(@PathVariable("id") Long id) {
-        Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
-        if (appointmentBooking.isPresent()) {
-            AppointmentBooking appointment = appointmentBooking.get();
-            appointment.setStatus(BookingStatus.COMPLETED);
-            appointmentService.save(appointment);
-            return "redirect:/vet/appointment/completed"; // This tells Spring to redirect
-        }
-        return "redirect:/vet/appointment/pending?error=true"; // or some error page
-    }
-
     @PostMapping("/vet/appointment/disapprove/{id}")
     public String disapproveAppointment(@PathVariable("id") Long id) {
         Optional<AppointmentBooking> appointmentBooking = appointmentService.findById(id);
@@ -241,54 +202,38 @@ public class AppointmentController {
         return "redirect:/vet/appointment/pending?error=true";
     }
 
+    @PostMapping("/vet/appointment/createPrescription")
+    public ResponseEntity<String> createPrescription(@RequestBody PrescriptionDTO dto) {
+        Optional<AppointmentBooking> optionalAppointment = appointmentService.findById(dto.getAppointmentId());
 
-@GetMapping("/vet/appointment/prescriptions")
-public ResponseEntity<List<PrescriptionDTO>> getPrescriptionsByAppointment(@RequestParam Long appointmentId) {
-    List<PrescriptionDTO> prescriptions = prescriptionService.getPrescriptionsByAppointmentId(appointmentId);
-    return ResponseEntity.ok(prescriptions);
-}
-
-    @PostMapping("/vet/appointment/prescriptions")
-    public ResponseEntity<?> createPrescription(
-            @Valid @RequestBody PrescriptionDTO prescriptionDTO,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            // Trả về thông báo lỗi chi tiết
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error ->
-                    errors.put(error.getField(), error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
+        if (optionalAppointment.isEmpty()) {
+            return ResponseEntity.badRequest().body("Appointment not found.");
         }
 
-        try {
-            PrescriptionDTO createdPrescription = prescriptionService.createPrescription(prescriptionDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdPrescription);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", e.getMessage()));
-        }
-    }
+        AppointmentBooking appointment = optionalAppointment.get();
 
-    @PutMapping("/vet/appointment/prescriptions/{prescriptionId}")
-    public ResponseEntity<PrescriptionDTO> updatePrescription(
-            @PathVariable Long prescriptionId,
-            @Valid @RequestBody PrescriptionDTO prescriptionDTO) {
-
-        // Đảm bảo ID trong path và DTO khớp nhau
-        if (!prescriptionId.equals(prescriptionDTO.getPrescriptionId())) {
-            throw new IllegalArgumentException("Path ID and body ID must match");
+        // Chỉ cho phép tạo đơn thuốc nếu service category là APPOINTMENT
+        if (appointment.getService() == null ||
+                appointment.getService().getServiceCategory() != ServiceCategory.APPOINTMENT) {
+            return ResponseEntity.badRequest().body("Không thể tạo đơn thuốc cho dịch vụ không phải loại 'appointment'.");
         }
 
-        PrescriptionDTO updatedPrescription = prescriptionService.updatePrescription(prescriptionDTO);
-        return ResponseEntity.ok(updatedPrescription);
+        // Check if prescription already exists
+        Optional<Prescription> optionalPrescription = Optional.ofNullable(prescriptionService.findByAppointmentId(dto.getAppointmentId()));
+
+        Prescription prescription;
+        if (optionalPrescription.isPresent()) {
+            // Update existing prescription
+            prescription = optionalPrescription.get();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+        } else {
+            // Create new prescription
+            prescription = new Prescription();
+            prescription.setPrescriptionNote(dto.getPrescriptionNote());
+            prescription.setAppointment(appointment);
+        }
+
+        prescriptionService.save(prescription);
+        return ResponseEntity.ok("Thêm đơn thuốc thành công.");
     }
-
-    @DeleteMapping("/vet/appointment/prescriptions/{prescriptionId}")
-    public ResponseEntity<Void> deletePrescription(@PathVariable Long prescriptionId) {
-        prescriptionService.deletePrescription(prescriptionId);
-        return ResponseEntity.noContent().build();
-    }
-
-
 }

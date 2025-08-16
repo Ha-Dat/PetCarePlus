@@ -1,7 +1,5 @@
 package org.example.petcareplus.enums;
 
-import java.util.Arrays;
-
 public enum Shift {
     MORNING("Ca sáng"), AFTERNOON("Ca chiều"), EVENING("Ca tối");
 
@@ -10,9 +8,4 @@ public enum Shift {
     Shift(String value) {
         this.value = value;
     }
-
-    public String getValue() {
-        return value;
-    }
-
 }

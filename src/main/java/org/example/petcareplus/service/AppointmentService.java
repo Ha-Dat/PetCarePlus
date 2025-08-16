@@ -18,8 +18,6 @@ public interface AppointmentService {
 
     Page<AppointmentBooking> getHistoryAppointments(Pageable pageable);
 
-    Page<AppointmentBooking> getCompletedAppointments(Pageable pageable);
-
     AppointmentBooking save(AppointmentBooking appointment);
 
     Optional<AppointmentBooking> findById(Long id);

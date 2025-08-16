@@ -13,8 +13,8 @@ public class RegisterDTO {
     private String phone;
 
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,50}$",
-            message = "Mật khẩu phải có ít nhất 8 và ít hơn 50 ký tự, gồm chữ hoa, chữ thường, số và không chứa khoảng trắng"
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
+            message = "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và không chứa khoảng trắng"
     )
     private String password;
 

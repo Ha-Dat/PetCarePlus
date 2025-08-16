@@ -2,7 +2,6 @@ package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.dto.PostDTO;
 import org.example.petcareplus.entity.*;
-import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.MediaCategory;
 import org.example.petcareplus.enums.Rating;
 import org.example.petcareplus.repository.*;
@@ -72,17 +71,13 @@ public class ForumServiceImpl implements ForumService {
         List<Media> medias = new ArrayList<>();
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
+        post.setChecked(false);
 
         // Gán account
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         post.setAccount(account);
 
-        if(account.getRole().equals(AccountRole.ADMIN) || account.getRole().equals(AccountRole.MANAGER)){
-            post.setChecked(true);
-        } else {
-            post.setChecked(false);
-        }
 
         // Lưu ảnh
         if (!postDTO.getImageFiles().isEmpty()) {
@@ -117,19 +112,13 @@ public class ForumServiceImpl implements ForumService {
     }
 
     @Transactional
-    public void updatePost(PostDTO postDTO, Long accountId) {
+    public void updatePost(PostDTO postDTO) {
         Post existingPost = postRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         existingPost.setTitle(postDTO.getTitle());
         existingPost.setDescription(postDTO.getDescription());
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        if(account.getRole().equals(AccountRole.ADMIN) || account.getRole().equals(AccountRole.MANAGER)){
-            existingPost.setChecked(true);
-        } else {
-            existingPost.setChecked(false);
-        }
+        existingPost.setChecked(false);
 
         // Lấy media cũ trong DB
         List<Media> existingMedias = mediaRepository.findByPost_postId(existingPost.getPostId());

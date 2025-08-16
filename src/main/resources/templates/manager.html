@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manager dashboard</title>
+    <title>Doctor dashboard</title>
     <style>
         body {
             margin: 0;
@@ -144,10 +144,10 @@
         .modal-box {
             background: white;
             border-radius: 16px;
-            max-width: 1200px;
+            max-width: 600px;
             width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-height: 90vh; /* 👈 giới hạn chiều cao */
+            overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
             padding: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
@@ -391,14 +391,13 @@
         .modal-box {
             background: white;
             border-radius: 16px;
-            max-width: 1200px;
-            width: fit-content;
+            max-width: 600px;
+            width: 100%;
             max-height: 90vh; /* 👈 giới hạn chiều cao */
             overflow-y: auto; /* 👈 thêm scroll khi nội dung dài */
             padding: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
-            collapse: auto;
         }
 
         .modal-box label {
@@ -420,25 +419,6 @@
 
         .modal-box textarea {
             resize: vertical;
-        }
-
-        .action-dropdown {
-            display: inline-block;
-        }
-
-        /* Button 3 chấm */
-        .dropdown-toggle {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-toggle:hover {
-            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -489,143 +469,12 @@
     </main>
 </div>
 
-<div id="scheduleModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="modalTitle">Lịch làm việc</h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalScheduleTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Ghi chú</th>
-                    <th>Trạng thái</th>
-                    <th>Chỉnh sửa</th>
-                </tr>
-                </thead>
-                <tbody id="modalScheduleBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeSchedulesModal()">Đóng</button>
-        </div>
-    </div>
-</div>
-
-<div id="offRequestModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="offRequestModalTitle"></h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalOffRequestTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Lý do</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody id="modalOffRequestBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeOffRequestsModal()">Đóng</button>
-        </div>
-    </div>
-</div>
-
-
-<div id="changeRequestModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="changeRequestModalTitle"></h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalChangeRequestTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Lý do</th>
-                    <th>Ngày muốn đổi</th>
-                    <th>Ca muốn đổi</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody id="modalChangeRequestBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeChangeRequestsModal()">Đóng</button>
-        </div>
-    </div>
-</div>
-
-<div id="editScheduleModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="editScheduleModalTitle">Chỉnh sửa lịch làm việc:</h2>
-        <form id="editScheduleForm" onsubmit="submitEditSchedule(event)">
-            <input type="hidden" id="editScheduleId" name="editScheduleId">
-            <input type="hidden" id="editAccountId" name="editAccountId">
-                <label for="editScheduleAccountName">Tên nhân viên:</label>
-                <input type="text" id="editScheduleAccountName" name="editScheduleAccountName" readonly>
-
-                <label for="editScheduleWorkDate">Ngày:</label>
-                <div class="date-input">
-                    <input
-                            type="date"
-                            id="editScheduleWorkDate"
-                            name="editScheduleWorkDate"
-                            required
-                    />
-                </div>
-
-                <label for="editScheduleShift">Ca làm *</label>
-                <select id="editScheduleShift" name="editScheduleShift" required>
-                    <option th:each="shi : ${shift}"
-                            th:value="${shi.name()}"
-                            th:text="${shi.value}"></option>
-                </select>
-
-                <label for="editScheduleStatus">Trạng thái *</label>
-                <select id="editScheduleStatus" name="editScheduleStatus" required>
-                    <option th:each="sta : ${scheduleStatus}"
-                            th:value="${sta.name()}"
-                            th:text="${sta.value}"></option>
-                </select>
-            <label for="editScheduleNote">Ghi chú:</label>
-            <textarea id="editScheduleNote" name="editScheduleNote" rows="3"></textarea>
-
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
 </div>
 
 <!-- Script -->
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    // Convert Java objects to JavaScript format
-    const schedules = /*[[${schedules}]]*/ [];
-    const absentRequests = /*[[${absentRequests}]]*/ [];
-    const shiftChangeRequests = /*[[${shiftChangeRequests}]]*/ [];
-</script>
 <script>
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
@@ -709,291 +558,72 @@
         }
     }
 
-
     function loadSchedule(weekStart) {
-        window.schedules = window.schedules || [];
-        window.absentRequests = window.absentRequests || [];
-        window.shiftChangeRequests = window.shiftChangeRequests || [];
-
-        const shiftMap = {
-            m: "MORNING",
-            a: "AFTERNOON",
-            e: "EVENING"
-        };
-
-        // First, set the day numbers in the header
-        const dateObj = new Date(weekStart);
-        for (let day = 1; day <= 7; day++) {
-            const dayElement = document.getElementById(`day${day}`);
-            if (dayElement) {
-                const currentDate = new Date(dateObj);
-                currentDate.setDate(dateObj.getDate() + (day - 1));
-                const dayNum = currentDate.getDate();
-                const monthNum = currentDate.getMonth() + 1;
-                dayElement.textContent = `${dayNum < 10 ? '0' : ''}${dayNum}/${monthNum < 10 ? '0' : ''}${monthNum}`;
-            }
-        }
-
-        // Then populate the schedule cells
-        for (let day = 1; day <= 7; day++) {
-            Object.entries(shiftMap).forEach(([prefix, shiftName]) => {
-                const cellId = `${prefix}${day}`;
+        // TODO: gọi API backend để lấy dữ liệu lịch tuần bắt đầu từ weekStart
+        for(let day=1; day<=7; day++) {
+            ['m','a','e'].forEach((prefix) => {
+                const cellId = prefix + day;
                 const cell = document.getElementById(cellId);
 
-                if (!cell) {
-                    console.error("Cell not found:", cellId);
-                    return;
-                }
+                const dateObj = new Date(weekStart);
+                dateObj.setDate(dateObj.getDate() + (day - 1));
+                const dateStr = dateObj.toISOString().split('T')[0];
 
-                const currentDate = new Date(dateObj);
-                currentDate.setDate(dateObj.getDate() + (day - 1));
+                // Work schedules count
+                const scheduleCount = 5;
 
-                // Format date as yyyy-MM-dd to match database
-                const dateStr = currentDate.toISOString().split('T')[0];
+                // Absent request count
+                const offCount = 5;
 
-                // Count schedules
-                const scheduleCount = Array.isArray(schedules) ? schedules.filter(s =>
-                    s.workDate === dateStr && s.shiftName === shiftName
-                ).length : 0;
-
-                // Count absent requests
-                const offCount = Array.isArray(absentRequests) ? absentRequests.filter(r =>
-                    r.workDate === dateStr && r.shiftName === shiftName
-                ).length : 0;
-
-                // Count shift change requests
-                const shiftChangeCount = Array.isArray(shiftChangeRequests) ? shiftChangeRequests.filter(r =>
-                    r.workDate === dateStr && r.shiftName === shiftName
-                ).length : 0;
+                // Shift change request count
+                const shiftChangeCount = 5;
 
                 cell.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
-                    <button onclick="openSchedulesModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Làm việc: ${scheduleCount}
-                    </button>
-                    <button onclick="openOffRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đơn xin nghỉ: ${offCount}
-                    </button>
-                    <button onclick="openChangeRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đổi lịch: ${shiftChangeCount}
-                    </button>
-                </div>
-            `;
+<div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Làm việc: ${scheduleCount}
+    </button>
+
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Đơn xin nghỉ: ${offCount}
+    </button>
+    <button
+        onclick="openSchedulesModal(this)"
+        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;"
+    >
+        Đơn xin nghỉ: ${shiftChangeCount}
+    </button>
+</div>
+`;
             });
         }
     }
 
+    function openSchedulesModal(element) {
+        const name = element.getAttribute('data-name');
+        const species = element.getAttribute('data-species');
+        const age = element.getAttribute('data-age');
+        const image = element.getAttribute('data-image');
+        const breeds = element.getAttribute('data-breeds');
+        const weight = element.getAttribute('data-weight');
 
-    function openSchedulesModal(date, shiftName) {
-        const modal = document.getElementById('scheduleModal');
-        const tbody = document.getElementById('modalScheduleBody');
-
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = schedules.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('modalTitle').textContent = `Lịch làm việc ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.note}</td>
-            <td>${sche.statusName}</td>
-            <td><a data-scheduleId="${sche.scheduleId}"
-            data-accountId="${sche.accountId}"
-   data-accountName="${sche.accountName}"
-   data-workDate="${sche.workDate}"
-   data-shiftName="${sche.shiftName}"
-   data-statusName="${sche.statusName}"
-   data-note="${sche.note}"
-   href="javascript:void(0)"
-   onclick="openEditScheduleModal(this)">
-    •••
-</a></td>
-        `;
-            tbody.appendChild(tr);
-        });
-
-        // Show modal
-        modal.style.display = 'flex';
+        document.getElementById("petName").value = name;
+        document.getElementById("petSpecies").value = species;
+        document.getElementById("petAge").value = age;
+        document.getElementById("petImagePreview").src = image || "";
+        document.getElementById("petBreeds").value = breeds;
+        document.getElementById("petWeight").value = weight;
+        document.getElementById("petProfile").style.display = "flex";
     }
 
     function closeSchedulesModal() {
-        document.getElementById('scheduleModal').style.display = 'none';
-    }
-
-    function openChangeRequestsModal(date, shiftName) {
-        const modal = document.getElementById('changeRequestModal');
-        const tbody = document.getElementById('modalChangeRequestBody');
-
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = shiftChangeRequests.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.reason}</td>
-            <td>${sche.requestDate}</td>
-            <td>${sche.requestShift}</td>
-            <td>${sche.status}</td>
-            <td><!-- Chấp nhận -->
-                            <form
-                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
-
-                            <!-- Không chấp nhận -->
-                            <form
-                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
-            </td>
-        `;
-            tbody.appendChild(tr);
-        });
-
-        // Show modal
-        modal.style.display = 'flex';
-    }
-
-    function closeChangeRequestsModal() {
-        document.getElementById('changeRequestModal').style.display = 'none';
-    }
-
-    function openOffRequestsModal(date, shiftName) {
-        const modal = document.getElementById('offRequestModal');
-        const tbody = document.getElementById('modalOffRequestBody');
-
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = absentRequests.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.reason}</td>
-            <td>${sche.status}</td>
-            <td><!-- Chấp nhận -->
-                            <form
-                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
-
-                            <!-- Không chấp nhận -->
-                            <form
-                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
-            </td>
-        `;
-            tbody.appendChild(tr);
-        });
-
-        // Show modal
-        modal.style.display = 'flex';
-    }
-
-    function closeOffRequestsModal() {
-        document.getElementById('offRequestModal').style.display = 'none';
-    }
-
-    function openEditScheduleModal(element) {
-
-        document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
-        document.getElementById("editScheduleWorkDate").value = element.getAttribute('data-workDate');
-        document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
-        document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
-        document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
-
-
-        document.getElementById("editScheduleModal").style.display = "flex";
-    }
-
-    function closeEditScheduleModal() {
-        document.getElementById('editScheduleModal').style.display = 'none';
-    }
-
-    function submitEditSchedule(event) {
-        event.preventDefault();
-
-        const form = document.getElementById('editScheduleForm');
-        const scheduleId = document.getElementById('editScheduleId').value;
-
-        const data = {
-            note: form.editScheduleNote.value.trim(),
-            status: form.editScheduleStatus.value.trim(),
-            accountId: parseInt(form.editAccountId.value),
-            workDate: form.editScheduleWorkDate.value,
-            shift:form.editScheduleShift.value.trim()
-        };
-
-        fetch(`/manager-dashboard/update/${scheduleId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.ok) {
-                closeEditScheduleModal();
-                showToast("Cập nhật lịch thành công!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast("Cập nhật lịch thất bại!", "error");
-            }
-        }).catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast("Có lỗi xảy ra khi cập nhật!", "error");
-        });
+        document.getElementById("Schedules").style.display = "none";
     }
 
     function onWeekChange() {

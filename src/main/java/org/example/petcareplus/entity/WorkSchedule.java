@@ -1,6 +1,5 @@
 package org.example.petcareplus.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,6 @@ public class WorkSchedule {
 
     @NotNull
     @Column(name="work_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate workDate;
 
     @NotNull
