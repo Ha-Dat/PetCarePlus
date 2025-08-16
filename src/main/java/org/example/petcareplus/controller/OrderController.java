@@ -10,6 +10,8 @@ import org.example.petcareplus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,7 @@ public class OrderController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/customer/list_order")
+    @GetMapping("/list-order")
     public String listOrder(HttpSession session,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
@@ -47,6 +49,8 @@ public class OrderController {
         List<Category> parentCategories = categoryService.getParentCategory();
         Page<Order> orderPage;
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderDate").descending());
+
         // Xử lý lọc theo trạng thái
         if (status != null && !status.isEmpty()) {
             try {
@@ -54,19 +58,19 @@ public class OrderController {
                 orderPage = orderService.findByAccount_AccountIdAndStatus(
                         account.getAccountId(),
                         orderStatus,
-                        PageRequest.of(page, size)
+                        pageable
                 );
             } catch (IllegalArgumentException e) {
                 // Nếu status không hợp lệ, lấy tất cả đơn hàng
                 orderPage = orderService.findByAccount_AccountId(
                         account.getAccountId(),
-                        PageRequest.of(page, size)
+                        pageable
                 );
             }
         } else {
             orderPage = orderService.findByAccount_AccountId(
                     account.getAccountId(),
-                    PageRequest.of(page, size)
+                    pageable
             );
         }
 
@@ -80,7 +84,7 @@ public class OrderController {
         return "my-order";
     }
 
-    @PostMapping("/customer/orders/{orderId}/cancel")
+    @PostMapping("/orders/{orderId}/cancel")
     public String cancelOrder(@PathVariable Long orderId,
                               HttpSession session,
                               RedirectAttributes redirectAttributes) {
@@ -97,12 +101,12 @@ public class OrderController {
             // Kiểm tra xem đơn hàng thuộc về người dùng hiện tại và có trạng thái PENDING không
             if (!order.getAccount().getAccountId().equals(account.getAccountId())) {
                 redirectAttributes.addFlashAttribute("error", "Bạn không có quyền hủy đơn hàng này");
-                return "redirect:/customer/list_order";
+                return "redirect:/list-order";
             }
 
             if (order.getStatus() != OrderStatus.PENDING) {
                 redirectAttributes.addFlashAttribute("error", "Chỉ có thể hủy đơn hàng ở trạng thái Chờ duyệt");
-                return "redirect:/customer/list_order";
+                return "redirect:/list-order";
             }
 
             // Cập nhật trạng thái đơn hàng
@@ -114,6 +118,6 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
         }
 
-        return "redirect:/customer/list_order";
+        return "redirect:/list-order";
     }
 }

@@ -2,27 +2,18 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
-import org.example.petcareplus.entity.Category;
-import jakarta.validation.Valid;
-import org.example.petcareplus.entity.HotelBooking;
+
 import org.example.petcareplus.entity.PetProfile;
-import org.example.petcareplus.service.CategoryService;
+
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -32,10 +23,9 @@ public class PetProfileController {
     @Autowired
     private PetProfileService petProfileService;
 
-    @Autowired
-    private CategoryService categoryService;
 
-    @GetMapping("/customer/pet-profile")
+
+    @GetMapping("/pet-profile")
     public String showPetProfilePage(Model model,
                                      HttpSession session,
                                      @RequestParam(value = "selectedId", required = false) Long selectedId) {
@@ -46,7 +36,6 @@ public class PetProfileController {
         }
 
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         PetProfile selectedPet = null;
 
@@ -58,12 +47,11 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", false);
         return "pet-profile";
     }
 
-    @PostMapping("/customer/pet-profile/edit")
+    @PostMapping("/pet-profile/edit")
     public String editPetProfile(@RequestParam("petId") Long petId,
                                  @RequestParam("name") String name,
                                  @RequestParam("species") String species,
@@ -87,10 +75,10 @@ public class PetProfileController {
             petProfileService.updatePetProfile(petId, existingPet);
         }
         
-        return "redirect:/customer/pet-profile?selectedId=" + petId;
+        return "redirect:/pet-profile?selectedId=" + petId;
     }
 
-    @PostMapping("/customer/pet-profile/add")
+    @PostMapping("/pet-profile/add")
     public String createNewPet(@RequestParam("name") String name,
                                @RequestParam("age") Integer age,
                                @RequestParam("species") String species,
@@ -122,7 +110,7 @@ public class PetProfileController {
                 }
             }
 
-            return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
+            return "redirect:/pet-profile?selectedId=" + savedPet.getPetProfileId();
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi tạo thú cưng: " + e.getMessage());
             model.addAttribute("petProfiles", petProfileService.findByAccount(account));
@@ -132,14 +120,13 @@ public class PetProfileController {
         }
     }
 
-    @GetMapping("/customer/pet-profile/edit")
+    @GetMapping("/pet-profile/edit")
     public String switchToEdit(@RequestParam("selectedId") Long selectedId,
                                HttpSession session,
                                Model model) {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
         PetProfile selectedPet = petProfileService.findById(selectedId);
-        List<Category> parentCategories = categoryService.getParentCategory();
 
         if (account == null) {
             return "redirect:/login";
@@ -147,12 +134,11 @@ public class PetProfileController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("selectedPet", selectedPet);
-        model.addAttribute("categories", parentCategories);
         model.addAttribute("edit", true);
         return "pet-profile";
     }
 
-    @PostMapping("/customer/pet-profile/save")
+    @PostMapping("/pet-profile/save")
     public String savePetProfile(@RequestParam(value = "petId", required = false) Long petId,
                                  @RequestParam("name") String name,
                                  @RequestParam("species") String species,
@@ -187,7 +173,7 @@ public class PetProfileController {
                     }
                 }
 
-                return "redirect:/customer/pet-profile?selectedId=" + petId;
+                return "redirect:/pet-profile?selectedId=" + petId;
             } else {
                 // Tạo PetProfile mới
                 PetProfile newPet = new PetProfile();
@@ -209,7 +195,7 @@ public class PetProfileController {
                     }
                 }
 
-                return "redirect:/customer/pet-profile?selectedId=" + savedPet.getPetProfileId();
+                return "redirect:/pet-profile?selectedId=" + savedPet.getPetProfileId();
             }
         } catch (Exception e) {
             model.addAttribute("error", "Có lỗi xảy ra khi lưu thông tin thú cưng: " + e.getMessage());
@@ -221,7 +207,7 @@ public class PetProfileController {
     }
 
     // Test endpoint để kiểm tra file upload
-    @PostMapping("/customer/pet-profile/test-upload")
+    @PostMapping("/pet-profile/test-upload")
     @ResponseBody
     public String testUpload(@RequestParam("imageFile") MultipartFile imageFile) {
         System.out.println("=== Test Upload ===");
