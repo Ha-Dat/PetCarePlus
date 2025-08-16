@@ -44,7 +44,7 @@ public class StaffScheduleController {
 
 
         List<Map<String, String>> absentRequests = allRequests.stream()
-                .filter(r -> r.getRequestType() == RequestType.OFF && r.getStatus() == ScheduleRequestStatus.PENDING)
+                .filter(r -> r.getRequestType() == RequestType.OFF)
                 .map(r -> Map.of(
                         "requestId", r.getRequestId().toString(),
                         "accountId",r.getOriginalSchedule().getAccount().getAccountId().toString(),
@@ -60,7 +60,7 @@ public class StaffScheduleController {
                 .collect(Collectors.toList());
 
         List<Map<String, String>> shiftChangeRequests = allRequests.stream()
-                .filter(r -> r.getRequestType() == RequestType.CHANGE && r.getStatus() == ScheduleRequestStatus.PENDING)
+                .filter(r -> r.getRequestType() == RequestType.CHANGE)
                 .map(r -> Map.of(
                         "requestId", r.getRequestId().toString(),
                         "accountId",r.getOriginalSchedule().getAccount().getAccountId().toString(),
@@ -105,16 +105,33 @@ public class StaffScheduleController {
         try {
             Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
             if (existing.isEmpty()) {
-                WorkScheduleRequest newOffRequest = new WorkScheduleRequest();
-                newOffRequest.setOriginalSchedule(workScheduleService.findById(dto.getScheduleId()).get());
-                newOffRequest.setRequestType(RequestType.OFF);
-                newOffRequest.setStatus(ScheduleRequestStatus.PENDING);
-                newOffRequest.setReason(dto.getReason());
-                workScheduleRequestService.save(newOffRequest);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.notFound().build();
             }
             WorkScheduleRequest updatedOffRequest = existing.get();
             updatedOffRequest.setReason(dto.getReason());
+
+            workScheduleRequestService.save(updatedOffRequest);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to update schedule: " + e.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/work-schedule/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> CreateSchedule(@RequestBody OffRequestDTO dto) {
+        try {
+            Optional<WorkSchedule> existing = workScheduleService.findById(dto.getScheduleId());
+            if (existing.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            WorkScheduleRequest OffRequest = new WorkScheduleRequest();
+            OffRequest.setOriginalSchedule(existing.get());
+            OffRequest.setRequestType(RequestType.OFF);
+            OffRequest.setReason(dto.getReason());
+            OffRequest.setStatus(ScheduleRequestStatus.PENDING);
+
+            workScheduleRequestService.save(OffRequest);
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

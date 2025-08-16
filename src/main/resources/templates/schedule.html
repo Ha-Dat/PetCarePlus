@@ -491,7 +491,9 @@
         <form id="OffRequestForm" onsubmit="submitOffRequest(event)">
             <input type="hidden" id="OffRequestScheduleId" name="OffRequestScheduleId">
             <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
+            <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
+            <label for="OffRequestStatus">Trạng thái đơn:</label>
             <input id="OffRequestStatus" name="OffRequestStatus" readonly>
 
             <label for="OffRequestReason">Lý do:</label>
@@ -503,7 +505,7 @@
             </div>
         </form>
         <div class="modal-actions">
-            <form id="deleteOffRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
+            <form id="DeleteOffRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
                 <button type="submit" class="dropdown-item delete-btn">
                     Rút đơn xin nghỉ
                 </button>
@@ -669,6 +671,11 @@
                     r.workDate === dateStr && r.shiftName === shiftName
                 ).length : 0;
 
+                const schedule = Array.isArray(schedules)
+                    ? schedules.find(s => s.workDate === dateStr && s.shiftName === shiftName)
+                    : null;
+
+
                 const thisStatus = Array.isArray(schedules) ? (schedules.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0]?.status || ""): "";
@@ -684,9 +691,10 @@
                     </button>
                     <a
                         data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
-                        data-scheduleId="${thisOffRequest != null ? thisOffRequest.scheduleId : ''}"
+                        data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
                         data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
                         data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
+                        data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
                         href="javascript:void(0)"
                         onclick="openOffRequestModal(this)"
                         style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
@@ -712,7 +720,7 @@
         document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
         // Set delete form
         const requestId = element.getAttribute('data-requestId');
-        const deleteForm = document.getElementById("deleteOffRequestForm");
+        const deleteForm = document.getElementById("DeleteOffRequestForm");
 
         if (requestId) {
             deleteForm.style.display = 'block';
@@ -727,30 +735,55 @@
     function submitOffRequest(event) {
         event.preventDefault();
 
-        const form = document.getElementById('offRequestForm');
-        const requestId = document.getElementById('offRequestRequestId').value;
+        const form = document.getElementById('OffRequestForm');
+        const requestId = document.getElementById('OffRequestRequestId').value;
 
-        const data = {
-            reason: form.OffRequestReason.value.trim(),
-            scheduleId: parseInt(form.OffRequestScheduleId.value),
-        };
+        if(requestId) {
+            const data = {
+                reason: form.OffRequestReason.value.trim(),
+                scheduleId: parseInt(form.OffRequestScheduleId.value),
+            };
 
-        fetch(`/work-schedule/update/${requestId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.ok) {
-                closeOffRequestModal();
-                showToast("Nộp đơn xin nghỉ thành công!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast("Nộp đơn xin nghỉ thất bại!", "error");
-            }
-        }).catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast("Có lỗi xảy ra khi nộp đơn xin nghỉ!", "error");
-        });
+            fetch(`/work-schedule/update/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeOffRequestModal();
+                    showToast("Nộp đơn xin nghỉ thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin nghỉ thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin nghỉ!", "error");
+            });
+        }
+        else {
+            const data = {
+                reason: form.OffRequestReason.value.trim(),
+                scheduleId: parseInt(form.OffRequestScheduleId.value),
+            };
+            fetch(`/work-schedule/create`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeOffRequestModal();
+                    showToast("Nộp đơn xin nghỉ thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin nghỉ thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin nghỉ!", "error");
+            });
+        }
+
     }
 
     function closeOffRequestModal() {
