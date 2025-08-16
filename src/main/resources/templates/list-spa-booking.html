@@ -468,7 +468,11 @@
                                         th:data-status="${spaBooking.status}"
                                         th:data-service="${spaBooking.service.name}"
 
-                                        th:data-pet-image="${spaBooking.petProfile.medias.get(0).url}"
+                                        th:data-pet-image="${spaBooking.petProfile != null
+                                                                and spaBooking.petProfile.medias != null
+                                                                and !spaBooking.petProfile.medias.isEmpty()
+                                                                ? spaBooking.petProfile.medias.get(0).url
+                                                                : null}"
                                         th:data-pet-name="${spaBooking.petProfile.name}"
                                         th:data-pet-species="${spaBooking.petProfile.species}"
                                         th:data-pet-breeds="${spaBooking.petProfile.breeds}"

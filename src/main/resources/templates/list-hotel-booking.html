@@ -469,7 +469,11 @@
                                             th:data-status="${hotelBooking.status}"
                                             th:data-service="${hotelBooking.service.name}"
 
-                                            th:data-pet-image="${hotelBooking.petProfile.medias.get(0).url}"
+                                            th:data-pet-image="${hotelBooking.petProfile != null
+                                                                and hotelBooking.petProfile.medias != null
+                                                                and !hotelBooking.petProfile.medias.isEmpty()
+                                                                ? hotelBooking.petProfile.medias.get(0).url
+                                                                : null}"
                                             th:data-pet-name="${hotelBooking.petProfile.name}"
                                             th:data-pet-species="${hotelBooking.petProfile.species}"
                                             th:data-pet-breeds="${hotelBooking.petProfile.breeds}"
