@@ -15,7 +15,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findTop5ByOrderByCreatedDateDesc();
-    List<Product> findTop3ByOrderByUnitSoldDesc();
     List<Product> findByNameContainingIgnoreCase(String keyword);
     List<Product> findTop9ByOrderByProductIdAsc();
 

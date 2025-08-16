@@ -40,6 +40,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public Page<AppointmentBooking> getCompletedAppointments(Pageable pageable) {
+        return appointmentRepository.findByStatus(BookingStatus.COMPLETED, pageable);
+    }
+
+    @Override
     public AppointmentBooking save(AppointmentBooking appointment){
         return appointmentRepository.save(appointment);
     };

@@ -241,7 +241,7 @@
             position: relative;
             overflow: hidden;
         }
-
+        
         .alert::before {
             content: '';
             position: absolute;
@@ -250,11 +250,11 @@
             width: 4px;
             height: 100%;
         }
-
+        
         .alert-danger::before {
             background-color: #dc3545;
         }
-
+        
         .alert-success {
             background-color: #d4edda;
             color: #155724;
@@ -291,7 +291,7 @@
                 opacity: 1;
             }
         }
-
+        
         .modal-error {
             background-color: #f8d7da;
             color: #721c24;
@@ -318,7 +318,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-                <a th:href="@{/profile}">Hồ Sơ</a>
+                            <a th:href="@{/profile}">Hồ Sơ</a>
                 <a th:href="@{/change-password}">Đổi mật khẩu</a>
                 <a th:href="@{/pet-profile}" class="active">Hồ Sơ thú cưng</a>
                 <a th:href="@{/list-order}">Đơn mua</a>
@@ -336,7 +336,7 @@
                 <i class="bi bi-check-circle-fill"></i>
                 <span th:text="${success}">Success message</span>
             </div>
-
+            
             <!-- Error Message -->
             <div th:if="${error != null}" class="alert alert-danger">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -466,7 +466,7 @@
                        class="btn btn-primary btn-custom">Chỉnh sửa</a>
 
                     <!-- Nút xóa thú cưng -->
-                    <button th:if="${!edit and selectedPet != null}" type="button" class="btn btn-danger btn-custom"
+                    <button th:if="${!edit and selectedPet != null}" type="button" class="btn btn-danger btn-custom" 
                             data-bs-toggle="modal" data-bs-target="#deletePetModal">
                         Xóa thú cưng
                     </button>

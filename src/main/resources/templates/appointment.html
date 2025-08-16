@@ -345,7 +345,7 @@
             pointer-events: auto;
             margin-top: 0; /* Loại bỏ khoảng cách */
         }
-
+        
         /* Tạo phần "cầu nối" giữa nút và menu để tránh khoảng trống */
         .action-dropdown .dropdown-menu::before {
             content: '';
@@ -871,17 +871,17 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <h2 class="sidebar-title">Doctor Dashboard</h2>
-        <ul class="sidebar-menu">
-            <li><a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a></li>
-            <li><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
-            <li><a th:href="@{/vet/appointment/completed}">🏥 Lịch khám đã hoàn thành</a></li>
-            <li><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
-            <li th:if="${mode == 'pending'}"><a href="/staff/work-schedule?from=/vet/appointment/pending">📅 Ca làm việc</a></li>
-            <li th:if="${mode == 'approved'}"><a href="/staff/work-schedule?from=/vet/appointment/approved">📅 Ca làm việc</a></li>
-            <li th:if="${mode == 'completed'}"><a href="/staff/work-schedule?from=/vet/appointment/completed">📅 Ca làm việc</a></li>
-            <li th:if="${mode == 'history'}"><a href="/staff/work-schedule?from=/vet/appointment/history">📅 Ca làm việc</a></li>
-            <li><a href="/staff/list-pet-profile?from=/vet/appointment/pending">🐾 Hồ Sơ Thú Cưng</a></li>
-        </ul>
+                 <ul class="sidebar-menu">
+             <li><a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a></li>
+             <li><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
+             <li><a th:href="@{/vet/appointment/completed}">🏥 Lịch khám đã hoàn thành</a></li>
+             <li><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
+             <li th:if="${mode == 'pending'}"><a href="/staff/work-schedule?from=/vet/appointment/pending">📅 Ca làm việc</a></li>
+             <li th:if="${mode == 'approved'}"><a href="/staff/work-schedule?from=/vet/appointment/approved">📅 Ca làm việc</a></li>
+             <li th:if="${mode == 'completed'}"><a href="/staff/work-schedule?from=/vet/appointment/completed">📅 Ca làm việc</a></li>
+             <li th:if="${mode == 'history'}"><a href="/staff/work-schedule?from=/vet/appointment/history">📅 Ca làm việc</a></li>
+             <li><a href="/staff/list-pet-profile?from=/vet/appointment/pending">🐾 Hồ Sơ Thú Cưng</a></li>
+         </ul>
 
         <!-- Thông tin người dùng -->
         <div class="vet-info">
@@ -1246,7 +1246,7 @@
         modal.style.display = "flex";
         modal.classList.add("show");
         document.body.classList.add("modal-open");
-
+        
         // Ẩn tất cả dropdown khi modal hiển thị
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
             menu.style.display = 'none';
@@ -1305,7 +1305,7 @@
         modal.style.display = 'flex';
         modal.classList.add("show");
         document.body.classList.add("modal-open");
-
+        
         // Ẩn tất cả dropdown khi modal hiển thị
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
             menu.style.display = 'none';
@@ -1340,7 +1340,7 @@
         formModal.style.display = 'flex';
         formModal.classList.add("show");
         document.body.classList.add("modal-open");
-
+        
         // Ẩn tất cả dropdown khi modal hiển thị
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
             menu.style.display = 'none';

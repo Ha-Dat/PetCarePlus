@@ -35,4 +35,6 @@ public interface ServiceService {
     
     // Lấy service ACTIVE theo category (cho trang đặt lịch)
     List<org.example.petcareplus.entity.Service> findActiveByServiceCategory(ServiceCategory serviceCategory);
+
+    List<Service> findAll();
 }

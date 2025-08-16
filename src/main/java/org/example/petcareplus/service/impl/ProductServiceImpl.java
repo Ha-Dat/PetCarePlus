@@ -93,11 +93,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getTop3BestSellingProducts() {
-        return productRepository.findTop3ByOrderByUnitSoldDesc();
-    }
-
-    @Override
     public List<CategorySalesDTO> getTotalSoldByEachParentCategory() {
         return productRepository.getTotalSoldByEachParentCategory();
     }

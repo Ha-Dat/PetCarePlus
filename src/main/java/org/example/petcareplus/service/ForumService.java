@@ -21,7 +21,7 @@ public interface ForumService {
 
     void savePost(PostDTO postDTO, Long accountId);
 
-    void updatePost(PostDTO postDTO);
+    void updatePost(PostDTO postDTO, Long accountId);
 
     void deletePostById(Long postId);
 
