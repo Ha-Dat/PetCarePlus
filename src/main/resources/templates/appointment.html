@@ -766,7 +766,11 @@
             <li><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
             <li><a th:href="@{/vet/appointment/completed}">Lịch khám đã hoàn thành</a></li>
             <li><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
-            <li><a href="/list-pet-profile?from=/vet/appointment/pending">Hồ Sơ Thú Cưng</a></li>
+            <li th:if="${mode == 'pending'}"><a href="/staff/work-schedule?from=/vet/appointment/pending">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'approved'}"><a href="/staff/work-schedule?from=/vet/appointment/approved">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'completed'}"><a href="/staff/work-schedule?from=/vet/appointment/completed">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'history'}"><a href="/staff/work-schedule?from=/vet/appointment/history">📅 Ca làm việc</a></li>
+            <li><a href="/staff/list-pet-profile?from=/vet/appointment/pending">Hồ Sơ Thú Cưng</a></li>
         </ul>
 
         <!-- Thông tin người dùng -->

@@ -592,15 +592,15 @@
                 <label for="editScheduleShift">Ca làm *</label>
                 <select id="editScheduleShift" name="editScheduleShift" required>
                     <option th:each="shi : ${shift}"
-                            th:value="${shi.getValue()}"
-                            th:text="${shi.value}"></option>
+                            th:value="${shi.name()}"
+                            th:text="${shi.getValue()}"></option>
                 </select>
 
                 <label for="editScheduleStatus">Trạng thái *</label>
                 <select id="editScheduleStatus" name="editScheduleStatus" required>
                     <option th:each="sta : ${scheduleStatus}"
-                            th:value="${sta.getValue()}"
-                            th:text="${sta.value}"></option>
+                            th:value="${sta.name()}"
+                            th:text="${sta.getValue()}"></option>
                 </select>
             <label for="editScheduleNote">Ghi chú:</label>
             <textarea id="editScheduleNote" name="editScheduleNote" rows="3"></textarea>
@@ -627,6 +627,18 @@
     const shiftChangeRequests = /*[[${shiftChangeRequests}]]*/ [];
 </script>
 <script>
+    const Shift = {
+        MORNING: "Ca sáng",
+        AFTERNOON: "Ca chiều",
+        EVENING: "Ca tối"
+    };
+
+    const ScheduleStatus = {
+        PENDING: "Chưa đến",
+        PRESENT: "Có mặt",
+        ABSENT: "Vắng mặt",
+        LEAVE_APPROVED: "Nghỉ có phép"
+    };
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
@@ -956,6 +968,17 @@
         document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
         document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
 
+        const statusSelect = document.getElementById("editScheduleStatus");
+        statusSelect.innerHTML = '';
+        Object.entries(ScheduleStatus).forEach(([key, value]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = value;
+            if (key === element.getAttribute('data-statusName')) {
+                option.selected = true;
+            }
+            statusSelect.appendChild(option);
+        });
 
         document.getElementById("editScheduleModal").style.display = "flex";
     }
@@ -1006,7 +1029,6 @@
         initWeekSelect();
         onWeekChange();
     };
-
 </script>
 </body>
 </html>
