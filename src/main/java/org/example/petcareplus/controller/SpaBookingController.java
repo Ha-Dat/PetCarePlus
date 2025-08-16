@@ -117,7 +117,7 @@ public class SpaBookingController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("spaBooking", new SpaBooking());
-        model.addAttribute("spaServices", serviceService.findByServiceCategory(ServiceCategory.SPA));
+        model.addAttribute("spaServices", serviceService.findActiveByServiceCategory(ServiceCategory.SPA));
         model.addAttribute("categories", parentCategories);
         return "spa-booking";
     }

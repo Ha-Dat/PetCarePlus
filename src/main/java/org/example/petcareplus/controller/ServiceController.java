@@ -1,7 +1,7 @@
 package org.example.petcareplus.controller;
 
-import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.enums.ServiceCategory;
+import org.example.petcareplus.enums.ServiceStatus;
 import org.example.petcareplus.service.ServiceService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ public class ServiceController {
             @RequestParam(defaultValue = "8") int size,
             Model model) {
         
-        Page<Service> servicesPage = serviceService.getServicesPaginated(page, size);
+        Page<org.example.petcareplus.entity.Service> servicesPage = serviceService.getServicesPaginated(page, size);
         
         model.addAttribute("services", servicesPage.getContent());
         model.addAttribute("currentPage", page);
@@ -54,13 +54,14 @@ public class ServiceController {
             
             ServiceCategory serviceCategory = ServiceCategory.valueOf(serviceCategoryStr);
             
-            Service service = new Service();
+            org.example.petcareplus.entity.Service service = new org.example.petcareplus.entity.Service();
             service.setName(name);
             service.setServiceCategory(serviceCategory);
             service.setPrice(price);
             service.setDuration(duration);
+            service.setStatus(ServiceStatus.ACTIVE); // Mặc định là ACTIVE
             
-            Service savedService = serviceService.saveService(service);
+            org.example.petcareplus.entity.Service savedService = serviceService.saveService(service);
             
             response.put("success", true);
             response.put("message", "Dịch vụ đã được tạo thành công");
@@ -90,7 +91,7 @@ public class ServiceController {
 
             ServiceCategory serviceCategory = ServiceCategory.valueOf(serviceCategoryStr);
             
-            Service service = serviceService.findById(id)
+            org.example.petcareplus.entity.Service service = serviceService.findById(id)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với ID: " + id));
             
             service.setName(name);
@@ -98,7 +99,7 @@ public class ServiceController {
             service.setPrice(price);
             service.setDuration(duration);
             
-            Service updatedService = serviceService.saveService(service);
+            org.example.petcareplus.entity.Service updatedService = serviceService.saveService(service);
             
             response.put("success", true);
             response.put("message", "Dịch vụ đã được cập nhật thành công");
@@ -108,6 +109,52 @@ public class ServiceController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Lỗi khi cập nhật dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/manager/service-dashboard/ban/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> banService(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            org.example.petcareplus.entity.Service service = serviceService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với ID: " + id));
+            
+            service.setStatus(ServiceStatus.BANNED);
+            serviceService.saveService(service);
+            
+            response.put("success", true);
+            response.put("message", "Dịch vụ đã được khóa thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi khóa dịch vụ: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/manager/service-dashboard/unban/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> unbanService(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            org.example.petcareplus.entity.Service service = serviceService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ với ID: " + id));
+            
+            service.setStatus(ServiceStatus.ACTIVE);
+            serviceService.saveService(service);
+            
+            response.put("success", true);
+            response.put("message", "Dịch vụ đã được mở khóa thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi khi mở khóa dịch vụ: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -158,7 +205,7 @@ public class ServiceController {
 
     @GetMapping("/service-dashboard/service/{id}")
     @ResponseBody
-    public ResponseEntity<Service> getServiceById(@PathVariable Long id) {
+    public ResponseEntity<org.example.petcareplus.entity.Service> getServiceById(@PathVariable Long id) {
         return serviceService.getServiceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

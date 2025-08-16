@@ -1,7 +1,7 @@
 package org.example.petcareplus.service;
 
-import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.enums.ServiceCategory;
+import org.example.petcareplus.enums.ServiceStatus;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public interface ServiceService {
 
-    Optional<Service> findById(Long id);
+    Optional<org.example.petcareplus.entity.Service> findById(Long id);
 
-    List<Service> findByServiceCategory(ServiceCategory serviceCategory);
+    List<org.example.petcareplus.entity.Service> findByServiceCategory(ServiceCategory serviceCategory);
 
-    Page<Service> getServicesPaginated(int page, int size);
+    Page<org.example.petcareplus.entity.Service> getServicesPaginated(int page, int size);
 
-    Service saveService(Service service);
+    org.example.petcareplus.entity.Service saveService(org.example.petcareplus.entity.Service service);
 
     void deleteService(Long id);
 
@@ -24,8 +24,14 @@ public interface ServiceService {
     boolean canDeleteService(Long id);
 
     // Lấy thông tin chi tiết về service
-    Optional<Service> getServiceById(Long id);
+    Optional<org.example.petcareplus.entity.Service> getServiceById(Long id);
 
     // Lấy thông tin chi tiết về các booking của service
     Map<String, Object> getServiceBookingInfo(Long serviceId);
+    
+    // Lấy service theo status
+    List<org.example.petcareplus.entity.Service> findByStatus(ServiceStatus status);
+    
+    // Lấy service ACTIVE theo category (cho trang đặt lịch)
+    List<org.example.petcareplus.entity.Service> findActiveByServiceCategory(ServiceCategory serviceCategory);
 }

@@ -1,6 +1,7 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.enums.ServiceCategory;
+import org.example.petcareplus.enums.ServiceStatus;
 import org.example.petcareplus.repository.AppointmentRepository;
 import org.example.petcareplus.repository.HotelBookingRepository;
 import org.example.petcareplus.repository.ServiceRepository;
@@ -96,5 +97,15 @@ public class ServiceServiceImpl implements ServiceService {
         bookingInfo.put("canDelete", !hasSpaBookings && !hasHotelBookings && !hasAppointmentBookings);
         
         return bookingInfo;
+    }
+    
+    @Override
+    public List<org.example.petcareplus.entity.Service> findByStatus(ServiceStatus status) {
+        return serviceRepository.findByStatus(status);
+    }
+    
+    @Override
+    public List<org.example.petcareplus.entity.Service> findActiveByServiceCategory(ServiceCategory serviceCategory) {
+        return serviceRepository.findByServiceCategoryAndStatus(serviceCategory, ServiceStatus.ACTIVE);
     }
 }
