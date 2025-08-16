@@ -37,4 +37,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable);
 
     Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable);
+    
+    List<Order> findByAccount_AccountId(Long accountId);
 }

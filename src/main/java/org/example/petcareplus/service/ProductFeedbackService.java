@@ -16,4 +16,6 @@ public interface ProductFeedbackService {
     long getFeedbackCountByProductIdAndRating(Long productId, int rating);
     
     ProductFeedback saveFeedback(ProductFeedback feedback);
+    
+    List<ProductFeedback> findByProductIdAndAccountId(Long productId, Long accountId);
 }

@@ -25,4 +25,7 @@ public interface ProductFeedbackRepository extends JpaRepository<ProductFeedback
     
     @Query("SELECT COUNT(pf) FROM ProductFeedback pf WHERE pf.product.productId = :productId AND pf.rating = :rating")
     long countByProductIdAndRating(@Param("productId") Long productId, @Param("rating") int rating);
+    
+    @Query("SELECT pf FROM ProductFeedback pf WHERE pf.product.productId = :productId AND pf.account.accountId = :accountId")
+    List<ProductFeedback> findByProductIdAndAccountAccountId(@Param("productId") Long productId, @Param("accountId") Long accountId);
 }

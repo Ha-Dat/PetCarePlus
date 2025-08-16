@@ -3,8 +3,12 @@ package org.example.petcareplus.controller;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Product;
 import org.example.petcareplus.entity.ProductFeedback;
+import org.example.petcareplus.entity.Order;
+import org.example.petcareplus.entity.OrderItem;
+import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.ProductFeedbackService;
 import org.example.petcareplus.service.ProductService;
+import org.example.petcareplus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/feedback")
@@ -24,6 +30,9 @@ public class ProductFeedbackController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("/add")
     @ResponseBody
@@ -70,6 +79,20 @@ public class ProductFeedbackController {
 
             Product product = productOpt.get();
             
+            // Kiểm tra xem user đã mua sản phẩm này chưa
+            if (!hasUserPurchasedProduct(account.getAccountId(), productId)) {
+                response.put("success", false);
+                response.put("message", "Bạn phải mua sản phẩm này trước khi đánh giá");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Kiểm tra xem user đã feedback cho sản phẩm này chưa
+            if (hasUserAlreadyFeedback(account.getAccountId(), productId)) {
+                response.put("success", false);
+                response.put("message", "Bạn đã đánh giá sản phẩm này rồi");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
             // Tạo feedback mới
             ProductFeedback feedback = new ProductFeedback();
             feedback.setRating(rating);
@@ -112,6 +135,46 @@ public class ProductFeedbackController {
             response.put("success", false);
             response.put("message", "Có lỗi xảy ra: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
+     * Kiểm tra xem user đã mua sản phẩm này chưa
+     */
+    private boolean hasUserPurchasedProduct(Long accountId, Long productId) {
+        try {
+            // Lấy tất cả order của user
+            List<Order> userOrders = orderService.findOrdersByAccountId(accountId);
+            
+            for (Order order : userOrders) {
+                // Chỉ xét những order đã hoàn thành
+                if (order.getStatus() == OrderStatus.COMPLETED) {
+                    // Kiểm tra từng item trong order
+                    for (OrderItem item : order.getOrderItems()) {
+                        if (item.getProduct().getProductId().equals(productId)) {
+                            return true; // User đã mua sản phẩm này
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error checking purchase status: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Kiểm tra xem user đã feedback cho sản phẩm này chưa
+     */
+    private boolean hasUserAlreadyFeedback(Long accountId, Long productId) {
+        try {
+            // Kiểm tra xem đã có feedback nào của user này cho sản phẩm này chưa
+            List<ProductFeedback> existingFeedbacks = productFeedbackService.findByProductIdAndAccountId(productId, accountId);
+            return !existingFeedbacks.isEmpty();
+        } catch (Exception e) {
+            System.out.println("Error checking existing feedback: " + e.getMessage());
+            return false;
         }
     }
     

@@ -43,4 +43,9 @@ public class ProductFeedbackServiceImpl implements ProductFeedbackService {
     public ProductFeedback saveFeedback(ProductFeedback feedback) {
         return productFeedbackRepository.save(feedback);
     }
+    
+    @Override
+    public List<ProductFeedback> findByProductIdAndAccountId(Long productId, Long accountId) {
+        return productFeedbackRepository.findByProductIdAndAccountAccountId(productId, accountId);
+    }
 }

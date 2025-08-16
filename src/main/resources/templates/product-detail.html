@@ -977,7 +977,7 @@
                 <h3>Đánh giá sản phẩm</h3>
                 
                 <!-- Add Feedback Form -->
-                <div class="add-feedback-form">
+                <div class="add-feedback-form" th:if="${canFeedback && !hasAlreadyFeedback}">
                     <h4>Thêm đánh giá của bạn</h4>
                     <form id="feedbackForm" class="feedback-form">
                         <input type="hidden" id="productId" th:value="${product.productId}">
@@ -996,14 +996,35 @@
                                 <label for="star1" class="star">★</label>
                             </div>
                         </div>
-                                                 <div class="comment-input">
-                             <label for="comment">Nhận xét (tùy chọn):</label>
-                             <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này... (để trống nếu chỉ muốn đánh giá bằng sao)"></textarea>
-                         </div>
+                        <div class="comment-input">
+                            <label for="comment">Nhận xét (tùy chọn):</label>
+                            <textarea id="comment" name="comment" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này... (để trống nếu chỉ muốn đánh giá bằng sao)"></textarea>
+                        </div>
                         <div class="button-group">
                             <button type="submit" class="submit-feedback">Gửi đánh giá</button>
                         </div>
                     </form>
+                </div>
+                
+                <!-- Message for users who haven't purchased -->
+                <div class="purchase-required-message" th:if="${!canFeedback && currentUser != null}">
+                    <p style="color: #666; font-style: italic; text-align: center; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                        Bạn cần mua sản phẩm này trước khi có thể đánh giá.
+                    </p>
+                </div>
+                
+                <!-- Message for users who haven't logged in -->
+                <div class="login-required-message" th:if="${currentUser == null}">
+                    <p style="color: #666; font-style: italic; text-align: center; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                        Vui lòng <a href="/login" style="color: #2e7d32; text-decoration: none;">đăng nhập</a> để đánh giá sản phẩm.
+                    </p>
+                </div>
+                
+                <!-- Message for users who already feedback -->
+                <div class="already-feedback-message" th:if="${hasAlreadyFeedback}">
+                    <p style="color: #2e7d32; font-style: italic; text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        Cảm ơn bạn đã đánh giá sản phẩm này!
+                    </p>
                 </div>
                 <div class="feedback-summary">
                     <div class="rating-overview">
@@ -1292,6 +1313,28 @@
                          showToast(data.message, 'success');
                          // Reset form
                          feedbackForm.reset();
+                         // Ẩn form feedback và hiển thị message đã feedback
+                         const feedbackFormContainer = document.querySelector('.add-feedback-form');
+                         if (feedbackFormContainer) {
+                             feedbackFormContainer.style.display = 'none';
+                         }
+                         
+                         // Hiển thị message đã feedback
+                         const alreadyFeedbackMessage = document.querySelector('.already-feedback-message');
+                         if (alreadyFeedbackMessage) {
+                             alreadyFeedbackMessage.style.display = 'block';
+                         } else {
+                             // Tạo message nếu chưa có
+                             const messageDiv = document.createElement('div');
+                             messageDiv.className = 'already-feedback-message';
+                             messageDiv.innerHTML = '<p style="color: #2e7d32; font-style: italic; text-align: center; padding: 20px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">Cảm ơn bạn đã đánh giá sản phẩm này!</p>';
+                             
+                             const feedbackHeader = document.querySelector('.feedback-header');
+                             if (feedbackHeader) {
+                                 feedbackHeader.appendChild(messageDiv);
+                             }
+                         }
+                         
                          // Cập nhật UI động thay vì reload trang
                          if (data.feedback) {
                              console.log('Adding feedback to UI...');
