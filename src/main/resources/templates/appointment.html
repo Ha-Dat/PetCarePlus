@@ -483,6 +483,64 @@
         .action-dropdown form {
             margin: 0;
         }
+        /* Modal Header */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Action Buttons in Table */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        /* Make table cells editable */
+        .editable {
+            background-color: #fff8e1;
+        }
+        /* Modal chỉ xem */
+        #viewPrescriptionModal .modal-box {
+            max-width: 700px;
+        }
+
+        #viewPrescriptionModal .product-table td {
+            background-color: #f8f9fa;
+            cursor: default;
+        }
+
+        #viewPrescriptionModal .product-table tr:hover td {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body>
@@ -493,6 +551,7 @@
         <ul class="sidebar-menu">
             <li><a th:href="@{/vet/appointment/pending}">Lịch khám chờ duyệt</a></li>
             <li><a th:href="@{/vet/appointment/approved}">Lịch khám đã duyệt</a></li>
+            <li><a th:href="@{/vet/appointment/completed}">Lịch khám đã hoàn thành</a></li>
             <li><a th:href="@{/vet/appointment/history}">Lịch khám từ chối</a></li>
             <li><a href="/list-pet-profile?from=/vet/appointment/pending">Hồ Sơ Thú Cưng</a></li>
         </ul>
@@ -502,6 +561,7 @@
     <main class="main-content">
         <h1 class="page-title" th:if="${mode == 'pending'}">Lịch khám chờ duyệt</h1>
         <h1 class="page-title" th:if="${mode == 'approved'}">Lịch khám đã duyệt</h1>
+        <h1 class="page-title" th:if="${mode == 'completed'}">Lịch khám đã hoàn tích</h1>
         <h1 class="page-title" th:if="${mode == 'history'}">Lịch khám từ chối</h1>
         <label th:if="${mode == 'history'}">Tra bằng tên thú cưng:</label>
         <form th:action="@{/vet/appointment/search}" method="post" th:if="${mode == 'history'}">
@@ -553,11 +613,19 @@
                                         Xem chi tiết
                                     </button>
 
-                                    <!-- Nút Đơn thuốc -->
+                                    <!-- Nút Đơn thuốc màn approved-->
                                     <a class="dropdown-item prescription-btn"
-                                       th:if="${mode == 'approved'}"
+                                       th:if="${(mode == 'approved')}"
                                        href="javascript:void(0)"
                                        th:onclick="'openPrescriptionListModal(' + ${appointment.appointmentBookingId} + ')'">
+                                        Đơn thuốc
+                                    </a>
+
+                                    <!-- Nút Đơn thuốc màn complete-->
+                                    <a class="dropdown-item prescription-btn"
+                                       th:if="${(mode == 'completed')}"
+                                       href="javascript:void(0)"
+                                       th:onclick="'openCompletePrescriptionListModal(' + ${appointment.appointmentBookingId} + ')'">
                                         Đơn thuốc
                                     </a>
 
@@ -576,6 +644,7 @@
                                           onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
                                         <button type="submit" class="dropdown-item disapproved-btn">Không chấp nhận</button>
                                     </form>
+
                                 </div>
                             </div>
                         </td>
@@ -642,9 +711,15 @@
     </div>
 </div>
 
+<!-- Modal Prescription List -->
 <div id="prescriptionListModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="prescriptionListModalTitle">Đơn thuốc:</h2>
+        <div class="modal-header">
+            <h2>Đơn thuốc</h2>
+            <button type="button" class="btn btn-primary" onclick="openAddPrescriptionModal()">
+                Thêm thuốc
+            </button>
+        </div>
         <div class="modal-content">
             <table class="product-table" id="modalPrescriptionListTable">
                 <thead>
@@ -652,6 +727,7 @@
                     <th>Tên thuốc</th>
                     <th>Số lượng</th>
                     <th>Cách dùng</th>
+                    <th>Thao tác</th>
                 </tr>
                 </thead>
                 <tbody id="modalPrescriptionListBody">
@@ -660,32 +736,71 @@
             </table>
         </div>
         <div class="modal-actions">
+            <button type="button" class="btn btn-primary" onclick="completeAppointment()">Hoàn thành</button>
             <button type="button" class="btn btn-secondary" onclick="closePrescriptionListModal()">Đóng</button>
         </div>
     </div>
 </div>
 
-<!--&lt;!&ndash; Prescription Modal &ndash;&gt;-->
-<!--<div id="prescription_modal" class="modal-overlay" style="display: none;">-->
-<!--    <div class="modal-box">-->
-<!--        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>-->
-<!--        <div class="modal-content">-->
-<!--            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">-->
-<!--                <input id="appointmentId" type="hidden" />-->
+<!-- Modal Add/Edit Prescription -->
+<div id="prescriptionFormModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 id="prescriptionFormTitle">Thêm thuốc mới</h2>
+        </div>
+        <form id="prescriptionForm" onsubmit="handlePrescriptionSubmit(event)">
+            <input type="hidden" id="prescriptionId" name="prescriptionId">
+            <input type="hidden" id="appointmentId" name="appointmentId">
+            <input type="hidden" id="currentContext" name="currentContext" value="">
 
-<!--                <div class="form-group">-->
-<!--                    <textarea id="prescriptionNote" rows="4" required></textarea>-->
-<!--                </div>-->
+            <div class="form-group">
+                <label for="drugName">Tên thuốc:</label>
+                <input type="text" id="drugName" name="drugName" required maxlength="50">
+            </div>
 
-<!--                <div class="modal-actions">-->
-<!--                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>-->
-<!--                    <button type="submit" class="btn btn-primary">Áp dụng</button>-->
-<!--                </div>-->
-<!--            </form>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+            <div class="form-group">
+                <label for="amount">Số lượng:</label>
+                <input type="number" id="amount" name="amount" required min="1" max="100">
+            </div>
 
+            <div class="form-group">
+                <label for="note">Cách dùng:</label>
+                <textarea id="note" name="note" rows="3" required maxlength="50"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePrescriptionFormModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal View Prescription (chỉ xem) -->
+<div id="viewPrescriptionModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Đơn thuốc đã hoàn thành</h2>
+        </div>
+        <div class="modal-content">
+            <table class="product-table">
+                <thead>
+                <tr>
+                    <th>Tên thuốc</th>
+                    <th>Số lượng</th>
+                    <th>Cách dùng</th>
+                </tr>
+                </thead>
+                <tbody id="viewPrescriptionListBody">
+                <!-- JS sẽ điền dữ liệu vào đây -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeViewPrescriptionModal()">Đóng</button>
+        </div>
+    </div>
+</div>
 <!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
@@ -694,11 +809,66 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     // Convert Java objects to JavaScript format
-    const prescriptions = /*[[${prescriptions}]]*/ [];
+    let prescriptions = /*[[${prescriptions}]]*/ [];
 </script>
 
 <!-- Script -->
 <script>
+    async function openCompletePrescriptionListModal(appointmentId) {
+        try {
+            currentAppointmentId = appointmentId;
+            const modal = document.getElementById('viewPrescriptionModal');
+            const tbody = document.getElementById('viewPrescriptionListBody');
+
+            // Hiển thị loading
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">Đang tải đơn thuốc...</td></tr>';
+
+            // Gọi API để lấy đơn thuốc
+            const response = await fetch(`/vet/appointment/prescriptions?appointmentId=${appointmentId}`);
+
+            if (!response.ok) {
+                throw new Error('Không thể lấy dữ liệu đơn thuốc');
+            }
+
+            const data = await response.json();
+            prescriptions = data;
+
+            // Hiển thị dữ liệu
+            tbody.innerHTML = '';
+
+            if (prescriptions.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center">Không có đơn thuốc</td>
+                </tr>
+            `;
+            } else {
+                prescriptions.forEach(prescription => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${prescription.drugName || 'N/A'}</td>
+                    <td>${prescription.amount || 'N/A'}</td>
+                    <td>${prescription.note || 'N/A'}</td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            modal.style.display = 'flex';
+        } catch (error) {
+            console.error("Error loading prescriptions:", error);
+            const tbody = document.getElementById('viewPrescriptionListBody');
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center error">Lỗi khi tải đơn thuốc: ${error.message}</td>
+            </tr>
+        `;
+        }
+    }
+
+    function closeViewPrescriptionModal() {
+        document.getElementById('viewPrescriptionModal').style.display = 'none';
+    }
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
@@ -751,88 +921,432 @@
         document.getElementById('bookingDetailModal').style.display = 'none';
     }
 
-    // function openPrescriptionModal(element) {
-    //     document.getElementById("prescription_modal").style.display = "flex";
-    //     document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
-    //     document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
-    // }
-    //
-    // function closePrescriptionModal() {
-    //     document.getElementById("prescription_modal").style.display = "none";
-    // }
-    //
-    // function submitPrescriptionModal(event) {
-    //     event.preventDefault();
-    //
-    //     const form = document.getElementById('createPrescriptionForm');
-    //     const data = {
-    //         appointmentId: parseInt(form.appointmentId.value),
-    //         prescriptionNote: form.prescriptionNote.value
-    //     };
-    //
-    //     fetch('/vet/appointment/createPrescription', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(data)
-    //     })
-    //         .then(res => {
-    //             if (res.ok) {
-    //                 closePrescriptionModal();
-    //                 showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
-    //                 setTimeout(() => window.location.href = "/vet/appointment/approved", 1000);
-    //             } else {
-    //                 return res.text().then(message => {
-    //                     showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
-    //                 });
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error("Lỗi khi gửi API:", error);
-    //             showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
-    //         });
-    // }
+    let currentAppointmentId = null;
 
     function openPrescriptionListModal(appointmentId) {
+        currentAppointmentId = appointmentId;
+
         const modal = document.getElementById('prescriptionListModal');
         const tbody = document.getElementById('modalPrescriptionListBody');
 
         // Clear previous rows
         tbody.innerHTML = '';
 
+        // Filter prescriptions for this appointment
         const filteredPrescriptions = prescriptions.filter(p =>
-            p.appointmentId === appointmentId.toString()
+            p.appointmentId == appointmentId ||
+            p.appointment?.appointmentBookingId == appointmentId
         );
 
         // Populate table
         filteredPrescriptions.forEach(pre => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${pre.prescriptionDrugName}</td>
-            <td>${pre.prescriptionAmount}</td>
-            <td>${pre.prescriptionNote}</td>
-        `;
+            tr.dataset.prescriptionId = pre.prescriptionId;
+            renderPrescriptionRow(tr, pre);
             tbody.appendChild(tr);
         });
+
+        // Load lại danh sách thuốc
+        refreshPrescriptionList();
 
         // Show modal
         modal.style.display = 'flex';
     }
 
-    function closePrescriptionListModal() {
-        document.getElementById('prescriptionListModal').style.display = 'none';
+    async function refreshPrescriptionList() {
+        if (!currentAppointmentId) return;
+
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions?appointmentId=${currentAppointmentId}`);
+            if (response.ok) {
+                const data = await response.json();
+                prescriptions = data;
+                renderPrescriptionList();
+            }
+        } catch (error) {
+            console.error("Error refreshing prescription list:", error);
+        }
     }
 
-    document.querySelectorAll('.action-dropdown').forEach(dropdown => {
-        dropdown.addEventListener('mouseenter', () => {
-            dropdown.querySelector('.dropdown-menu').style.display = 'block';
-        });
+    function openAddPrescriptionModal() {
+        const formModal = document.getElementById('prescriptionFormModal');
+        const formTitle = document.getElementById('prescriptionFormTitle');
+        const form = document.getElementById('prescriptionForm');
 
-        dropdown.addEventListener('mouseleave', () => {
-            dropdown.querySelector('.dropdown-menu').style.display = 'none';
+        formTitle.textContent = 'Thêm thuốc mới';
+        form.reset();
+        document.getElementById('appointmentId').value = currentAppointmentId;
+        document.getElementById('prescriptionId').value = '';
+
+        formModal.style.display = 'flex';
+    }
+
+
+    function closePrescriptionFormModal() {
+        document.getElementById('prescriptionFormModal').style.display = 'none';
+    }
+
+    /**
+     * Render danh sách đơn thuốc vào bảng
+     */
+    function renderPrescriptionList() {
+        const tbody = document.getElementById('modalPrescriptionListBody');
+        if (!tbody) {
+            console.error('Không tìm thấy tbody để render danh sách thuốc');
+            return;
+        }
+
+        tbody.innerHTML = '';
+
+        // Lọc đơn thuốc theo appointmentId hiện tại
+        const filteredPrescriptions = prescriptions.filter(p =>
+            p.appointmentId == currentAppointmentId ||
+            p.appointment?.appointmentBookingId == currentAppointmentId
+        );
+
+        if (filteredPrescriptions.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">Chưa có thuốc nào được kê</td>
+            </tr>
+        `;
+            return;
+        }
+
+        // Render từng dòng
+        filteredPrescriptions.forEach(prescription => {
+            const tr = document.createElement('tr');
+            tr.dataset.prescriptionId = prescription.prescriptionId;
+
+            tr.innerHTML = `
+            <td class="editable" contenteditable="false"
+                data-maxlength="50"
+                oninput="validateDrugName(this)">
+                ${prescription.drugName || prescription.prescriptionDrugName}
+            </td>
+            <td class="editable" contenteditable="false"
+                data-min="1"
+                data-max="100"
+                oninput="validateAmount(this)">
+                ${prescription.amount || prescription.prescriptionAmount}
+            </td>
+            <td class="editable" contenteditable="false"
+                data-maxlength="50"
+                oninput="validateNote(this)">
+                ${prescription.note || prescription.prescriptionNote}
+            </td>
+            <td class="action-buttons">
+                <button class="edit-btn" onclick="toggleEditPrescription(this)">
+                    Sửa
+                </button>
+                <button class="delete-btn"
+                        onclick="deletePrescription(${prescription.prescriptionId})">
+                    Xóa
+                </button>
+            </td>
+        `;
+            tbody.appendChild(tr);
         });
+    }
+
+    // Các hàm validate
+    function validateDrugName(element) {
+        const maxLength = parseInt(element.getAttribute('data-maxlength')) || 50;
+        const content = element.textContent.trim();
+
+        // Kiểm tra không được để trống
+        if (content === '') {
+            element.textContent = ''; // Xóa nếu chỉ có khoảng trắng
+            showToast('Tên thuốc không được để trống', 'error');
+            return false; // Trả về false nếu không hợp lệ
+        }
+
+        // Kiểm tra độ dài tối đa
+        if (content.length > maxLength) {
+            element.textContent = content.substring(0, maxLength);
+            showToast(`Tên thuốc tối đa ${maxLength} ký tự`, 'warning');
+            return false;
+        }
+
+        return true; // Trả về true nếu hợp lệ
+    }
+
+    function validateAmount(element) {
+        const min = parseInt(element.getAttribute('data-min')) || 1;
+        const max = parseInt(element.getAttribute('data-max')) || 100;
+
+        // Chỉ cho phép nhập số
+        element.textContent = element.textContent.replace(/[^0-9]/g, '');
+
+        const value = parseInt(element.textContent) || 0;
+
+        if (value < min) {
+            element.textContent = min;
+            showToast(`Số lượng tối thiểu là ${min}`, 'warning');
+            return false;
+        } else if (value > max) {
+            element.textContent = max;
+            showToast(`Số lượng tối đa là ${max}`, 'warning');
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateNote(element) {
+        const maxLength = parseInt(element.getAttribute('data-maxlength')) || 50;
+        const content = element.textContent.trim();
+
+        // Kiểm tra không được để trống
+        if (content === '') {
+            element.textContent = '';
+            showToast('Ghi chú không được để trống', 'error');
+            return false;
+        }
+
+        // Kiểm tra độ dài tối đa
+        if (content.length > maxLength) {
+            element.textContent = content.substring(0, maxLength);
+            showToast(`Ghi chú tối đa ${maxLength} ký tự`, 'warning');
+            return false;
+        }
+
+        return true;
+    }
+
+    function toggleEditPrescription(button) {
+        const row = button.closest('tr');
+        const isEditing = row.querySelector('.editable').isContentEditable;
+
+        if (isEditing) {
+            // Lấy các ô cần validate
+            const drugNameCell = row.cells[0];
+            const amountCell = row.cells[1];
+            const noteCell = row.cells[2];
+
+            // Thực hiện validate tất cả các trường
+            const isDrugNameValid = validateDrugName(drugNameCell);
+            const isAmountValid = validateAmount(amountCell);
+            const isNoteValid = validateNote(noteCell);
+
+            // Nếu bất kỳ trường nào không hợp lệ thì không lưu
+            if (!isDrugNameValid || !isAmountValid || !isNoteValid) {
+                return;
+            }
+
+            // Tiếp tục xử lý lưu dữ liệu nếu tất cả đều hợp lệ
+            const prescriptionId = row.dataset.prescriptionId;
+            const prescriptionIndex = prescriptions.findIndex(p => p.prescriptionId == prescriptionId);
+
+            if (prescriptionIndex !== -1) {
+                const updatedData = {
+                    prescriptionId: prescriptionId,
+                    drugName: drugNameCell.textContent.trim(),
+                    amount: parseInt(amountCell.textContent),
+                    note: noteCell.textContent.trim(),
+                    appointmentId: currentAppointmentId
+                };
+
+                updatePrescription(updatedData)
+                    .then(updatedPrescription => {
+                        prescriptions[prescriptionIndex] = updatedPrescription;
+                        row.querySelectorAll('.editable').forEach(cell => {
+                            cell.contentEditable = false;
+                            cell.classList.remove('editing');
+                        });
+                        button.textContent = 'Sửa';
+                        showToast("Cập nhật thành công!", "success");
+                    })
+                    .catch(error => {
+                        console.error("Update error:", error);
+                        showToast("Lỗi khi cập nhật: " + error.message, "error");
+                    });
+            }
+        } else {
+            // Bật chế độ edit
+            row.querySelectorAll('.editable').forEach(cell => {
+                cell.contentEditable = true;
+                cell.classList.add('editing');
+            });
+            button.textContent = 'Lưu';
+        }
+    }
+
+    function renderPrescriptionRow(row, prescription) {
+        row.innerHTML = `
+        <td class="editable" contenteditable="false">${prescription.drugName || prescription.prescriptionDrugName}</td>
+        <td class="editable" contenteditable="false">${prescription.amount || prescription.prescriptionAmount}</td>
+        <td class="editable" contenteditable="false">${prescription.note || prescription.prescriptionNote}</td>
+        <td class="action-buttons">
+            <button class="edit-btn" onclick="toggleEditPrescription(this)">Sửa</button>
+            <button class="delete-btn" onclick="deletePrescription(${prescription.prescriptionId})">Xóa</button>
+        </td>
+    `;
+    }
+
+    async function handlePrescriptionSubmit(event) {
+        event.preventDefault();
+
+        // Lưu appointmentId hiện tại vào sessionStorage
+        sessionStorage.setItem('lastEditedAppointmentId', currentAppointmentId);
+
+        const form = event.target;
+        const formData = {
+            appointmentId: currentAppointmentId, // Sử dụng biến đã lưu khi mở modal
+            drugName: form.drugName.value,
+            amount: form.amount.value,
+            note: form.note.value
+        };
+
+        try {
+            const response = await fetch('/vet/appointment/prescriptions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create prescription');
+            }
+
+            const result = await response.json();
+            showToast("Thêm thuốc thành công!", "success");
+            closePrescriptionFormModal();
+            openPrescriptionListModal(currentAppointmentId); // Refresh danh sách
+
+            // Sau khi tạo thành công, reload trang
+            window.location.reload();
+        } catch (error) {
+            console.error("Error creating prescription:", error);
+            showToast(error.message || "Có lỗi xảy ra khi thêm thuốc!", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra nếu có appointmentId trong sessionStorage
+        const lastEditedAppointmentId = sessionStorage.getItem('lastEditedAppointmentId');
+
+        if (lastEditedAppointmentId) {
+            // Mở modal prescription list
+            openPrescriptionListModal(lastEditedAppointmentId);
+
+            // Xóa dữ liệu đã lưu
+            sessionStorage.removeItem('lastEditedAppointmentId');
+        }
+
+        // Khởi tạo dữ liệu ban đầu
+        initializeData(prescriptions);
     });
+    function initializeData(initialPrescriptions) {
+        // Kiểm tra nếu có dữ liệu từ Thymeleaf
+        if (typeof initialPrescriptions !== 'undefined') {
+            prescriptions = Array.isArray(initialPrescriptions) ? initialPrescriptions : [];
+        } else {
+            // Hoặc khởi tạo mảng rỗng nếu không có dữ liệu
+            prescriptions = [];
+        }
+
+        console.log('Initialized prescriptions:', prescriptions);
+
+        // Kiểm tra nếu cần mở modal sau khi reload
+        const lastAppointmentId = sessionStorage.getItem('lastEditedAppointmentId');
+        if (lastAppointmentId) {
+            openPrescriptionListModal(lastAppointmentId);
+            sessionStorage.removeItem('lastEditedAppointmentId');
+        }
+    }
+
+    async function updatePrescription(prescriptionData) {
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions/${prescriptionData.prescriptionId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(prescriptionData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update prescription');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Update error:", error);
+            throw error;
+        }
+    }
+
+    async function deletePrescription(prescriptionId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa thuốc này không?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions/${prescriptionId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete prescription');
+            }
+
+            // Remove from local array
+            const index = prescriptions.findIndex(p => p.prescriptionId == prescriptionId);
+            if (index !== -1) {
+                prescriptions.splice(index, 1);
+            }
+
+            showToast("Xóa thuốc thành công!", "success");
+            // Refresh the prescription list
+            openPrescriptionListModal(currentAppointmentId);
+        } catch (error) {
+            console.error("Error deleting prescription:", error);
+            showToast("Có lỗi xảy ra khi xóa thuốc!", "error");
+        }
+    }
+
+    function closePrescriptionListModal() {
+        document.getElementById('prescriptionListModal').style.display = 'none';
+        currentAppointmentId = null;
+    }
+
+    async function completeAppointment() {
+        if (!currentAppointmentId) {
+            showToast("Không tìm thấy ID cuộc hẹn", "error");
+            return;
+        }
+
+        if (!confirm('Bạn có chắc chắn muốn hoàn thành cuộc hẹn này không?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/vet/appointment/complete/${currentAppointmentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to complete appointment');
+            }
+
+            showToast("Đã hoàn thành cuộc hẹn thành công!", "success");
+            closePrescriptionListModal();
+            // Reload page to update status
+            window.location.reload();
+        } catch (error) {
+            console.error("Error completing appointment:", error);
+            showToast(error.message || "Có lỗi xảy ra khi hoàn thành cuộc hẹn!", "error");
+        }
+    }
 </script>
 </body>
 </html>
