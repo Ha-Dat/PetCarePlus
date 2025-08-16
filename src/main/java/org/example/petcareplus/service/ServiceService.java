@@ -1,5 +1,6 @@
 package org.example.petcareplus.service;
 
+import org.example.petcareplus.entity.Service;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.enums.ServiceStatus;
 import org.springframework.data.domain.Page;
