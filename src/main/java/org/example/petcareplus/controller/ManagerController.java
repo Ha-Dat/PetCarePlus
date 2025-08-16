@@ -17,11 +17,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@RequestMapping("/manager")
 @Controller
 @RequestMapping("/manager")
 public class ManagerController {
@@ -94,7 +95,7 @@ public class ManagerController {
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
 
-        return "manager.html";
+        return "manager";
     }
 
     private WorkSchedule convertToSchedule(WorkScheduleDTO dto, WorkSchedule existingSchedule) {

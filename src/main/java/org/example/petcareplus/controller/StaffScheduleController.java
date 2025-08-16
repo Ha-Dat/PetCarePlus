@@ -34,8 +34,8 @@ public class StaffScheduleController {
         this.workScheduleRequestService = workScheduleRequestService;
     }
 
-    @GetMapping("/work-schedule")
-    public String sellerWorkSchedule(Model model, HttpSession session) {
+    @GetMapping("/staff/work-schedule")
+    public String sellerWorkSchedule(Model model, HttpSession session,@RequestParam(required = false) String from) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if(account.getRole().equals(AccountRole.CUSTOMER) || account.getRole().equals(AccountRole.ADMIN) || account.getRole().equals(AccountRole.MANAGER)) {
             return "redirect:/home";
@@ -96,12 +96,13 @@ public class StaffScheduleController {
         model.addAttribute("schedules", schedules);
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
+        model.addAttribute("from", from);
 
         return "schedule";
     }
 
 
-    @PutMapping(value = "/work-schedule/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/staff/work-schedule/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateOffRequest(@PathVariable Long id, @RequestBody OffRequestDTO dto) {
         try {
             Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
@@ -119,7 +120,7 @@ public class StaffScheduleController {
         }
     }
 
-    @PutMapping(value = "/work-schedule/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/staff/work-schedule/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> CreateOffRequest(@RequestBody OffRequestDTO dto) {
         try {
             Optional<WorkSchedule> existing = workScheduleService.findById(dto.getScheduleId());
@@ -141,7 +142,7 @@ public class StaffScheduleController {
         }
     }
 
-    @PostMapping(value = "/work-schedule/delete/{id}")
+    @PostMapping(value = "/staff/work-schedule/delete/{id}")
     public String deleteOffRequest(@PathVariable Long id) {
         Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
         if (existing.isEmpty()) {
@@ -151,7 +152,7 @@ public class StaffScheduleController {
         return "redirect:/work-schedule";
     }
 
-    @PutMapping(value = "/work-schedule/update-change-request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/staff/work-schedule/update-change-request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateChangeRequest(@PathVariable Long id, @RequestBody ChangeRequestDTO dto) {
         try {
             Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
@@ -171,7 +172,7 @@ public class StaffScheduleController {
         }
     }
 
-    @PutMapping(value = "/work-schedule/create-change-request", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/staff/work-schedule/create-change-request", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> CreateChangeRequest(@RequestBody ChangeRequestDTO dto) {
         try {
             Optional<WorkSchedule> existing = workScheduleService.findById(dto.getScheduleId());

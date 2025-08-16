@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manager dashboard</title>
     <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Màu xanh lá */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #45a049; /* Màu khi hover */
+        }
         body {
             margin: 0;
             font-family: "Nunito", sans-serif;
@@ -444,14 +459,9 @@
 </head>
 <body>
 <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <ul class="sidebar-menu">
-        </ul>
-    </aside>
-
     <!-- Main Content -->
     <main class="main-content">
+        <a th:if="${from != null}" th:href="@{${from}}" class="back-button">← Quay lại</a>
         <h1 class="page-title">Lịch làm việc</h1>
         <div class="content">
             <!-- Table Container -->
@@ -794,7 +804,7 @@
 
         if (requestId) {
             deleteForm.style.display = 'block';
-            deleteForm.action = `/work-schedule/delete/${requestId}`;
+            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
         } else {
             deleteForm.style.display = 'none';
         }
@@ -814,7 +824,7 @@
                 scheduleId: parseInt(form.OffRequestScheduleId.value),
             };
 
-            fetch(`/work-schedule/update/${requestId}`, {
+            fetch(`/staff/work-schedule/update/${requestId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -836,7 +846,7 @@
                 reason: form.OffRequestReason.value.trim(),
                 scheduleId: parseInt(form.OffRequestScheduleId.value),
             };
-            fetch(`/work-schedule/create`, {
+            fetch(`/staff/work-schedule/create`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -874,7 +884,7 @@
 
         if (requestId) {
             deleteForm.style.display = 'block';
-            deleteForm.action = `/work-schedule/delete/${requestId}`;
+            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
         } else {
             deleteForm.style.display = 'none';
         }
@@ -896,7 +906,7 @@
                 requestedShift: form.ChangeRequestShift.value.trim()
             };
 
-            fetch(`/work-schedule/update-change-request/${requestId}`, {
+            fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -920,7 +930,7 @@
                 requestedDate: form.ChangeRequestWorkDate.value,
                 requestedShift: form.ChangeRequestShift.value.trim()
             };
-            fetch(`/work-schedule/create-change-request`, {
+            fetch(`/staff/work-schedule/create-change-request`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

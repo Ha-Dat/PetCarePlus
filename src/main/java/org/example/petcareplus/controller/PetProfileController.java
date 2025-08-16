@@ -220,7 +220,7 @@ public class PetProfileController {
         return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
     }
 
-    @GetMapping("/list-pet-profile")
+    @GetMapping("/staff/list-pet-profile")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size,
