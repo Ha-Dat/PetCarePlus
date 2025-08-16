@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@RequestMapping("/manager")
 @Controller
 public class ManagerController {
     private final WorkScheduleService workScheduleService;
@@ -93,7 +93,7 @@ public class ManagerController {
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
 
-        return "manager.html";
+        return "manager";
     }
 
     private WorkSchedule convertToSchedule(WorkScheduleDTO dto, WorkSchedule existingSchedule) {
