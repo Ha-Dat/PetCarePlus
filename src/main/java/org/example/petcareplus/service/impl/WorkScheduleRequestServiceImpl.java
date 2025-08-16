@@ -36,4 +36,9 @@ public class WorkScheduleRequestServiceImpl implements WorkScheduleRequestServic
     public Optional<WorkScheduleRequest> findById(Long id) {
         return workScheduleRequestRepository.findById(id);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        
+    }
 }
