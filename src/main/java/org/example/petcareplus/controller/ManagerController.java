@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/manager")
 public class ManagerController {
     private final WorkScheduleService workScheduleService;
     private final WorkScheduleRequestService workScheduleRequestService;
@@ -142,9 +143,9 @@ public class ManagerController {
             }
             workScheduleService.save(workSchedule);
             workScheduleRequestService.save(sche);
-            return "redirect:/manager-dashboard"; // This tells Spring to redirect
+            return "redirect:/manager/manager-dashboard"; // This tells Spring to redirect
         }
-        return "redirect:/manager-dashboard?error=true"; // or some error page
+        return "redirect:/manager/manager-dashboard?error=true"; // or some error page
     }
 
     @PostMapping("/manager-dashboard/disapprove/{id}")
@@ -154,8 +155,8 @@ public class ManagerController {
             WorkScheduleRequest sche = existing.get();
             sche.setStatus(ScheduleRequestStatus.REJECTED);
             workScheduleRequestService.save(sche);
-            return "redirect:/manager-dashboard";
+            return "redirect:/manager/manager-dashboard";
         }
-        return "redirect:/manager-dashboard?error=true";
+        return "redirect:/manager/manager-dashboard?error=true";
     }
 }
