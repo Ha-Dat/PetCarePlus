@@ -866,7 +866,7 @@
             <td>${sche.status}</td>
             <td><!-- Chấp nhận -->
                             <form
-                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
+                                  action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
                                 <button type="submit" class="approved-btn">Chấp nhận</button>
@@ -874,7 +874,7 @@
 
                             <!-- Không chấp nhận -->
                             <form
-                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
+                                  action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
                                 <button type="submit" class="disapproved-btn">Không chấp nhận</button>
@@ -920,7 +920,7 @@
             <td>${sche.status}</td>
             <td><!-- Chấp nhận -->
                             <form
-                                  action="/manager-dashboard/approve/${parseInt(sche.requestId)}"
+                                  action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
                                 <button type="submit" class="approved-btn">Chấp nhận</button>
@@ -928,7 +928,7 @@
 
                             <!-- Không chấp nhận -->
                             <form
-                                  action="/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
+                                  action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
                                   method="post"
                                   onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
                                 <button type="submit" class="disapproved-btn">Không chấp nhận</button>
@@ -978,7 +978,7 @@
             shift:form.editScheduleShift.value.trim()
         };
 
-        fetch(`/manager-dashboard/update/${scheduleId}`, {
+        fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
