@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @RequestMapping("/manager")
 @Controller
-@RequestMapping("/manager")
 public class ManagerController {
     private final WorkScheduleService workScheduleService;
     private final WorkScheduleRequestService workScheduleRequestService;

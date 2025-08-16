@@ -8,4 +8,8 @@ public enum ScheduleStatus {
     ScheduleStatus(String value) {
         this.value = value;
     }
+
+    public String getValue() {
+        return value;
+    }
 }
