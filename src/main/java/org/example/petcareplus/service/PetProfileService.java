@@ -1,7 +1,10 @@
 package org.example.petcareplus.service;
 
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.AppointmentBooking;
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.SpaBooking;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,4 +28,14 @@ public interface PetProfileService {
     Page<PetProfile> findAll(int page, int size, String sortBy);
 
     Page<PetProfile> searchByName(String name, int page, int size, String sortBy);
+
+    boolean canDeletePet(Long petProfileId);
+
+    void deletePet(Long petProfileId);
+
+    List<AppointmentBooking> getAppointmentsByPetId(Long petId);
+
+    List<HotelBooking> getHotelBookingsByPetId(Long petId);
+
+    List<SpaBooking> getSpaBookingsByPetId(Long petId);
 }

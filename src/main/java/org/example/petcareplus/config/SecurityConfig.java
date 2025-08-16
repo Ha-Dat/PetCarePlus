@@ -24,7 +24,8 @@ public class SecurityConfig {
                         .requestMatchers("/vet/**").hasRole("VET")
                         .requestMatchers("/pet-groomer/**").hasRole("PET_GROOMER")
                         .requestMatchers("/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/staff/**").hasAnyRole("VET", "MANAGER", "SELLER")
+                        // .requestMatchers("/customer/**").hasRole("CUSTOMER")
 
                         .anyRequest().permitAll()
                 );

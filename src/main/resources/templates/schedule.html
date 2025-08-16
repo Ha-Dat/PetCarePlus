@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manager dashboard</title>
     <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Màu xanh lá */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #45a049; /* Màu khi hover */
+        }
         body {
             margin: 0;
             font-family: "Nunito", sans-serif;
@@ -444,18 +459,9 @@
 </head>
 <body>
 <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2 class="sidebar-title">Manager Dashboard</h2>
-        <ul class="sidebar-menu">
-            <li><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
-            <li><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
-            <li class="active"><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
-        </ul>
-    </aside>
-
     <!-- Main Content -->
     <main class="main-content">
+        <a th:if="${from != null}" th:href="@{${from}}" class="back-button">← Quay lại</a>
         <h1 class="page-title">Lịch làm việc</h1>
         <div class="content">
             <!-- Table Container -->
@@ -489,127 +495,78 @@
     </main>
 </div>
 
-<div id="scheduleModal" class="modal-overlay" style="display: none;">
+<div id="OffRequestModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="modalTitle">Lịch làm việc</h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalScheduleTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Ghi chú</th>
-                    <th>Trạng thái</th>
-                    <th>Chỉnh sửa</th>
-                </tr>
-                </thead>
-                <tbody id="modalScheduleBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeSchedulesModal()">Đóng</button>
-        </div>
-    </div>
-</div>
+        <h2 id="OffRequestModalTitle">Đon xin nghỉ:</h2>
+        <form id="OffRequestForm" onsubmit="submitOffRequest(event)">
+            <input type="hidden" id="OffRequestScheduleId" name="OffRequestScheduleId">
+            <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
+            <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
-<div id="offRequestModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="offRequestModalTitle"></h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalOffRequestTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Lý do</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody id="modalOffRequestBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeOffRequestsModal()">Đóng</button>
-        </div>
-    </div>
-</div>
+            <label for="OffRequestStatus">Trạng thái đơn:</label>
+            <input id="OffRequestStatus" name="OffRequestStatus" readonly>
 
-
-<div id="changeRequestModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="changeRequestModalTitle"></h2>
-        <div class="modal-content">
-            <table class="product-table" id="modalChangeRequestTable">
-                <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Vị trí</th>
-                    <th>Số điện thoại</th>
-                    <th>Lý do</th>
-                    <th>Ngày muốn đổi</th>
-                    <th>Ca muốn đổi</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody id="modalChangeRequestBody">
-                <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeChangeRequestsModal()">Đóng</button>
-        </div>
-    </div>
-</div>
-
-<div id="editScheduleModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="editScheduleModalTitle">Chỉnh sửa lịch làm việc:</h2>
-        <form id="editScheduleForm" onsubmit="submitEditSchedule(event)">
-            <input type="hidden" id="editScheduleId" name="editScheduleId">
-            <input type="hidden" id="editAccountId" name="editAccountId">
-                <label for="editScheduleAccountName">Tên nhân viên:</label>
-                <input type="text" id="editScheduleAccountName" name="editScheduleAccountName" readonly>
-
-                <label for="editScheduleWorkDate">Ngày:</label>
-                <div class="date-input">
-                    <input
-                            type="date"
-                            id="editScheduleWorkDate"
-                            name="editScheduleWorkDate"
-                            required
-                    />
-                </div>
-
-                <label for="editScheduleShift">Ca làm *</label>
-                <select id="editScheduleShift" name="editScheduleShift" required>
-                    <option th:each="shi : ${shift}"
-                            th:value="${shi.name()}"
-                            th:text="${shi.getValue()}"></option>
-                </select>
-
-                <label for="editScheduleStatus">Trạng thái *</label>
-                <select id="editScheduleStatus" name="editScheduleStatus" required>
-                    <option th:each="sta : ${scheduleStatus}"
-                            th:value="${sta.name()}"
-                            th:text="${sta.getValue()}"></option>
-                </select>
-            <label for="editScheduleNote">Ghi chú:</label>
-            <textarea id="editScheduleNote" name="editScheduleNote" rows="3"></textarea>
+            <label for="OffRequestReason">Lý do:</label>
+            <textarea id="OffRequestReason" name="OffRequestReason" rows="3"></textarea>
 
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="button" class="btn btn-secondary" onclick="closeOffRequestModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Xin nghỉ</button>
             </div>
         </form>
+        <div class="modal-actions">
+            <form id="DeleteOffRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
+                <button type="submit" class="dropdown-item delete-btn">
+                    Rút đơn xin nghỉ
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="ChangeRequestModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="ChangeRequestModalTitle">Đon xin đổi lịch:</h2>
+        <form id="ChangeRequestForm" onsubmit="submitChangeRequest(event)">
+            <input type="hidden" id="ChangeRequestScheduleId" name="ChangeRequestScheduleId">
+            <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
+            <input type="hidden" id="ChangeRequestAccountId" name="ChangeRequestAccountId">
+
+            <label for="ChangeRequestStatus">Trạng thái đơn:</label>
+            <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly>
+
+            <label for="ChangeRequestWorkDate">Ngày:</label>
+            <div class="date-input">
+                <input
+                        type="date"
+                        id="ChangeRequestWorkDate"
+                        name="ChangeRequestWorkDate"
+                        required
+                />
+            </div>
+
+            <label for="ChangeRequestShift">Ca làm *</label>
+            <select id="ChangeRequestShift" name="ChangeRequestShift" required>
+                <option th:each="shi : ${shift}"
+                        th:value="${shi.name()}"
+                        th:text="${shi.value}"></option>
+            </select>
+
+            <label for="ChangeRequestReason">Lý do:</label>
+            <textarea id="ChangeRequestReason" name="ChangeRequestReason" rows="3"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeChangeRequestModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Xin đổi lịch</button>
+            </div>
+        </form>
+        <div class="modal-actions">
+            <form id="DeleteChangeRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
+                <button type="submit" class="dropdown-item delete-btn">
+                    Rút đơn xin đổi lịch
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -627,18 +584,17 @@
     const shiftChangeRequests = /*[[${shiftChangeRequests}]]*/ [];
 </script>
 <script>
-    const Shift = {
-        MORNING: "Ca sáng",
-        AFTERNOON: "Ca chiều",
-        EVENING: "Ca tối"
-    };
+    function confirmDeleteAndToast(event) {
+        event.preventDefault();
 
-    const ScheduleStatus = {
-        PENDING: "Chưa đến",
-        PRESENT: "Có mặt",
-        ABSENT: "Vắng mặt",
-        LEAVE_APPROVED: "Nghỉ có phép"
-    };
+        if (confirm("Bạn có chắc muốn rút đơn?")) {
+            showToast("Thành công", "success");
+
+            setTimeout(() => {
+                event.target.submit();
+            }, 500);
+        }
+    }
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
@@ -768,255 +724,234 @@
                     s.workDate === dateStr && s.shiftName === shiftName
                 ).length : 0;
 
-                // Count absent requests
                 const offCount = Array.isArray(absentRequests) ? absentRequests.filter(r =>
                     r.workDate === dateStr && r.shiftName === shiftName
                 ).length : 0;
 
-                // Count shift change requests
-                const shiftChangeCount = Array.isArray(shiftChangeRequests) ? shiftChangeRequests.filter(r =>
-                    r.workDate === dateStr && r.shiftName === shiftName
-                ).length : 0;
+                const schedule = Array.isArray(schedules)
+                    ? schedules.find(s => s.workDate === dateStr && s.shiftName === shiftName)
+                    : null;
 
-                cell.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
-                    <button onclick="openSchedulesModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Làm việc: ${scheduleCount}
-                    </button>
-                    <button onclick="openOffRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đơn xin nghỉ: ${offCount}
-                    </button>
-                    <button onclick="openChangeRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đổi lịch: ${shiftChangeCount}
-                    </button>
-                </div>
-            `;
+
+                const thisStatus = Array.isArray(schedules) ? (schedules.filter(s =>
+                    s.workDate === dateStr && s.shiftName === shiftName
+                )[0]?.status || ""): "";
+
+                const thisOffRequest = Array.isArray(absentRequests) ? (absentRequests.filter(s =>
+                    s.workDate === dateStr && s.shiftName === shiftName
+                )[0] || null) : null;
+
+                const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
+                    s.workDate === dateStr && s.shiftName === shiftName
+                )[0] || null) : null;
+
+                if (scheduleCount > 0) {
+                    let html = `
+                                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+                                    <button style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                                        Có lịch:<br> ${thisStatus}
+                                    </button>
+                                `;
+                    if (thisChangeRequest == null) {
+                        html += `<a
+                                    data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
+                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                    data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
+                                    data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
+                                    data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
+                                    href="javascript:void(0)"
+                                    onclick="openOffRequestModal(this)"
+                                    style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
+                                    Xin nghỉ
+                                </a>`;
+                    }
+
+                    if (thisOffRequest == null) {
+                        html += `
+                                <a
+                                    data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
+                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                    data-reason="${thisChangeRequest != null ? thisChangeRequest.reason : ''}"
+                                    data-status="${thisChangeRequest != null ? thisChangeRequest.status : ''}"
+                                    data-accountId="${thisChangeRequest != null ? thisChangeRequest.accountId : ''}"
+                                    data-requestedDate="${thisChangeRequest != null ? thisChangeRequest.requestedDate : ''}"
+                                    data-requestedShift="${thisChangeRequest != null ? thisChangeRequest.requestedShiftName : ''}"
+                                    href="javascript:void(0)"
+                                    onclick="openChangeRequestModal(this)"
+                                    style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2; align-self:;">
+                                    Đổi lịch
+                                </a>
+                                `;
+                    }
+
+                    html += `</div>`;
+                    cell.innerHTML = html;
+                }
             });
         }
     }
 
 
-    function openSchedulesModal(date, shiftName) {
-        const modal = document.getElementById('scheduleModal');
-        const tbody = document.getElementById('modalScheduleBody');
+    function openOffRequestModal(element) {
+        document.getElementById("OffRequestScheduleId").value = element.getAttribute('data-scheduleId');
+        document.getElementById("OffRequestAccountId").value = element.getAttribute('data-accountId');
+        document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
+        document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
+        document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
+        // Set delete form
+        const requestId = element.getAttribute('data-requestId');
+        const deleteForm = document.getElementById("DeleteOffRequestForm");
 
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = schedules.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('modalTitle').textContent = `Lịch làm việc ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.note}</td>
-            <td>${sche.statusName}</td>
-            <td><a data-scheduleId="${sche.scheduleId}"
-            data-accountId="${sche.accountId}"
-   data-accountName="${sche.accountName}"
-   data-workDate="${sche.workDate}"
-   data-shiftName="${sche.shiftName}"
-   data-statusName="${sche.statusName}"
-   data-note="${sche.note}"
-   href="javascript:void(0)"
-   onclick="openEditScheduleModal(this)">
-    •••
-</a></td>
-        `;
-            tbody.appendChild(tr);
-        });
-
+        if (requestId) {
+            deleteForm.style.display = 'block';
+            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
+        } else {
+            deleteForm.style.display = 'none';
+        }
         // Show modal
-        modal.style.display = 'flex';
+        document.getElementById("OffRequestModal").style.display = 'flex';
     }
 
-    function closeSchedulesModal() {
-        document.getElementById('scheduleModal').style.display = 'none';
-    }
-
-    function openChangeRequestsModal(date, shiftName) {
-        const modal = document.getElementById('changeRequestModal');
-        const tbody = document.getElementById('modalChangeRequestBody');
-
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = shiftChangeRequests.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.reason}</td>
-            <td>${sche.requestDate}</td>
-            <td>${sche.requestShift}</td>
-            <td>${sche.status}</td>
-            <td><!-- Chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
-
-                            <!-- Không chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
-            </td>
-        `;
-            tbody.appendChild(tr);
-        });
-
-        // Show modal
-        modal.style.display = 'flex';
-    }
-
-    function closeChangeRequestsModal() {
-        document.getElementById('changeRequestModal').style.display = 'none';
-    }
-
-    function openOffRequestsModal(date, shiftName) {
-        const modal = document.getElementById('offRequestModal');
-        const tbody = document.getElementById('modalOffRequestBody');
-
-        // Clear previous rows
-        tbody.innerHTML = '';
-
-        // Filter schedules by date and shift
-        const filteredSchedules = absentRequests.filter(s =>
-            s.workDate === date && s.shiftName === shiftName
-        );
-
-        const shiftValue = filteredSchedules[0].shift;
-
-        // Set modal title
-        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${shiftValue}`;
-
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.reason}</td>
-            <td>${sche.status}</td>
-            <td><!-- Chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
-
-                            <!-- Không chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
-            </td>
-        `;
-            tbody.appendChild(tr);
-        });
-
-        // Show modal
-        modal.style.display = 'flex';
-    }
-
-    function closeOffRequestsModal() {
-        document.getElementById('offRequestModal').style.display = 'none';
-    }
-
-    function openEditScheduleModal(element) {
-
-        document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
-        document.getElementById("editScheduleWorkDate").value = element.getAttribute('data-workDate');
-        document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
-        document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
-        document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
-
-        const statusSelect = document.getElementById("editScheduleStatus");
-        statusSelect.innerHTML = '';
-        Object.entries(ScheduleStatus).forEach(([key, value]) => {
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = value;
-            if (key === element.getAttribute('data-statusName')) {
-                option.selected = true;
-            }
-            statusSelect.appendChild(option);
-        });
-
-        document.getElementById("editScheduleModal").style.display = "flex";
-    }
-
-    function closeEditScheduleModal() {
-        document.getElementById('editScheduleModal').style.display = 'none';
-    }
-
-    function submitEditSchedule(event) {
+    function submitOffRequest(event) {
         event.preventDefault();
 
-        const form = document.getElementById('editScheduleForm');
-        const scheduleId = document.getElementById('editScheduleId').value;
+        const form = document.getElementById('OffRequestForm');
+        const requestId = document.getElementById('OffRequestRequestId').value;
 
-        const data = {
-            note: form.editScheduleNote.value.trim(),
-            status: form.editScheduleStatus.value.trim(),
-            accountId: parseInt(form.editAccountId.value),
-            workDate: form.editScheduleWorkDate.value,
-            shift:form.editScheduleShift.value.trim()
-        };
+        if(requestId) {
+            const data = {
+                reason: form.OffRequestReason.value.trim(),
+                scheduleId: parseInt(form.OffRequestScheduleId.value),
+            };
 
-        fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.ok) {
-                closeEditScheduleModal();
-                showToast("Cập nhật lịch thành công!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast("Cập nhật lịch thất bại!", "error");
-            }
-        }).catch(error => {
-            console.error("Lỗi cập nhật:", error);
-            showToast("Có lỗi xảy ra khi cập nhật!", "error");
-        });
+            fetch(`/staff/work-schedule/update/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeOffRequestModal();
+                    showToast("Nộp đơn xin nghỉ thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin nghỉ thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin nghỉ!", "error");
+            });
+        }
+        else {
+            const data = {
+                reason: form.OffRequestReason.value.trim(),
+                scheduleId: parseInt(form.OffRequestScheduleId.value),
+            };
+            fetch(`/staff/work-schedule/create`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeOffRequestModal();
+                    showToast("Nộp đơn xin nghỉ thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin nghỉ thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin nghỉ!", "error");
+            });
+        }
+
+    }
+
+    function closeOffRequestModal() {
+        document.getElementById("OffRequestModal").style.display = 'none';
+    }
+
+    function openChangeRequestModal(element) {
+        document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
+        document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
+        document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
+        document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
+        document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
+        document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
+        document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
+        // Set delete form
+        const requestId = element.getAttribute('data-requestId');
+        const deleteForm = document.getElementById("DeleteChangeRequestForm");
+
+        if (requestId) {
+            deleteForm.style.display = 'block';
+            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
+        } else {
+            deleteForm.style.display = 'none';
+        }
+        // Show modal
+        document.getElementById("ChangeRequestModal").style.display = 'flex';
+    }
+
+    function submitChangeRequest(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('ChangeRequestForm');
+        const requestId = document.getElementById('ChangeRequestRequestId').value;
+
+        if(requestId) {
+            const data = {
+                reason: form.ChangeRequestReason.value.trim(),
+                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                requestedDate: form.ChangeRequestWorkDate.value,
+                requestedShift: form.ChangeRequestShift.value.trim()
+            };
+
+            fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeChangeRequestModal();
+                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+            });
+        }
+        else {
+            const data = {
+                reason: form.ChangeRequestReason.value.trim(),
+                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                requestedDate: form.ChangeRequestWorkDate.value,
+                requestedShift: form.ChangeRequestShift.value.trim()
+            };
+            fetch(`/staff/work-schedule/create-change-request`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeChangeRequestModal();
+                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+            });
+        }
+
+    }
+
+    function closeChangeRequestModal() {
+        document.getElementById("ChangeRequestModal").style.display = 'none';
     }
 
     function onWeekChange() {
@@ -1029,6 +964,7 @@
         initWeekSelect();
         onWeekChange();
     };
+
 </script>
 </body>
 </html>

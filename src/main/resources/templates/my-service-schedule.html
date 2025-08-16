@@ -32,6 +32,7 @@
             border: 1px solid #ced4da;
         }
 
+        >
         .sidebar {
             width: 220px;
             background-color: #ffffff;
@@ -105,6 +106,42 @@
 
         .btn-custom:hover {
             background-color: #388e3c;
+        }
+
+        /* Thêm style cho các nút filter */
+        .btn-outline-success.filter-type {
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+        }
+
+        .btn-outline-success.filter-type.active {
+            background-color: #4caf50;
+            color: white !important;
+        }
+
+        /* Style cho tab filter trạng thái */
+        .nav-tabs .nav-link {
+            color: #495057;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: #4caf50;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #4caf50;
+            color: white !important;
+            border: none;
+        }
+
+        /* Hiệu ứng hover cho các hàng trong bảng */
+        .table tbody tr:hover {
+            background-color: rgba(76, 175, 80, 0.1);
         }
 
         /* ========================
@@ -334,43 +371,43 @@
             </li>
         </ul>
 
-            <!-- Bảng -->
-            <table class="table table-bordered bg-white align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>Thú cưng</th>
-                    <th>Dịch vụ</th>
-                    <th>Thời gian</th>
-                    <th>Trạng thái</th>
-                    <th style="width: 220px;">Hành động</th>
-                </tr>
-                </thead>
-                <tbody id="schedule-table">
-                <tr th:each="s : ${schedules}"
-                    th:attr="data-id=${s.bookingId}"
-                    th:data-type="${s.serviceCategory.name()}"
-                    th:data-status="${s.status.name()}">
-                    <td th:text="${s.petName}"></td>
-                    <td th:text="${s.serviceName}"></td>
-                    <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="col-status" th:text="${s.status.value}"></td>
-                    <td>
-                        <button class="btn btn-sm btn-info detail-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Chi tiết
-                        </button>
-                        <button class="btn btn-sm btn-danger cancel-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Hủy
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <!-- Bảng -->
+        <table class="table table-bordered bg-white align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Thú cưng</th>
+                <th>Dịch vụ</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th style="width: 220px;">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="schedule-table">
+            <tr th:each="s : ${myServices}"
+                th:attr="data-id=${s.bookingId}"
+                th:data-type="${s.serviceCategory.name()}"
+                th:data-status="${s.status.name()}">
+                <td th:text="${s.petName}"></td>
+                <td th:text="${s.serviceName}"></td>
+                <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="col-status" th:text="${s.status.value}"></td>
+                <td>
+                    <button class="btn btn-sm btn-info detail-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Chi tiết
+                    </button>
+                    <button class="btn btn-sm btn-danger cancel-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Hủy
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
             <!-- Modal Chi tiết -->
             <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
@@ -392,8 +429,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Loại dịch vụ</label>
-                                    <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;"
-                                            required>
+                                    <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;" required>
                                         <option value="">-- Chọn loại dịch vụ --</option>
                                         <option value="SPA">Spa</option>
                                         <option value="HOTEL">Khách sạn thú cưng</option>
@@ -403,8 +439,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Dịch vụ</label>
-                                    <select class="form-control" id="detailServiceNameSelect" style="width: 100%;"
-                                            required>
+                                    <select class="form-control" id="detailServiceNameSelect" style="width: 100%;" required>
                                         <option value="">-- Chọn dịch vụ --</option>
                                     </select>
                                 </div>

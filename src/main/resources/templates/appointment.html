@@ -97,6 +97,8 @@
             border-collapse: collapse;
             position: relative;
             z-index: 1;
+            overflow: visible;
+            position: relative;
         }
 
         .product-table th,
@@ -122,6 +124,17 @@
             z-index: 1;
         }
 
+        /* Đảm bảo dropdown không bị che bởi các hàng khác */
+        .product-table tr {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tăng z-index cho hàng có dropdown đang mở */
+        .product-table tr:hover {
+            z-index: 1000;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -132,7 +145,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 999;
+            z-index: 999999;
             padding: 20px;
         }
 
@@ -146,6 +159,8 @@
             padding: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
+            position: relative;
+            z-index: 1000000;
         }
 
         .modal-box label {
@@ -280,108 +295,100 @@
         .action-dropdown {
             position: relative;
             display: inline-block;
-            z-index: 10001;
+            z-index: 10000;
         }
 
         /* Button 3 chấm */
-        .dropdown-toggle {
+        .dots-toggle {
             background: none;
             border: none;
             font-size: 18px;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
             transition: background-color 0.2s;
-            color: #666;
-        }
-
-        .dropdown-toggle:hover {
-            background-color: #f0f0f0;
             color: #333;
         }
 
-        /* Dropdown menu */
+        .dots-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
             right: 0;
-            bottom: 100%; /* Hiển thị phía trên button */
-            background-color: #fff;
-            min-width: 140px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 10010; /* Cao hơn các element khác */
-            border-radius: 6px;
-            padding: 2px 0;
-            border: 1px solid #e0e0e0;
-            white-space: nowrap;
-            margin-bottom: 5px; /* Khoảng cách với button */
-        }
-
-        /* Các item trong menu */
-        .dropdown-menu .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            text-decoration: none;
+            top: 100%;
             background-color: white;
-            color: #333;
-            font-size: 13px;
-            width: 100%;
-            border: none;
-            cursor: pointer;
-            text-align: left;
-            transition: background-color 0.2s;
-            border-radius: 0;
+            min-width: 180px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 100001;
+            border: 1px solid #e0e0e0;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(-5px);
+            pointer-events: none;
         }
 
-        /* Hover hiệu ứng */
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* Hover để hiện menu */
-        .action-dropdown:hover .dropdown-menu {
+        /* Ensure dropdown shows below by default */
+        .action-dropdown:hover .dropdown-menu,
+        .dropdown-menu:hover {
             display: block;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
-        /* Ensure action column has enough space */
-        .product-table td:last-child {
-            min-width: 50px;
-            width: auto;
-            white-space: nowrap;
-            overflow: visible;
-            position: relative;
-            z-index: 10002;
+        .action-dropdown .dropdown-menu {
+            pointer-events: auto;
+            margin-top: 0; /* Loại bỏ khoảng cách */
         }
 
-        /* Đảm bảo dropdown menu có thể hover để giữ mở */
-        .action-dropdown .dropdown-menu:hover {
-            display: block !important;
-        }
-
-        /* Tạo vùng hover liên tục cho dropdown menu */
-        .dropdown-menu::before {
+        /* Tạo phần "cầu nối" giữa nút và menu để tránh khoảng trống */
+        .action-dropdown .dropdown-menu::before {
             content: '';
             position: absolute;
-            bottom: -5px;
+            top: -10px;
             left: 0;
             right: 0;
-            height: 5px;
+            height: 10px;
             background: transparent;
         }
 
-        /* Đảm bảo dropdown không bị cắt bởi bất kỳ container nào */
-        .action-dropdown,
-        .action-dropdown .dropdown-menu {
-            isolation: isolate;
+        /* Ensure dropdown shows to the left when near right edge */
+        .action-dropdown.right-edge .dropdown-menu {
+            right: auto;
+            left: 0;
+        }
+
+        /* Responsive dropdown positioning */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                right: auto;
+                left: 0;
+                min-width: 140px;
+            }
+        }
+
+        /* Ensure dropdown is always visible */
+        .dropdown-menu {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Auto-adjust dropdown position based on available space */
+        .action-dropdown:hover .dropdown-menu {
+            display: block !important;
+            animation: fadeIn 0.2s ease-in-out;
         }
 
         /* Animation for dropdown appearance */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(5px);
+                transform: translateY(-5px);
             }
             to {
                 opacity: 1;
@@ -394,19 +401,75 @@
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
-        /* Auto-adjust dropdown position based on available space */
-        .action-dropdown:hover .dropdown-menu {
+        /* Ensure dropdown is always on top */
+        .action-dropdown {
+            position: relative;
+        }
+
+        .action-dropdown .dropdown-menu {
+            position: absolute;
+            z-index: 100001;
+            pointer-events: auto;
+            /* Đảm bảo dropdown không bị cắt */
+            clip: auto;
+            overflow: visible;
+        }
+
+        /* Đảm bảo dropdown menu có thể hover để giữ mở */
+        .action-dropdown .dropdown-menu:hover {
             display: block !important;
-            animation: fadeIn 0.2s ease-in-out;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Thêm CSS để tránh khoảng trống giữa nút và menu */
+        .action-dropdown .dots-toggle {
+            position: relative;
+            z-index: 100001;
+        }
+
+        .action-dropdown .dropdown-menu {
+            margin-top: 0;
+            padding-top: 8px;
+        }
+
+        /* Đảm bảo dropdown luôn hiển thị trên cùng */
+        .action-dropdown {
+            z-index: 100000;
+        }
+
+        .action-dropdown .dropdown-menu {
+            z-index: 100001;
+        }
+
+        /* Tăng z-index cho toàn bộ bảng khi có dropdown mở */
+        .table-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Bỏ hiệu ứng hover cho table container */
+        /* .table-container:hover {
+            z-index: 99999;
+        } */
+
+        /* Ensure action column has enough space */
+        .product-table td:last-child {
+            min-width: 60px;
+            width: auto;
+            white-space: nowrap;
+            overflow: visible;
+            position: relative;
+            z-index: 100002;
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
+            gap: 8px;
+            padding: 10px 16px;
             width: 100%;
-            font-size: 13px;
+            font-size: 14px;
             color: #333;
             background: none;
             border: none;
@@ -414,6 +477,8 @@
             cursor: pointer;
             transition: background-color 0.2s;
             box-sizing: border-box;
+            position: relative;
+            z-index: 100002;
         }
 
         .dropdown-item i {
@@ -425,6 +490,17 @@
             background-color: #f8f9fa;
         }
 
+        /* Đảm bảo dropdown item không bị che khuất */
+        .dropdown-item:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
         .dropdown-item.delete-btn {
             color: #dc3545;
             font-weight: 500;
@@ -434,7 +510,7 @@
             background-color: #ffe5e5;
         }
 
-        /* Toast styles */
+        /* Toast thông báo*/
         .toast {
             position: fixed;
             top: 20px;
@@ -443,7 +519,7 @@
             border-radius: 8px;
             color: white;
             font-weight: bold;
-            z-index: 1001;
+            z-index: 1000001;
             display: none;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             animation: fadeInOut 3s ease forwards;
@@ -589,6 +665,205 @@
         .logout-btn:hover {
             color: #c82333;
         }
+
+        /* Các item trong menu */
+        .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        /* Hover hiệu ứng */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.confirm-btn {
+            color: #3dba3a;
+            font-weight: 500;
+        }
+
+        .dropdown-item.confirm-btn:hover {
+            background-color: #ffe5e5;
+        }
+
+        .dropdown-item.reject-btn {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .dropdown-item.reject-btn:hover {
+            background-color: #ffe5e5;
+        }
+        /* Dropdown styles */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Dropdown đơn giản */
+        .simple-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dots-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 8px;
+            color: #666;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            overflow: visible;
+        }
+
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Style cho các nút đặc biệt */
+        .approved-btn {
+            color: #28a745;
+        }
+
+        .disapproved-btn {
+            color: #dc3545;
+        }
+
+        .prescription-btn {
+            color: #17a2b8;
+        }
+
+        /* Đảm bảo các form không có margin */
+        .action-dropdown form {
+            margin: 0;
+        }
+        /* Modal Header */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Action Buttons in Table */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        /* Make table cells editable */
+        .editable {
+            background-color: #fff8e1;
+        }
+        /* Modal chỉ xem */
+        #viewPrescriptionModal .modal-box {
+            max-width: 700px;
+        }
+
+        #viewPrescriptionModal .product-table td {
+            background-color: #f8f9fa;
+            cursor: default;
+        }
+
+        #viewPrescriptionModal .product-table tr:hover td {
+            background-color: #e9ecef;
+        }
+
+        /* Đảm bảo modal hiển thị trên cùng và các element khác không thể tương tác */
+        .modal-overlay.show {
+            display: flex !important;
+        }
+
+        /* Khi modal hiển thị, ẩn tất cả dropdown */
+        .modal-overlay.show ~ .action-dropdown .dropdown-menu {
+            display: none !important;
+        }
+
+        /* Đảm bảo modal content luôn hiển thị trên cùng */
+        .modal-content {
+            position: relative;
+            z-index: 1000001;
+        }
+
+        /* Khi modal hiển thị, không cho phép scroll body */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Đảm bảo modal luôn hiển thị trên cùng */
+        .modal-overlay.show {
+            z-index: 999999 !important;
+        }
+
+        .modal-overlay.show .modal-box {
+            z-index: 1000000 !important;
+        }
     </style>
 </head>
 <body>
@@ -597,15 +872,15 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Doctor Dashboard</h2>
         <ul class="sidebar-menu">
-            <li th:classappend="${mode == 'pending'} ? 'active' : ''">
-                <a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a>
-            </li>
-            <li th:classappend="${mode == 'approved'} ? 'active' : ''">
-                <a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a>
-            </li>
-            <li th:classappend="${mode == 'history'} ? 'active' : ''">
-                <a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a>
-            </li>
+            <li><a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a></li>
+            <li><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
+            <li><a th:href="@{/vet/appointment/completed}">🏥 Lịch khám đã hoàn thành</a></li>
+            <li><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
+            <li th:if="${mode == 'pending'}"><a href="/staff/work-schedule?from=/vet/appointment/pending">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'approved'}"><a href="/staff/work-schedule?from=/vet/appointment/approved">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'completed'}"><a href="/staff/work-schedule?from=/vet/appointment/completed">📅 Ca làm việc</a></li>
+            <li th:if="${mode == 'history'}"><a href="/staff/work-schedule?from=/vet/appointment/history">📅 Ca làm việc</a></li>
+            <li><a href="/staff/list-pet-profile?from=/vet/appointment/pending">🐾 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
         <!-- Thông tin người dùng -->
@@ -629,6 +904,7 @@
     <main class="main-content">
         <h1 class="page-title" th:if="${mode == 'pending'}">Lịch khám chờ duyệt</h1>
         <h1 class="page-title" th:if="${mode == 'approved'}">Lịch khám đã duyệt</h1>
+        <h1 class="page-title" th:if="${mode == 'completed'}">Lịch khám đã hoàn tích</h1>
         <h1 class="page-title" th:if="${mode == 'history'}">Lịch khám từ chối</h1>
         <div class="content">
             <!-- Table Container -->
@@ -640,7 +916,6 @@
                         <th>Tên thú cưng</th>
                         <th>Thời điểm</th>
                         <th>Thời gian</th>
-                        <th>Ghi chú</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -651,67 +926,69 @@
                         <td th:text="${appointment.petProfile.name}"></td>
                         <td th:text="${appointment.bookDate}"></td>
                         <td th:text="${appointment.service != null ? appointment.service.duration : 'N/A'}"> phút</td>
-                        <td th:text="${appointment.note}"></td>
-                        <td th:text="${appointment.status}"></td>
+                        <td th:text="${appointment.status.getValue()}"></td>
+                        <!--nút thao tác-->
                         <td>
-                            <!-- Dropdown cho thao tác -->
                             <div class="action-dropdown">
-                                <button class="dropdown-toggle" title="Thao tác">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
+                                <button class="dots-toggle">...</button>
                                 <div class="dropdown-menu">
-                                    <!-- Button Chi tiết luôn hiển thị -->
-                                    <button class="dropdown-item" 
-                                            th:attr="data-name=${appointment.petProfile.name},
-                                            data-species=${appointment.petProfile.species},
-                                            data-breeds=${appointment.petProfile.breeds},
-                                            data-weight=${appointment.petProfile.weight},
-                                            data-age=${appointment.petProfile.age},
-                                            data-image=${(appointment.petProfile.medias != null and !#lists.isEmpty(appointment.petProfile.medias))
-                                                          ? appointment.petProfile.medias[0].url
-                                                          : ''}"
-                                            onclick="openPetProfileModal(this)">
-                                        <i class="fas fa-info-circle"></i> Chi tiết
+                                    <!-- Nút Xem chi tiết -->
+                                    <button type="button" class="dropdown-item"
+                                            th:data-id="${appointment.appointmentBookingId}"
+                                            th:data-date="${appointment.bookDate}"
+                                            th:data-status="${appointment.status.getValue()}"
+                                            th:data-service="${appointment.service.name}"
+                                            th:data-pet-image="${appointment.petProfile.medias.get(0).url}"
+                                            th:data-pet-name="${appointment.petProfile.name}"
+                                            th:data-pet-species="${appointment.petProfile.species}"
+                                            th:data-pet-breeds="${appointment.petProfile.breeds}"
+                                            th:data-pet-weight="${appointment.petProfile.weight}"
+                                            th:data-pet-age="${appointment.petProfile.age}"
+                                            th:data-account-name="${appointment.petProfile.profile.account.name}"
+                                            th:data-account-phone="${appointment.petProfile.profile.account.phone}"
+                                            th:data-pet-note="${appointment.note}"
+                                            onclick="openBookingDetail(this)">
+                                        Xem chi tiết
                                     </button>
-                                    
-                                    <!-- Button Đơn thuốc chỉ hiển thị ở trang approved -->
-                                    <button th:if="${mode == 'approved'}" 
-                                            class="dropdown-item"
-                                            th:attr="data-appointment-id=${appointment.appointmentBookingId},
-                                            data-prescription=${prescriptionMap[appointment.appointmentBookingId] != null
-                                                ? prescriptionMap[appointment.appointmentBookingId].prescriptionNote
-                                                : 'Chưa có đơn thuốc'}"
-                                            onclick="openPrescriptionModal(this)">
-                                        <i class="fas fa-prescription"></i> Đơn thuốc
-                                    </button>
-                                    
-                                    <!-- Button Chấp nhận chỉ hiển thị ở trang pending -->
+
+                                    <!-- Nút Đơn thuốc màn approved-->
+                                    <a class="dropdown-item prescription-btn"
+                                       th:if="${(mode == 'approved')}"
+                                       href="javascript:void(0)"
+                                       th:onclick="'openPrescriptionListModal(' + ${appointment.appointmentBookingId} + ')'">
+                                        Đơn thuốc
+                                    </a>
+
+                                    <!-- Nút Đơn thuốc màn complete-->
+                                    <a class="dropdown-item prescription-btn"
+                                       th:if="${(mode == 'completed')}"
+                                       href="javascript:void(0)"
+                                       th:onclick="'openCompletePrescriptionListModal(' + ${appointment.appointmentBookingId} + ')'">
+                                        Đơn thuốc
+                                    </a>
+
+                                    <!-- Nút Chấp nhận -->
                                     <form th:if="${mode == 'pending'}"
                                           th:action="@{/vet/appointment/approve/{id}(id=${appointment.appointmentBookingId})}"
                                           method="post"
-                                          style="margin: 0; padding: 0;"
                                           onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận cuộc hẹn này không?')">
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-check"></i> Chấp nhận
-                                        </button>
+                                        <button type="submit" class="dropdown-item approved-btn">Chấp nhận</button>
                                     </form>
-                                    
-                                    <!-- Button Không chấp nhận chỉ hiển thị ở trang pending -->
+
+                                    <!-- Nút Không chấp nhận -->
                                     <form th:if="${mode == 'pending'}"
                                           th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
                                           method="post"
-                                          style="margin: 0; padding: 0;"
                                           onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
-                                        <button type="submit" class="dropdown-item delete-btn">
-                                            <i class="fas fa-times"></i> Không chấp nhận
-                                        </button>
+                                        <button type="submit" class="dropdown-item disapproved-btn">Không chấp nhận</button>
                                     </form>
+
                                 </div>
                             </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(appointments)}">
-                        <td colspan="7">Không có cuộc hẹn nào.</td>
+                        <td colspan="6">Không có cuộc hẹn nào.</td>
                     </tr>
                     </tbody>
                 </table>
@@ -737,66 +1014,202 @@
         </div>
     </main>
 </div>
-<!-- Pet Profile Modal -->
-<div id="petProfile" class="modal-overlay" style="display: none;">
+<!-- Modal Booking Detail -->
+<div class="modal-overlay" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
     <div class="modal-box">
-        <h2 id="modalTitle">Thông tin thú cưng</h2>
         <div class="modal-content">
-            <label>Tên:</label>
-            <input type="text" id="petName" readonly />
+            <div class="modal-header">
+                <h5>Chi tiết</h5>
+            </div>
+            <div class="booking-info">
+                <p><strong>Booking ID:</strong> <span id="popup-id"></span></p>
+                <p><strong>Ngày đặt:</strong> <span id="popup-date"></span></p>
+                <p><strong>Trạng thái:</strong> <span id="popup-status"></span></p>
+                <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
+                <hr>
+                <div class="pet-image">
+                    <img id="popup-image" src="" alt="Pet Image">
+                </div>
+                <div class="pet-info">
+                    <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
+                    <p><strong>Loài:</strong> <span id="popup-species"></span></p>
+                    <p><strong>Giống:</strong> <span id="popup-breed"></span></p>
+                    <p><strong>Cân nặng:</strong> <span id="popup-weight"></span> kg</p>
+                    <p><strong>Tuổi:</strong> <span id="popup-age"></span> tháng</p>
+                </div>
+                <hr>
+                <div class="owner-info">
+                    <p><strong>Chủ nuôi:</strong> <span id="popup-owner"></span></p>
+                    <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+                    <p><strong>Ghi chú:</strong> <span id="popup-note"></span></p>
+                </div>
+            </div>
+            <button type="button" class="close-button" onclick="closeDetailPopup()">Đóng</button>
+        </div>
+    </div>
+</div>
 
-            <label>Loài:</label>
-            <input type="text" id="petSpecies" readonly />
+<!-- Modal Prescription List -->
+<div id="prescriptionListModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Đơn thuốc</h2>
+            <button type="button" class="btn btn-primary" onclick="openAddPrescriptionModal()">
+                Thêm thuốc
+            </button>
+        </div>
+        <div class="modal-content">
+            <table class="product-table" id="modalPrescriptionListTable">
+                <thead>
+                <tr>
+                    <th>Tên thuốc</th>
+                    <th>Số lượng</th>
+                    <th>Cách dùng</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="modalPrescriptionListBody">
+                <!-- JS will populate rows here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-primary" onclick="completeAppointment()">Hoàn thành</button>
+            <button type="button" class="btn btn-secondary" onclick="closePrescriptionListModal()">Đóng</button>
+        </div>
+    </div>
+</div>
 
-            <label>Tuổi:</label>
-            <input type="text" id="petAge" readonly />
+<!-- Modal Add/Edit Prescription -->
+<div id="prescriptionFormModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 id="prescriptionFormTitle">Thêm thuốc mới</h2>
+        </div>
+        <form id="prescriptionForm" onsubmit="handlePrescriptionSubmit(event)">
+            <input type="hidden" id="prescriptionId" name="prescriptionId">
+            <input type="hidden" id="appointmentId" name="appointmentId">
+            <input type="hidden" id="currentContext" name="currentContext" value="">
 
-            <label>Hình ảnh:</label>
-            <div style="margin: 10px 0;">
-                <img id="petImagePreview" src="" style="max-width: 100%; max-height: 200px;" />
+            <div class="form-group">
+                <label for="drugName">Tên thuốc:</label>
+                <input type="text" id="drugName" name="drugName" required maxlength="50">
             </div>
 
-            <label>Giống:</label>
-            <input type="text" id="petBreeds" readonly />
+            <div class="form-group">
+                <label for="amount">Số lượng:</label>
+                <input type="number" id="amount" name="amount" required min="1" max="100">
+            </div>
 
-            <label>Cân nặng:</label>
-            <input type="text" id="petWeight" readonly />
-        </div>
+            <div class="form-group">
+                <label for="note">Cách dùng:</label>
+                <textarea id="note" name="note" rows="3" required maxlength="50"></textarea>
+            </div>
 
-        <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closePetProfileModal()">Đóng</button>
-        </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePrescriptionFormModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Prescription Modal -->
-<div id="prescription_modal" class="modal-overlay" style="display: none;">
+<!-- Modal View Prescription (chỉ xem) -->
+<div id="viewPrescriptionModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="prscriptionModalTitle">Đơn thuốc</h2>
+        <div class="modal-header">
+            <h2>Đơn thuốc đã hoàn thành</h2>
+        </div>
         <div class="modal-content">
-            <form id="createPrescriptionForm" onsubmit="submitPrescriptionModal(event)">
-                <input id="appointmentId" type="hidden" />
-
-                <div class="form-group">
-                    <textarea id="prescriptionNote" rows="4" required></textarea>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closePrescriptionModal()">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Áp dụng</button>
-                </div>
-            </form>
+            <table class="product-table">
+                <thead>
+                <tr>
+                    <th>Tên thuốc</th>
+                    <th>Số lượng</th>
+                    <th>Cách dùng</th>
+                </tr>
+                </thead>
+                <tbody id="viewPrescriptionListBody">
+                <!-- JS sẽ điền dữ liệu vào đây -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeViewPrescriptionModal()">Đóng</button>
         </div>
     </div>
 </div>
-
 <!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
 </div>
 
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Convert Java objects to JavaScript format
+    let prescriptions = /*[[${prescriptions}]]*/ [];
+</script>
+
 <!-- Script -->
 <script>
+    async function openCompletePrescriptionListModal(appointmentId) {
+        try {
+            currentAppointmentId = appointmentId;
+            const modal = document.getElementById('viewPrescriptionModal');
+            const tbody = document.getElementById('viewPrescriptionListBody');
+
+            // Hiển thị loading
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">Đang tải đơn thuốc...</td></tr>';
+
+            // Gọi API để lấy đơn thuốc
+            const response = await fetch(`/vet/appointment/prescriptions?appointmentId=${appointmentId}`);
+
+            if (!response.ok) {
+                throw new Error('Không thể lấy dữ liệu đơn thuốc');
+            }
+
+            const data = await response.json();
+            prescriptions = data;
+
+            // Hiển thị dữ liệu
+            tbody.innerHTML = '';
+
+            if (prescriptions.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center">Không có đơn thuốc</td>
+                </tr>
+            `;
+            } else {
+                prescriptions.forEach(prescription => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${prescription.drugName || 'N/A'}</td>
+                    <td>${prescription.amount || 'N/A'}</td>
+                    <td>${prescription.note || 'N/A'}</td>
+                `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            modal.style.display = 'flex';
+        } catch (error) {
+            console.error("Error loading prescriptions:", error);
+            const tbody = document.getElementById('viewPrescriptionListBody');
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center error">Lỗi khi tải đơn thuốc: ${error.message}</td>
+            </tr>
+        `;
+        }
+    }
+
+    function closeViewPrescriptionModal() {
+        const modal = document.getElementById('viewPrescriptionModal');
+        modal.style.display = 'none';
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+    }
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
@@ -811,74 +1224,506 @@
         }, 3000);
     }
 
-    function openPetProfileModal(element) {
-        const name = element.getAttribute('data-name');
-        const species = element.getAttribute('data-species');
-        const age = element.getAttribute('data-age');
-        const image = element.getAttribute('data-image');
-        const breeds = element.getAttribute('data-breeds');
-        const weight = element.getAttribute('data-weight');
+    function openBookingDetail(button) {
+        document.getElementById("popup-id").textContent = button.getAttribute("data-id");
+        document.getElementById("popup-date").textContent = formatDateTime(button.getAttribute("data-date"));
+        document.getElementById("popup-status").textContent = button.getAttribute("data-status");
+        document.getElementById("popup-service").textContent = button.getAttribute("data-service");
 
-        document.getElementById("petName").value = name;
-        document.getElementById("petSpecies").value = species;
-        document.getElementById("petAge").value = age;
-        document.getElementById("petImagePreview").src = image || "";
-        document.getElementById("petBreeds").value = breeds;
-        document.getElementById("petWeight").value = weight;
-        document.getElementById("petProfile").style.display = "flex";
+        document.getElementById("popup-image").src = button.getAttribute("data-pet-image");
+        document.getElementById("popup-petName").textContent = button.getAttribute("data-pet-name");
+        document.getElementById("popup-species").textContent = button.getAttribute("data-pet-species");
+        document.getElementById("popup-breed").textContent = button.getAttribute("data-pet-breeds");
+        document.getElementById("popup-weight").textContent = button.getAttribute("data-pet-weight");
+        document.getElementById("popup-age").textContent = button.getAttribute("data-pet-age");
+
+        document.getElementById("popup-owner").textContent = button.getAttribute("data-account-name");
+        document.getElementById("popup-phone").textContent = button.getAttribute("data-account-phone");
+        document.getElementById("popup-note").textContent = button.getAttribute("data-pet-note");
+
+        // Hiển thị modal
+        const modal = document.getElementById("bookingDetailModal");
+        modal.style.display = "flex";
+        modal.classList.add("show");
+        document.body.classList.add("modal-open");
+
+        // Ẩn tất cả dropdown khi modal hiển thị
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
     }
 
-    function closePetProfileModal() {
-        document.getElementById("petProfile").style.display = "none";
+    function formatDateTime(datetimeStr) {
+        if (!datetimeStr) return "Không có";
+        const date = new Date(datetimeStr);
+        if (isNaN(date.getTime())) return datetimeStr;
+        return date.toLocaleString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
     }
 
-    function openPrescriptionModal(element) {
-        document.getElementById("prescription_modal").style.display = "flex";
-        document.getElementById("appointmentId").value = element.getAttribute('data-appointment-id');
-        document.getElementById("prescriptionNote").value = element.getAttribute('data-prescription');
+    function closeDetailPopup() {
+        const modal = document.getElementById('bookingDetailModal');
+        modal.style.display = 'none';
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
     }
 
-    function closePrescriptionModal() {
-        document.getElementById("prescription_modal").style.display = "none";
+    let currentAppointmentId = null;
+
+    function openPrescriptionListModal(appointmentId) {
+        currentAppointmentId = appointmentId;
+
+        const modal = document.getElementById('prescriptionListModal');
+        const tbody = document.getElementById('modalPrescriptionListBody');
+
+        // Clear previous rows
+        tbody.innerHTML = '';
+
+        // Filter prescriptions for this appointment
+        const filteredPrescriptions = prescriptions.filter(p =>
+            p.appointmentId == appointmentId ||
+            p.appointment?.appointmentBookingId == appointmentId
+        );
+
+        // Populate table
+        filteredPrescriptions.forEach(pre => {
+            const tr = document.createElement('tr');
+            tr.dataset.prescriptionId = pre.prescriptionId;
+            renderPrescriptionRow(tr, pre);
+            tbody.appendChild(tr);
+        });
+
+        // Load lại danh sách thuốc
+        refreshPrescriptionList();
+
+        // Show modal
+        modal.style.display = 'flex';
+        modal.classList.add("show");
+        document.body.classList.add("modal-open");
+
+        // Ẩn tất cả dropdown khi modal hiển thị
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
     }
 
-    function submitPrescriptionModal(event) {
+    async function refreshPrescriptionList() {
+        if (!currentAppointmentId) return;
+
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions?appointmentId=${currentAppointmentId}`);
+            if (response.ok) {
+                const data = await response.json();
+                prescriptions = data;
+                renderPrescriptionList();
+            }
+        } catch (error) {
+            console.error("Error refreshing prescription list:", error);
+        }
+    }
+
+    function openAddPrescriptionModal() {
+        const formModal = document.getElementById('prescriptionFormModal');
+        const formTitle = document.getElementById('prescriptionFormTitle');
+        const form = document.getElementById('prescriptionForm');
+
+        formTitle.textContent = 'Thêm thuốc mới';
+        form.reset();
+        document.getElementById('appointmentId').value = currentAppointmentId;
+        document.getElementById('prescriptionId').value = '';
+
+        formModal.style.display = 'flex';
+        formModal.classList.add("show");
+        document.body.classList.add("modal-open");
+
+        // Ẩn tất cả dropdown khi modal hiển thị
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+
+
+    function closePrescriptionFormModal() {
+        const modal = document.getElementById('prescriptionFormModal');
+        modal.style.display = 'none';
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+    }
+
+    /**
+     * Render danh sách đơn thuốc vào bảng
+     */
+    function renderPrescriptionList() {
+        const tbody = document.getElementById('modalPrescriptionListBody');
+        if (!tbody) {
+            console.error('Không tìm thấy tbody để render danh sách thuốc');
+            return;
+        }
+
+        tbody.innerHTML = '';
+
+        // Lọc đơn thuốc theo appointmentId hiện tại
+        const filteredPrescriptions = prescriptions.filter(p =>
+            p.appointmentId == currentAppointmentId ||
+            p.appointment?.appointmentBookingId == currentAppointmentId
+        );
+
+        if (filteredPrescriptions.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">Chưa có thuốc nào được kê</td>
+            </tr>
+        `;
+            return;
+        }
+
+        // Render từng dòng
+        filteredPrescriptions.forEach(prescription => {
+            const tr = document.createElement('tr');
+            tr.dataset.prescriptionId = prescription.prescriptionId;
+
+            tr.innerHTML = `
+            <td class="editable" contenteditable="false"
+                data-maxlength="50"
+                oninput="validateDrugName(this)">
+                ${prescription.drugName || prescription.prescriptionDrugName}
+            </td>
+            <td class="editable" contenteditable="false"
+                data-min="1"
+                data-max="100"
+                oninput="validateAmount(this)">
+                ${prescription.amount || prescription.prescriptionAmount}
+            </td>
+            <td class="editable" contenteditable="false"
+                data-maxlength="50"
+                oninput="validateNote(this)">
+                ${prescription.note || prescription.prescriptionNote}
+            </td>
+            <td class="action-buttons">
+                <button class="edit-btn" onclick="toggleEditPrescription(this)">
+                    Sửa
+                </button>
+                <button class="delete-btn"
+                        onclick="deletePrescription(${prescription.prescriptionId})">
+                    Xóa
+                </button>
+            </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Các hàm validate
+    function validateDrugName(element) {
+        const maxLength = parseInt(element.getAttribute('data-maxlength')) || 50;
+        const content = element.textContent.trim();
+
+        // Kiểm tra không được để trống
+        if (content === '') {
+            element.textContent = ''; // Xóa nếu chỉ có khoảng trắng
+            showToast('Tên thuốc không được để trống', 'error');
+            return false; // Trả về false nếu không hợp lệ
+        }
+
+        // Kiểm tra độ dài tối đa
+        if (content.length > maxLength) {
+            element.textContent = content.substring(0, maxLength);
+            showToast(`Tên thuốc tối đa ${maxLength} ký tự`, 'warning');
+            return false;
+        }
+
+        return true; // Trả về true nếu hợp lệ
+    }
+
+    function validateAmount(element) {
+        const min = parseInt(element.getAttribute('data-min')) || 1;
+        const max = parseInt(element.getAttribute('data-max')) || 100;
+
+        // Chỉ cho phép nhập số
+        element.textContent = element.textContent.replace(/[^0-9]/g, '');
+
+        const value = parseInt(element.textContent) || 0;
+
+        if (value < min) {
+            element.textContent = min;
+            showToast(`Số lượng tối thiểu là ${min}`, 'warning');
+            return false;
+        } else if (value > max) {
+            element.textContent = max;
+            showToast(`Số lượng tối đa là ${max}`, 'warning');
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateNote(element) {
+        const maxLength = parseInt(element.getAttribute('data-maxlength')) || 50;
+        const content = element.textContent.trim();
+
+        // Kiểm tra không được để trống
+        if (content === '') {
+            element.textContent = '';
+            showToast('Ghi chú không được để trống', 'error');
+            return false;
+        }
+
+        // Kiểm tra độ dài tối đa
+        if (content.length > maxLength) {
+            element.textContent = content.substring(0, maxLength);
+            showToast(`Ghi chú tối đa ${maxLength} ký tự`, 'warning');
+            return false;
+        }
+
+        return true;
+    }
+
+    function toggleEditPrescription(button) {
+        const row = button.closest('tr');
+        const isEditing = row.querySelector('.editable').isContentEditable;
+
+        if (isEditing) {
+            // Lấy các ô cần validate
+            const drugNameCell = row.cells[0];
+            const amountCell = row.cells[1];
+            const noteCell = row.cells[2];
+
+            // Thực hiện validate tất cả các trường
+            const isDrugNameValid = validateDrugName(drugNameCell);
+            const isAmountValid = validateAmount(amountCell);
+            const isNoteValid = validateNote(noteCell);
+
+            // Nếu bất kỳ trường nào không hợp lệ thì không lưu
+            if (!isDrugNameValid || !isAmountValid || !isNoteValid) {
+                return;
+            }
+
+            // Tiếp tục xử lý lưu dữ liệu nếu tất cả đều hợp lệ
+            const prescriptionId = row.dataset.prescriptionId;
+            const prescriptionIndex = prescriptions.findIndex(p => p.prescriptionId == prescriptionId);
+
+            if (prescriptionIndex !== -1) {
+                const updatedData = {
+                    prescriptionId: prescriptionId,
+                    drugName: drugNameCell.textContent.trim(),
+                    amount: parseInt(amountCell.textContent),
+                    note: noteCell.textContent.trim(),
+                    appointmentId: currentAppointmentId
+                };
+
+                updatePrescription(updatedData)
+                    .then(updatedPrescription => {
+                        prescriptions[prescriptionIndex] = updatedPrescription;
+                        row.querySelectorAll('.editable').forEach(cell => {
+                            cell.contentEditable = false;
+                            cell.classList.remove('editing');
+                        });
+                        button.textContent = 'Sửa';
+                        showToast("Cập nhật thành công!", "success");
+                    })
+                    .catch(error => {
+                        console.error("Update error:", error);
+                        showToast("Lỗi khi cập nhật: " + error.message, "error");
+                    });
+            }
+        } else {
+            // Bật chế độ edit
+            row.querySelectorAll('.editable').forEach(cell => {
+                cell.contentEditable = true;
+                cell.classList.add('editing');
+            });
+            button.textContent = 'Lưu';
+        }
+    }
+
+    function renderPrescriptionRow(row, prescription) {
+        row.innerHTML = `
+        <td class="editable" contenteditable="false">${prescription.drugName || prescription.prescriptionDrugName}</td>
+        <td class="editable" contenteditable="false">${prescription.amount || prescription.prescriptionAmount}</td>
+        <td class="editable" contenteditable="false">${prescription.note || prescription.prescriptionNote}</td>
+        <td class="action-buttons">
+            <button class="edit-btn" onclick="toggleEditPrescription(this)">Sửa</button>
+            <button class="delete-btn" onclick="deletePrescription(${prescription.prescriptionId})">Xóa</button>
+        </td>
+    `;
+    }
+
+    async function handlePrescriptionSubmit(event) {
         event.preventDefault();
 
-        const form = document.getElementById('createPrescriptionForm');
-        const data = {
-            appointmentId: parseInt(form.appointmentId.value),
-            prescriptionNote: form.prescriptionNote.value
+        // Lưu appointmentId hiện tại vào sessionStorage
+        sessionStorage.setItem('lastEditedAppointmentId', currentAppointmentId);
+
+        const form = event.target;
+        const formData = {
+            appointmentId: currentAppointmentId, // Sử dụng biến đã lưu khi mở modal
+            drugName: form.drugName.value,
+            amount: form.amount.value,
+            note: form.note.value
         };
 
-        fetch('/vet/appointment/createPrescription', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => {
-                if (res.ok) {
-                    closePrescriptionModal();
-                    showToast("Thêm/cập nhật đơn thuốc thành công!", "success");
-                    setTimeout(() => window.location.href = "/vet/appointment/approved", 1000);
-                } else {
-                    return res.text().then(message => {
-                        showToast(`Thêm/cập nhật đơn thuốc thất bại: ${message}`, "error");
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi khi gửi API:", error);
-                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+        try {
+            const response = await fetch('/vet/appointment/prescriptions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create prescription');
+            }
+
+            const result = await response.json();
+            showToast("Thêm thuốc thành công!", "success");
+            closePrescriptionFormModal();
+            openPrescriptionListModal(currentAppointmentId); // Refresh danh sách
+
+            // Sau khi tạo thành công, reload trang
+            window.location.reload();
+        } catch (error) {
+            console.error("Error creating prescription:", error);
+            showToast(error.message || "Có lỗi xảy ra khi thêm thuốc!", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra nếu có appointmentId trong sessionStorage
+        const lastEditedAppointmentId = sessionStorage.getItem('lastEditedAppointmentId');
+
+        if (lastEditedAppointmentId) {
+            // Mở modal prescription list
+            openPrescriptionListModal(lastEditedAppointmentId);
+
+            // Xóa dữ liệu đã lưu
+            sessionStorage.removeItem('lastEditedAppointmentId');
+        }
+
+        // Khởi tạo dữ liệu ban đầu
+        initializeData(prescriptions);
+    });
+    function initializeData(initialPrescriptions) {
+        // Kiểm tra nếu có dữ liệu từ Thymeleaf
+        if (typeof initialPrescriptions !== 'undefined') {
+            prescriptions = Array.isArray(initialPrescriptions) ? initialPrescriptions : [];
+        } else {
+            // Hoặc khởi tạo mảng rỗng nếu không có dữ liệu
+            prescriptions = [];
+        }
+
+        console.log('Initialized prescriptions:', prescriptions);
+
+        // Kiểm tra nếu cần mở modal sau khi reload
+        const lastAppointmentId = sessionStorage.getItem('lastEditedAppointmentId');
+        if (lastAppointmentId) {
+            openPrescriptionListModal(lastAppointmentId);
+            sessionStorage.removeItem('lastEditedAppointmentId');
+        }
+    }
+
+    async function updatePrescription(prescriptionData) {
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions/${prescriptionData.prescriptionId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(prescriptionData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update prescription');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Update error:", error);
+            throw error;
+        }
+    }
+
+    async function deletePrescription(prescriptionId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa thuốc này không?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/vet/appointment/prescriptions/${prescriptionId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete prescription');
+            }
+
+            // Remove from local array
+            const index = prescriptions.findIndex(p => p.prescriptionId == prescriptionId);
+            if (index !== -1) {
+                prescriptions.splice(index, 1);
+            }
+
+            showToast("Xóa thuốc thành công!", "success");
+            // Refresh the prescription list
+            openPrescriptionListModal(currentAppointmentId);
+        } catch (error) {
+            console.error("Error deleting prescription:", error);
+            showToast("Có lỗi xảy ra khi xóa thuốc!", "error");
+        }
+    }
+
+    function closePrescriptionListModal() {
+        const modal = document.getElementById('prescriptionListModal');
+        modal.style.display = 'none';
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+        currentAppointmentId = null;
+    }
+
+    async function completeAppointment() {
+        if (!currentAppointmentId) {
+            showToast("Không tìm thấy ID cuộc hẹn", "error");
+            return;
+        }
+
+        if (!confirm('Bạn có chắc chắn muốn hoàn thành cuộc hẹn này không?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/vet/appointment/complete/${currentAppointmentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to complete appointment');
+            }
+
+            showToast("Đã hoàn thành cuộc hẹn thành công!", "success");
+            closePrescriptionListModal();
+            // Reload page to update status
+            window.location.reload();
+        } catch (error) {
+            console.error("Error completing appointment:", error);
+            showToast(error.message || "Có lỗi xảy ra khi hoàn thành cuộc hẹn!", "error");
+        }
     }
 
     // Add active class to current menu item
     document.addEventListener('DOMContentLoaded', function() {
         const menuItems = document.querySelectorAll('.sidebar-menu li');
-        
+
         menuItems.forEach(item => {
             item.addEventListener('click', function() {
                 // Remove active class from all items
@@ -895,7 +1740,48 @@
             }
         });
     });
-</script>
 
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdowns = document.querySelectorAll('.action-dropdown');
+
+        dropdowns.forEach(dropdown => {
+            let timeout;
+            const menu = dropdown.querySelector('.dropdown-menu');
+
+            // Mở dropdown khi hover vào nút hoặc menu
+            const showMenu = () => {
+                clearTimeout(timeout);
+                menu.style.display = 'block';
+                menu.style.opacity = '1';
+                menu.style.transform = 'translateY(0)';
+                menu.style.pointerEvents = 'auto';
+                menu.style.zIndex = '100001';
+                dropdown.style.zIndex = '100000';
+            };
+
+            // Đóng dropdown với delay
+            const hideMenu = () => {
+                timeout = setTimeout(() => {
+                    menu.style.opacity = '0';
+                    menu.style.transform = 'translateY(-5px)';
+                    menu.style.pointerEvents = 'none';
+                    menu.style.zIndex = '100001';
+                    dropdown.style.zIndex = '10000';
+                    setTimeout(() => {
+                        menu.style.display = 'none';
+                    },);
+                },);
+            };
+
+            // Sự kiện cho nút dropdown
+            dropdown.addEventListener('mouseenter', showMenu);
+            dropdown.addEventListener('mouseleave', hideMenu);
+
+            // Sự kiện cho menu
+            menu.addEventListener('mouseenter', showMenu);
+            menu.addEventListener('mouseleave', hideMenu);
+        });
+    });
+</script>
 </body>
 </html>
