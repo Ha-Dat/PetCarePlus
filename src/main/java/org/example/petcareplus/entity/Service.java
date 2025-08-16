@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.petcareplus.enums.ServiceCategory;
+import org.example.petcareplus.enums.ServiceStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,6 +32,10 @@ public class Service {
 
     @Column(nullable = false)
     private Integer duration;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ServiceStatus status;
 
     @OneToMany(mappedBy = "service")
     private List<AppointmentBooking> appointmentBookings;
@@ -106,5 +111,13 @@ public class Service {
 
     public void setSpaBookings(List<SpaBooking> spaBookings) {
         this.spaBookings = spaBookings;
+    }
+    
+    public ServiceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ServiceStatus status) {
+        this.status = status;
     }
 }

@@ -171,4 +171,9 @@ public class OrderServiceImpl implements OrderService {
     public Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable) {
         return orderRepository.findByAccount_AccountIdAndStatus(accountId, status, pageable);
     }
+    
+    @Override
+    public List<Order> findOrdersByAccountId(Long accountId) {
+        return orderRepository.findByAccount_AccountId(accountId);
+    }
 }

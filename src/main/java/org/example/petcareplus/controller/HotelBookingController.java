@@ -121,7 +121,7 @@ public class HotelBookingController {
 
         model.addAttribute("petProfiles", petProfiles);
         model.addAttribute("hotelBooking", new HotelBooking()); // model binding
-        model.addAttribute("hotelServices", serviceService.findByServiceCategory(ServiceCategory.HOTEL));
+        model.addAttribute("hotelServices", serviceService.findActiveByServiceCategory(ServiceCategory.HOTEL));
         model.addAttribute("categories", parentCategories);
         return "hotel-booking";
     }

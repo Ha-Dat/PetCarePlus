@@ -28,11 +28,9 @@ public class WorkScheduleRequest {
     @Column(name="request_type", nullable = false)
     private RequestType requestType;
 
-    @NotNull
     @Column(name="requested_date")
     private LocalDate requestedDate;
 
-    @NotNull
     @Column(name="requested_shift")
     @Enumerated(EnumType.STRING)
     private Shift requestedShift;
