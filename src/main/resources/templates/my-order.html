@@ -267,13 +267,13 @@
       <div class="pagination">
                     <a th:if="${currentPage > 0}" th:href="@{'/list_order'(page=${currentPage - 1})}">Previous</a>
         <span th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-              <a th:href="@{'/list_order'(page=${pageNum})}"
+              <a th:href="@{'/list-order'(page=${pageNum})}"
          th:text="${pageNum + 1}"
          th:classappend="${pageNum == currentPage} ? ' active-page' : ''"
          class="page-number">
       </a>
     </span>
-                    <a th:if="${currentPage + 1 < totalPages}" th:href="@{'/list_order'(page=${currentPage + 1})}">Next</a>
+                    <a th:if="${currentPage + 1 < totalPages}" th:href="@{'/list-order'(page=${currentPage + 1})}">Next</a>
       </div>
     </div>
     </div>
