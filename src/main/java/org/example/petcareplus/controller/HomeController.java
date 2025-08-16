@@ -30,6 +30,22 @@ public class HomeController {
     @Autowired
     private PromotionService promotionService;
 
+    @GetMapping("/")
+    public String landingPage(Model model) {
+        List<Category> parentCategories = categoryService.getParentCategory();
+        
+        // Lấy top 4 sản phẩm mới nhất và tốt nhất
+        List<Product> topProducts = productService.getTop5ByOrderByCreatedDateDesc()
+                .stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .limit(4)
+                .toList();
+        
+        model.addAttribute("categories", parentCategories);
+        model.addAttribute("topProducts", topProducts);
+        return "landing";
+    }
+
     @GetMapping("/home")
     public String Viewhome(Model model) {
         List<Product> getTop5ProductByCreateDate = productService.getTop5ByOrderByCreatedDateDesc()
