@@ -8,31 +8,6 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <style>
-
-        .select2-container .select2-selection--single {
-            height: calc(2.5rem + 2px);
-            padding: 0.375rem 0.75rem;
-            border: 1px solid #ced4da;
-            border-radius: 0.375rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: normal;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 100%;
-            right: 0.75rem;
-        }
-
-        .select2-dropdown {
-            border-radius: 0.375rem;
-            border: 1px solid #ced4da;
-        }
-
-        >
         .sidebar {
             width: 220px;
             background-color: #ffffff;
@@ -106,42 +81,6 @@
 
         .btn-custom:hover {
             background-color: #388e3c;
-        }
-
-        /* Thêm style cho các nút filter */
-        .btn-outline-success.filter-type {
-            margin-right: 8px;
-            margin-bottom: 8px;
-            border-radius: 20px;
-        }
-
-        .btn-outline-success.filter-type.active {
-            background-color: #4caf50;
-            color: white !important;
-        }
-
-        /* Style cho tab filter trạng thái */
-        .nav-tabs .nav-link {
-            color: #495057;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-        }
-
-        .nav-tabs .nav-link:hover {
-            border: none;
-            color: #4caf50;
-        }
-
-        .nav-tabs .nav-link.active {
-            background-color: #4caf50;
-            color: white !important;
-            border: none;
-        }
-
-        /* Hiệu ứng hover cho các hàng trong bảng */
-        .table tbody tr:hover {
-            background-color: rgba(76, 175, 80, 0.1);
         }
 
         /* ========================
@@ -332,11 +271,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul class="list-unstyled">
-            <li><a href="/customer/profile">Hồ Sơ</a></li>
-            <li><a href="/customer/change-password">Đổi mật khẩu</a></li>
-            <li><a href="/customer/pet-profile">Hồ Sơ thú cưng</a></li>
-            <li><a href="/customer/list-order">Đơn mua</a></li>
-            <li><a href="/customer/my-schedule" class="active">Lịch</a></li>
+                    <li><a href="/profile">Hồ Sơ</a></li>
+        <li><a href="/change-password">Đổi mật khẩu</a></li>
+        <li><a href="/pet-profile">Hồ Sơ thú cưng</a></li>
+        <li><a href="/list-order">Đơn mua</a></li>
+        <li><a href="/my-schedule" class="active">Lịch</a></li>
         </ul>
     </div>
 
@@ -352,43 +291,36 @@
             <button class="btn btn-outline-success filter-type" data-type="APPOINTMENT">Khám bệnh</button>
         </div>
 
-        <!-- Tabs trạng thái -->
-        <div class="status-tabs">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Chờ duyệt')}"
-                       th:classappend="${selectedStatus}=='Chờ duyệt' ? 'active' : ''">Chờ duyệt</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Đã duyệt')}"
-                       th:classappend="${selectedStatus}=='Đã duyệt' ? 'active' : ''">Đã duyệt</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Từ chối')}"
-                       th:classappend="${selectedStatus}=='Từ chối' ? 'active' : ''">Từ chối</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{'/customer/my-schedule'(type=${selectedType}, status='Hủy')}"
-                       th:classappend="${selectedStatus}=='Hủy' ? 'active' : ''">Hủy</a>
-                </li>
-            </ul>
-        </div>
+        <!-- Filter trạng thái -->
+        <ul class="nav nav-tabs mb-3" id="statusFilter">
+            <li class="nav-item">
+                <a class="nav-link active" data-status="ALL" href="#">Tất cả</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="PENDING" href="#">Chờ duyệt</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="ACCEPTED" href="#">Đã duyệt</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="REJECTED" href="#">Từ chối</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="CANCELLED" href="#">Hủy</a>
+            </li>
+        </ul>
 
         <!-- Bảng lịch -->
         <div class="schedule-table">
             <table class="table">
                 <thead>
-                <tr>
-                    <th>Thú cưng</th>
-                    <th>Dịch vụ</th>
-                    <th>Thời gian</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
+<!--                <tr>-->
+<!--                    <th>Thú cưng</th>-->
+<!--                    <th>Dịch vụ</th>-->
+<!--                    <th>Thời gian</th>-->
+<!--                    <th>Trạng thái</th>-->
+<!--                    <th>Hành động</th>-->
+<!--                </tr>-->
                 </thead>
                 <tbody>
                 <tr th:each="s : ${schedules}">
@@ -404,13 +336,51 @@
                     </td>
                     <td>
                         <span th:if="${s.status.value == 'Chờ duyệt'}">
-                            <a th:href="@{'/customer/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
+                            <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
                                class="action-link"
                                onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
                                 <i class="fas fa-times-circle"></i> Hủy
                             </a>
                         </span>
                         <span th:if="${s.status.value != 'Chờ duyệt'}" class="text-muted">—</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Bảng -->
+            <table class="table table-bordered bg-white align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Thú cưng</th>
+                    <th>Dịch vụ</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 220px;">Hành động</th>
+                </tr>
+                </thead>
+                <tbody id="schedule-table">
+                <tr th:each="s : ${myServices}"
+                    th:attr="data-id=${s.bookingId}"
+                    th:data-type="${s.serviceCategory.name()}"
+                    th:data-status="${s.status.name()}">
+                    <td th:text="${s.petName}"></td>
+                    <td th:text="${s.serviceName}"></td>
+                    <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td class="col-status" th:text="${s.status.value}"></td>
+                    <td>
+                        <button class="btn btn-sm btn-info detail-btn"
+                                th:if="${s.status.name() == 'PENDING'}"
+                                th:data-id="${s.bookingId}"
+                                th:data-type="${s.serviceCategory.name()}">
+                            Chi tiết
+                        </button>
+                        <button class="btn btn-sm btn-danger cancel-btn"
+                                th:if="${s.status.name() == 'PENDING'}"
+                                th:data-id="${s.bookingId}"
+                                th:data-type="${s.serviceCategory.name()}">
+                            Hủy
+                        </button>
                     </td>
                 </tr>
                 </tbody>
@@ -436,7 +406,8 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Loại dịch vụ</label>
-                                    <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;" required>
+                                    <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;"
+                                            required>
                                         <option value="">-- Chọn loại dịch vụ --</option>
                                         <option value="SPA">Spa</option>
                                         <option value="HOTEL">Khách sạn thú cưng</option>
@@ -446,7 +417,8 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Dịch vụ</label>
-                                    <select class="form-control" id="detailServiceNameSelect" style="width: 100%;" required>
+                                    <select class="form-control" id="detailServiceNameSelect" style="width: 100%;"
+                                            required>
                                         <option value="">-- Chọn dịch vụ --</option>
                                     </select>
                                 </div>
@@ -534,7 +506,6 @@
             }
         });
     });
-
 
     // Set minimum date to today
     document.addEventListener("DOMContentLoaded", () => {
