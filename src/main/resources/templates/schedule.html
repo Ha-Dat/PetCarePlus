@@ -446,7 +446,6 @@
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <h2 class="sidebar-title">MANAGER DASHBOARD</h2>
         <ul class="sidebar-menu">
         </ul>
     </aside>
@@ -485,6 +484,7 @@
         </div>
     </main>
 </div>
+
 <div id="OffRequestModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
         <h2 id="OffRequestModalTitle">Đon xin nghỉ:</h2>
@@ -513,6 +513,53 @@
         </div>
     </div>
 </div>
+
+<div id="ChangeRequestModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="ChangeRequestModalTitle">Đon xin đổi lịch:</h2>
+        <form id="ChangeRequestForm" onsubmit="submitChangeRequest(event)">
+            <input type="hidden" id="ChangeRequestScheduleId" name="ChangeRequestScheduleId">
+            <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
+            <input type="hidden" id="ChangeRequestAccountId" name="ChangeRequestAccountId">
+
+            <label for="ChangeRequestStatus">Trạng thái đơn:</label>
+            <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly>
+
+            <label for="ChangeRequestWorkDate">Ngày:</label>
+            <div class="date-input">
+                <input
+                        type="date"
+                        id="ChangeRequestWorkDate"
+                        name="ChangeRequestWorkDate"
+                        required
+                />
+            </div>
+
+            <label for="ChangeRequestShift">Ca làm *</label>
+            <select id="ChangeRequestShift" name="ChangeRequestShift" required>
+                <option th:each="shi : ${shift}"
+                        th:value="${shi.name()}"
+                        th:text="${shi.value}"></option>
+            </select>
+
+            <label for="ChangeRequestReason">Lý do:</label>
+            <textarea id="ChangeRequestReason" name="ChangeRequestReason" rows="3"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeChangeRequestModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Xin đổi lịch</button>
+            </div>
+        </form>
+        <div class="modal-actions">
+            <form id="DeleteChangeRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
+                <button type="submit" class="dropdown-item delete-btn">
+                    Rút đơn xin đổi lịch
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Toast Notification -->
 <div id="toast" class="toast hidden">
     <span id="toastMessage"></span>
@@ -530,7 +577,7 @@
     function confirmDeleteAndToast(event) {
         event.preventDefault();
 
-        if (confirm("Bạn có chắc muốn rút đơn xin nghỉ?")) {
+        if (confirm("Bạn có chắc muốn rút đơn?")) {
             showToast("Thành công", "success");
 
             setTimeout(() => {
@@ -683,29 +730,52 @@
                 const thisOffRequest = Array.isArray(absentRequests) ? (absentRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
+
+                const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
+                    s.workDate === dateStr && s.shiftName === shiftName
+                )[0] || null) : null;
+
                 if (scheduleCount > 0) {
-                    cell.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
-                    <button style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Có lịch:<br> ${thisStatus}
-                    </button>
-                    <a
-                        data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
-                        data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
-                        data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
-                        data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
-                        data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
-                        href="javascript:void(0)"
-                        onclick="openOffRequestModal(this)"
-                        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
-                        Xin nghỉ
-                    </a>
-                    <button onclick="openOffRequestModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2; align-self:;">
-                        Đổi lịch
-                    </button>
-                </div>
-                                    `;
+                    let html = `
+                                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+                                    <button style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                                        Có lịch:<br> ${thisStatus}
+                                    </button>
+                                `;
+                    if (thisChangeRequest == null) {
+                        html += `<a
+                                    data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
+                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                    data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
+                                    data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
+                                    data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
+                                    href="javascript:void(0)"
+                                    onclick="openOffRequestModal(this)"
+                                    style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
+                                    Xin nghỉ
+                                </a>`;
+                    }
+
+                    if (thisOffRequest == null) {
+                        html += `
+                                <a
+                                    data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
+                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                    data-reason="${thisChangeRequest != null ? thisChangeRequest.reason : ''}"
+                                    data-status="${thisChangeRequest != null ? thisChangeRequest.status : ''}"
+                                    data-accountId="${thisChangeRequest != null ? thisChangeRequest.accountId : ''}"
+                                    data-requestedDate="${thisChangeRequest != null ? thisChangeRequest.requestedDate : ''}"
+                                    data-requestedShift="${thisChangeRequest != null ? thisChangeRequest.requestedShiftName : ''}"
+                                    href="javascript:void(0)"
+                                    onclick="openChangeRequestModal(this)"
+                                    style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2; align-self:;">
+                                    Đổi lịch
+                                </a>
+                                `;
+                    }
+
+                    html += `</div>`;
+                    cell.innerHTML = html;
                 }
             });
         }
@@ -790,6 +860,89 @@
         document.getElementById("OffRequestModal").style.display = 'none';
     }
 
+    function openChangeRequestModal(element) {
+        document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
+        document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
+        document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
+        document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
+        document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
+        document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
+        document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
+        // Set delete form
+        const requestId = element.getAttribute('data-requestId');
+        const deleteForm = document.getElementById("DeleteChangeRequestForm");
+
+        if (requestId) {
+            deleteForm.style.display = 'block';
+            deleteForm.action = `/work-schedule/delete/${requestId}`;
+        } else {
+            deleteForm.style.display = 'none';
+        }
+        // Show modal
+        document.getElementById("ChangeRequestModal").style.display = 'flex';
+    }
+
+    function submitChangeRequest(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('ChangeRequestForm');
+        const requestId = document.getElementById('ChangeRequestRequestId').value;
+
+        if(requestId) {
+            const data = {
+                reason: form.ChangeRequestReason.value.trim(),
+                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                requestedDate: form.ChangeRequestWorkDate.value,
+                requestedShift: form.ChangeRequestShift.value.trim()
+            };
+
+            fetch(`/work-schedule/update-change-request/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeChangeRequestModal();
+                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+            });
+        }
+        else {
+            const data = {
+                reason: form.ChangeRequestReason.value.trim(),
+                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                requestedDate: form.ChangeRequestWorkDate.value,
+                requestedShift: form.ChangeRequestShift.value.trim()
+            };
+            fetch(`/work-schedule/create-change-request`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (res.ok) {
+                    closeChangeRequestModal();
+                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                }
+            }).catch(error => {
+                console.error("Lỗi cập nhật:", error);
+                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+            });
+        }
+
+    }
+
+    function closeChangeRequestModal() {
+        document.getElementById("ChangeRequestModal").style.display = 'none';
+    }
 
     function onWeekChange() {
         const weekStart = document.getElementById('weekSelect').value;
