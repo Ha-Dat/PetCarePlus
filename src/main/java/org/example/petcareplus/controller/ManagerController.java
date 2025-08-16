@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-@RequestMapping("/manager")
+
 @Controller
 @RequestMapping("/manager")
 public class ManagerController {
