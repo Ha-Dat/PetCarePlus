@@ -388,6 +388,7 @@
                                         class="dropdown-item">Chi tiết</button>
 
                                 <button type="button"
+                                        th:if="${a.role.name() != 'ADMIN'}"
                                         th:data-id="${a.accountId}"
                                         th:data-status="${a.status.value}"
                                         th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"
