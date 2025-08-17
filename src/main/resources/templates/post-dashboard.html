@@ -237,17 +237,6 @@
             animation: fadeIn 0.2s ease-in-out;
         }
 
-        /* Status text (Đã duyệt) */
-        .dropdown-status {
-            padding: 6px 12px;
-            font-size: 13px;
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            text-align: center;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
         .pagination {
             margin-top: 20px;
             text-align: center;
@@ -650,8 +639,6 @@
                                             th:if="${!post.checked}"
                                             onclick="return confirm('Bạn có chắc chắn muốn từ chối bài viết này? Bài viết sẽ bị xóa khỏi hệ thống.')">❌ Từ chối</button>
                                 </form>
-
-                                <span th:if="${post.checked}" class="dropdown-status">Đã duyệt</span>
                             </div>
                         </div>
                     </td>
