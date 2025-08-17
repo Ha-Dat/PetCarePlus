@@ -32,7 +32,6 @@
             border: 1px solid #ced4da;
         }
 
-        >
         .sidebar {
             width: 220px;
             background-color: #ffffff;
@@ -330,7 +329,10 @@
 <div th:insert="component/header :: header"></div>
 <div class="d-flex">
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" style="width: 220px;
+                background-color: #ffffff;
+                border-right: 1px solid #ddd;
+                padding: 30px 20px;">
         <ul class="list-unstyled">
             <li><a href="/profile">Hồ Sơ</a></li>
             <li><a href="/change-password">Đổi mật khẩu</a></li>
@@ -383,27 +385,28 @@
                 <!--                    <th>Hành động</th>-->
                 <!--                </tr>-->
                 </thead>
-                <tbody>
-                <tr th:each="s : ${schedules}">
+                <tbody id="schedule-table">
+                <tr th:each="s : ${myServices}"
+                    th:attr="data-id=${s.bookingId}"
+                    th:data-type="${s.serviceCategory.name()}"
+                    th:data-status="${s.status.name()}">
                     <td th:text="${s.petName}"></td>
-                    <td th:text="${s.serviceCategory.value}"></td>
-                    <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${s.serviceName}"></td>
+                    <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td class="col-status" th:text="${s.status.value}"></td>
                     <td>
-                        <span th:class="'status-badge ' +
-                                     (${s.status.value == 'Chờ duyệt'} ? 'status-pending' :
-                                     (${s.status.value == 'Đã duyệt'} ? 'status-approved' :
-                                     (${s.status.value == 'Từ chối'} ? 'status-rejected' : 'status-cancelled')))"
-                              th:text="${s.status.value}"></span>
-                    </td>
-                    <td>
-                        <span th:if="${s.status.value == 'Chờ duyệt'}">
-                            <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
-                               class="action-link"
-                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
-                                <i class="fas fa-times-circle"></i> Hủy
-                            </a>
-                        </span>
-                        <span th:if="${s.status.value != 'Chờ duyệt'}" class="text-muted">—</span>
+                        <button class="btn btn-sm btn-info detail-btn"
+                                th:if="${s.status.name() == 'PENDING'}"
+                                th:data-id="${s.bookingId}"
+                                th:data-type="${s.serviceCategory.name()}">
+                            Chi tiết
+                        </button>
+                        <button class="btn btn-sm btn-danger cancel-btn"
+                                th:if="${s.status.name() == 'PENDING'}"
+                                th:data-id="${s.bookingId}"
+                                th:data-type="${s.serviceCategory.name()}">
+                            Hủy
+                        </button>
                     </td>
                 </tr>
                 </tbody>
