@@ -48,4 +48,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT SUM(p.unitSold) FROM Product p")
     Integer getTotalUnitsSold();
+
+    List<Product> findTop3ByOrderByUnitSoldDesc();
 }

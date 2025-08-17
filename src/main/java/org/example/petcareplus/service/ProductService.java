@@ -23,6 +23,8 @@ public interface ProductService {
 
     List<Product> getTop5ByOrderByCreatedDateDesc();
 
+    List<Product> getTop3BestSellingProducts();
+
     List<Product> getTop9Products();
 
     Page<Product> findAll(Pageable pageable);

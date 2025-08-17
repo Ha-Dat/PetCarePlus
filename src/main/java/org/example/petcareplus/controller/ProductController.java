@@ -89,6 +89,14 @@ public class ProductController {
         model.addAttribute("searchkeyword", searchkeyword);
         model.addAttribute("result_product", resultSearch);
 
+        // Thêm top 3 sản phẩm bán chạy nhất
+        List<Product> top3BestSellingProducts = productService.getTop3BestSellingProducts()
+                .stream()
+                .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                .limit(3)
+                .toList();
+        model.addAttribute("top3BestSellingProducts", top3BestSellingProducts);
+
         return "view-product";
     }
 
