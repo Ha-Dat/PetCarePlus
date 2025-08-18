@@ -37,7 +37,14 @@ public class WorkScheduleDTO {
     }
 
     public ScheduleStatus getStatus() {
-        return ScheduleStatus.valueOf(status);
+        if (status == null || status.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return ScheduleStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
     }
 
     public void setStatus(String status) {
@@ -61,7 +68,14 @@ public class WorkScheduleDTO {
     }
 
     public Shift getShift() {
-        return Shift.valueOf(shift);
+        if (shift == null || shift.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Shift.valueOf(shift);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid shift: " + shift);
+        }
     }
 
     public void setShift(String shift) {

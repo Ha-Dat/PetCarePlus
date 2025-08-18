@@ -440,6 +440,55 @@
         .dropdown-toggle:hover {
             background-color: #f0f0f0;
         }
+
+        /* Styling for optgroup */
+        optgroup {
+            font-weight: bold;
+            color: #2ec4b6;
+        }
+
+        optgroup option {
+            font-weight: normal;
+            color: #333;
+            padding: 8px;
+        }
+
+        select optgroup option:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Action buttons styling */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .edit-btn {
+            color: #2ec4b6;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0f7f5;
+        }
+
+        .delete-btn {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: #f8d7da;
+        }
     </style>
 </head>
 <body>
@@ -493,6 +542,11 @@
     <div class="modal-box">
         <h2 id="modalTitle">Lịch làm việc</h2>
         <div class="modal-content">
+            <div style="margin-bottom: 20px;" id="addScheduleButtonContainer">
+                <button type="button" class="btn btn-primary" onclick="openAddScheduleModal()">
+                    + Thêm ca làm việc
+                </button>
+            </div>
             <table class="product-table" id="modalScheduleTable">
                 <thead>
                 <tr>
@@ -512,6 +566,47 @@
         <div class="modal-actions">
             <button type="button" class="btn btn-secondary" onclick="closeSchedulesModal()">Đóng</button>
         </div>
+    </div>
+</div>
+
+<div id="addScheduleModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="addScheduleModalTitle">Thêm ca làm việc mới</h2>
+        <form id="addScheduleForm" onsubmit="submitAddSchedule(event)">
+            <input type="hidden" id="addScheduleWorkDate" name="addScheduleWorkDate">
+            <input type="hidden" id="addScheduleShift" name="addScheduleShift">
+            
+            <label for="addScheduleAccountSelect">Chọn nhân viên:</label>
+            <select id="addScheduleAccountSelect" name="addScheduleAccountSelect" required>
+                <option value="">-- Chọn nhân viên --</option>
+                <optgroup label="Nhân viên chăm sóc thú cưng">
+                    <option th:each="staff : ${availableStaff}" 
+                            th:if="${staff.roleName == 'PET_GROOMER'}"
+                            th:value="${staff.accountId}"
+                            th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
+                </optgroup>
+                <optgroup label="Nhân viên bán hàng">
+                    <option th:each="staff : ${availableStaff}" 
+                            th:if="${staff.roleName == 'SELLER'}"
+                            th:value="${staff.accountId}"
+                            th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
+                </optgroup>
+                <optgroup label="Bác sĩ thú y">
+                    <option th:each="staff : ${availableStaff}" 
+                            th:if="${staff.roleName == 'VET'}"
+                            th:value="${staff.accountId}"
+                            th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
+                </optgroup>
+            </select>
+
+            <label for="addScheduleNote">Ghi chú:</label>
+            <textarea id="addScheduleNote" name="addScheduleNote" rows="3" placeholder="Ghi chú (không bắt buộc)"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeAddScheduleModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Thêm ca làm việc</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -622,9 +717,10 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     // Convert Java objects to JavaScript format
-    const schedules = /*[[${schedules}]]*/ [];
-    const absentRequests = /*[[${absentRequests}]]*/ [];
-    const shiftChangeRequests = /*[[${shiftChangeRequests}]]*/ [];
+         const schedules = /*[[${schedules}]]*/ [];
+     const absentRequests = /*[[${absentRequests}]]*/ [];
+     const shiftChangeRequests = /*[[${shiftChangeRequests}]]*/ [];
+     const availableStaff = /*[[${availableStaff}]]*/ [];
 </script>
 <script>
     const Shift = {
@@ -800,42 +896,101 @@
 
 
     function openSchedulesModal(date, shiftName) {
+        console.log("openSchedulesModal called with:", { date, shiftName });
+        
+        // Validate input parameters
+        if (!date || !shiftName) {
+            console.error("Invalid parameters:", { date, shiftName });
+            showToast("Lỗi: Thông tin ngày hoặc ca làm việc không hợp lệ!", "error");
+            return;
+        }
+
         const modal = document.getElementById('scheduleModal');
         const tbody = document.getElementById('modalScheduleBody');
 
         // Clear previous rows
         tbody.innerHTML = '';
 
+        // Store current date and shift for add schedule functionality FIRST
+        window.currentScheduleDate = date;
+        window.currentScheduleShift = shiftName;
+        
+        console.log("Stored values for add schedule:", {
+            date: window.currentScheduleDate,
+            shift: window.currentScheduleShift
+        });
+
+        // Check if the date is in the past
+        const scheduleDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        const isPast = scheduleDate < today;
+        
+        // Show/hide add schedule button based on date
+        const addButtonContainer = document.getElementById('addScheduleButtonContainer');
+        if (isPast) {
+            addButtonContainer.style.display = 'none';
+        } else {
+            addButtonContainer.style.display = 'block';
+        }
+
         // Filter schedules by date and shift
         const filteredSchedules = schedules.filter(s =>
             s.workDate === date && s.shiftName === shiftName
         );
 
+        // Check if filteredSchedules is empty or undefined
+        if (!filteredSchedules || filteredSchedules.length === 0) {
+            console.log('No schedules found for date:', date, 'shift:', shiftName);
+            // Still show modal but with empty table
+            const shiftDisplay = getShiftDisplay(shiftName);
+            document.getElementById('modalTitle').textContent = `Lịch làm việc ngày ${date}, ${shiftDisplay}`;
+            modal.style.display = 'flex';
+            return;
+        }
+
         const shiftValue = filteredSchedules[0].shift;
 
-        // Set modal title
-        document.getElementById('modalTitle').textContent = `Lịch làm việc ngày ${date}, ${shiftValue}`;
+        // Set modal title with Vietnamese display
+        const shiftDisplay = getShiftDisplay(shiftValue);
+        document.getElementById('modalTitle').textContent = `Lịch làm việc ngày ${date}, ${shiftDisplay}`;
 
         // Populate table
         filteredSchedules.forEach(sche => {
+            // Check if the schedule is in the past
+            const scheduleDate = new Date(sche.workDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+            const isPast = scheduleDate < today;
+            
             const tr = document.createElement('tr');
             tr.innerHTML = `
             <td>${sche.accountName}</td>
             <td>${sche.accountRole}</td>
             <td>${sche.accountPhone}</td>
             <td>${sche.note}</td>
-            <td>${sche.statusName}</td>
-            <td><a data-scheduleId="${sche.scheduleId}"
-            data-accountId="${sche.accountId}"
-   data-accountName="${sche.accountName}"
-   data-workDate="${sche.workDate}"
-   data-shiftName="${sche.shiftName}"
-   data-statusName="${sche.statusName}"
-   data-note="${sche.note}"
-   href="javascript:void(0)"
-   onclick="openEditScheduleModal(this)">
-    •••
-</a></td>
+            <td>${getStatusDisplay(sche.statusName)}</td>
+            <td>
+                <div class="action-buttons">
+                    <a data-scheduleId="${sche.scheduleId}"
+                       data-accountId="${sche.accountId}"
+                       data-accountName="${sche.accountName}"
+                       data-workDate="${sche.workDate}"
+                       data-shiftName="${sche.shiftName}"
+                       data-statusName="${sche.statusName}"
+                       data-note="${sche.note}"
+                       href="javascript:void(0)"
+                       onclick="openEditScheduleModal(this)"
+                       class="edit-btn">
+                        ✏️
+                    </a>
+                    ${!isPast ? `<a href="javascript:void(0)" 
+                                    onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')"
+                                    class="delete-btn">
+                                    🗑️
+                                 </a>` : ''}
+                </div>
+            </td>
         `;
             tbody.appendChild(tr);
         });
@@ -859,6 +1014,12 @@
         const filteredSchedules = shiftChangeRequests.filter(s =>
             s.workDate === date && s.shiftName === shiftName
         );
+
+        // Check if filteredSchedules is empty or undefined
+        if (!filteredSchedules || filteredSchedules.length === 0) {
+            console.log('No change requests found for date:', date, 'shift:', shiftName);
+            return;
+        }
 
         const shiftValue = filteredSchedules[0].shift;
 
@@ -1025,9 +1186,182 @@
         loadSchedule(weekStart);
     }
 
+    // Helper function to convert enum to Vietnamese display
+    function getShiftDisplay(shiftEnum) {
+        const shiftMap = {
+            'MORNING': 'Ca sáng',
+            'AFTERNOON': 'Ca chiều',
+            'EVENING': 'Ca tối'
+        };
+        return shiftMap[shiftEnum] || shiftEnum;
+    }
+    
+    function getStatusDisplay(statusEnum) {
+        const statusMap = {
+            'PENDING': 'Chưa đến',
+            'PRESENT': 'Có mặt',
+            'ABSENT': 'Vắng mặt',
+            'LEAVE_APPROVED': 'Nghỉ có phép'
+        };
+        return statusMap[statusEnum] || statusEnum;
+    }
+
+    function deleteSchedule(scheduleId, accountName, workDate, shiftDisplay) {
+        const confirmMessage = `Bạn có chắc chắn muốn xóa ${accountName} khỏi ca làm việc ngày ${workDate}, ${shiftDisplay}?`;
+        
+        if (confirm(confirmMessage)) {
+            fetch(`/manager/manager-dashboard/delete-schedule/${scheduleId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(res => {
+                if (res.ok) {
+                    showToast("Xóa ca làm việc thành công!", "success");
+                    // Save modal info to localStorage before reload
+                    localStorage.setItem('openModalAfterReload', JSON.stringify({
+                        type: 'schedule',
+                        date: workDate,
+                        shift: shiftDisplay === 'Ca sáng' ? 'MORNING' : 
+                               shiftDisplay === 'Ca chiều' ? 'AFTERNOON' : 'EVENING'
+                    }));
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    return res.text().then(text => {
+                        console.log("Error response:", text);
+                        showToast("Xóa ca làm việc thất bại! Chi tiết: " + text, "error");
+                    });
+                }
+            }).catch(error => {
+                console.error("Lỗi xóa ca làm việc:", error);
+                showToast("Có lỗi xảy ra khi xóa ca làm việc!", "error");
+            });
+        }
+    }
+
+    function openAddScheduleModal() {
+        // Set the current date and shift from the schedule modal
+        console.log("Setting values:", {
+            date: window.currentScheduleDate,
+            shift: window.currentScheduleShift
+        });
+        
+        // Check if values are defined before setting
+        if (window.currentScheduleDate && window.currentScheduleDate !== 'undefined') {
+            document.getElementById('addScheduleWorkDate').value = window.currentScheduleDate;
+        } else {
+            console.error("currentScheduleDate is undefined");
+            showToast("Lỗi: Không thể lấy ngày làm việc!", "error");
+            return;
+        }
+        
+        if (window.currentScheduleShift && window.currentScheduleShift !== 'undefined') {
+            document.getElementById('addScheduleShift').value = window.currentScheduleShift;
+        } else {
+            console.error("currentScheduleShift is undefined");
+            showToast("Lỗi: Không thể lấy ca làm việc!", "error");
+            return;
+        }
+        
+        // Show the add schedule modal
+        document.getElementById('addScheduleModal').style.display = 'flex';
+    }
+
+    function closeAddScheduleModal() {
+        document.getElementById('addScheduleModal').style.display = 'none';
+        // Reset form
+        document.getElementById('addScheduleForm').reset();
+    }
+
+    function submitAddSchedule(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('addScheduleForm');
+        const accountId = form.addScheduleAccountSelect.value;
+        const workDate = form.addScheduleWorkDate.value;
+        const shift = form.addScheduleShift.value;
+        const note = form.addScheduleNote.value.trim();
+
+        console.log("Form values:", { accountId, workDate, shift, note });
+
+        if (!accountId) {
+            showToast("Vui lòng chọn nhân viên!", "error");
+            return;
+        }
+
+        if (!workDate || workDate === 'undefined') {
+            showToast("Ngày làm việc không được để trống!", "error");
+            return;
+        }
+
+        if (!shift || shift === 'undefined') {
+            showToast("Ca làm việc không được để trống!", "error");
+            return;
+        }
+
+        // Validate date format
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(workDate)) {
+            showToast("Định dạng ngày không hợp lệ!", "error");
+            return;
+        }
+
+        const data = {
+            accountId: parseInt(accountId),
+            workDate: workDate,
+            shift: shift,
+            note: note || ""
+        };
+
+        console.log("Data being sent:", data);
+        console.log("JSON string:", JSON.stringify(data));
+
+        fetch('/manager/manager-dashboard/create-schedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            console.log("Response status:", res.status);
+            if (res.ok) {
+                closeAddScheduleModal();
+                showToast("Thêm ca làm việc thành công!", "success");
+                // Save modal info to localStorage before reload
+                localStorage.setItem('openModalAfterReload', JSON.stringify({
+                    type: 'schedule',
+                    date: window.currentScheduleDate,
+                    shift: window.currentScheduleShift
+                }));
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                return res.text().then(text => {
+                    console.log("Error response:", text);
+                    showToast("Thêm ca làm việc thất bại! Chi tiết: " + text, "error");
+                });
+            }
+        }).catch(error => {
+            console.error("Lỗi thêm ca làm việc:", error);
+            showToast("Có lỗi xảy ra khi thêm ca làm việc!", "error");
+        });
+    }
+
     window.onload = () => {
         initWeekSelect();
         onWeekChange();
+        
+        // Check if we need to open a modal after reload
+        const modalInfo = localStorage.getItem('openModalAfterReload');
+        if (modalInfo) {
+            try {
+                const info = JSON.parse(modalInfo);
+                localStorage.removeItem('openModalAfterReload'); // Clear the info
+                
+                // Wait a bit for the page to fully load
+                setTimeout(() => {
+                    if (info.type === 'schedule') {
+                        openSchedulesModal(info.date, info.shift);
+                    }
+                }, 500);
+            } catch (e) {
+                console.error("Error parsing modal info:", e);
+            }
+        }
     };
 </script>
 </body>

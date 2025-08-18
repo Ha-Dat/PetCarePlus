@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,17 @@ public class ManagerController {
         List<WorkSchedule> allSchedules = workScheduleService.findAll();
         List<WorkScheduleRequest> allRequests = workScheduleRequestService.findAll();
 
+        // Get available staff for scheduling
+        List<Map<String, String>> availableStaff = accountService.findByRoleIn(Arrays.asList(AccountRole.PET_GROOMER, AccountRole.SELLER, AccountRole.VET))
+                .stream()
+                .map(account -> Map.of(
+                        "accountId", account.getAccountId().toString(),
+                        "accountName", account.getName(),
+                        "accountPhone", account.getPhone(),
+                        "accountRole", account.getRole().getValue(),
+                        "roleName", account.getRole().name()
+                ))
+                .collect(Collectors.toList());
 
         List<Map<String, String>> absentRequests = allRequests.stream()
                 .filter(r -> r.getRequestType() == RequestType.OFF && r.getStatus() == ScheduleRequestStatus.PENDING)
@@ -94,6 +106,7 @@ public class ManagerController {
         model.addAttribute("schedules", schedules);
         model.addAttribute("absentRequests", absentRequests);
         model.addAttribute("shiftChangeRequests", shiftChangeRequests);
+        model.addAttribute("availableStaff", availableStaff);
 
         return "manager";
     }
@@ -159,5 +172,54 @@ public class ManagerController {
             return "redirect:/manager/manager-dashboard";
         }
         return "redirect:/manager/manager-dashboard?error=true";
+    }
+
+    @PostMapping("/manager-dashboard/create-schedule")
+    @ResponseBody
+    public ResponseEntity<?> createSchedule(@RequestBody WorkScheduleDTO dto) {
+        try {
+            WorkSchedule newSchedule = new WorkSchedule();
+            newSchedule.setNote(dto.getNote());
+            newSchedule.setStatus(ScheduleStatus.PENDING);
+            newSchedule.setWorkDate(dto.getWorkDate());
+            newSchedule.setShift(dto.getShift());
+            
+            accountService.getById(dto.getAccountId())
+                    .ifPresentOrElse(
+                            newSchedule::setAccount,
+                            () -> { throw new IllegalArgumentException("Account not found for ID: " + dto.getAccountId()); }
+                    );
+            
+            workScheduleService.save(newSchedule);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to create schedule: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/manager-dashboard/delete-schedule/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteSchedule(@PathVariable Long id) {
+        try {
+            Optional<WorkSchedule> existing = workScheduleService.findById(id);
+            if (existing.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            WorkSchedule schedule = existing.get();
+            
+            // Check if the schedule is in the past
+            java.time.LocalDate today = java.time.LocalDate.now();
+            if (schedule.getWorkDate().isBefore(today)) {
+                return ResponseEntity.badRequest().body("Cannot delete past schedules");
+            }
+
+            workScheduleService.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to delete schedule: " + e.getMessage());
+        }
     }
 }

@@ -33,4 +33,6 @@ public interface AccountService {
     Page<Account> getAccountPage(int page, int size);
 
     Long countByRole(AccountRole role);
+    
+    List<Account> findByRoleIn(List<AccountRole> roles);
 }

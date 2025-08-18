@@ -36,4 +36,9 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
     public Optional<WorkSchedule> findById(Long id) {
         return workScheduleRepository.findById(id);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        workScheduleRepository.deleteById(id);
+    }
 }
