@@ -483,11 +483,10 @@
                                         th:data-status="${spaBooking.status}"
                                         th:data-service="${spaBooking.service.name}"
 
-                                        th:data-pet-image="${spaBooking.petProfile != null
-                                                                and spaBooking.petProfile.medias != null
-                                                                and !spaBooking.petProfile.medias.isEmpty()
+                                        th:data-pet-image="${(spaBooking.petProfile.medias != null
+                                                                and !spaBooking.petProfile.medias.isEmpty())
                                                                 ? spaBooking.petProfile.medias.get(0).url
-                                                                : null}"
+                                                                : 'https://png.pngtree.com/png-vector/20250627/ourmid/pngtree-simple-black-and-white-square-face-with-sad-expression-as-icon-vector-png-image_7013880.png'}"
                                         th:data-pet-name="${spaBooking.petProfile.name}"
                                         th:data-pet-species="${spaBooking.petProfile.species}"
                                         th:data-pet-breeds="${spaBooking.petProfile.breeds}"
