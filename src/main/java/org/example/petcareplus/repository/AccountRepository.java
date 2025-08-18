@@ -13,7 +13,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByPhone(String phone);
 
+    Optional<Account> findByRole(AccountRole role);
+
     boolean existsByPhone(String phone);
 
     Long countByRole(AccountRole role);
+
 }

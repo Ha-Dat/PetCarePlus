@@ -310,6 +310,21 @@
             background-color: lightgreen;
         }
 
+        /* Add Product Button */
+        .add-product-btn {
+            padding: 8px 14px;
+            background-color: #00b894;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-product-btn:hover {
+            background-color: #009e82;
+        }
+
         .approved-btn {
             padding: 8px 14px;
             background-color: lightgrey;
@@ -459,6 +474,7 @@
         <h1 class="page-title">Lịch làm việc</h1>
         <div class="content">
             <!-- Table Container -->
+            <button type="button" class="btn add-product-btn" onclick="openCreateScheduleModal()">Tạo lịch mới</button>
             <div class="table-container">
                 <label for="weekSelect">Tuần: </label>
                 <select id="weekSelect" onchange="onWeekChange()">
@@ -608,6 +624,48 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="createScheduleModal" class="modal-overlay">
+    <div class="modal-box">
+        <h2 id="createScheduleTitle">Thêm lịch làm mới</h2>
+
+        <form id="createScheduleForm"  onsubmit="submitCreateSchedule(event)">
+            <label for="createScheduleAccount">Chọn nhân viên *</label>
+            <select id="createScheduleAccount" name="createScheduleAccount" required>
+                <option th:each="acc : ${accounts}"
+                        th:value="${acc.accountId}"
+                        th:text="${acc.name}"></option>
+            </select>
+
+            <label for="createScheduleWorkDate">Ngày *</label>
+            <div class="date-input">
+                <input
+                        type="date"
+                        id="createScheduleWorkDate"
+                        name="createScheduleWorkDate"
+                        required
+                />
+            </div>
+
+            <label for="createScheduleShift">Ca làm *</label>
+            <select id="createScheduleShift" name="createScheduleShift" required>
+                <option th:each="shi : ${shift}"
+                        th:value="${shi.name()}"
+                        th:text="${shi.value}"></option>
+            </select>
+
+            <label for="createScheduleNote">Ghi chú:</label>
+            <textarea id="createScheduleNote" name="createScheduleNote" rows="3"></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeCreateScheduleModal()">Hủy</button>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="submitButtonText">Thêm lịch</span>
+                </button>
             </div>
         </form>
     </div>
@@ -994,6 +1052,40 @@
             console.error("Lỗi cập nhật:", error);
             showToast("Có lỗi xảy ra khi cập nhật!", "error");
         });
+    }
+
+    function openCreateScheduleModal() {
+        document.getElementById("createScheduleModal").style.display = "flex";
+    }
+
+    function closeCreateScheduleModal() {
+        document.getElementById("createScheduleModal").style.display = "none";
+        document.getElementById("createScheduleForm").reset();
+    }
+
+    function submitCreateSchedule(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('createScheduleForm');
+        const formData = new FormData(form);
+
+        fetch('/manager/manager-dashboard/create', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => {
+                if (res.ok) {
+                    closeCreateScheduleModal();
+                    showToast("Thêm lịch thành công!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast("Thêm lịch thất bại!", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi gửi API:", error);
+                showToast("Có lỗi xảy ra khi gửi dữ liệu!", "error");
+            });
     }
 
     function onWeekChange() {

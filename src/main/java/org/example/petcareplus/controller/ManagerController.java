@@ -3,20 +3,20 @@ package org.example.petcareplus.controller;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.dto.WorkScheduleDTO;
-import org.example.petcareplus.entity.AppointmentBooking;
-import org.example.petcareplus.entity.Product;
-import org.example.petcareplus.entity.WorkSchedule;
-import org.example.petcareplus.entity.WorkScheduleRequest;
+import org.example.petcareplus.entity.*;
 import org.example.petcareplus.enums.*;
 import org.example.petcareplus.service.AccountService;
 import org.example.petcareplus.service.WorkScheduleRequestService;
 import org.example.petcareplus.service.WorkScheduleService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +40,7 @@ public class ManagerController {
         // Get all data from services
         List<WorkSchedule> allSchedules = workScheduleService.findAll();
         List<WorkScheduleRequest> allRequests = workScheduleRequestService.findAll();
+        List<Account> accounts= accountService.getAllAccount().stream().filter(a -> a.getRole() == AccountRole.SELLER || a.getRole() == AccountRole.VET || a.getRole() == AccountRole.PET_GROOMER).collect(Collectors.toList());
 
 
         List<Map<String, String>> absentRequests = allRequests.stream()
@@ -88,6 +89,7 @@ public class ManagerController {
                 ))
                 .collect(Collectors.toList());
 
+        model.addAttribute("accounts", accounts);
         model.addAttribute("shift", Shift.values());
         model.addAttribute("scheduleStatus", ScheduleStatus.values());
         model.addAttribute("schedules", schedules);
@@ -158,5 +160,36 @@ public class ManagerController {
             return "redirect:/manager/manager-dashboard";
         }
         return "redirect:/manager/manager-dashboard?error=true";
+    }
+
+    @PostMapping("/manager-dashboard/create")
+    @ResponseBody
+    public ResponseEntity<?> createSchedule(
+            @RequestParam("createScheduleAccount") Long createScheduleAccount,
+            @RequestParam("createScheduleWorkDate")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createScheduleWorkDate,
+            @RequestParam("createScheduleShift") String createScheduleShift,
+            @RequestParam("createScheduleNote") String createScheduleNote) {
+
+        try {
+            Account account = accountService.getById(createScheduleAccount)
+                    .orElseThrow(() -> new RuntimeException("Account not found"));
+
+            Shift shift = Shift.valueOf(createScheduleShift);
+
+            WorkSchedule workSchedule = new WorkSchedule();
+            workSchedule.setAccount(account);
+            workSchedule.setWorkDate(createScheduleWorkDate);
+            workSchedule.setShift(shift);
+            workSchedule.setNote(createScheduleNote);
+            workSchedule.setStatus(ScheduleStatus.PENDING);
+
+            workScheduleService.save(workSchedule);
+
+            return ResponseEntity.ok("Schedule created");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
