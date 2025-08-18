@@ -41,4 +41,6 @@ public interface OrderService {
     Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable);
 
     Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable);
+    
+    List<Order> findOrdersByAccountId(Long accountId);
 }

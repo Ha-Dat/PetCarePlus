@@ -25,6 +25,7 @@ public class PostDTO {
     private List<MultipartFile> videoFiles;
     private List<String> oldImageUrls;
     private List<String> oldVideoUrls;
+    private Rating userRating; // Rating của user hiện tại cho post này
 
     public PostDTO() {
     }
@@ -54,6 +55,19 @@ public class PostDTO {
             this.rating = null;
         }
 
+    }
+
+    public PostDTO(Post post, Long currentUserId) {
+        this(post); // Gọi constructor cũ
+        
+        // Tìm rating của user hiện tại
+        if (currentUserId != null && post.getPostRatings() != null) {
+            this.userRating = post.getPostRatings().stream()
+                    .filter(r -> r.getAccount().getAccountId().equals(currentUserId))
+                    .findFirst()
+                    .map(r -> r.getRating())
+                    .orElse(null);
+        }
     }
 
     // Getters and Setters
@@ -175,5 +189,13 @@ public class PostDTO {
 
     public void setOldVideoUrls(List<String> oldVideoUrls) {
         this.oldVideoUrls = oldVideoUrls;
+    }
+
+    public Rating getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(Rating userRating) {
+        this.userRating = userRating;
     }
 }

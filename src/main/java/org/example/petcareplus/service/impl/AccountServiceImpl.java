@@ -94,4 +94,9 @@ public class AccountServiceImpl implements AccountService {
     public Long countByRole(AccountRole role) {
         return accountRepository.countByRole(role);
     }
+    
+    @Override
+    public List<Account> findByRoleIn(List<AccountRole> roles) {
+        return accountRepository.findByRoleIn(roles);
+    }
 }

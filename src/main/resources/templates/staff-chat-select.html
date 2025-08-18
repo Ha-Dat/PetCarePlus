@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<select id="customerSelect">
+  <option value="1">Customer 1</option>
+  <option value="2">Customer 2</option>
+</select>
+<button onclick="goToChat()">Vào chat</button>
+</body>
+<script>
+  function goToChat() {
+    const customerId = document.getElementById('customerSelect').value;
+    window.location.href = `/chat?customerId=${customerId}`;
+  }
+</script>
+</html>

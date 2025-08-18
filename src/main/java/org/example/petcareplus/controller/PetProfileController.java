@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 
@@ -219,7 +220,7 @@ public class PetProfileController {
         return "File received: " + imageFile.getOriginalFilename() + ", Size: " + imageFile.getSize();
     }
 
-    @GetMapping("/list-pet-profile")
+    @GetMapping("/staff/list-pet-profile")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "8") int size,
@@ -240,5 +241,85 @@ public class PetProfileController {
         model.addAttribute("keyword", keyword); // giữ lại từ khóa trên view
 
         return "list-pet-profile";
+    }
+
+    @PostMapping("/pet-profile/delete")
+    public String deletePet(@RequestParam("petId") Long petId,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        
+        if (account == null) {
+            System.out.println("DEBUG: User not logged in, redirecting to login");
+            return "redirect:/login";
+        }
+        
+        System.out.println("DEBUG: Attempting to delete pet with ID: " + petId);
+        
+        try {
+            // Kiểm tra xem có thể xóa không
+            if (!petProfileService.canDeletePet(petId)) {
+                System.out.println("DEBUG: Pet cannot be deleted, getting error message");
+                // Lấy thông tin chi tiết về lý do không thể xóa
+                String errorMessage = getDeleteErrorMessage(petId);
+                System.out.println("DEBUG: Error message: " + errorMessage);
+                redirectAttributes.addFlashAttribute("error", errorMessage);
+                return "redirect:/pet-profile";
+            }
+            
+            System.out.println("DEBUG: Pet can be deleted, proceeding with deletion");
+            
+            // Xóa thú cưng
+            petProfileService.deletePet(petId);
+            
+            System.out.println("DEBUG: Pet deleted successfully, redirecting with success message");
+
+            redirectAttributes.addFlashAttribute("success", "Xóa thú cưng thành công");
+            
+            return "redirect:/pet-profile";
+            
+        } catch (Exception e) {
+            System.out.println("DEBUG: Exception occurred: " + e.getMessage());
+            e.printStackTrace();
+            String errorMessage = "Có lỗi xảy ra khi xóa thú cưng: " + e.getMessage();
+            redirectAttributes.addFlashAttribute("error", errorMessage);
+            return "redirect:/pet-profile";
+        }
+    }
+
+    private String getDeleteErrorMessage(Long petId) {
+        try {
+            // Kiểm tra từng loại booking để đưa ra thông báo cụ thể
+            List<org.example.petcareplus.entity.AppointmentBooking> appointments = 
+                petProfileService.getAppointmentsByPetId(petId);
+            List<org.example.petcareplus.entity.HotelBooking> hotelBookings = 
+                petProfileService.getHotelBookingsByPetId(petId);
+            List<org.example.petcareplus.entity.SpaBooking> spaBookings = 
+                petProfileService.getSpaBookingsByPetId(petId);
+            
+            StringBuilder message = new StringBuilder();
+            message.append("Không thể xóa thú cưng vì đang sử dụng các dịch vụ sau: ");
+            
+            if (!appointments.isEmpty()) {
+                message.append("Đặt lịch khám (").append(appointments.size()).append(" lịch hẹn), ");
+            }
+            if (!hotelBookings.isEmpty()) {
+                message.append("Đặt khách sạn (").append(hotelBookings.size()).append(" lịch đặt phòng), ");
+            }
+            if (!spaBookings.isEmpty()) {
+                message.append("Đặt spa (").append(spaBookings.size()).append(" lịch hẹn), ");
+            }
+            
+            // Xóa dấu phẩy cuối cùng
+            if (message.charAt(message.length() - 2) == ',') {
+                message.setLength(message.length() - 2);
+            }
+            
+            message.append(". Vui lòng hủy tất cả dịch vụ trước khi xóa thú cưng.");
+            
+            return message.toString();
+        } catch (Exception e) {
+            return "Không thể xóa thú cưng. Thú cưng đang sử dụng dịch vụ.";
+        }
     }
 }

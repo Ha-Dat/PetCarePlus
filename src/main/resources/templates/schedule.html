@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manager dashboard</title>
     <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Màu xanh lá */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #45a049; /* Màu khi hover */
+        }
         body {
             margin: 0;
             font-family: "Nunito", sans-serif;
@@ -444,14 +459,9 @@
 </head>
 <body>
 <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <ul class="sidebar-menu">
-        </ul>
-    </aside>
-
     <!-- Main Content -->
     <main class="main-content">
+        <a th:if="${from != null}" th:href="@{${from}}" class="back-button">← Quay lại</a>
         <h1 class="page-title">Lịch làm việc</h1>
         <div class="content">
             <!-- Table Container -->
@@ -493,16 +503,16 @@
             <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
             <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
-            <label for="OffRequestStatus">Trạng thái đơn:</label>
-            <input id="OffRequestStatus" name="OffRequestStatus" readonly>
+                         <label for="OffRequestStatus" id="OffRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
+             <input id="OffRequestStatus" name="OffRequestStatus" readonly style="display: none;">
 
             <label for="OffRequestReason">Lý do:</label>
             <textarea id="OffRequestReason" name="OffRequestReason" rows="3"></textarea>
 
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeOffRequestModal()">Hủy</button>
-                <button type="submit" class="btn btn-primary">Xin nghỉ</button>
-            </div>
+                         <div class="modal-actions">
+                 <button type="button" class="btn btn-secondary" onclick="closeOffRequestModal()">Hủy</button>
+                 <button type="submit" class="btn btn-primary" id="submitOffRequestBtn">Xin nghỉ</button>
+             </div>
         </form>
         <div class="modal-actions">
             <form id="DeleteOffRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
@@ -522,18 +532,19 @@
             <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
             <input type="hidden" id="ChangeRequestAccountId" name="ChangeRequestAccountId">
 
-            <label for="ChangeRequestStatus">Trạng thái đơn:</label>
-            <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly>
+                         <label for="ChangeRequestStatus" id="ChangeRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
+             <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly style="display: none;">
 
-            <label for="ChangeRequestWorkDate">Ngày:</label>
-            <div class="date-input">
-                <input
-                        type="date"
-                        id="ChangeRequestWorkDate"
-                        name="ChangeRequestWorkDate"
-                        required
-                />
-            </div>
+                         <label for="ChangeRequestWorkDate">Ngày:</label>
+             <div class="date-input">
+                 <input
+                         type="date"
+                         id="ChangeRequestWorkDate"
+                         name="ChangeRequestWorkDate"
+                         required
+                         min=""
+                 />
+             </div>
 
             <label for="ChangeRequestShift">Ca làm *</label>
             <select id="ChangeRequestShift" name="ChangeRequestShift" required>
@@ -545,10 +556,10 @@
             <label for="ChangeRequestReason">Lý do:</label>
             <textarea id="ChangeRequestReason" name="ChangeRequestReason" rows="3"></textarea>
 
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeChangeRequestModal()">Hủy</button>
-                <button type="submit" class="btn btn-primary">Xin đổi lịch</button>
-            </div>
+                         <div class="modal-actions">
+                 <button type="button" class="btn btn-secondary" onclick="closeChangeRequestModal()">Hủy</button>
+                 <button type="submit" class="btn btn-primary" id="submitChangeRequestBtn">Xin đổi lịch</button>
+             </div>
         </form>
         <div class="modal-actions">
             <form id="DeleteChangeRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
@@ -730,77 +741,131 @@
                 const thisOffRequest = Array.isArray(absentRequests) ? (absentRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
+                
+                // Debug log for off request
+                if (thisOffRequest) {
+                    console.log("Off Request found:", thisOffRequest);
+                    console.log("Off Request status:", thisOffRequest.status);
+                }
 
                 const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
 
-                if (scheduleCount > 0) {
-                    let html = `
-                                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
-                                    <button style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                                        Có lịch:<br> ${thisStatus}
-                                    </button>
-                                `;
-                    if (thisChangeRequest == null) {
-                        html += `<a
-                                    data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
-                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
-                                    data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
-                                    data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
-                                    data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
-                                    href="javascript:void(0)"
-                                    onclick="openOffRequestModal(this)"
-                                    style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
-                                    Xin nghỉ
-                                </a>`;
-                    }
+                                 if (scheduleCount > 0) {
+                     let html = `
+                                 <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+                                     <button style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                                         Có lịch:<br> ${thisStatus}
+                                     </button>
+                                 `;
+                     
+                     if (thisChangeRequest == null) {
+                         html += `<a
+                                     data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
+                                     data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                     data-reason="${thisOffRequest != null ? thisOffRequest.reason : ''}"
+                                     data-status="${thisOffRequest != null ? thisOffRequest.status : ''}"
+                                     data-accountId="${thisOffRequest != null ? thisOffRequest.accountId : ''}"
+                                     href="javascript:void(0)"
+                                     onclick="openOffRequestModal(this)"
+                                     style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2;">
+                                     Xin nghỉ
+                                 </a>`;
+                     }
 
-                    if (thisOffRequest == null) {
-                        html += `
-                                <a
-                                    data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
-                                    data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
-                                    data-reason="${thisChangeRequest != null ? thisChangeRequest.reason : ''}"
-                                    data-status="${thisChangeRequest != null ? thisChangeRequest.status : ''}"
-                                    data-accountId="${thisChangeRequest != null ? thisChangeRequest.accountId : ''}"
-                                    data-requestedDate="${thisChangeRequest != null ? thisChangeRequest.requestedDate : ''}"
-                                    data-requestedShift="${thisChangeRequest != null ? thisChangeRequest.requestedShiftName : ''}"
-                                    href="javascript:void(0)"
-                                    onclick="openChangeRequestModal(this)"
-                                    style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2; align-self:;">
-                                    Đổi lịch
-                                </a>
-                                `;
-                    }
+                     if (thisOffRequest == null) {
+                         html += `
+                                 <a
+                                     data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
+                                     data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
+                                     data-reason="${thisChangeRequest != null ? thisChangeRequest.reason : ''}"
+                                     data-status="${thisChangeRequest != null ? thisChangeRequest.status : ''}"
+                                     data-accountId="${thisChangeRequest != null ? thisChangeRequest.accountId : ''}"
+                                     data-requestedDate="${thisChangeRequest != null ? thisChangeRequest.requestedDate : ''}"
+                                     data-requestedShift="${thisChangeRequest != null ? thisChangeRequest.requestedShiftName : ''}"
+                                     href="javascript:void(0)"
+                                     onclick="openChangeRequestModal(this)"
+                                     style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 2; align-self:;">
+                                     Đổi lịch
+                                 </a>
+                                 `;
+                     }
 
-                    html += `</div>`;
-                    cell.innerHTML = html;
-                }
+                     html += `</div>`;
+                     cell.innerHTML = html;
+                 }
             });
         }
     }
 
 
-    function openOffRequestModal(element) {
-        document.getElementById("OffRequestScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("OffRequestAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
-        document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
-        document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
-        // Set delete form
-        const requestId = element.getAttribute('data-requestId');
-        const deleteForm = document.getElementById("DeleteOffRequestForm");
+         function openOffRequestModal(element) {
+         document.getElementById("OffRequestScheduleId").value = element.getAttribute('data-scheduleId');
+         document.getElementById("OffRequestAccountId").value = element.getAttribute('data-accountId');
+         document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
+         document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
+         document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
+         
+                   // Show status field only if request is APPROVED or REJECTED
+          const status = element.getAttribute('data-status');
+          const statusLabel = document.getElementById("OffRequestStatusLabel");
+          const statusInput = document.getElementById("OffRequestStatus");
+          
+          console.log("Off Request Status:", status); // Debug log
+          
+          if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+              statusLabel.style.display = 'block';
+              statusInput.style.display = 'block';
+              
+              // Set all form fields to read-only
+              document.getElementById("OffRequestReason").readOnly = true;
+              document.getElementById("OffRequestReason").style.backgroundColor = '#f5f5f5';
+          } else {
+              statusLabel.style.display = 'none';
+              statusInput.style.display = 'none';
+              
+              // Enable form fields for editing
+              document.getElementById("OffRequestReason").readOnly = false;
+              document.getElementById("OffRequestReason").style.backgroundColor = 'white';
+          }
+          // Set delete form
+          const requestId = element.getAttribute('data-requestId');
+          const deleteForm = document.getElementById("DeleteOffRequestForm");
 
-        if (requestId) {
-            deleteForm.style.display = 'block';
-            deleteForm.action = `/work-schedule/delete/${requestId}`;
-        } else {
-            deleteForm.style.display = 'none';
-        }
-        // Show modal
-        document.getElementById("OffRequestModal").style.display = 'flex';
-    }
+          if (requestId) {
+              // Hide delete button if request is already APPROVED or REJECTED
+              if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+                  deleteForm.style.display = 'none';
+              } else {
+                  deleteForm.style.display = 'block';
+                  // Always redirect back to the work-schedule page after deleting (preserve the from parameter for back button)
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const fromParam = urlParams.get('from');
+                  let redirectPath = '/staff/work-schedule';
+                  
+                  // Preserve the from parameter in the redirect URL for the back button functionality
+                  if (fromParam) {
+                      redirectPath += `?from=${encodeURIComponent(fromParam)}`;
+                  }
+                  
+                  deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
+              }
+                    } else {
+               deleteForm.style.display = 'none';
+           }
+           
+           // Hide submit button if request is already APPROVED or REJECTED
+           const submitBtn = document.getElementById("submitOffRequestBtn");
+           if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+               submitBtn.style.display = 'none';
+           } else {
+               submitBtn.style.display = 'block';
+           }
+          
+          // Show modal
+          document.getElementById("OffRequestModal").style.display = 'flex';
+     }
 
     function submitOffRequest(event) {
         event.preventDefault();
@@ -814,7 +879,7 @@
                 scheduleId: parseInt(form.OffRequestScheduleId.value),
             };
 
-            fetch(`/work-schedule/update/${requestId}`, {
+            fetch(`/staff/work-schedule/update/${requestId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -836,7 +901,7 @@
                 reason: form.OffRequestReason.value.trim(),
                 scheduleId: parseInt(form.OffRequestScheduleId.value),
             };
-            fetch(`/work-schedule/create`, {
+            fetch(`/staff/work-schedule/create`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -860,43 +925,113 @@
         document.getElementById("OffRequestModal").style.display = 'none';
     }
 
-    function openChangeRequestModal(element) {
-        document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
-        document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
-        document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
-        document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
-        document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
-        // Set delete form
-        const requestId = element.getAttribute('data-requestId');
-        const deleteForm = document.getElementById("DeleteChangeRequestForm");
+         function openChangeRequestModal(element) {
+         document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
+         document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
+         document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
+         document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
+         document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
+         document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
+         document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
+         
+                   // Show status field only if request is APPROVED or REJECTED
+          const status = element.getAttribute('data-status');
+          const statusLabel = document.getElementById("ChangeRequestStatusLabel");
+          const statusInput = document.getElementById("ChangeRequestStatus");
+          
+          console.log("Change Request Status:", status); // Debug log
+          
+          if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+              statusLabel.style.display = 'block';
+              statusInput.style.display = 'block';
+              
+              // Set all form fields to read-only
+              document.getElementById("ChangeRequestWorkDate").readOnly = true;
+              document.getElementById("ChangeRequestWorkDate").style.backgroundColor = '#f5f5f5';
+              document.getElementById("ChangeRequestShift").disabled = true;
+              document.getElementById("ChangeRequestShift").style.backgroundColor = '#f5f5f5';
+              document.getElementById("ChangeRequestReason").readOnly = true;
+              document.getElementById("ChangeRequestReason").style.backgroundColor = '#f5f5f5';
+          } else {
+              statusLabel.style.display = 'none';
+              statusInput.style.display = 'none';
+              
+              // Enable form fields for editing
+              document.getElementById("ChangeRequestWorkDate").readOnly = false;
+              document.getElementById("ChangeRequestWorkDate").style.backgroundColor = 'white';
+              document.getElementById("ChangeRequestShift").disabled = false;
+              document.getElementById("ChangeRequestShift").style.backgroundColor = 'white';
+              document.getElementById("ChangeRequestReason").readOnly = false;
+              document.getElementById("ChangeRequestReason").style.backgroundColor = 'white';
+              
+              // Set minimum date to today to prevent selecting past dates
+              const today = new Date().toISOString().split('T')[0];
+              document.getElementById("ChangeRequestWorkDate").min = today;
+          }
+          
+          // Set delete form
+          const requestId = element.getAttribute('data-requestId');
+          const deleteForm = document.getElementById("DeleteChangeRequestForm");
 
-        if (requestId) {
-            deleteForm.style.display = 'block';
-            deleteForm.action = `/work-schedule/delete/${requestId}`;
-        } else {
-            deleteForm.style.display = 'none';
-        }
-        // Show modal
-        document.getElementById("ChangeRequestModal").style.display = 'flex';
-    }
+          if (requestId) {
+              // Hide delete button if request is already APPROVED or REJECTED
+              if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+                  deleteForm.style.display = 'none';
+              } else {
+                  deleteForm.style.display = 'block';
+                  // Always redirect back to the work-schedule page after deleting (preserve the from parameter for back button)
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const fromParam = urlParams.get('from');
+                  let redirectPath = '/staff/work-schedule';
+                  
+                  // Preserve the from parameter in the redirect URL for the back button functionality
+                  if (fromParam) {
+                      redirectPath += `?from=${encodeURIComponent(fromParam)}`;
+                  }
+                  
+                  deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
+              }
+          } else {
+              deleteForm.style.display = 'none';
+          }
+                    // Hide submit button if request is already APPROVED or REJECTED
+           const submitBtn = document.getElementById("submitChangeRequestBtn");
+           if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+               submitBtn.style.display = 'none';
+           } else {
+               submitBtn.style.display = 'block';
+           }
+          
+          // Show modal
+          document.getElementById("ChangeRequestModal").style.display = 'flex';
+     }
 
-    function submitChangeRequest(event) {
-        event.preventDefault();
+         function submitChangeRequest(event) {
+         event.preventDefault();
+ 
+         const form = document.getElementById('ChangeRequestForm');
+         const requestId = document.getElementById('ChangeRequestRequestId').value;
+         
+         // Validate that the requested date is not in the past
+         const requestedDate = form.ChangeRequestWorkDate.value;
+         const today = new Date();
+         today.setHours(0, 0, 0, 0); // Set to start of today
+         const requestedDateObj = new Date(requestedDate);
+         
+         if (requestedDateObj < today) {
+             showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
+             return;
+         }
+ 
+         if(requestId) {
+             const data = {
+                 reason: form.ChangeRequestReason.value.trim(),
+                 scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                 requestedDate: form.ChangeRequestWorkDate.value,
+                 requestedShift: form.ChangeRequestShift.value.trim()
+             };
 
-        const form = document.getElementById('ChangeRequestForm');
-        const requestId = document.getElementById('ChangeRequestRequestId').value;
-
-        if(requestId) {
-            const data = {
-                reason: form.ChangeRequestReason.value.trim(),
-                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
-                requestedDate: form.ChangeRequestWorkDate.value,
-                requestedShift: form.ChangeRequestShift.value.trim()
-            };
-
-            fetch(`/work-schedule/update-change-request/${requestId}`, {
+            fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -920,7 +1055,7 @@
                 requestedDate: form.ChangeRequestWorkDate.value,
                 requestedShift: form.ChangeRequestShift.value.trim()
             };
-            fetch(`/work-schedule/create-change-request`, {
+            fetch(`/staff/work-schedule/create-change-request`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

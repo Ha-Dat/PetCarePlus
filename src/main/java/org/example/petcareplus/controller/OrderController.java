@@ -10,6 +10,8 @@ import org.example.petcareplus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,6 +49,8 @@ public class OrderController {
         List<Category> parentCategories = categoryService.getParentCategory();
         Page<Order> orderPage;
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderDate").descending());
+
         // Xử lý lọc theo trạng thái
         if (status != null && !status.isEmpty()) {
             try {
@@ -54,19 +58,19 @@ public class OrderController {
                 orderPage = orderService.findByAccount_AccountIdAndStatus(
                         account.getAccountId(),
                         orderStatus,
-                        PageRequest.of(page, size)
+                        pageable
                 );
             } catch (IllegalArgumentException e) {
                 // Nếu status không hợp lệ, lấy tất cả đơn hàng
                 orderPage = orderService.findByAccount_AccountId(
                         account.getAccountId(),
-                        PageRequest.of(page, size)
+                        pageable
                 );
             }
         } else {
             orderPage = orderService.findByAccount_AccountId(
                     account.getAccountId(),
-                    PageRequest.of(page, size)
+                    pageable
             );
         }
 

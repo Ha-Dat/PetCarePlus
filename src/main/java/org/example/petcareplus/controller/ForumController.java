@@ -41,7 +41,7 @@ public class ForumController {
                     .toList();
         }
         List<PostDTO> sortedPosts = allPosts.stream()
-                .map(PostDTO::new)
+                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
         // Tự tính chỉ số trang
@@ -50,7 +50,7 @@ public class ForumController {
         List<PostDTO> pageContent = sortedPosts.subList(fromIndex, toIndex);
         // Lấy 6 bài post mới nhất
         List<Post> latestPosts = forumService.findTop6NewestPosts();
-        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(post -> new PostDTO(post, account != null ? account.getAccountId() : null)).toList();
         model.addAttribute("posts", pageContent);
         model.addAttribute("hasNext", toIndex < sortedPosts.size());
 
@@ -63,7 +63,9 @@ public class ForumController {
     @ResponseBody
     public List<PostDTO> getMorePosts(@RequestParam int page,
                                       @RequestParam int size,
-                                      @RequestParam(required = false) String keyword) {
+                                      @RequestParam(required = false) String keyword,
+                                      HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
         List<Post> allPosts = forumService.findAll();
         // Lọc nếu có keyword
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -73,7 +75,7 @@ public class ForumController {
                     .toList();
         }
         List<PostDTO> sortedPosts = allPosts.stream()
-                .map(PostDTO::new)
+                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
         int fromIndex = page * size;
@@ -90,10 +92,10 @@ public class ForumController {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         Account account = (Account) session.getAttribute("loggedInUser");
         List<CommentPost> comments = forumService.findCommentByPostId(postId);
-        PostDTO postDTO = new PostDTO(post);
+        PostDTO postDTO = new PostDTO(post, account != null ? account.getAccountId() : null);
         // Lấy 6 bài post mới nhất
         List<Post> latestPosts = forumService.findTop6NewestPosts();
-        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(p -> new PostDTO(p, account != null ? account.getAccountId() : null)).toList();
         model.addAttribute("account", account);
         model.addAttribute("post", post);
         model.addAttribute("postDTO", postDTO);
@@ -327,7 +329,7 @@ public class ForumController {
         }
 
         List<PostDTO> sortedPosts = allPosts.stream()
-                .map(PostDTO::new)
+                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
 
@@ -339,7 +341,7 @@ public class ForumController {
 
         // Lấy 6 bài post mới nhất
         List<Post> latestPosts = forumService.findTop6NewestPosts();
-        List<PostDTO> latestPostDTOs = latestPosts.stream().map(PostDTO::new).toList();
+        List<PostDTO> latestPostDTOs = latestPosts.stream().map(post -> new PostDTO(post, account != null ? account.getAccountId() : null)).toList();
 
         model.addAttribute("account", account);
         model.addAttribute("posts", pageContent);
@@ -354,7 +356,9 @@ public class ForumController {
     public List<PostDTO> getMoreMyPosts(@RequestParam int page,
                                       @RequestParam int size,
                                       @RequestParam(required = false) String keyword,
-                                      @PathVariable Long accountId) {
+                                      @PathVariable Long accountId,
+                                      HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
         List<Post> allPosts = forumService.findAllByAccountId(accountId);
         // Lọc nếu có keyword
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -364,7 +368,7 @@ public class ForumController {
                     .toList();
         }
         List<PostDTO> sortedPosts = allPosts.stream()
-                .map(PostDTO::new)
+                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
                 .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
                 .toList();
 

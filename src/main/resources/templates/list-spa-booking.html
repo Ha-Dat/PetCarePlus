@@ -25,7 +25,7 @@
             max-width: 230px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
+            height: 94.5vh;
             top: 0;
             left: 0;
             padding: 20px;
@@ -362,7 +362,7 @@
         }
 
         .pet-groomer-info {
-            margin: 18pc 0 10px 0;
+            margin: 17pc 0 10px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -388,14 +388,24 @@
             color: #777;
         }
 
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            color: #1e7e34;
+        }
+
         .logout-btn {
-            color: #ff4d4f;
+            color: #dc3545;
             font-size: 18px;
             text-decoration: none;
         }
 
         .logout-btn:hover {
-            color: #d9363e;
+            color: #c82333;
         }
     </style>
 </head>
@@ -408,8 +418,8 @@
             <li><a href="/pet-groomer/dashboard">📊 Thống Kê</a></li>
             <li class="active"><a href="/pet-groomer/list-spa-booking">🧴 Spa</a></li>
             <li><a href="/pet-groomer/list-hotel-booking">🏨 Khách Sạn Thú Cưng</a></li>
-            <li><a href="#">📅 Ca làm việc</a></li>
-            <li><a href="/list-pet-profile?from=/pet-groomer/list-spa-booking">🐶 Hồ Sơ Thú Cưng</a></li>
+            <li><a href="/staff/work-schedule?from=/pet-groomer/list-spa-booking">📅 Ca làm việc</a></li>
+            <li><a href="/staff/list-pet-profile?from=/pet-groomer/list-spa-booking">🐶 Hồ Sơ Thú Cưng</a></li>
         </ul>
 
         <!-- Thông tin người dùng -->
@@ -418,9 +428,14 @@
                 <span class="pet-groomer-name" th:text="${session.loggedInUser.getName()}">Name</span>
                 <span class="pet-groomer-role" th:text="${session.loggedInUser.getRole()}">Role</span>
             </div>
-            <a href="/logout" class="logout-btn" title="Đăng xuất">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+            <div class="pet-groomer-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
         </div>
     </aside>
 
@@ -468,7 +483,11 @@
                                         th:data-status="${spaBooking.status}"
                                         th:data-service="${spaBooking.service.name}"
 
-                                        th:data-pet-image="${spaBooking.petProfile.medias.get(0).url}"
+                                        th:data-pet-image="${spaBooking.petProfile != null
+                                                                and spaBooking.petProfile.medias != null
+                                                                and !spaBooking.petProfile.medias.isEmpty()
+                                                                ? spaBooking.petProfile.medias.get(0).url
+                                                                : null}"
                                         th:data-pet-name="${spaBooking.petProfile.name}"
                                         th:data-pet-species="${spaBooking.petProfile.species}"
                                         th:data-pet-breeds="${spaBooking.petProfile.breeds}"

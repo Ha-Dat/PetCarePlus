@@ -19,4 +19,6 @@ public interface WorkScheduleService {
     WorkSchedule save(WorkSchedule workSchedule);
 
     Optional<WorkSchedule> findById(Long id);
+    
+    void deleteById(Long id);
 }

@@ -77,10 +77,38 @@
             font-weight: bold;
             transition: background-color 0.3s;
             margin-right: 10px;
+            margin-bottom: 5px;
         }
 
         .btn-custom:hover {
             background-color: #388e3c;
+        }
+
+        .btn-danger.btn-custom {
+            background-color: #dc3545;
+        }
+
+        .btn-danger.btn-custom:hover {
+            background-color: #c82333;
+        }
+
+        .modal .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .modal .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .modal .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
         }
 
         .top-actions {
@@ -209,18 +237,59 @@
             padding: 15px 20px;
             margin-bottom: 20px;
             font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
         
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .alert-danger::before {
+            background-color: #dc3545;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            animation: slideIn 0.5s ease-out;
+        }
+
         .alert-danger {
             background-color: #f8d7da;
             color: #721c24;
             border-left: 4px solid #dc3545;
+            width: 800px;
         }
-        
+
         .alert-info {
             background-color: #d1ecf1;
             color: #0c5460;
             border-left: 4px solid #17a2b8;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         
         .modal-error {
@@ -262,6 +331,12 @@
         <div class="top-actions">
             <h4>Hồ sơ thú cưng</h4>
             <hr>
+            <!-- Success Message -->
+            <div th:if="${success != null}" class="alert alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}">Success message</span>
+            </div>
+            
             <!-- Error Message -->
             <div th:if="${error != null}" class="alert alert-danger">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -390,6 +465,12 @@
                     <a th:if="${!edit}" th:href="@{'/pet-profile/edit?selectedId=' + ${selectedPet.petProfileId}}"
                        class="btn btn-primary btn-custom">Chỉnh sửa</a>
 
+                    <!-- Nút xóa thú cưng -->
+                    <button th:if="${!edit and selectedPet != null}" type="button" class="btn btn-danger btn-custom" 
+                            data-bs-toggle="modal" data-bs-target="#deletePetModal">
+                        Xóa thú cưng
+                    </button>
+
                     <!-- Nút mở modal -->
                     <button type="button" class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#addPetModal">
                         + Thêm thú cưng mới
@@ -437,7 +518,7 @@
                     <label class="form-label">Giống:</label>
                     <input type="text" name="breeds" class="form-control" required maxlength="50" 
                            pattern="^[a-zA-ZÀ-ỹ\s]+$"
-                           title="Chỉ cho phép nhập chữ cẩu, khoảng trắng và dấu tiếng Việt">
+                           title="Chỉ cho phép nhập chữ cái, khoảng trắng và dấu tiếng Việt">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Cân nặng (kg):</label>
@@ -457,6 +538,40 @@
                 <button type="submit" class="btn btn-success">Lưu</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa thú cưng -->
+<div class="modal fade" id="deletePetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa thú cưng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Cảnh báo:</strong>
+                    <p class="mb-0 mt-2">Bạn có chắc chắn muốn xóa thú cưng "<span th:text="${selectedPet?.name}">Tên thú cưng</span>"?</p>
+                    <p class="mb-0 mt-2"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác và sẽ xóa vĩnh viễn tất cả thông tin và ảnh của thú cưng.</p>
+                </div>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Thông tin:</strong>
+                    <p class="mb-0 mt-2">Thú cưng chỉ có thể xóa khi không đang sử dụng bất kỳ dịch vụ nào (đặt lịch, khách sạn, spa).</p>
+                    <p class="mb-0 mt-2"><strong>Lưu ý:</strong> Nếu thú cưng đang sử dụng dịch vụ, bạn sẽ nhận được thông báo chi tiết về các dịch vụ đang được sử dụng.</p>
+                    <p class="mb-0 mt-2"><strong>Hướng dẫn:</strong> Để xóa thú cưng, vui lòng hủy tất cả các dịch vụ đang sử dụng trước.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form th:action="@{/pet-profile/delete}" method="post" style="display: inline;">
+                    <input type="hidden" name="petId" th:value="${selectedPet?.petProfileId}" />
+                    <button type="submit" class="btn btn-danger">Xóa thú cưng</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -550,6 +665,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (modalError && document.querySelector('.modal-error')) {
         const modalInstance = new bootstrap.Modal(modal);
         modalInstance.show();
+    }
+
+    // Xử lý modal xóa thú cưng
+    const deleteModal = document.getElementById('deletePetModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function() {
+            // Cập nhật tên thú cưng trong modal
+            const petName = document.querySelector('#deletePetModal .alert-warning span').textContent;
+            if (petName === 'Tên thú cưng') {
+                const selectedPetName = document.querySelector('select[name="selectedId"] option:checked').textContent;
+                document.querySelector('#deletePetModal .alert-warning span').textContent = selectedPetName;
+            }
+        });
+    }
+
+    const successAlert = document.querySelector('.alert-success');
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.transition = 'opacity 0.5s ease-out';
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                if (successAlert.parentNode) {
+                    successAlert.parentNode.removeChild(successAlert);
+                }
+            }, 300);
+        }, 3000);
     }
 });
 </script>

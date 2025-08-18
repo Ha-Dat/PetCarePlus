@@ -292,7 +292,7 @@
     }
 
     .admin-info {
-        margin: 29pc 0 10px 0;
+        margin: 27pc 0 10px 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -318,14 +318,24 @@
         color: #777;
     }
 
+    .home-btn {
+        color: #28a745;
+        font-size: 18px;
+        text-decoration: none;
+    }
+
+    .home-btn:hover {
+        color: #1e7e34;
+    }
+
     .logout-btn {
-        color: #ff4d4f;
+        color: #dc3545;
         font-size: 18px;
         text-decoration: none;
     }
 
     .logout-btn:hover {
-        color: #d9363e;
+        color: #c82333;
     }
 </style>
 <body>
@@ -346,9 +356,14 @@
                 <span class="admin-name" th:text="${session.loggedInUser.getName()}">Name</span>
                 <span class="admin-role" th:text="${session.loggedInUser.getRole()}">Role</span>
             </div>
-            <a href="/logout" class="logout-btn" title="Đăng xuất">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+            <div class="admin-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
         </div>
     </aside>
 
@@ -388,6 +403,7 @@
                                         class="dropdown-item">Chi tiết</button>
 
                                 <button type="button"
+                                        th:if="${a.role.name() != 'ADMIN'}"
                                         th:data-id="${a.accountId}"
                                         th:data-status="${a.status.value}"
                                         th:text="${a.status.value == 'Hoạt động' ? 'Khóa' : 'Mở khóa'}"

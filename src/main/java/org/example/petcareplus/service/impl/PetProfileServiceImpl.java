@@ -1,11 +1,17 @@
 package org.example.petcareplus.service.impl;
 
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.AppointmentBooking;
+import org.example.petcareplus.entity.HotelBooking;
 import org.example.petcareplus.entity.Media;
 import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.enums.MediaCategory;
+import org.example.petcareplus.repository.AppointmentRepository;
+import org.example.petcareplus.repository.HotelBookingRepository;
 import org.example.petcareplus.repository.MediaRepository;
 import org.example.petcareplus.repository.PetProfileRepository;
+import org.example.petcareplus.repository.SpaBookingRepository;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,16 +35,25 @@ public class PetProfileServiceImpl implements PetProfileService {
     private final PetProfileRepository petProfileRepository;
     private final MediaRepository mediaRepository;
     private final S3Client s3Client;
+    private final AppointmentRepository appointmentRepository;
+    private final HotelBookingRepository hotelBookingRepository;
+    private final SpaBookingRepository spaBookingRepository;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
     public PetProfileServiceImpl(PetProfileRepository petProfileRepository,
                                MediaRepository mediaRepository,
-                               S3Client s3Client) {
+                               S3Client s3Client,
+                               AppointmentRepository appointmentRepository,
+                               HotelBookingRepository hotelBookingRepository,
+                               SpaBookingRepository spaBookingRepository) {
         this.petProfileRepository = petProfileRepository;
         this.mediaRepository = mediaRepository;
         this.s3Client = s3Client;
+        this.appointmentRepository = appointmentRepository;
+        this.hotelBookingRepository = hotelBookingRepository;
+        this.spaBookingRepository = spaBookingRepository;
     }
 
 
@@ -179,5 +194,54 @@ public class PetProfileServiceImpl implements PetProfileService {
                         .key(key)
                         .build()
         );
+    }
+
+    @Override
+    public boolean canDeletePet(Long petProfileId) {
+        // Kiểm tra xem thú cưng có đang sử dụng dịch vụ nào không
+        List<AppointmentBooking> appointments = appointmentRepository.findByPetProfile_petProfileId(petProfileId);
+        List<HotelBooking> hotelBookings = hotelBookingRepository.findByPetProfile_petProfileId(petProfileId);
+        List<SpaBooking> spaBookings = spaBookingRepository.findByPetProfile_petProfileId(petProfileId);
+        
+        // Nếu có bất kỳ booking nào thì không thể xóa
+        return appointments.isEmpty() && hotelBookings.isEmpty() && spaBookings.isEmpty();
+    }
+
+    @Override
+    public void deletePet(Long petProfileId) {
+        PetProfile petProfile = petProfileRepository.findById(petProfileId).orElse(null);
+        if (petProfile == null) {
+            throw new RuntimeException("PetProfile not found with ID: " + petProfileId);
+        }
+        
+        // Kiểm tra xem có thể xóa không
+        if (!canDeletePet(petProfileId)) {
+            throw new RuntimeException("Cannot delete pet. Pet is currently using services.");
+        }
+        
+        // Xóa ảnh từ S3 nếu có
+        Media media = mediaRepository.findByPetProfile_petProfileId(petProfileId);
+        if (media != null) {
+            deleteFileFromS3(media.getUrl());
+            mediaRepository.delete(media);
+        }
+        
+        // Xóa PetProfile
+        petProfileRepository.delete(petProfile);
+    }
+
+    @Override
+    public List<AppointmentBooking> getAppointmentsByPetId(Long petId) {
+        return appointmentRepository.findByPetProfile_petProfileId(petId);
+    }
+
+    @Override
+    public List<HotelBooking> getHotelBookingsByPetId(Long petId) {
+        return hotelBookingRepository.findByPetProfile_petProfileId(petId);
+    }
+
+    @Override
+    public List<SpaBooking> getSpaBookingsByPetId(Long petId) {
+        return spaBookingRepository.findByPetProfile_petProfileId(petId);
     }
 }

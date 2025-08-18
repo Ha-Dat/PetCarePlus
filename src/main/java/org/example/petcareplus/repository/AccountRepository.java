@@ -16,4 +16,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     boolean existsByPhone(String phone);
 
     Long countByRole(AccountRole role);
+    
+    List<Account> findByRoleIn(List<AccountRole> roles);
 }
