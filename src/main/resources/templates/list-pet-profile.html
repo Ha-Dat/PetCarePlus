@@ -444,7 +444,7 @@
                                         th:data-pet-breeds="${pet.breeds}"
                                         th:data-pet-weight="${pet.weight}"
                                         th:data-pet-age="${pet.age}"
-                                        th:data-pet-image="${pet.medias.size() > 0 ? pet.medias.get(0).url : '/default.png'}"
+                                        th:data-pet-image="${pet.medias.size() > 0 ? pet.medias.get(0).url : 'https://png.pngtree.com/png-vector/20250627/ourmid/pngtree-simple-black-and-white-square-face-with-sad-expression-as-icon-vector-png-image_7013880.png'}"
                                         th:data-account-name="${pet.profile.account.name}"
                                         th:data-account-phone="${pet.profile.account.phone}"
                                         onclick="openPetDetail(this)">
@@ -461,17 +461,17 @@
             <div class="pagination">
                 <ul>
                     <li th:if="${currentPage > 0}">
-                        <a th:href="@{'/list-pet-profile'(page=${currentPage - 1}, size=8, from=${from}, keyword=${keyword})}">&lt;</a>
+                        <a th:href="@{'/staff/list-pet-profile'(page=${currentPage - 1}, size=8, from=${from}, keyword=${keyword})}">&lt;</a>
                     </li>
 
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active' : ''">
-                        <a th:href="@{'/list-pet-profile'(page=${i}, size=8, from=${from}, keyword=${keyword})}"
+                        <a th:href="@{'/staff/list-pet-profile'(page=${i}, size=8, from=${from}, keyword=${keyword})}"
                            th:text="${i + 1}"></a>
                     </li>
 
                     <li th:if="${currentPage < totalPages - 1}">
-                        <a th:href="@{'/list-pet-profile'(page=${currentPage + 1}, size=8, from=${from}, keyword=${keyword})}">&gt;</a>
+                        <a th:href="@{'/staff/list-pet-profile'(page=${currentPage + 1}, size=8, from=${from}, keyword=${keyword})}">&gt;</a>
                     </li>
                 </ul>
             </div>

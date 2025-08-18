@@ -938,7 +938,10 @@
                                             th:data-date="${appointment.bookDate}"
                                             th:data-status="${appointment.status.getValue()}"
                                             th:data-service="${appointment.service.name}"
-                                            th:data-pet-image="${appointment.petProfile.medias.get(0).url}"
+                                            th:data-pet-image="${(appointment.petProfile.medias != null
+                                                                and !appointment.petProfile.medias.isEmpty())
+                                                                ? appointment.petProfile.medias.get(0).url
+                                                                : 'https://png.pngtree.com/png-vector/20250627/ourmid/pngtree-simple-black-and-white-square-face-with-sad-expression-as-icon-vector-png-image_7013880.png'}"
                                             th:data-pet-name="${appointment.petProfile.name}"
                                             th:data-pet-species="${appointment.petProfile.species}"
                                             th:data-pet-breeds="${appointment.petProfile.breeds}"
