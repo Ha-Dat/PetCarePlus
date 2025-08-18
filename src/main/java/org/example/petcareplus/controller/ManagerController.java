@@ -132,6 +132,12 @@ public class ManagerController {
                 return ResponseEntity.notFound().build();
             }
 
+            // Check if the new work date is in the past
+            java.time.LocalDate today = java.time.LocalDate.now();
+            if (dto.getWorkDate().isBefore(today)) {
+                return ResponseEntity.badRequest().body("Cannot update schedule to a past date");
+            }
+
             WorkSchedule updatedSchedule = convertToSchedule(dto, existing.get());
             updatedSchedule.setScheduleId(id);
             workScheduleService.save(updatedSchedule);

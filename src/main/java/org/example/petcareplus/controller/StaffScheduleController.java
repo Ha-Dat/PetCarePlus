@@ -143,13 +143,13 @@ public class StaffScheduleController {
     }
 
     @PostMapping(value = "/staff/work-schedule/delete/{id}")
-    public String deleteOffRequest(@PathVariable Long id) {
+    public String deleteOffRequest(@PathVariable Long id, @RequestParam(value = "redirect", defaultValue = "/staff/work-schedule") String redirect) {
         Optional<WorkScheduleRequest> existing = workScheduleRequestService.findById(id);
         if (existing.isEmpty()) {
-            return "redirect:/work-schedule?error";
+            return "redirect:" + redirect + "?error";
         }
         workScheduleRequestService.deleteById(existing.get().getRequestId());
-        return "redirect:/work-schedule";
+        return "redirect:" + redirect;
     }
 
     @PutMapping(value = "/staff/work-schedule/update-change-request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

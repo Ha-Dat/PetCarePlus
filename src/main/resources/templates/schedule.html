@@ -503,8 +503,8 @@
             <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
             <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
-            <label for="OffRequestStatus">Trạng thái đơn:</label>
-            <input id="OffRequestStatus" name="OffRequestStatus" readonly>
+                         <label for="OffRequestStatus" id="OffRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
+             <input id="OffRequestStatus" name="OffRequestStatus" readonly style="display: none;">
 
             <label for="OffRequestReason">Lý do:</label>
             <textarea id="OffRequestReason" name="OffRequestReason" rows="3"></textarea>
@@ -532,18 +532,19 @@
             <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
             <input type="hidden" id="ChangeRequestAccountId" name="ChangeRequestAccountId">
 
-            <label for="ChangeRequestStatus">Trạng thái đơn:</label>
-            <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly>
+                         <label for="ChangeRequestStatus" id="ChangeRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
+             <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly style="display: none;">
 
-            <label for="ChangeRequestWorkDate">Ngày:</label>
-            <div class="date-input">
-                <input
-                        type="date"
-                        id="ChangeRequestWorkDate"
-                        name="ChangeRequestWorkDate"
-                        required
-                />
-            </div>
+                         <label for="ChangeRequestWorkDate">Ngày:</label>
+             <div class="date-input">
+                 <input
+                         type="date"
+                         id="ChangeRequestWorkDate"
+                         name="ChangeRequestWorkDate"
+                         required
+                         min=""
+                 />
+             </div>
 
             <label for="ChangeRequestShift">Ca làm *</label>
             <select id="ChangeRequestShift" name="ChangeRequestShift" required>
@@ -740,6 +741,12 @@
                 const thisOffRequest = Array.isArray(absentRequests) ? (absentRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
+                
+                // Debug log for off request
+                if (thisOffRequest) {
+                    console.log("Off Request found:", thisOffRequest);
+                    console.log("Off Request status:", thisOffRequest.status);
+                }
 
                 const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
@@ -792,25 +799,50 @@
     }
 
 
-    function openOffRequestModal(element) {
-        document.getElementById("OffRequestScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("OffRequestAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
-        document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
-        document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
-        // Set delete form
-        const requestId = element.getAttribute('data-requestId');
-        const deleteForm = document.getElementById("DeleteOffRequestForm");
+         function openOffRequestModal(element) {
+         document.getElementById("OffRequestScheduleId").value = element.getAttribute('data-scheduleId');
+         document.getElementById("OffRequestAccountId").value = element.getAttribute('data-accountId');
+         document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
+         document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
+         document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
+         
+         // Show status field only if request is APPROVED or REJECTED
+         const status = element.getAttribute('data-status');
+         const statusLabel = document.getElementById("OffRequestStatusLabel");
+         const statusInput = document.getElementById("OffRequestStatus");
+         
+         console.log("Off Request Status:", status); // Debug log
+         
+         if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+             statusLabel.style.display = 'block';
+             statusInput.style.display = 'block';
+         } else {
+             statusLabel.style.display = 'none';
+             statusInput.style.display = 'none';
+         }
+         // Set delete form
+         const requestId = element.getAttribute('data-requestId');
+         const deleteForm = document.getElementById("DeleteOffRequestForm");
 
-        if (requestId) {
-            deleteForm.style.display = 'block';
-            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
-        } else {
-            deleteForm.style.display = 'none';
-        }
-        // Show modal
-        document.getElementById("OffRequestModal").style.display = 'flex';
-    }
+         if (requestId) {
+             deleteForm.style.display = 'block';
+             // Always redirect back to the work-schedule page after deleting (preserve the from parameter for back button)
+             const urlParams = new URLSearchParams(window.location.search);
+             const fromParam = urlParams.get('from');
+             let redirectPath = '/staff/work-schedule';
+             
+             // Preserve the from parameter in the redirect URL for the back button functionality
+             if (fromParam) {
+                 redirectPath += `?from=${encodeURIComponent(fromParam)}`;
+             }
+             
+             deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
+         } else {
+             deleteForm.style.display = 'none';
+         }
+         // Show modal
+         document.getElementById("OffRequestModal").style.display = 'flex';
+     }
 
     function submitOffRequest(event) {
         event.preventDefault();
@@ -870,41 +902,81 @@
         document.getElementById("OffRequestModal").style.display = 'none';
     }
 
-    function openChangeRequestModal(element) {
-        document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
-        document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
-        document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
-        document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
-        document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
-        // Set delete form
-        const requestId = element.getAttribute('data-requestId');
-        const deleteForm = document.getElementById("DeleteChangeRequestForm");
+         function openChangeRequestModal(element) {
+         document.getElementById("ChangeRequestScheduleId").value = element.getAttribute('data-scheduleId');
+         document.getElementById("ChangeRequestAccountId").value = element.getAttribute('data-accountId');
+         document.getElementById("ChangeRequestRequestId").value = element.getAttribute('data-requestId');
+         document.getElementById("ChangeRequestReason").value = element.getAttribute('data-reason');
+         document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
+         document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
+         document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
+         
+         // Show status field only if request is APPROVED or REJECTED
+         const status = element.getAttribute('data-status');
+         const statusLabel = document.getElementById("ChangeRequestStatusLabel");
+         const statusInput = document.getElementById("ChangeRequestStatus");
+         
+         console.log("Change Request Status:", status); // Debug log
+         
+         if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
+             statusLabel.style.display = 'block';
+             statusInput.style.display = 'block';
+         } else {
+             statusLabel.style.display = 'none';
+             statusInput.style.display = 'none';
+         }
+         
+         // Set minimum date to today to prevent selecting past dates
+         const today = new Date().toISOString().split('T')[0];
+         document.getElementById("ChangeRequestWorkDate").min = today;
+         // Set delete form
+         const requestId = element.getAttribute('data-requestId');
+         const deleteForm = document.getElementById("DeleteChangeRequestForm");
 
-        if (requestId) {
-            deleteForm.style.display = 'block';
-            deleteForm.action = `/staff/work-schedule/delete/${requestId}`;
-        } else {
-            deleteForm.style.display = 'none';
-        }
-        // Show modal
-        document.getElementById("ChangeRequestModal").style.display = 'flex';
-    }
+         if (requestId) {
+             deleteForm.style.display = 'block';
+             // Always redirect back to the work-schedule page after deleting (preserve the from parameter for back button)
+             const urlParams = new URLSearchParams(window.location.search);
+             const fromParam = urlParams.get('from');
+             let redirectPath = '/staff/work-schedule';
+             
+             // Preserve the from parameter in the redirect URL for the back button functionality
+             if (fromParam) {
+                 redirectPath += `?from=${encodeURIComponent(fromParam)}`;
+             }
+             
+             deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
+         } else {
+             deleteForm.style.display = 'none';
+         }
+         // Show modal
+         document.getElementById("ChangeRequestModal").style.display = 'flex';
+     }
 
-    function submitChangeRequest(event) {
-        event.preventDefault();
-
-        const form = document.getElementById('ChangeRequestForm');
-        const requestId = document.getElementById('ChangeRequestRequestId').value;
-
-        if(requestId) {
-            const data = {
-                reason: form.ChangeRequestReason.value.trim(),
-                scheduleId: parseInt(form.ChangeRequestScheduleId.value),
-                requestedDate: form.ChangeRequestWorkDate.value,
-                requestedShift: form.ChangeRequestShift.value.trim()
-            };
+         function submitChangeRequest(event) {
+         event.preventDefault();
+ 
+         const form = document.getElementById('ChangeRequestForm');
+         const requestId = document.getElementById('ChangeRequestRequestId').value;
+         
+         // Validate that the requested date is not in the past
+         const requestedDate = form.ChangeRequestWorkDate.value;
+         const today = new Date();
+         today.setHours(0, 0, 0, 0); // Set to start of today
+         const requestedDateObj = new Date(requestedDate);
+         
+         if (requestedDateObj < today) {
+             showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
+             return;
+         }
+ 
+         if(requestId) {
+             const data = {
+                 reason: form.ChangeRequestReason.value.trim(),
+                 scheduleId: parseInt(form.ChangeRequestScheduleId.value),
+                 requestedDate: form.ChangeRequestWorkDate.value,
+                 requestedShift: form.ChangeRequestShift.value.trim()
+             };
 
             fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
                 method: 'PUT',

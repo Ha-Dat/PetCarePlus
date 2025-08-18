@@ -464,31 +464,39 @@
             align-items: center;
         }
 
-        .edit-btn {
-            color: #2ec4b6;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
+                 .edit-btn {
+             color: #2ec4b6;
+             text-decoration: none;
+             font-weight: bold;
+             padding: 4px 8px;
+             border-radius: 4px;
+             transition: background-color 0.2s;
+             display: inline-block;
+             font-size: 16px;
+             cursor: pointer;
+             border: none;
+             background: none;
+         }
 
-        .edit-btn:hover {
-            background-color: #e0f7f5;
-        }
+         .edit-btn:hover {
+             background-color: #e0f7f5;
+         }
 
-        .delete-btn {
-            color: #dc3545;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
+                 .delete-btn {
+             color: #dc3545;
+             text-decoration: none;
+             font-weight: bold;
+             padding: 4px 8px;
+             border-radius: 4px;
+             transition: background-color 0.2s;
+             border: none;
+             background: none;
+             cursor: pointer;
+         }
 
-        .delete-btn:hover {
-            background-color: #f8d7da;
-        }
+         .delete-btn:hover {
+             background-color: #f8d7da;
+         }
     </style>
 </head>
 <body>
@@ -874,22 +882,39 @@
                     r.workDate === dateStr && r.shiftName === shiftName
                 ).length : 0;
 
-                cell.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
-                    <button onclick="openSchedulesModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Làm việc: ${scheduleCount}
-                    </button>
-                    <button onclick="openOffRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đơn xin nghỉ: ${offCount}
-                    </button>
-                    <button onclick="openChangeRequestsModal('${dateStr}', '${shiftName}')"
-                        style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                        Đổi lịch: ${shiftChangeCount}
-                    </button>
-                </div>
-            `;
+                                 // Build buttons dynamically based on counts
+                 let buttonsHTML = `
+                     <button onclick="openSchedulesModal('${dateStr}', '${shiftName}')"
+                         style="background-color: #22c55e; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                         Làm việc: ${scheduleCount}
+                     </button>
+                 `;
+                 
+                 // Only show off request button if there are off requests
+                 if (offCount > 0) {
+                     buttonsHTML += `
+                         <button onclick="openOffRequestsModal('${dateStr}', '${shiftName}')"
+                             style="background-color: #ef4444; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                             Đơn xin nghỉ: ${offCount}
+                         </button>
+                     `;
+                 }
+                 
+                 // Only show change request button if there are change requests
+                 if (shiftChangeCount > 0) {
+                     buttonsHTML += `
+                         <button onclick="openChangeRequestsModal('${dateStr}', '${shiftName}')"
+                             style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
+                             Đổi lịch: ${shiftChangeCount}
+                         </button>
+                     `;
+                 }
+                 
+                 cell.innerHTML = `
+                 <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
+                     ${buttonsHTML}
+                 </div>
+             `;
             });
         }
     }
@@ -963,8 +988,11 @@
             today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
             const isPast = scheduleDate < today;
             
+            console.log('Creating row for schedule:', sche);
+            console.log('Is past:', isPast);
+            
             const tr = document.createElement('tr');
-            tr.innerHTML = `
+            const rowHTML = `
             <td>${sche.accountName}</td>
             <td>${sche.accountRole}</td>
             <td>${sche.accountPhone}</td>
@@ -972,26 +1000,24 @@
             <td>${getStatusDisplay(sche.statusName)}</td>
             <td>
                 <div class="action-buttons">
-                    <a data-scheduleId="${sche.scheduleId}"
-                       data-accountId="${sche.accountId}"
-                       data-accountName="${sche.accountName}"
-                       data-workDate="${sche.workDate}"
-                       data-shiftName="${sche.shiftName}"
-                       data-statusName="${sche.statusName}"
-                       data-note="${sche.note}"
-                       href="javascript:void(0)"
-                       onclick="openEditScheduleModal(this)"
-                       class="edit-btn">
+                    <button onclick="openEditScheduleModal(this)" 
+                            data-scheduleId="${sche.scheduleId}"
+                            data-accountId="${sche.accountId}"
+                            data-accountName="${sche.accountName}"
+                            data-workDate="${sche.workDate}"
+                            data-shiftName="${sche.shiftName}"
+                            data-statusName="${sche.statusName}"
+                            data-note="${sche.note}"
+                            class="edit-btn">
                         ✏️
-                    </a>
-                    ${!isPast ? `<a href="javascript:void(0)" 
-                                    onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')"
-                                    class="delete-btn">
-                                    🗑️
-                                 </a>` : ''}
+                    </button>
+                    ${!isPast ? `<button onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')" class="delete-btn">🗑️</button>` : ''}
                 </div>
             </td>
         `;
+            
+            console.log('Row HTML:', rowHTML);
+            tr.innerHTML = rowHTML;
             tbody.appendChild(tr);
         });
 
@@ -1026,36 +1052,36 @@
         // Set modal title
         document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${shiftValue}`;
 
-        // Populate table
-        filteredSchedules.forEach(sche => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${sche.accountName}</td>
-            <td>${sche.accountRole}</td>
-            <td>${sche.accountPhone}</td>
-            <td>${sche.reason}</td>
-            <td>${sche.requestDate}</td>
-            <td>${sche.requestShift}</td>
-            <td>${sche.status}</td>
-            <td><!-- Chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
-                                <button type="submit" class="approved-btn">Chấp nhận</button>
-                            </form>
+                 // Populate table
+         filteredSchedules.forEach(sche => {
+             const tr = document.createElement('tr');
+             tr.innerHTML = `
+             <td>${sche.accountName}</td>
+             <td>${sche.accountRole}</td>
+             <td>${sche.accountPhone}</td>
+             <td>${sche.reason}</td>
+             <td>${sche.requestDate}</td>
+             <td>${getShiftDisplay(sche.requestShift)}</td>
+             <td>${sche.status}</td>
+             <td><!-- Chấp nhận -->
+                             <form
+                                   action="/manager/manager-dashboard/approve/${parseInt(sche.requestId)}"
+                                   method="post"
+                                   onsubmit="return confirm('Bạn có chắc chắn muốn chấp nhận yêu cầu này không?')">
+                                 <button type="submit" class="approved-btn">Chấp nhận</button>
+                             </form>
 
-                            <!-- Không chấp nhận -->
-                            <form
-                                  action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
-                                  method="post"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
-                                <button type="submit" class="disapproved-btn">Không chấp nhận</button>
-                            </form>
-            </td>
-        `;
-            tbody.appendChild(tr);
-        });
+                             <!-- Không chấp nhận -->
+                             <form
+                                   action="/manager/manager-dashboard/disapprove/${parseInt(sche.requestId)}"
+                                   method="post"
+                                   onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?')">
+                                 <button type="submit" class="disapproved-btn">Không chấp nhận</button>
+                             </form>
+             </td>
+         `;
+             tbody.appendChild(tr);
+         });
 
         // Show modal
         modal.style.display = 'flex';
@@ -1119,15 +1145,55 @@
         document.getElementById('offRequestModal').style.display = 'none';
     }
 
-    function openEditScheduleModal(element) {
-
-        document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
-        document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
-        document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
-        document.getElementById("editScheduleWorkDate").value = element.getAttribute('data-workDate');
-        document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
-        document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
-        document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
+         function openEditScheduleModal(element) {
+ 
+         document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
+         document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
+         document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
+         document.getElementById("editScheduleWorkDate").value = element.getAttribute('data-workDate');
+         document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
+         document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
+         document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
+         
+         // Check if the schedule is in the past
+         const workDate = element.getAttribute('data-workDate');
+         const scheduleDate = new Date(workDate);
+         const today = new Date();
+         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+         const isPast = scheduleDate < today;
+         
+         // Disable fields for past schedules (only allow status change)
+         const workDateInput = document.getElementById("editScheduleWorkDate");
+         const shiftSelect = document.getElementById("editScheduleShift");
+         const noteTextarea = document.getElementById("editScheduleNote");
+         
+         if (isPast) {
+             workDateInput.disabled = true;
+             shiftSelect.disabled = true;
+             noteTextarea.disabled = true;
+             
+             // Add visual indication
+             workDateInput.style.backgroundColor = '#f5f5f5';
+             shiftSelect.style.backgroundColor = '#f5f5f5';
+             noteTextarea.style.backgroundColor = '#f5f5f5';
+             
+             // Show warning message
+             showToast("Lưu ý: Chỉ có thể thay đổi trạng thái cho ca làm việc trong quá khứ", "success");
+         } else {
+             workDateInput.disabled = false;
+             shiftSelect.disabled = false;
+             noteTextarea.disabled = false;
+             
+             // Remove visual indication
+             workDateInput.style.backgroundColor = '';
+             shiftSelect.style.backgroundColor = '';
+             noteTextarea.style.backgroundColor = '';
+             
+             // Set minimum date to today for future schedules
+             const today = new Date();
+             const todayStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+             workDateInput.min = todayStr;
+         }
 
         const statusSelect = document.getElementById("editScheduleStatus");
         statusSelect.innerHTML = '';
@@ -1148,19 +1214,50 @@
         document.getElementById('editScheduleModal').style.display = 'none';
     }
 
-    function submitEditSchedule(event) {
-        event.preventDefault();
-
-        const form = document.getElementById('editScheduleForm');
-        const scheduleId = document.getElementById('editScheduleId').value;
-
-        const data = {
-            note: form.editScheduleNote.value.trim(),
-            status: form.editScheduleStatus.value.trim(),
-            accountId: parseInt(form.editAccountId.value),
-            workDate: form.editScheduleWorkDate.value,
-            shift:form.editScheduleShift.value.trim()
-        };
+         function submitEditSchedule(event) {
+         event.preventDefault();
+ 
+         const form = document.getElementById('editScheduleForm');
+         const scheduleId = document.getElementById('editScheduleId').value;
+         
+         // Check if the schedule is in the past
+         const workDate = form.editScheduleWorkDate.value;
+         const scheduleDate = new Date(workDate);
+         const today = new Date();
+         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+         const isPast = scheduleDate < today;
+         
+         // Additional validation: prevent updating to past date for non-past schedules
+         if (!isPast) {
+             const newWorkDate = form.editScheduleWorkDate.value;
+             const newScheduleDate = new Date(newWorkDate);
+             if (newScheduleDate < today) {
+                 showToast("Không thể chỉnh sửa ca làm việc thành ngày trong quá khứ!", "error");
+                 return;
+             }
+         }
+         
+         let data;
+         
+         if (isPast) {
+             // For past schedules, only allow status change
+             data = {
+                 status: form.editScheduleStatus.value.trim(),
+                 accountId: parseInt(form.editAccountId.value),
+                 workDate: workDate, // Keep original date
+                 shift: form.editScheduleShift.value.trim(), // Keep original shift
+                 note: form.editScheduleNote.value.trim() // Keep original note
+             };
+         } else {
+             // For current/future schedules, allow all changes
+             data = {
+                 note: form.editScheduleNote.value.trim(),
+                 status: form.editScheduleStatus.value.trim(),
+                 accountId: parseInt(form.editAccountId.value),
+                 workDate: form.editScheduleWorkDate.value,
+                 shift: form.editScheduleShift.value.trim()
+             };
+         }
 
         fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
             method: 'PUT',
@@ -1170,9 +1267,20 @@
             if (res.ok) {
                 closeEditScheduleModal();
                 showToast("Cập nhật lịch thành công!", "success");
+                
+                // Save modal info to localStorage before reload
+                localStorage.setItem('openModalAfterReload', JSON.stringify({
+                    type: 'schedule',
+                    date: form.editScheduleWorkDate.value,
+                    shift: form.editScheduleShift.value.trim()
+                }));
+                
                 setTimeout(() => window.location.reload(), 1000);
             } else {
-                showToast("Cập nhật lịch thất bại!", "error");
+                return res.text().then(text => {
+                    console.log("Error response:", text);
+                    showToast("Cập nhật lịch thất bại! " + text, "error");
+                });
             }
         }).catch(error => {
             console.error("Lỗi cập nhật:", error);
