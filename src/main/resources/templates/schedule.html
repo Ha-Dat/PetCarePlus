@@ -493,6 +493,7 @@
             <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
             <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
+            <label for="OffRequestStatus">Trạng thái đơn:</label>
             <input id="OffRequestStatus" name="OffRequestStatus" readonly>
 
             <label for="OffRequestReason">Lý do:</label>
@@ -521,6 +522,7 @@
             <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
             <input type="hidden" id="ChangeRequestAccountId" name="ChangeRequestAccountId">
 
+            <label for="ChangeRequestStatus">Trạng thái đơn:</label>
             <input id="ChangeRequestStatus" name="ChangeRequestStatus" readonly>
 
             <label for="ChangeRequestWorkDate">Ngày:</label>
@@ -790,10 +792,6 @@
         const requestId = element.getAttribute('data-requestId');
         const deleteForm = document.getElementById("DeleteOffRequestForm");
 
-        if(!requestId) {
-            document.getElementById("OffRequestStatus").style.display = "none";
-        } else {document.getElementById("OffRequestStatus").style.display = "flex";}
-
         if (requestId) {
             deleteForm.style.display = 'block';
             deleteForm.action = `/work-schedule/delete/${requestId}`;
@@ -873,10 +871,6 @@
         // Set delete form
         const requestId = element.getAttribute('data-requestId');
         const deleteForm = document.getElementById("DeleteChangeRequestForm");
-
-        if(!requestId) {
-            document.getElementById("ChangeRequestStatus").style.display = "none";
-        } else {document.getElementById("ChangeRequestStatus").style.display = "flex";}
 
         if (requestId) {
             deleteForm.style.display = 'block';
