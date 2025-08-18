@@ -18,8 +18,6 @@ public interface AccountService {
 
     Optional<Account> findById(Long id);
 
-    Optional<Account> findByRole(AccountRole role);
-
     Optional<Account> login(String phone, String rawPassword);
 
     Profile getProfileByAccountAccountId(Long accountId);
