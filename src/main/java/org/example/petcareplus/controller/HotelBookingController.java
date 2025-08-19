@@ -51,7 +51,7 @@ public class HotelBookingController {
     @GetMapping("/pet-groomer/list-hotel-booking")
     public String GetHotelBookings(Model model,
                                    @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "8") int size,
+                                   @RequestParam(defaultValue = "7") int size,
                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("bookDate").descending());
         Page<HotelBooking> hotelBookings;
