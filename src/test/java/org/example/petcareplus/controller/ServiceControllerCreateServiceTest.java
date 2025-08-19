@@ -279,6 +279,8 @@ class ServiceControllerCreateServiceTest {
         request.put("price", 100000);
         request.put("duration", 30);
 
+        when(serviceService.saveService(any(Service.class))).thenReturn(testService);
+
         // Act
         ResponseEntity<Map<String, Object>> response = serviceController.createService(request);
 

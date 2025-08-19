@@ -91,6 +91,7 @@ public class OrderController {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thực hiện thao tác này");
             return "redirect:/login";
         }
 

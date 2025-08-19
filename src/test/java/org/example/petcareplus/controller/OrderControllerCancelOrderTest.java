@@ -159,8 +159,6 @@ class OrderControllerCancelOrderTest {
 	@DisplayName("UTCID08: Not authenticated (no session user)")
 	void UTCID08_NotAuthenticated() {
 		MockHttpSession noUserSession = new MockHttpSession();
-		Order order = buildOrder(1L, owner, OrderStatus.PENDING);
-		when(orderService.findById(1L)).thenReturn(Optional.of(order));
 
 		String view = controller.cancelOrder(1L, noUserSession, redirectAttrs);
 
