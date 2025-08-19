@@ -1358,16 +1358,8 @@
                              }
                          }
                          
-                         // Cập nhật UI động thay vì reload trang
-                         if (data.feedback) {
-                             console.log('Adding feedback to UI...');
-                             addFeedbackToUI(data.feedback);
-                             updateFeedbackSummary();
-                             console.log('Feedback added to UI successfully!');
-                         } else {
-                             console.log('No feedback data received, reloading page...');
-                             setTimeout(() => window.location.reload(), 1000);
-                         }
+                         // Reload trang sau khi đánh giá thành công
+                         setTimeout(() => window.location.reload(), 1000);
                      } else {
                          showToast(data.message, 'error');
                      }
