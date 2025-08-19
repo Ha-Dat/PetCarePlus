@@ -196,6 +196,19 @@ public class ManagerController {
                 return ResponseEntity.badRequest().body("Cannot create schedule for past dates");
             }
 
+            // Check for duplicate schedule (same employee, same date, same shift)
+            List<WorkSchedule> existingSchedules = workScheduleService.findAll();
+            boolean hasDuplicate = existingSchedules.stream()
+                    .anyMatch(schedule -> 
+                        schedule.getAccount().getAccountId().equals(dto.getAccountId()) &&
+                        schedule.getWorkDate().equals(dto.getWorkDate()) &&
+                        schedule.getShift().equals(dto.getShift())
+                    );
+            
+            if (hasDuplicate) {
+                return ResponseEntity.badRequest().body("Nhân viên này đã được phân công vào ca làm việc này trong ngày " + dto.getWorkDate());
+            }
+
             WorkSchedule newSchedule = new WorkSchedule();
             newSchedule.setNote(dto.getNote());
             newSchedule.setStatus(ScheduleStatus.PENDING);
