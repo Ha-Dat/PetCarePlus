@@ -5,6 +5,7 @@
     <title>Lịch đặt dịch vụ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <style>
@@ -107,6 +108,55 @@
             background-color: #388e3c;
         }
 
+        .prescription-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .prescription-btn:hover {
+            background-color: #218838;
+            color: white;
+        }
+
+        .prescription-table {
+            margin-top: 15px;
+        }
+
+        .prescription-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .prescription-table td {
+            vertical-align: middle;
+        }
+
+        .prescription-modal .modal-header {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .prescription-modal .modal-title {
+            font-weight: 600;
+        }
+
+        .prescription-table th {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .prescription-table td {
+            border-color: #dee2e6;
+        }
+
+        .prescription-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
         /* Thêm style cho các nút filter */
         .btn-outline-success.filter-type {
             margin-right: 8px;
@@ -164,6 +214,13 @@
             border-radius: 0.375rem;
             border: 1px solid #ced4da;
         }
+
+        
+
+        .form-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -207,6 +264,9 @@
                 <a class="nav-link" data-status="ACCEPTED" href="#">Đã duyệt</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" data-status="COMPLETED" href="#">Hoàn thành</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" data-status="REJECTED" href="#">Từ chối</a>
             </li>
             <li class="nav-item">
@@ -247,11 +307,26 @@
                             th:data-type="${s.serviceCategory.name()}">
                         Hủy
                     </button>
+                    <button class="btn btn-sm btn-success prescription-btn"
+                            th:if="${s.serviceCategory.name() == 'APPOINTMENT' and s.status.name() == 'COMPLETED'}"
+                            th:data-id="${s.bookingId}">
+                        <i class="bi bi-file-medical me-1"></i>Xem đơn thuốc
+                    </button>
                 </td>
             </tr>
             </tbody>
-
         </table>
+
+        <!-- Thông báo khi không có dữ liệu -->
+        <div th:if="${#lists.isEmpty(myServices)}" class="text-center py-5">
+            <div class="text-muted">
+                <i class="bi bi-calendar-x" style="font-size: 3rem; color: #dee2e6;"></i>
+                <h5 class="mt-3">Không có lịch hẹn nào</h5>
+                <p>Bạn chưa có lịch hẹn dịch vụ nào.</p>
+            </div>
+        </div>
+
+        
 
         <!-- Modal Chi tiết -->
         <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
@@ -315,6 +390,28 @@
     </div>
 </div>
 
+<!-- Modal Đơn thuốc -->
+<div class="modal fade prescription-modal" id="prescriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đơn thuốc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="prescriptionContent">
+                    <!-- Nội dung đơn thuốc sẽ được load động -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
 <div th:insert="component/footer :: footer"></div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -330,6 +427,7 @@
     const bookingStatusMap = {
         PENDING: "Chờ duyệt",
         ACCEPTED: "Đã duyệt",
+        COMPLETED: "Hoàn thành",
         REJECTED: "Từ chối",
         CANCELLED: "Hủy"
     };
@@ -392,22 +490,22 @@
         let selectedType = "ALL";
         let selectedStatus = "ALL";
 
-        // Filter theo loại dịch vụ
-        $(".filter-type").click(function () {
-            $(".filter-type").removeClass("active");
-            $(this).addClass("active");
-            selectedType = $(this).data("type");
-            filterTable();
-        });
-
-        // Filter theo trạng thái
-        $("#statusFilter .nav-link").click(function (e) {
-            e.preventDefault();
-            $("#statusFilter .nav-link").removeClass("active");
-            $(this).addClass("active");
-            selectedStatus = $(this).data("status");
-            filterTable();
-        });
+                 // Filter theo loại dịch vụ
+         $(".filter-type").click(function () {
+             $(".filter-type").removeClass("active");
+             $(this).addClass("active");
+             selectedType = $(this).data("type");
+             filterTable();
+         });
+ 
+         // Filter theo trạng thái
+         $("#statusFilter .nav-link").click(function (e) {
+             e.preventDefault();
+             $("#statusFilter .nav-link").removeClass("active");
+             $(this).addClass("active");
+             selectedStatus = $(this).data("status");
+             filterTable();
+         });
 
         function filterTable() {
             $("#schedule-table tr").each(function () {
@@ -503,7 +601,9 @@
 
                 // Ẩn các nút hành động
                 $row.find(".cancel-btn, .detail-btn").remove();
-                location.reload();
+                
+                                 // Reload trang
+                 location.reload();
             },
             error: function () {
                 alert("Có lỗi xảy ra khi hủy lịch.");
@@ -542,10 +642,71 @@
                 $row.find("td:nth-child(2)").text(data.serviceName);
                 $row.find(".col-time").text(new Date(data.bookDate).toLocaleString("vi-VN"));
                 $row.find(".col-status").text("Chờ duyệt");
-                location.reload();
+                
+                                 // Reload trang
+                 location.reload();
             },
             error: function () {
                 alert("Không thể cập nhật lịch.");
+            }
+        });
+    });
+
+    // Xử lý nút xem đơn thuốc
+    $(document).on("click", ".prescription-btn", function () {
+        let appointmentId = $(this).data("id");
+        
+        $.ajax({
+            url: `/my-schedule/prescriptions/${appointmentId}`,
+            type: "GET",
+            success: function (prescriptions) {
+                let content = "";
+                
+                if (prescriptions && prescriptions.length > 0) {
+                    content = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered prescription-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên thuốc</th>
+                                        <th>Liều lượng</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    prescriptions.forEach((prescription, index) => {
+                        content += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${prescription.drugName}</td>
+                                <td>${prescription.amount}</td>
+                                <td>${prescription.note}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    content += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    content = `
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Chưa có đơn thuốc cho lịch hẹn này.
+                        </div>
+                    `;
+                }
+                
+                $("#prescriptionContent").html(content);
+                $("#prescriptionModal").modal("show");
+            },
+            error: function () {
+                alert("Không thể lấy thông tin đơn thuốc.");
             }
         });
     });

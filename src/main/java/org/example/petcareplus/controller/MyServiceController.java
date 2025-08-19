@@ -2,12 +2,15 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.MyServiceDTO;
+import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.BookingService;
+import org.example.petcareplus.service.PrescriptionService;
 import org.example.petcareplus.service.ServiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +24,12 @@ public class MyServiceController {
 
     private final BookingService bookingService;
     private final ServiceService serviceService;
+    private final PrescriptionService prescriptionService;
 
-    public MyServiceController(BookingService bookingService, ServiceService serviceService) {
+    public MyServiceController(BookingService bookingService, ServiceService serviceService, PrescriptionService prescriptionService) {
         this.bookingService = bookingService;
         this.serviceService = serviceService;
+        this.prescriptionService = prescriptionService;
     }
 
     @GetMapping
@@ -34,6 +39,7 @@ public class MyServiceController {
 
         List<MyServiceDTO> myServices = bookingService.getMyServices(account.getProfile().getProfileId());
         model.addAttribute("myServices", myServices);
+        
         return "my-service-schedule";
     }
 
@@ -111,5 +117,23 @@ public class MyServiceController {
                         "price", s.getPrice().toString()
                 ))
                 .toList();
+    }
+
+    @GetMapping("/prescriptions/{appointmentId}")
+    @ResponseBody
+    public ResponseEntity<?> getPrescriptions(@PathVariable Long appointmentId, HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập."));
+        }
+
+        try {
+            List<PrescriptionDTO> prescriptions = prescriptionService.getPrescriptionsByAppointmentId(appointmentId);
+            return ResponseEntity.ok(prescriptions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Có lỗi xảy ra khi lấy đơn thuốc: " + e.getMessage()));
+        }
     }
 }
