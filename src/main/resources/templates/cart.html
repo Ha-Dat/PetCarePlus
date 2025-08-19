@@ -519,7 +519,7 @@
          }
 
          // Xử lý nút Mua Hàng
-         function handleCheckout() {
+         window.handleCheckout = function() {
              const cartItems = document.querySelectorAll('.cart-item');
              if (cartItems.length === 0) {
                  alert("Không có gì trong giỏ hàng!");
