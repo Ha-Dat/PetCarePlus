@@ -49,16 +49,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean deleteCategory(Long categoryId) {
-        // Kiểm tra sản phẩm trực tiếp thuộc category này
         long productCount = productRepository.countProductsByCategoryId(categoryId);
         if (productCount > 0) {
             return false; // Có sản phẩm, không xóa
-        }
-
-        // Kiểm tra sản phẩm trong tất cả subcategories
-        Category category = categoryRepository.findById(categoryId).orElse(null);
-        if (category != null && hasProductsInSubCategories(category)) {
-            return false; // Có sản phẩm trong subcategories, không xóa
         }
 
         categoryRepository.deleteById(categoryId);
@@ -101,27 +94,6 @@ public class CategoryServiceImpl implements CategoryService {
         for (Category sub : child.getSubCategories()) {
             if (isChildOf(sub, potentialParent)) return true;
         }
-        return false;
-    }
-
-    private boolean hasProductsInSubCategories(Category category) {
-        if (category.getSubCategories() == null || category.getSubCategories().isEmpty()) {
-            return false;
-        }
-
-        for (Category subCategory : category.getSubCategories()) {
-            // Kiểm tra sản phẩm trực tiếp trong subcategory này
-            long productCount = productRepository.countProductsByCategoryId(subCategory.getCategoryId());
-            if (productCount > 0) {
-                return true;
-            }
-
-            // Kiểm tra đệ quy trong các subcategories của subcategory này
-            if (hasProductsInSubCategories(subCategory)) {
-                return true;
-            }
-        }
-
         return false;
     }
 }

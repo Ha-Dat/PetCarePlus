@@ -93,11 +93,11 @@ public class CategoryController {
                 redirectAttributes.addFlashAttribute("toastMessage", "Xóa danh mục thành công!");
                 redirectAttributes.addFlashAttribute("toastType", "success");
             } else {
-                redirectAttributes.addFlashAttribute("toastMessage", "Danh mục này đã có sản phẩm hoặc danh mục con có sản phẩm, không thể xóa!");
+                redirectAttributes.addFlashAttribute("toastMessage", "Danh mục này đã có sản phẩm, không thể xóa!");
                 redirectAttributes.addFlashAttribute("toastType", "error");
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("toastMessage", "Có lỗi xảy ra khi xóa danh mục!");
+            redirectAttributes.addFlashAttribute("toastMessage", "Danh mục này đã có danh mục con, không thể xóa!");
             redirectAttributes.addFlashAttribute("toastType", "error");
         }
 
