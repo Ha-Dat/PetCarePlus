@@ -571,7 +571,8 @@
                                     </a>
 
                                     <button type="button" class="dropdown-item"
-                                            th:onclick="'checkServiceInfo(' + ${service.serviceId} + ')'">
+                                            th:onclick="'checkServiceInfo(' + ${service.serviceId} + ')'"
+                                            th:if="${false}">
                                         ℹ️ Thông tin
                                     </button>
 
