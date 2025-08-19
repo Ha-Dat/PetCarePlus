@@ -496,21 +496,20 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-            <ul>
-                <li th:if="${promotionsPage.hasPrevious()}">
-                    <a th:href="@{/seller/promotion/list(page=${promotionsPage.number - 1}, size=${pageSize})}">Previous</a>
-                </li>
-                <li>
-                    <span>Page <span th:text="${promotionsPage.number + 1}">1</span> of <span th:text="${promotionsPage.totalPages}">1</span></span>
-                </li>
-                <li th:if="${promotionsPage.hasNext()}">
-                    <a th:href="@{/seller/promotion/list(page=${promotionsPage.number + 1}, size=${pageSize})}">Next</a>
-                </li>
-            </ul>
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul>
+                    <li th:if="${promotionsPage.hasPrevious()}">
+                        <a th:href="@{/seller/promotion/list(page=${promotionsPage.number - 1}, size=${pageSize})}">Previous</a>
+                    </li>
+                    <li>
+                        <span>Page <span th:text="${promotionsPage.number + 1}">1</span> of <span th:text="${promotionsPage.totalPages}">1</span></span>
+                    </li>
+                    <li th:if="${promotionsPage.hasNext()}">
+                        <a th:href="@{/seller/promotion/list(page=${promotionsPage.number + 1}, size=${pageSize})}">Next</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </main>
 </div>

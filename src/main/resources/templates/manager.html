@@ -1136,10 +1136,11 @@
             return;
         }
 
-        const shiftValue = filteredSchedules[0].shift;
+        // Use shiftName instead of shift since backend only provides shiftName
+        const shiftValue = filteredSchedules[0].shiftName;
 
         // Set modal title
-        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${shiftValue}`;
+        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${getShiftDisplay(shiftValue)}`;
 
                  // Populate table
          filteredSchedules.forEach(sche => {
@@ -1192,10 +1193,17 @@
             s.workDate === date && s.shiftName === shiftName
         );
 
-        const shiftValue = filteredSchedules[0].shift;
+        // Check if filteredSchedules is empty or undefined
+        if (!filteredSchedules || filteredSchedules.length === 0) {
+            console.log('No off requests found for date:', date, 'shift:', shiftName);
+            return;
+        }
+
+        // Use shiftName instead of shift since backend only provides shiftName
+        const shiftValue = filteredSchedules[0].shiftName;
 
         // Set modal title
-        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${shiftValue}`;
+        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${getShiftDisplay(shiftValue)}`;
 
         // Populate table
         filteredSchedules.forEach(sche => {
