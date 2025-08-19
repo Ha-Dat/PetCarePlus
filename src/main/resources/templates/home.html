@@ -5,6 +5,7 @@
     <title>Trang chủ</title>
     <link rel="stylesheet" th:href="@{css/header.css}">
     <link rel="stylesheet" th:href="@{css/footer.css}">
+    <link rel="stylesheet" th:href="@{css/rating-stars.css}">
     <style>
         /* Carousel + Featured Section */
         .featured-product {
@@ -470,7 +471,8 @@
         <section class="featured-products">
             <button class="carousel-btn prev" id="prevBtn">❮</button>
             <div class="carousel-track" id="carouselTrack">
-                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}"
+                     th:attr="data-product-id=${product.productId}, data-rating=${productRatings.get(product.productId)}, data-feedback-count=${productFeedbackCounts.get(product.productId)}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:if="${!#lists.isEmpty(product.medias)}"
@@ -487,7 +489,7 @@
                             <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                             <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
-                        <div class="stars">★★★★★</div>
+                        <div class="stars"></div>
                         <div class="price"
                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                     </a>
@@ -498,7 +500,8 @@
                                 th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
                     </form>
                 </div>
-                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}">
+                <div class="carousel-item" th:each="product : ${getTop5ProductByCreateDate}"
+                     th:attr="data-product-id=${product.productId}, data-rating=${productRatings.get(product.productId)}, data-feedback-count=${productFeedbackCounts.get(product.productId)}">
                     <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:if="${!#lists.isEmpty(product.medias)}"
@@ -515,7 +518,7 @@
                             <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                             <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         </div>
-                        <div class="stars">★★★★★</div>
+                        <div class="stars"></div>
                         <div class="price"
                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                     </a>
@@ -537,7 +540,8 @@
             <p>Những sản phẩm được yêu thích nhất</p>
         </div>
         <div class="best-seller-products-images">
-            <div th:each="product : ${top3BestSellingProducts}" class="best-selling-product">
+            <div th:each="product : ${top3BestSellingProducts}" class="best-selling-product"
+                 th:attr="data-product-id=${product.productId}, data-rating=${productRatings.get(product.productId)}, data-feedback-count=${productFeedbackCounts.get(product.productId)}">
                 <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                     <div class="product-image-wrapper">
                         <img th:if="${!#lists.isEmpty(product.medias)}"
@@ -553,7 +557,7 @@
                         <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         <div class="unit-sold" th:text="'Đã bán: ' + ${product.unitSold} + ' sản phẩm'" style="color: #666; font-size: 12px; margin: 5px 0;"></div>
                     </div>
-                    <div class="stars">★★★★★</div>
+                    <div class="stars"></div>
                     <div class="price"
                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                 </a>
@@ -574,7 +578,8 @@
                 <div class="product-row">
                     <div th:each="product, iterStat : ${category.products}"
                          th:if="${iterStat.index} < 3"
-                         class="product-item">
+                         class="product-item"
+                         th:attr="data-product-id=${product.productId}, data-rating=${productRatings.get(product.productId)}, data-feedback-count=${productFeedbackCounts.get(product.productId)}">
                         <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                             <div class="product-image-wrapper">
                                 <img th:if="${!#lists.isEmpty(product.medias)}"
@@ -591,7 +596,7 @@
                                 <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                                 <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                             </div>
-                            <div class="stars">★★★★★</div>
+                            <div class="stars"></div>
                             <div class="price"
                                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                         </a>
@@ -753,5 +758,6 @@
         });
     });
 </script>
+<script th:src="@{js/rating-stars.js}"></script>
 <script th:src="@{js/header.js}"></script>
 </html>

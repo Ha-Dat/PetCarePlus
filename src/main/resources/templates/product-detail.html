@@ -5,6 +5,7 @@
     <title>Product detail</title>
     <link rel="stylesheet" th:href="@{css/header.css}">
     <link rel="stylesheet" th:href="@{css/footer.css}">
+    <link rel="stylesheet" th:href="@{css/rating-stars.css}">
     <style>
         /* Main Section Breadcrumb */
         .main-section {
@@ -1095,7 +1096,8 @@
         <section class="featured">
             <h2>Sản phẩm nổi bật khác</h2>
             <div class="product-row">
-                <div class="product-item" th:each="item : ${top9Products}">
+                <div class="product-item" th:each="item : ${top9Products}"
+                     th:attr="data-product-id=${item.productId}, data-rating=${productRatings.get(item.productId)}, data-feedback-count=${productFeedbackCounts.get(item.productId)}">
                     <a th:href="@{/product-detail(productId=${item.productId})}" class="product-card">
                         <div class="product-image-wrapper">
                             <img th:if="${!#lists.isEmpty(item.medias)}"
@@ -1111,7 +1113,7 @@
                             <h3 th:text="${item.name}" class="product-name"></h3>
                             <div class="product-status" th:class="${'product-status ' + (item.status.name() == 'IN_STOCK' ? 'status-in-stock' : (item.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${item.status.value}"></div>
                         </div>
-                        <div class="stars">★★★★★</div>
+                        <div class="stars"></div>
                         <div class="price"
                              th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                     </a>
@@ -1478,6 +1480,7 @@
         });
     });
 </script>
+<script th:src="@{js/rating-stars.js}"></script>
 </body>
 <script th:src="@{js/header.js}"></script>
 </html>

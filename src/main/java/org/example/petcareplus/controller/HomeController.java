@@ -6,6 +6,7 @@ import org.example.petcareplus.entity.Promotion;
 import org.example.petcareplus.enums.ProductStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
+import org.example.petcareplus.service.ProductFeedbackService;
 import org.example.petcareplus.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @RequestMapping("/")
@@ -29,6 +32,9 @@ public class HomeController {
 
     @Autowired
     private PromotionService promotionService;
+    
+    @Autowired
+    private ProductFeedbackService productFeedbackService;
 
     @GetMapping("/home")
     public String Viewhome(Model model) {
@@ -49,10 +55,48 @@ public class HomeController {
 
         List<Category> parentCategories = categoryService.getParentCategory();
 
+        // Tạo rating data cho các sản phẩm
+        Map<Long, Double> productRatings = new HashMap<>();
+        Map<Long, Long> productFeedbackCounts = new HashMap<>();
+        
+        // Lấy rating cho top 5 products mới nhất
+        for (Product product : getTop5ProductByCreateDate) {
+            Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+            long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+            productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+            productFeedbackCounts.put(product.getProductId(), feedbackCount);
+        }
+        
+        // Lấy rating cho top 3 best selling products
+        for (Product product : top3BestSellingProducts) {
+            if (!productRatings.containsKey(product.getProductId())) {
+                Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+                long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+                productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+                productFeedbackCounts.put(product.getProductId(), feedbackCount);
+            }
+        }
+        
+        // Lấy rating cho sản phẩm trong categories
+        for (Category category : parentCategories) {
+            if (category.getProducts() != null) {
+                for (Product product : category.getProducts()) {
+                    if (product.getStatus() != ProductStatus.INACTIVE && !productRatings.containsKey(product.getProductId())) {
+                        Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+                        long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+                        productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+                        productFeedbackCounts.put(product.getProductId(), feedbackCount);
+                    }
+                }
+            }
+        }
+
         model.addAttribute("getTop5ProductByCreateDate", getTop5ProductByCreateDate);
         model.addAttribute("product", AllProduct);
         model.addAttribute("categories", parentCategories);
         model.addAttribute("top3BestSellingProducts", top3BestSellingProducts);
+        model.addAttribute("productRatings", productRatings);
+        model.addAttribute("productFeedbackCounts", productFeedbackCounts);
         return "home";
     }
 

@@ -24,6 +24,8 @@ import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Controller
@@ -97,6 +99,41 @@ public class ProductController {
                 .toList();
         model.addAttribute("top3BestSellingProducts", top3BestSellingProducts);
 
+        // Tạo rating data cho các sản phẩm
+        Map<Long, Double> productRatings = new HashMap<>();
+        Map<Long, Long> productFeedbackCounts = new HashMap<>();
+        
+        // Lấy rating cho active products
+        for (Product product : activeProducts) {
+            Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+            long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+            productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+            productFeedbackCounts.put(product.getProductId(), feedbackCount);
+        }
+        
+        // Lấy rating cho result search products
+        for (Product product : resultSearch) {
+            if (!productRatings.containsKey(product.getProductId())) {
+                Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+                long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+                productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+                productFeedbackCounts.put(product.getProductId(), feedbackCount);
+            }
+        }
+        
+        // Lấy rating cho top 3 best selling products
+        for (Product product : top3BestSellingProducts) {
+            if (!productRatings.containsKey(product.getProductId())) {
+                Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
+                long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
+                productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
+                productFeedbackCounts.put(product.getProductId(), feedbackCount);
+            }
+        }
+        
+        model.addAttribute("productRatings", productRatings);
+        model.addAttribute("productFeedbackCounts", productFeedbackCounts);
+
         return "view-product";
     }
 
@@ -145,6 +182,17 @@ public class ProductController {
                 }
             }
             
+            // Tạo rating data cho top9Products
+            Map<Long, Double> productRatings = new HashMap<>();
+            Map<Long, Long> productFeedbackCounts = new HashMap<>();
+            
+            for (Product topProduct : top9Products) {
+                Double avgRating = productFeedbackService.getAverageRatingByProductId(topProduct.getProductId());
+                long feedbackCount_ProductId = productFeedbackService.getFeedbackCountByProductId(topProduct.getProductId());
+                productRatings.put(topProduct.getProductId(), avgRating != null ? avgRating : 0.0);
+                productFeedbackCounts.put(topProduct.getProductId(), feedbackCount_ProductId);
+            }
+            
             model.addAttribute("product", product);
             model.addAttribute("categories", parentCategories);
             model.addAttribute("top9Products", top9Products);
@@ -161,6 +209,8 @@ public class ProductController {
             model.addAttribute("currentUser", currentUser);
             model.addAttribute("purchaseCount", purchaseCount);
             model.addAttribute("feedbackCount", feedbackCount);
+            model.addAttribute("productRatings", productRatings);
+            model.addAttribute("productFeedbackCounts", productFeedbackCounts);
             return "product-detail";
         } else {
             return "error/404";
