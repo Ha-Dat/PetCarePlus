@@ -227,13 +227,17 @@
                   <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
                   <circle cx="12" cy="13" r="3" />
                 </svg>
-                <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh vào đây hoặc</p>
               </div>
               <div id="image-preview" class="mt-4 flex-col justify-center items-center gap-4 w-fit mx-auto"></div>
-              <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
-              <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                Chọn tệp hình ảnh
-              </label>
+              <div class="flex justify-center gap-2">
+                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
+                <label for="image-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                  Chọn tệp hình ảnh
+                </label>
+                <button type="button" id="clear-images" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                  Xóa tất cả ảnh
+                </button>
+              </div>
             </div>
             </div>
 
@@ -245,13 +249,17 @@
                   <polygon points="23 7 16 12 23 17 23 7" />
                   <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                 </svg>
-                <p class="text-sm text-muted-foreground mb-2">Kéo thả video vào đây hoặc</p>
               </div>
               <div id="video-preview" class="mt-4 flex-col justify-center items-center gap-4 w-fit mx-auto"></div>
-              <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
-              <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                Chọn tệp video
-              </label>
+              <div class="flex justify-center gap-2">
+                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
+                <label for="video-upload" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                  Chọn tệp video
+                </label>
+                <button type="button" id="clear-videos" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                  Xóa tất cả video
+                </button>
+              </div>
             </div>
             </div>
 
@@ -390,9 +398,31 @@
 
   const imagePlaceholder = document.getElementById("image-placeholder");
   const imagePreview = document.getElementById("image-preview");
+  const clearImagesBtn = document.getElementById("clear-images");
 
   const videoPlaceholder = document.getElementById("video-placeholder");
   const videoPreview = document.getElementById("video-preview");
+  const clearVideosBtn = document.getElementById("clear-videos");
+
+  // Xử lý clear images
+  if (clearImagesBtn) {
+    clearImagesBtn.addEventListener("click", function () {
+      imageUpload.value = "";
+      imagePreview.innerHTML = "";
+      imagePlaceholder.style.display = "block";
+      clearImagesBtn.style.display = "none";
+    });
+  }
+
+  // Xử lý clear videos
+  if (clearVideosBtn) {
+    clearVideosBtn.addEventListener("click", function () {
+      videoUpload.value = "";
+      videoPreview.innerHTML = "";
+      videoPlaceholder.style.display = "block";
+      clearVideosBtn.style.display = "none";
+    });
+  }
 
   if (imageUpload) {
     imageUpload.addEventListener("change", function () {
@@ -400,6 +430,7 @@
       imagePreview.innerHTML = "";
       if (files.length > 0) {
         imagePlaceholder.style.display = "none";
+        clearImagesBtn.style.display = "inline-flex";
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const img = document.createElement("img");
@@ -412,6 +443,7 @@
         }
       } else {
         imagePlaceholder.style.display = "block";
+        clearImagesBtn.style.display = "none";
       }
     });
   }
@@ -422,6 +454,7 @@
       videoPreview.innerHTML = "";
       if (files.length > 0) {
         videoPlaceholder.style.display = "none";
+        clearVideosBtn.style.display = "inline-flex";
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const video = document.createElement("video");
@@ -435,6 +468,7 @@
         }
       } else {
         videoPlaceholder.style.display = "block";
+        clearVideosBtn.style.display = "none";
       }
     });
   }
