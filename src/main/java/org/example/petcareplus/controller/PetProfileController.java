@@ -298,24 +298,22 @@ public class PetProfileController {
                 petProfileService.getSpaBookingsByPetId(petId);
             
             StringBuilder message = new StringBuilder();
-            message.append("Không thể xóa thú cưng vì đang sử dụng các dịch vụ sau: ");
+            message.append("Không thể xóa thú cưng vì đã sử dụng các dịch vụ của hệ thống: ");
             
             if (!appointments.isEmpty()) {
-                message.append("Đặt lịch khám (").append(appointments.size()).append(" lịch hẹn), ");
+                message.append("lịch khám (").append(appointments.size()).append(" đơn đặt), ");
             }
             if (!hotelBookings.isEmpty()) {
-                message.append("Đặt khách sạn (").append(hotelBookings.size()).append(" lịch đặt phòng), ");
+                message.append("Đặt trông hộ (").append(hotelBookings.size()).append(" đơn đặt), ");
             }
             if (!spaBookings.isEmpty()) {
-                message.append("Đặt spa (").append(spaBookings.size()).append(" lịch hẹn), ");
+                message.append("Đặt spa (").append(spaBookings.size()).append(" đơn đặt), ");
             }
             
             // Xóa dấu phẩy cuối cùng
             if (message.charAt(message.length() - 2) == ',') {
                 message.setLength(message.length() - 2);
             }
-            
-            message.append(". Vui lòng hủy tất cả dịch vụ trước khi xóa thú cưng.");
             
             return message.toString();
         } catch (Exception e) {
