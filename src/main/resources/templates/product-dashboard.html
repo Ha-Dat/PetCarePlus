@@ -606,7 +606,7 @@
                     <option value="">Chọn danh mục</option>
                     <option th:each="cat : ${categoryOptions}"
                             th:value="${cat.categoryId}"
-                            th:text="${cat.name}"
+                            th:text="${cat.parent != null ? (cat.parent.parent != null ? cat.name + ' (Cháu của: ' + cat.parent.parent.name + ' > ' + cat.parent.name + ')' : cat.name + ' (Con của: ' + cat.parent.name + ')') : cat.name}"
                             th:selected="${product?.category?.categoryId} == ${cat.categoryId}">
                     </option>
                 </select>
@@ -673,7 +673,7 @@
                     <option value="">Chọn danh mục</option>
                     <option th:each="cat : ${categoryOptions}"
                             th:value="${cat.categoryId}"
-                            th:text="${cat.name}">
+                            th:text="${cat.parent != null ? (cat.parent.parent != null ? cat.name + ' (Cháu của: ' + cat.parent.parent.name + ' > ' + cat.parent.name + ')' : cat.name + ' (Con của: ' + cat.parent.name + ')') : cat.name}">
                     </option>
                 </select>
 
