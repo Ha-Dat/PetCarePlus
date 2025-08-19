@@ -321,11 +321,11 @@
                 xóa khỏi giỏ hàng
             </button>
             
-            <button class="checkout-btn"
-                    th:disabled="${cartItems.isEmpty()}"
-                    onclick="window.location.href='/checkout'">
-                Mua Hàng
-            </button>
+                         <button class="checkout-btn"
+                     th:disabled="${cartItems.isEmpty()}"
+                     onclick="handleCheckout()">
+                 Mua Hàng
+             </button>
         </div>
     </div>
 </main>
@@ -503,20 +503,47 @@
             });
         });
 
-        // Xử lý xóa toàn bộ giỏ hàng
-        const clearCartBtn = document.getElementById("clearCartBtn");
-        if (clearCartBtn) {
-            clearCartBtn.addEventListener("click", () => {
-                if (confirm("Bạn muốn xóa hết sản phẩm trong giỏ hàng?")) {
-                    fetch("/clear-cart", { method: "POST" })
-                        .then(() => {
-                            showToast("🗑️ Đã xóa hết sản phẩm!");
-                            setTimeout(() => window.location.reload(), 1500);
-                        })
-                        .catch(() => showToast("❌ Lỗi khi xóa giỏ hàng!", "error"));
-                }
-            });
-        }
+                 // Xử lý xóa toàn bộ giỏ hàng
+         const clearCartBtn = document.getElementById("clearCartBtn");
+         if (clearCartBtn) {
+             clearCartBtn.addEventListener("click", () => {
+                 if (confirm("Bạn muốn xóa hết sản phẩm trong giỏ hàng?")) {
+                     fetch("/clear-cart", { method: "POST" })
+                         .then(() => {
+                             showToast("🗑️ Đã xóa hết sản phẩm!");
+                             setTimeout(() => window.location.reload(), 1500);
+                         })
+                         .catch(() => showToast("❌ Lỗi khi xóa giỏ hàng!", "error"));
+                 }
+             });
+         }
+
+         // Xử lý nút Mua Hàng
+         function handleCheckout() {
+             const cartItems = document.querySelectorAll('.cart-item');
+             if (cartItems.length === 0) {
+                 alert("Không có gì trong giỏ hàng!");
+                 return;
+             }
+             
+             // Kiểm tra xem có sản phẩm nào có số lượng > 0 không
+             let hasValidItems = false;
+             cartItems.forEach(item => {
+                 const qtyInput = item.querySelector('.quantity-input');
+                 const quantity = parseInt(qtyInput.value) || 0;
+                 if (quantity > 0) {
+                     hasValidItems = true;
+                 }
+             });
+             
+             if (!hasValidItems) {
+                 alert("Không có gì trong giỏ hàng!");
+                 return;
+             }
+             
+             // Nếu có sản phẩm hợp lệ thì chuyển đến trang checkout
+             window.location.href = '/checkout';
+         }
     });
 </script>
 <script th:src="@{js/header.js}"></script>
