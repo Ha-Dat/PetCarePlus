@@ -88,36 +88,36 @@
             background-color: #ff6600;
         }
 
-        /* Brand Logos */
-        .brand-logos {
+        /* Top 3 Best Selling Products */
+        .best-seller-products {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: linear-gradient(to right, #fff5e1, #ffe9c7);
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
             padding: 30px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin: 40px 10px;
         }
 
-        .brand-logos > div {
+        .best-seller-products > div {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .brand-logos h2 {
+        .best-seller-products h2 {
             font-size: 24px;
             color: #333;
             margin-bottom: 8px;
         }
 
-        .brand-logos p {
+        .best-seller-products p {
             color: #666;
             font-size: 16px;
             margin: 0;
         }
 
-        .brand-logos img {
+        .best-seller-products img {
             width: 180px;
             height: auto;
             margin: 0 20px;
@@ -127,16 +127,81 @@
             padding: 10px;
         }
 
-        .brand-logos img:hover {
+        .best-seller-products img:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .brand-logos-images {
+        .best-seller-products-images {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 30px;
+        }
+
+        .best-selling-product {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-width: 250px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .best-selling-product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .best-selling-product .product-image-wrapper {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px;
+        }
+
+        .best-selling-product .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .best-selling-product .product-card {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .best-selling-product .product-card:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .best-selling-product .unit-sold {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 8px 0;
+            display: inline-block;
+        }
+
+        .best-selling-product .product-status {
+            margin: 8px 0;
+        }
+
+        .best-selling-product .stars {
+            color: #ffc107;
+            margin: 8px 0;
+        }
+
+        .best-selling-product .price {
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 8px 0;
+            font-size: 16px;
         }
 
         /* Main Section Breadcrumb */
@@ -466,15 +531,39 @@
         </section>
     </div>
 
-    <section class="brand-logos">
+    <section class="best-seller-products">
         <div>
-            <h2>Thương hiệu</h2>
-            <p>Top các thương hiệu hàng đầu</p>
+            <h2>Top 3 Sản Phẩm Bán Chạy Nhất</h2>
+            <p>Những sản phẩm được yêu thích nhất</p>
         </div>
-        <div class="brand-logos-images">
-            <img src="https://snspetshop.com/image/cache/catalog/Brands/Me-o-600x315h.jpg" alt="Me-o">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Royal-Canin-Logo.svg/2560px-Royal-Canin-Logo.svg.png" alt="Royal Canin">
-            <img src="https://asista.ca/wp-content/uploads/2019/03/nutrience-generic-red-en-768x217.png" alt="Nutrience">
+        <div class="best-seller-products-images">
+            <div th:each="product : ${top3BestSellingProducts}" class="best-selling-product">
+                <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
+                    <div class="product-image-wrapper">
+                        <img th:if="${!#lists.isEmpty(product.medias)}"
+                             th:src="@{${product.medias[0].url}}"
+                             alt="Product Image">
+                        <img th:if="${#lists.isEmpty(product.medias)}"
+                             src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
+                             alt="No Image">
+                    </div>
+                    <div class="product-details">
+                        <h3 th:text="${product.name}" class="product-name"></h3>
+                        <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
+                        <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
+                        <div class="unit-sold" th:text="'Đã bán: ' + ${product.unitSold} + ' sản phẩm'" style="color: #666; font-size: 12px; margin: 5px 0;"></div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <div class="price"
+                         th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                </a>
+                <form th:action="@{/add-to-cart}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.productId}" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="button" class="add-to-cart js-add-to-cart"
+                            th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -622,7 +711,7 @@
                 const quantity = 1;
 
                 // Kiểm tra stock trước khi thêm vào giỏ hàng
-                const productItem = button.closest('.carousel-item, .product-item');
+                const productItem = button.closest('.carousel-item, .product-item, .best-selling-product');
                 const unitInStockElement = productItem.querySelector('.unit-in-stock');
                 const unitInStock = parseInt(unitInStockElement?.getAttribute('data-unit-in-stock') || '0');
                 

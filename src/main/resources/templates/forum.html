@@ -250,7 +250,7 @@
                             <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
                                 <!-- upvote -->
                                 <a th:href="@{'/forum/' + ${post.getPostId()} + '/rating?rating=UPVOTE'}"
-                                   th:class="'vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' + 
+                                   th:class="'vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' +
                                    (${post.userRating == T(org.example.petcareplus.enums.Rating).UPVOTE} ? 'bg-primary/10 text-primary voted' : 'hover:bg-primary/10 hover:text-primary')">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="m5 12 7-7 7 7" />
@@ -260,7 +260,7 @@
                                 <span class="text-xs font-medium text-muted-foreground" th:text="${post.getRating()}"></span>
                                 <!-- downvote -->
                                 <a th:href="@{'/forum/' + ${post.getPostId()} + '/rating?rating=DOWNVOTE'}"
-                                   th:class="'vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' + 
+                                   th:class="'vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' +
                                    (${post.userRating == T(org.example.petcareplus.enums.Rating).DOWNVOTE} ? 'bg-destructive/10 text-destructive voted' : 'hover:bg-destructive/10 hover:text-destructive')">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M12 5v14" />

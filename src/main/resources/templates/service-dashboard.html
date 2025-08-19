@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý dịch vụ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -22,7 +23,6 @@
             max-width: 230px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
             top: 0;
             left: 0;
             padding: 20px;
@@ -492,6 +492,53 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .manager-info {
+            margin: 25pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .manager-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .manager-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .manager-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            color: #1e7e34;
+        }
+
+        .logout-btn {
+            color: #dc3545;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -504,6 +551,22 @@
             <li><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
             <li><a href="/manager/manager-dashboard">📅 Quản lý ca làm việc</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="manager-info">
+            <div class="manager-details">
+                <span class="manager-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="manager-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <div class="manager-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
     </aside>
 
     <!-- Main Content -->
