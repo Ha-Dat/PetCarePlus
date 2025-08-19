@@ -311,7 +311,7 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="chart-container">
-                    <h5 class="chart-title">Thống kê đơn trong năm</h5>
+                    <h5 class="chart-title">Phân tích chi tiết theo tháng</h5>
                     <div id="columnchart_material" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
                 </div>
             </div>
@@ -320,16 +320,6 @@
                 <div class="chart-container">
                     <h5 class="chart-title">Tỷ lệ đơn đặt Spa và Khách Sạn thú cưng</h5>
                     <div id="donutchart" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Biểu đồ chi tiết -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="chart-container">
-                    <h5 class="chart-title">Phân tích chi tiết theo tháng</h5>
-                    <div id="detailed_chart" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
                 </div>
             </div>
         </div>
@@ -357,7 +347,7 @@
             const options = {
                 chart: {},
                 legend: { position: 'none' },
-                colors: ['#2ec4b6'],
+                colors: ['#2ec4b6', '#ff6b6b'],
                 backgroundColor: 'transparent'
             };
 
@@ -393,43 +383,6 @@
         chart.draw(data, options);
     }
 </script>
-
-<!-- Biểu đồ chi tiết -->
-<script th:inline="javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawDetailedChart);
-
-    function drawDetailedChart() {
-        var data = google.visualization.arrayToDataTable([
-            ['Tháng', 'Hotel Bookings', 'Spa Bookings'],
-            ['T1', 15, 8],
-            ['T2', 12, 10],
-            ['T3', 18, 12],
-            ['T4', 20, 15],
-            ['T5', 22, 18],
-            ['T6', 25, 20],
-            ['T7', 28, 22],
-            ['T8', 30, 25],
-            ['T9', 27, 23],
-            ['T10', 24, 19],
-            ['T11', 21, 16],
-            ['T12', 19, 14]
-        ]);
-
-        var options = {
-            title: 'Thống kê chi tiết theo tháng',
-            hAxis: {title: 'Tháng', titleTextStyle: {color: '#333'}},
-            vAxis: {minValue: 0},
-            legend: { position: 'top' },
-            colors: ['#2ec4b6', '#ff6b6b'],
-            backgroundColor: 'transparent'
-        };
-
-        var chart = new google.visualization.ColumnChart(document.getElementById('detailed_chart'));
-        chart.draw(data, options);
-    }
-</script>
-
 <script>
     // Add active class to current menu item
     document.addEventListener('DOMContentLoaded', function() {
