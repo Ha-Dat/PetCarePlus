@@ -1762,6 +1762,7 @@
                 // Không cần làm gì vì dropdown sẽ tự động đóng khi không hover
             }
         });
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         const dropdowns = document.querySelectorAll('.action-dropdown');
@@ -1791,8 +1792,8 @@
                     dropdown.style.zIndex = '10000';
                     setTimeout(() => {
                         menu.style.display = 'none';
-                    },);
-                },);
+                    }, 150);
+                }, 100);
             };
 
             // Sự kiện cho nút dropdown
