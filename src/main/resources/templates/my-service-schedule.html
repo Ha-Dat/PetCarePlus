@@ -221,6 +221,28 @@
             font-size: 0.875rem;
             color: #6c757d;
         }
+
+        /* Style cho trường disabled */
+        .select2-container--default.select2-container--disabled .select2-selection--single {
+            background-color: #e9ecef !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+        }
+
+        .select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
+
+        /* Style cho trường disabled khi select element bị disabled */
+        select:disabled + .select2-container .select2-selection--single {
+            background-color: #e9ecef !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+        }
+
+        select:disabled + .select2-container .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -348,7 +370,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Loại dịch vụ</label>
-                                <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;" required>
+                                <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;" required disabled>
                                     <option value="">-- Chọn loại dịch vụ --</option>
                                     <option value="SPA">Spa</option>
                                     <option value="HOTEL">Khách sạn thú cưng</option>
@@ -433,14 +455,27 @@
     };
 
     $(document).ready(function () {
-        // Khởi tạo Select2
-        $('#detailServiceTypeSelect, #detailServiceNameSelect').select2({
+        // Khởi tạo Select2 cho trường dịch vụ (cho phép clear)
+        $('#detailServiceNameSelect').select2({
             dropdownParent: $('#bookingDetailModal'),
             width: '100%',
             theme: 'bootstrap-5',
-            placeholder: '-- Chọn --',
+            placeholder: '-- Chọn dịch vụ --',
             allowClear: true
         });
+
+        // Khởi tạo Select2 cho trường loại dịch vụ (không cho phép clear và disable)
+        $('#detailServiceTypeSelect').select2({
+            dropdownParent: $('#bookingDetailModal'),
+            width: '100%',
+            theme: 'bootstrap-5',
+            placeholder: '-- Chọn loại dịch vụ --',
+            allowClear: false
+        });
+        
+        // Disable trường và trigger change để áp dụng style
+        $('#detailServiceTypeSelect').prop('disabled', true).trigger('change');
+        $('#detailServiceTypeSelect').next('.select2-container').addClass('select2-container--disabled');
 
         // Khi chọn loại dịch vụ => load dịch vụ từ DB
         $('#detailServiceTypeSelect').on('change', function () {
