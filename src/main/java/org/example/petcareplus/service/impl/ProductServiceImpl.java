@@ -126,6 +126,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
+    @Override
+    public List<Product> getTop3BestSellingProducts() {
+        return productRepository.findTop3ByOrderByUnitSoldDesc();
+    }
+
     public class InsufficientStockException extends Exception {
         public InsufficientStockException(String message) {
             super(message);

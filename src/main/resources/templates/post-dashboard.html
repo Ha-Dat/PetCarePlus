@@ -627,10 +627,6 @@
                                     🔗 Đi tới bài viết
                                 </button>
 
-                                <button type="button" class="dropdown-item" th:onclick="'window.location.href=\'/post-detail/' + ${post.postId} + '\''">
-                                    Đi tới bài viết
-                                </button>
-
                                 <form th:action="@{'/manager/post-dashboard/approve/' + ${post.postId}}" method="post" style="display: contents;">
                                     <button type="submit" class="dropdown-item"
                                             th:disabled="${post.checked}"

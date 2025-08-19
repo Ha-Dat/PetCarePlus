@@ -44,4 +44,6 @@ public interface ProductService {
     int getTotalUnitsSold();
 
     void decreaseProductQuantity(Long productId, int quantity) throws ProductServiceImpl.InsufficientStockException;
+
+    List<Product> getTop3BestSellingProducts();
 }

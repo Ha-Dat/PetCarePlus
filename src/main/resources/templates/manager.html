@@ -468,6 +468,32 @@
             color: #777;
         }
 
+        /* Styles for past schedules */
+        .past-schedule {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+
+        .past-schedule .btn {
+            opacity: 0.8;
+        }
+
+        .past-schedule .btn:hover {
+            opacity: 1;
+        }
+
+        /* Warning text for past schedules */
+        .past-schedule-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .home-btn {
             color: #28a745;
             font-size: 18px;
@@ -1320,6 +1346,16 @@
                  workDate: form.editScheduleWorkDate.value,
                  shift: form.editScheduleShift.value.trim()
              };
+
+             // Validate that the new date is not in the past
+             const selectedDate = new Date(form.editScheduleWorkDate.value);
+             const today = new Date();
+             today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+             
+             if (selectedDate < today) {
+                 showToast("Không thể cập nhật ca làm việc cho ngày trong quá khứ!", "error");
+                 return;
+             }
          }
 
         fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
@@ -1342,7 +1378,19 @@
             } else {
                 return res.text().then(text => {
                     console.log("Error response:", text);
-                    showToast("Cập nhật lịch thất bại! " + text, "error");
+                    let errorMessage = "Cập nhật lịch thất bại!";
+                    
+                    if (text.includes("Cannot change date, account, or shift for past schedules")) {
+                        errorMessage = "Không thể thay đổi ngày, nhân viên hoặc ca làm việc cho lịch trong quá khứ. Chỉ có thể cập nhật trạng thái và ghi chú.";
+                    } else if (text.includes("Cannot create schedule for past dates")) {
+                        errorMessage = "Không thể tạo ca làm việc cho ngày trong quá khứ.";
+                    } else if (text.includes("Cannot delete past schedules")) {
+                        errorMessage = "Không thể xóa ca làm việc trong quá khứ.";
+                    } else {
+                        errorMessage += " " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
                 });
             }
         }).catch(error => {
@@ -1398,7 +1446,15 @@
                 } else {
                     return res.text().then(text => {
                         console.log("Error response:", text);
-                        showToast("Xóa ca làm việc thất bại! Chi tiết: " + text, "error");
+                        let errorMessage = "Xóa ca làm việc thất bại!";
+                        
+                        if (text.includes("Cannot delete past schedules")) {
+                            errorMessage = "Không thể xóa ca làm việc trong quá khứ.";
+                        } else {
+                            errorMessage += " Chi tiết: " + text;
+                        }
+                        
+                        showToast(errorMessage, "error");
                     });
                 }
             }).catch(error => {
@@ -1474,6 +1530,16 @@
             return;
         }
 
+        // Validate that the date is not in the past
+        const selectedDate = new Date(workDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        
+        if (selectedDate < today) {
+            showToast("Không thể tạo ca làm việc cho ngày trong quá khứ!", "error");
+            return;
+        }
+
         const data = {
             accountId: parseInt(accountId),
             workDate: workDate,
@@ -1503,7 +1569,15 @@
             } else {
                 return res.text().then(text => {
                     console.log("Error response:", text);
-                    showToast("Thêm ca làm việc thất bại! Chi tiết: " + text, "error");
+                    let errorMessage = "Thêm ca làm việc thất bại!";
+                    
+                    if (text.includes("Cannot create schedule for past dates")) {
+                        errorMessage = "Không thể tạo ca làm việc cho ngày trong quá khứ.";
+                    } else {
+                        errorMessage += " Chi tiết: " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
                 });
             }
         }).catch(error => {
