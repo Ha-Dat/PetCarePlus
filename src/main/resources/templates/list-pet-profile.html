@@ -403,11 +403,11 @@
         <h1 class="page-title">Danh sách hồ sơ thú cưng</h1>
         <div class="header">
             <div class="filters">
-                <form th:action="@{/list-pet-profile}" method="get" class="search-form">
+                <form th:action="@{/staff/list-pet-profile}" method="get" class="search-form">
                     <input type="text" name="keyword" placeholder="🔍 Tìm theo tên thú cưng..." th:value="${keyword}" class="search-input">
                     <input type="hidden" name="from" th:value="${from}">
                     <button type="submit" class="search-button">Tìm kiếm</button>
-                    <a th:href="@{/list-pet-profile(from=${from})}" class="cancel-button">Hủy</a>
+                    <a th:href="@{/staff/list-pet-profile(from=${from})}" class="cancel-button">Hủy</a>
                 </form>
             </div>
         </div>
