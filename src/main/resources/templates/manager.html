@@ -1136,11 +1136,10 @@
             return;
         }
 
-        // Use shiftName instead of shift since backend only provides shiftName
-        const shiftValue = filteredSchedules[0].shiftName;
+        const shiftValue = filteredSchedules[0].shift;
 
         // Set modal title
-        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${getShiftDisplay(shiftValue)}`;
+        document.getElementById('changeRequestModalTitle').textContent = `Đơn đổi lịch ngày ${date}, ${shiftValue}`;
 
                  // Populate table
          filteredSchedules.forEach(sche => {
@@ -1193,17 +1192,10 @@
             s.workDate === date && s.shiftName === shiftName
         );
 
-        // Check if filteredSchedules is empty or undefined
-        if (!filteredSchedules || filteredSchedules.length === 0) {
-            console.log('No off requests found for date:', date, 'shift:', shiftName);
-            return;
-        }
-
-        // Use shiftName instead of shift since backend only provides shiftName
-        const shiftValue = filteredSchedules[0].shiftName;
+        const shiftValue = filteredSchedules[0].shift;
 
         // Set modal title
-        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${getShiftDisplay(shiftValue)}`;
+        document.getElementById('offRequestModalTitle').textContent = `Đơn xin nghỉ ngày ${date}, ${shiftValue}`;
 
         // Populate table
         filteredSchedules.forEach(sche => {
@@ -1311,28 +1303,46 @@
         document.getElementById('editScheduleModal').style.display = 'none';
     }
 
-         function submitEditSchedule(event) {
-         event.preventDefault();
+             function submitEditSchedule(event) {
+        event.preventDefault();
 
-         const form = document.getElementById('editScheduleForm');
-         const scheduleId = document.getElementById('editScheduleId').value;
+        const form = document.getElementById('editScheduleForm');
+        const scheduleId = document.getElementById('editScheduleId').value;
+        const accountId = parseInt(form.editAccountId.value);
+        const newWorkDate = form.editScheduleWorkDate.value;
+        const newShift = form.editScheduleShift.value.trim();
 
-         // Check if the schedule is in the past
-         const workDate = form.editScheduleWorkDate.value;
-         const scheduleDate = new Date(workDate);
-         const today = new Date();
-         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
-         const isPast = scheduleDate < today;
+        // Check if the schedule is in the past
+        const workDate = form.editScheduleWorkDate.value;
+        const scheduleDate = new Date(workDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        const isPast = scheduleDate < today;
 
-         // Additional validation: prevent updating to past date for non-past schedules
-         if (!isPast) {
-             const newWorkDate = form.editScheduleWorkDate.value;
-             const newScheduleDate = new Date(newWorkDate);
-             if (newScheduleDate < today) {
-                 showToast("Không thể chỉnh sửa ca làm việc thành ngày trong quá khứ!", "error");
-                 return;
-             }
-         }
+        // Additional validation: prevent updating to past date for non-past schedules
+        if (!isPast) {
+            const newScheduleDate = new Date(newWorkDate);
+            if (newScheduleDate < today) {
+                showToast("Không thể chỉnh sửa ca làm việc thành ngày trong quá khứ!", "error");
+                return;
+            }
+        }
+
+        // Check for duplicate schedule for the same employee, date, and shift (excluding current schedule)
+        const hasDuplicate = schedules.some(schedule => {
+            const scheduleIdInt = parseInt(scheduleId);
+            const scheduleAccountId = parseInt(schedule.accountId);
+            
+            return schedule.scheduleId !== scheduleIdInt && // Exclude current schedule
+                   scheduleAccountId === accountId && 
+                   schedule.workDate === newWorkDate && 
+                   schedule.shiftName === newShift;
+        });
+
+        if (hasDuplicate) {
+            showToast("Nhân viên đã có lịch làm việc trong ca này rồi!", "error");
+            return;
+        }
 
          let data;
 
