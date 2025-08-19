@@ -1006,22 +1006,39 @@
           document.getElementById("ChangeRequestModal").style.display = 'flex';
      }
 
-         function submitChangeRequest(event) {
-         event.preventDefault();
+             function submitChangeRequest(event) {
+        event.preventDefault();
 
-         const form = document.getElementById('ChangeRequestForm');
-         const requestId = document.getElementById('ChangeRequestRequestId').value;
+        const form = document.getElementById('ChangeRequestForm');
+        const requestId = document.getElementById('ChangeRequestRequestId').value;
+        const accountId = document.getElementById('ChangeRequestAccountId').value;
 
-         // Validate that the requested date is not in the past
-         const requestedDate = form.ChangeRequestWorkDate.value;
-         const today = new Date();
-         today.setHours(0, 0, 0, 0); // Set to start of today
-         const requestedDateObj = new Date(requestedDate);
+        // Validate that the requested date is not in the past
+        const requestedDate = form.ChangeRequestWorkDate.value;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to start of today
+        const requestedDateObj = new Date(requestedDate);
 
-         if (requestedDateObj < today) {
-             showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
-             return;
-         }
+        if (requestedDateObj < today) {
+            showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
+            return;
+        }
+
+        // Check for duplicate schedule on the requested date and shift
+        const requestedShift = form.ChangeRequestShift.value.trim();
+        
+        const hasDuplicate = schedules.some(schedule => {
+            // Check if there's any schedule (not just the current user's) on the requested date and shift
+            return schedule.workDate === requestedDate && 
+                schedule.shiftName === requestedShift;
+        });
+
+        if (hasDuplicate) {
+            showToast("Bạn đã có lịch làm việc trong ca này rồi! Không thể tạo đơn đổi lịch.", "error");
+            return;
+        }
+
+
 
          if(requestId) {
              const data = {
@@ -1031,22 +1048,22 @@
                  requestedShift: form.ChangeRequestShift.value.trim()
              };
 
-            fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(res => {
-                if (res.ok) {
-                    closeChangeRequestModal();
-                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
-                }
-            }).catch(error => {
-                console.error("Lỗi cập nhật:", error);
-                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
-            });
+                         fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(data)
+             }).then(res => {
+                 if (res.ok) {
+                     closeChangeRequestModal();
+                     showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                     setTimeout(() => window.location.reload(), 1000);
+                 } else {
+                     showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                 }
+             }).catch(error => {
+                 console.error("Lỗi cập nhật:", error);
+                 showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+             });
         }
         else {
             const data = {
@@ -1055,22 +1072,22 @@
                 requestedDate: form.ChangeRequestWorkDate.value,
                 requestedShift: form.ChangeRequestShift.value.trim()
             };
-            fetch(`/staff/work-schedule/create-change-request`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(res => {
-                if (res.ok) {
-                    closeChangeRequestModal();
-                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
-                }
-            }).catch(error => {
-                console.error("Lỗi cập nhật:", error);
-                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
-            });
+                         fetch(`/staff/work-schedule/create-change-request`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(data)
+             }).then(res => {
+                 if (res.ok) {
+                     closeChangeRequestModal();
+                     showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                     setTimeout(() => window.location.reload(), 1000);
+                 } else {
+                     showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                 }
+             }).catch(error => {
+                 console.error("Lỗi cập nhật:", error);
+                 showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+             });
         }
 
     }
