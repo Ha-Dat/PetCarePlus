@@ -283,17 +283,23 @@ public class ForumServiceImpl implements ForumService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         PostRating checkPostRating = postRatingRepository.findByAccount_AccountIdAndPost_PostId(accountId, postId).orElse(null);
-        if (checkPostRating != null) {
+        if (checkPostRating != null && checkPostRating.getRating().equals(rating)) {
             postRatingRepository.delete(checkPostRating);
-            if (checkPostRating.getRating().equals(rating)){
-                postRatingRepository.delete(checkPostRating);
-            }
         } else {
-        PostRating postRating = new PostRating();
-        postRating.setPost(post);
-        postRating.setAccount(account);
-        postRating.setRating(rating);
-        postRatingRepository.save(postRating);
+            if (checkPostRating != null && !checkPostRating.getRating().equals(rating)) {
+                postRatingRepository.delete(checkPostRating);
+                PostRating postRating = new PostRating();
+                postRating.setPost(post);
+                postRating.setAccount(account);
+                postRating.setRating(rating);
+                postRatingRepository.save(postRating);
+            } else {
+                PostRating postRating = new PostRating();
+                postRating.setPost(post);
+                postRating.setAccount(account);
+                postRating.setRating(rating);
+                postRatingRepository.save(postRating);
+            }
         }
     }
 
