@@ -47,6 +47,11 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findByNameContainingIgnoreCase(String keyword) {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
+    
+    @Override
+    public List<Product> findByNameOrCategoryContainingIgnoreCase(String keyword) {
+        return productRepository.findByNameOrCategoryContainingIgnoreCase(keyword);
+    }
 
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);

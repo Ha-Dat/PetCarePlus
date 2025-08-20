@@ -18,6 +18,8 @@ public interface ProductService {
     Page<Product> searchProducts(String keyword, String categoryName, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
     List<Product> findByNameContainingIgnoreCase(String keyword);
+    
+    List<Product> findByNameOrCategoryContainingIgnoreCase(String keyword);
 
     Optional<Product> getProductById(Long id);
 

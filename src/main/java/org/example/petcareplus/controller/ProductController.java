@@ -14,6 +14,7 @@ import org.example.petcareplus.service.ProductService;
 import org.example.petcareplus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -50,7 +51,7 @@ public class ProductController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer priceRange,
-            @RequestParam(required = false) String searchkeyword,
+            @RequestParam(required = false) String searchKeyword,
             Model model) {
 
         if (page < 0) page = 0;
@@ -66,20 +67,68 @@ public class ProductController {
             }
         }
 
-        Page<Product> productPage = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+        // Xử lý search kết hợp với filter
+        Page<Product> productPage;
+        
+        // Tạo final variables để sử dụng trong lambda
+        final String finalCategory = category;
+        final BigDecimal finalMinPrice = minPrice;
+        final BigDecimal finalMaxPrice = maxPrice;
+        
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            // Nếu có search keyword, tìm theo tên và category, sau đó lọc thông minh
+            List<Product> searchResults = productService.findByNameOrCategoryContainingIgnoreCase(searchKeyword.trim())
+                    .stream()
+                    .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
+                    .filter(product -> {
+                        // Lọc thông minh: nếu search "chó" thì chỉ hiển thị sản phẩm cho chó
+                        String searchTerm = searchKeyword.trim().toLowerCase();
+                        String productName = product.getName().toLowerCase();
+                        String categoryName = product.getCategory().getName().toLowerCase();
+                        
+                        // Nếu keyword là "chó" thì chỉ hiển thị sản phẩm có "chó" trong tên hoặc category
+                        if (searchTerm.equals("chó")) {
+                            return productName.contains("chó") || categoryName.contains("chó");
+                        }
+                        // Nếu keyword là "mèo" thì chỉ hiển thị sản phẩm có "mèo" trong tên hoặc category
+                        else if (searchTerm.equals("mèo")) {
+                            return productName.contains("mèo") || categoryName.contains("mèo");
+                        }
+                        // Với các keyword khác, tìm kiếm bình thường
+                        else {
+                            return productName.contains(searchTerm) || categoryName.contains(searchTerm);
+                        }
+                    })
+                    .toList();
+            
+            // Áp dụng filter category và giá cho kết quả search
+            List<Product> filteredResults = searchResults.stream()
+                    .filter(product -> finalCategory == null || product.getCategory().getName().equals(finalCategory))
+                    .filter(product -> {
+                        if (finalMinPrice == null && finalMaxPrice == null) return true;
+                        if (finalMinPrice != null && product.getPrice().compareTo(finalMinPrice) < 0) return false;
+                        if (finalMaxPrice != null && product.getPrice().compareTo(finalMaxPrice) > 0) return false;
+                        return true;
+                    })
+                    .toList();
+            
+            // Tạo Page object cho pagination
+            int start = page * 12;
+            int end = Math.min(start + 12, filteredResults.size());
+            List<Product> pagedResults = start < filteredResults.size() ? 
+                filteredResults.subList(start, end) : new ArrayList<>();
+            
+            // Tạo Page object
+            productPage = new PageImpl<>(pagedResults, PageRequest.of(page, 12), filteredResults.size());
+        } else {
+            // Nếu không có search keyword, sử dụng filter bình thường
+            productPage = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+        }
         
         // Lọc bỏ sản phẩm không hoạt động
         List<Product> activeProducts = productPage.getContent().stream()
                 .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
                 .toList();
-        
-        List<Product> resultSearch = new ArrayList<>();
-        if (searchkeyword != null && !searchkeyword.trim().isEmpty()) {
-            resultSearch = productService.findByNameContainingIgnoreCase(searchkeyword.trim())
-                    .stream()
-                    .filter(product -> product.getStatus() != ProductStatus.INACTIVE)
-                    .toList();
-        }
 
         model.addAttribute("products", activeProducts);
         model.addAttribute("currentPage", page);
@@ -88,8 +137,7 @@ public class ProductController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedCategory", category);
         model.addAttribute("priceRange", priceRange);
-        model.addAttribute("searchkeyword", searchkeyword);
-        model.addAttribute("result_product", resultSearch);
+        model.addAttribute("searchkeyword", searchKeyword);
 
         // Thêm top 3 sản phẩm bán chạy nhất
         List<Product> top3BestSellingProducts = productService.getTop3BestSellingProducts()
@@ -111,15 +159,7 @@ public class ProductController {
             productFeedbackCounts.put(product.getProductId(), feedbackCount);
         }
         
-        // Lấy rating cho result search products
-        for (Product product : resultSearch) {
-            if (!productRatings.containsKey(product.getProductId())) {
-                Double avgRating = productFeedbackService.getAverageRatingByProductId(product.getProductId());
-                long feedbackCount = productFeedbackService.getFeedbackCountByProductId(product.getProductId());
-                productRatings.put(product.getProductId(), avgRating != null ? avgRating : 0.0);
-                productFeedbackCounts.put(product.getProductId(), feedbackCount);
-            }
-        }
+
         
         // Lấy rating cho top 3 best selling products
         for (Product product : top3BestSellingProducts) {

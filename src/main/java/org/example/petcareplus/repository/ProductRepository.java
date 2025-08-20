@@ -16,6 +16,11 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findTop5ByOrderByCreatedDateDesc();
     List<Product> findByNameContainingIgnoreCase(String keyword);
+    
+    @Query("SELECT p FROM Product p WHERE " +
+           "LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(p.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Product> findByNameOrCategoryContainingIgnoreCase(@Param("keyword") String keyword);
     List<Product> findTop9ByOrderByProductIdAsc();
 
     @Query("SELECT p FROM Product p " +

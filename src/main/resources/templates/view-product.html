@@ -516,7 +516,7 @@
                     </div>
                     <div class="product-details">
                         <h3 th:text="${product.name}" class="product-name"></h3>
-                        <div class="product-status" th:class="${'product-status ' + (product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.status.value}"></div>
+                        <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
                         <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
                         <div class="unit-sold" th:text="'Đã bán: ' + ${product.unitSold} + ' sản phẩm'" style="color: #666; font-size: 12px; margin: 5px 0;"></div>
                     </div>
@@ -538,14 +538,12 @@
         <div class="sidebar-container">
             <form method="get" th:action="@{/view-product}">
                 <aside class="sidebar">
-                    <h4>Danh mục sản phẩm</h4>
-                    <ul class="checkbox-list">
-                        <li th:each="kw : ${ {'Chó','Mèo','Chim','Cá','Bò sát'} }">
-                            <input type="checkbox" name="keyword" th:value="${kw}"
-                                   th:checked="${param.keyword != null and #arrays.contains(param.keyword, kw)}">
-                            <label th:text="${kw}"></label>
-                        </li>
-                    </ul>
+                    <h4>Tìm kiếm sản phẩm</h4>
+                    <div style="margin-bottom: 18px;">
+                        <input type="text" name="searchKeyword" placeholder="Nhập tên sản phẩm..." 
+                               th:value="${param.searchKeyword != null ? param.searchKeyword[0] : ''}"
+                               style="width: 90%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                    </div>
 
                     <h4>Loại</h4>
                     <ul class="checkbox-list">
@@ -576,49 +574,111 @@
         </div>
 
         <div class="product-grid-container">
-            <div class="search">
-                <h2 th:if="${searchkeyword != null}">Kết quả tìm kiếm cho: "<span th:text="${searchkeyword}"></span>"</h2>
+            <div class="search" th:if="${searchkeyword != null}">
+                <h2>Kết quả tìm kiếm cho: "<span th:text="${searchkeyword}"></span>"</h2>
                 <div class="search-result">
-                    <div th:if="${searchkeyword != null and result_product != null and #lists.isEmpty(result_product)}">
+                    <div th:if="${#lists.isEmpty(products)}">
                         <p>Không tìm thấy sản phẩm nào.</p>
                     </div>
-                    <div class="product-result" th:if="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
-                        <div class="product-item" th:each="result_product : ${result_product}"
-                             th:attr="data-product-id=${result_product.productId}, data-rating=${productRatings.get(result_product.productId)}, data-feedback-count=${productFeedbackCounts.get(result_product.productId)}">
-                            <a th:href="@{/product-detail(productId=${result_product.productId})}" class="product-card">
+                    <div class="product-result" th:if="${not #lists.isEmpty(products)}">
+                        <div class="product-item" th:each="product : ${products}"
+                             th:attr="data-product-id=${product.productId}, data-rating=${productRatings.get(product.productId)}, data-feedback-count=${productFeedbackCounts.get(product.productId)}">
+                            <a th:href="@{/product-detail(productId=${product.productId})}" class="product-card">
                                 <div class="product-image-wrapper">
-                                    <img th:if="${!#lists.isEmpty(result_product.medias)}"
-                                         th:src="@{${result_product.medias[0].url}}"
+                                    <img th:if="${!#lists.isEmpty(product.medias)}"
+                                         th:src="@{${product.medias[0].url}}"
                                          alt="Product Image">
 
                                     <!-- fallback nếu không có ảnh -->
-                                    <img th:if="${#lists.isEmpty(result_product.medias)}"
+                                    <img th:if="${#lists.isEmpty(product.medias)}"
                                          src="https://vietbox.vn/wp-content/uploads/2019/08/sp_5_thungcarton.png"
                                          alt="No Image">
                                 </div>
-                                                                 <div class="product-details">
-                                     <h3 th:text="${result_product.name}" class="product-name"></h3>
-                                                                          <div class="product-status" th:class="${'product-status ' + (result_product.status.name() == 'IN_STOCK' ? 'status-in-stock' : (result_product.status.name() == 'OUT_OF_STOCK' ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${result_product.status.value}"></div>
-                                     <div class="unit-in-stock" th:attr="data-unit-in-stock=${result_product.unitInStock}" style="display: none;"></div>
-                                 </div>
+                                <div class="product-details">
+                                    <h3 th:text="${product.name}" class="product-name"></h3>
+                                    <div class="product-status" th:class="${'product-status ' + (product.unitInStock > 0 ? 'status-in-stock' : (product.unitInStock == 0 ? 'status-out-of-stock' : 'status-inactive'))}" th:text="${product.unitInStock > 0 ? 'Còn Hàng' : 'Hết Hàng'}"></div>
+                                    <div class="unit-in-stock" th:attr="data-unit-in-stock=${product.unitInStock}" style="display: none;"></div>
+                                </div>
                                 <div class="stars"></div>
                                 <div class="price"
-                                     th:text="${#numbers.formatDecimal(result_product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                                     th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
                             </a>
                             <form th:action="@{add-to-cart}" method="post">
-                                <input type="hidden" name="productId" th:value="${result_product.productId}"/>
+                                <input type="hidden" name="productId" th:value="${product.productId}"/>
                                 <input type="hidden" name="quantity" value="1"/>
                                 <button type="button"
                                         class="add-to-cart js-add-to-cart"
-                                        th:attr="data-product-id=${result_product.productId}">Thêm vào giỏ hàng</button>
+                                        th:attr="data-product-id=${product.productId}">Thêm vào giỏ hàng</button>
                             </form>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Pagination cho search -->
+                <div class="pagination" th:if="${searchkeyword != null}">
+                    <ul>
+                        <!-- Nút "Trước" -->
+                        <li th:if="${currentPage > 0}">
+                            <!-- Chỉ search keyword -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, searchKeyword=${searchkeyword})}">« Trước</a>
 
+                            <!-- search keyword + category -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, searchKeyword=${searchkeyword}, category=${selectedCategory})}">« Trước</a>
+
+                            <!-- search keyword + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, searchKeyword=${searchkeyword}, priceRange=${priceRange})}">« Trước</a>
+
+                            <!-- search keyword + category + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage - 1}, searchKeyword=${searchkeyword}, category=${selectedCategory}, priceRange=${priceRange})}">« Trước</a>
+                        </li>
+
+                        <!-- Các số trang -->
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <!-- Chỉ search keyword -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${i}, searchKeyword=${searchkeyword})}" th:text="${i + 1}"></a>
+
+                            <!-- search keyword + category -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${i}, searchKeyword=${searchkeyword}, category=${selectedCategory})}" th:text="${i + 1}"></a>
+
+                            <!-- search keyword + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, searchKeyword=${searchkeyword}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
+
+                            <!-- search keyword + category + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${i}, searchKeyword=${searchkeyword}, category=${selectedCategory}, priceRange=${priceRange})}" th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- Nút "Tiếp" -->
+                        <li th:if="${currentPage < totalPages - 1}">
+                            <!-- Chỉ search keyword -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, searchKeyword=${searchkeyword})}">Tiếp »</a>
+
+                            <!-- search keyword + category -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange == null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, searchKeyword=${searchkeyword}, category=${selectedCategory})}">Tiếp »</a>
+
+                            <!-- search keyword + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory == null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, searchKeyword=${searchkeyword}, priceRange=${priceRange})}">Tiếp »</a>
+
+                            <!-- search keyword + category + priceRange -->
+                            <a th:if="${searchkeyword != null and selectedCategory != null and priceRange != null}"
+                               th:href="@{/view-product(page=${currentPage + 1}, searchKeyword=${searchkeyword}, category=${selectedCategory}, priceRange=${priceRange})}">Tiếp »</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            <section th:unless="${searchkeyword != null and result_product != null and not #lists.isEmpty(result_product)}">
+            <section th:unless="${searchkeyword != null}">
                 <h2 style="display: flow; margin: 30px;">Tất cả sản phẩm</h2>
                 <div class="product-grid-item">
                     <div class="product-item" th:each="product : ${products}"
