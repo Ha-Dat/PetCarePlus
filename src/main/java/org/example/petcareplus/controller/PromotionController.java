@@ -160,7 +160,7 @@ public class PromotionController {
         promotion.setStatus(status);
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            String url = saveFileToS3(imageFile, "upload/promotions/");
+            String url = saveFileToS3(imageFile, "uploads/promotions/");
             Media media = new Media();
             media.setMediaCategory(MediaCategory.PROMOTION_IMAGE);
             media.setUrl(url);
