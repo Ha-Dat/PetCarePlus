@@ -215,6 +215,6 @@ class MyServiceControllerCancelBookingTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertNotNull(body);
-        assertNotEquals("Không thể hủy lịch này.", body.get("message"));
+        assertEquals("Không thể hủy lịch này.", body.get("message"));
     }
 }

@@ -38,6 +38,8 @@ public interface OrderService {
 
     BigDecimal getTotalRevenue();
 
+    BigDecimal getTotalRevenueByFilters(String orderId, String status, LocalDate startDate, LocalDate endDate);
+
     Page<Order> findByAccount_AccountId(Long accountId, Pageable pageable);
 
     Page<Order> findByAccount_AccountIdAndStatus(Long accountId, OrderStatus status, Pageable pageable);

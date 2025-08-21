@@ -46,17 +46,14 @@ public class OrderDashboardController {
 
         Page<OrderDTO> orderPage = orderService.filterOrders(orderId, status, startDate, endDate, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate")));
 
-        // Tính toán thống kê
+        // Tính toán thống kê cho trang hiện tại
         List<OrderDTO> orders = orderPage.getContent();
         long totalOrders = orders.size();
         long completedOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.COMPLETED).count();
         long pendingOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.PENDING).count();
 
-        BigDecimal totalRevenue = orders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.COMPLETED) // lọc đơn hoàn thành
-                .map(OrderDTO::getTotalPrice)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Tính tổng doanh thu từ tất cả đơn hàng đã hoàn thành (không phân trang)
+        BigDecimal totalRevenue = orderService.getTotalRevenueByFilters(orderId, status, startDate, endDate);
 
         model.addAttribute("orders", orders);
         model.addAttribute("currentPage", page);

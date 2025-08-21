@@ -162,7 +162,7 @@ class OrderControllerCancelOrderTest {
 
 		String view = controller.cancelOrder(1L, noUserSession, redirectAttrs);
 
-		assertNotEquals("redirect:/login", view);
+		assertEquals("redirect:/login", view);
 		assertTrue(redirectAttrs.getFlashAttributes().containsKey("error"));
 		// save may or may not be called depending on where exception occurs, ensure no unexpected exceptions
 	}

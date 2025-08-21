@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -160,6 +161,51 @@ public class OrderServiceImpl implements OrderService {
     public BigDecimal getTotalRevenue() {
         BigDecimal revenue = orderRepository.getTotalRevenue();
         return revenue != null ? revenue : BigDecimal.ZERO;
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByFilters(String orderId, String status, LocalDate startDate, LocalDate endDate) {
+        List<Order> filteredOrders = orderRepository.findAll((root, query, cb) -> {
+            var predicates = cb.conjunction();
+
+            if (orderId != null && !orderId.isBlank()) {
+                try {
+                    Long parsedId = Long.parseLong(orderId);
+                    predicates = cb.and(predicates, cb.equal(root.get("orderId"), parsedId));
+                } catch (NumberFormatException ignored) {
+                    // Invalid orderId format, ignore this filter
+                }
+            }
+
+            if (status != null && !status.isBlank()) {
+                try {
+                    OrderStatus orderStatus = OrderStatus.valueOf(status);
+                    predicates = cb.and(predicates, cb.equal(root.get("status"), orderStatus));
+                } catch (IllegalArgumentException ignored) {
+                    // Invalid status value, ignore this filter
+                }
+            }
+
+            if (startDate != null) {
+                predicates = cb.and(predicates,
+                        cb.greaterThanOrEqualTo(root.get("orderDate"), startDate.atStartOfDay()));
+            }
+
+            if (endDate != null) {
+                predicates = cb.and(predicates,
+                        cb.lessThanOrEqualTo(root.get("orderDate"), endDate.atTime(23, 59, 59)));
+            }
+
+            // Chỉ tính doanh thu từ đơn hàng đã hoàn thành
+            predicates = cb.and(predicates, cb.equal(root.get("status"), OrderStatus.COMPLETED));
+
+            return predicates;
+        });
+
+        return filteredOrders.stream()
+                .map(Order::getTotalPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
