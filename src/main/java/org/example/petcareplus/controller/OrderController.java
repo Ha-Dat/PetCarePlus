@@ -7,6 +7,7 @@ import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.OrderService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,13 +26,14 @@ import java.util.List;
 @Controller
 public class OrderController {
     private final OrderService orderService;
-
     private final CategoryService categoryService;
+    private final ProductService productService;
 
     @Autowired
-    public OrderController(final OrderService orderService, CategoryService categoryService) {
+    public OrderController(final OrderService orderService, CategoryService categoryService, ProductService productService) {
         this.orderService = orderService;
         this.categoryService = categoryService;
+        this.productService = productService;
     }
 
     @GetMapping("/list-order")
@@ -108,6 +110,14 @@ public class OrderController {
             if (order.getStatus() != OrderStatus.PENDING) {
                 redirectAttributes.addFlashAttribute("error", "Chỉ có thể hủy đơn hàng ở trạng thái Chờ duyệt");
                 return "redirect:/list-order";
+            }
+
+            // Khôi phục số lượng sản phẩm trong kho
+            for (var orderItem : order.getOrderItems()) {
+                productService.increaseProductQuantity(
+                    orderItem.getProduct().getProductId(), 
+                    orderItem.getQuantity()
+                );
             }
 
             // Cập nhật trạng thái đơn hàng

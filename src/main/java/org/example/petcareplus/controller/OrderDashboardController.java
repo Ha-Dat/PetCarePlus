@@ -6,6 +6,7 @@ import org.example.petcareplus.entity.Payment;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.repository.PaymentRepository;
 import org.example.petcareplus.service.OrderService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,10 +26,12 @@ public class OrderDashboardController {
 
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
+    private final ProductService productService;
 
-    public OrderDashboardController(OrderService orderService, PaymentRepository paymentRepository) {
+    public OrderDashboardController(OrderService orderService, PaymentRepository paymentRepository, ProductService productService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
+        this.productService = productService;
     }
 
     @GetMapping("/seller/order-dashboard")
@@ -86,6 +89,15 @@ public class OrderDashboardController {
     @GetMapping("/seller/orders/reject/{id}")
     public String rejectOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
+        
+        // Khôi phục số lượng sản phẩm trong kho
+        for (var orderItem : order.getOrderItems()) {
+            productService.increaseProductQuantity(
+                orderItem.getProduct().getProductId(), 
+                orderItem.getQuantity()
+            );
+        }
+        
         order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
         return "redirect:/seller/order-dashboard";
@@ -104,6 +116,17 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         try {
             OrderStatus orderStatus = OrderStatus.valueOf(status);
+            
+            // Khôi phục số lượng sản phẩm nếu đơn hàng bị hủy hoặc từ chối
+            if (orderStatus == OrderStatus.CANCELLED || orderStatus == OrderStatus.REJECTED || orderStatus == OrderStatus.DELIVERY_FAILED) {
+                for (var orderItem : order.getOrderItems()) {
+                    productService.increaseProductQuantity(
+                        orderItem.getProduct().getProductId(), 
+                        orderItem.getQuantity()
+                    );
+                }
+            }
+            
             order.setStatus(orderStatus);
             orderService.save(order);
         } catch (IllegalArgumentException e) {

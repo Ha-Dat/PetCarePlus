@@ -132,6 +132,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void increaseProductQuantity(Long productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        product.setUnitInStock(product.getUnitInStock() + quantity);
+        productRepository.save(product);
+    }
+
+    @Override
     public List<Product> getTop3BestSellingProducts() {
         return productRepository.findTop3ByOrderByUnitSoldDesc();
     }

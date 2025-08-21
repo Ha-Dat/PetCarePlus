@@ -330,6 +330,7 @@
                 <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Đã hủy</option>
                 <option value="REJECTED" th:selected="${status == 'REJECTED'}">Từ chối</option>
                 <option value="APPROVED" th:selected="${status == 'APPROVED'}">Duyệt</option>
+                <option value="DELIVERY_FAILED" th:selected="${status == 'DELIVERY_FAILED'}">Giao hàng thất bại</option>
             </select>
             <button type="submit" class="btn btn-primary">Lọc</button>
         </form>

@@ -211,6 +211,8 @@
                 onclick="filterOrders('DELIVERING')">Đang giao</button>
         <button class="tab ${currentStatus == 'COMPLETED' ? 'active' : ''}"
                 onclick="filterOrders('COMPLETED')">Hoàn thành</button>
+        <button class="tab ${currentStatus == 'DELIVERY_FAILED' ? 'active' : ''}"
+                onclick="filterOrders('DELIVERY_FAILED')">Giao Hàng Thất bại</button>
         <button class="tab ${currentStatus == 'CANCELLED' ? 'active' : ''}"
                 onclick="filterOrders('CANCELLED')">Đã Hủy</button>
       </div>
