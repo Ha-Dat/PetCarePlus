@@ -113,11 +113,13 @@ public class OrderController {
             }
 
             // Khôi phục số lượng sản phẩm trong kho
-            for (var orderItem : order.getOrderItems()) {
-                productService.increaseProductQuantity(
-                    orderItem.getProduct().getProductId(), 
-                    orderItem.getQuantity()
-                );
+            if (order.getOrderItems() != null) {
+                for (var orderItem : order.getOrderItems()) {
+                    productService.increaseProductQuantity(
+                        orderItem.getProduct().getProductId(), 
+                        orderItem.getQuantity()
+                    );
+                }
             }
 
             // Cập nhật trạng thái đơn hàng

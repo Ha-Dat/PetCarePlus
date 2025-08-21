@@ -4,6 +4,8 @@ import org.example.petcareplus.entity.Order;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.OrderService;
 import org.example.petcareplus.service.PaymentService;
+
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,6 +68,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -87,6 +90,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -126,6 +130,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -165,6 +170,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -204,6 +210,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -243,6 +250,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act
@@ -282,6 +290,7 @@ class OrderDashboardControllerUpdateOrderStatusTest {
         Order order = new Order();
         order.setOrderId(orderId);
         order.setStatus(OrderStatus.PENDING);
+        order.setOrderItems(new ArrayList<>()); // Initialize empty list to avoid NPE
         when(orderService.get(orderId)).thenReturn(order);
 
         // Act

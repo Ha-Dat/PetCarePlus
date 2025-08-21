@@ -91,11 +91,13 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         
         // Khôi phục số lượng sản phẩm trong kho
-        for (var orderItem : order.getOrderItems()) {
-            productService.increaseProductQuantity(
-                orderItem.getProduct().getProductId(), 
-                orderItem.getQuantity()
-            );
+        if (order.getOrderItems() != null) {
+            for (var orderItem : order.getOrderItems()) {
+                productService.increaseProductQuantity(
+                    orderItem.getProduct().getProductId(), 
+                    orderItem.getQuantity()
+                );
+            }
         }
         
         order.setStatus(OrderStatus.REJECTED);
@@ -119,11 +121,13 @@ public class OrderDashboardController {
             
             // Khôi phục số lượng sản phẩm nếu đơn hàng bị hủy hoặc từ chối
             if (orderStatus == OrderStatus.CANCELLED || orderStatus == OrderStatus.REJECTED || orderStatus == OrderStatus.DELIVERY_FAILED) {
-                for (var orderItem : order.getOrderItems()) {
-                    productService.increaseProductQuantity(
-                        orderItem.getProduct().getProductId(), 
-                        orderItem.getQuantity()
-                    );
+                if (order.getOrderItems() != null) {
+                    for (var orderItem : order.getOrderItems()) {
+                        productService.increaseProductQuantity(
+                            orderItem.getProduct().getProductId(), 
+                            orderItem.getQuantity()
+                        );
+                    }
                 }
             }
             
