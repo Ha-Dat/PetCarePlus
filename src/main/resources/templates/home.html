@@ -462,6 +462,12 @@
 </head>
 <body>
 <div th:insert="component/header :: header"></div>
+
+<!-- Error Message Display -->
+<div th:if="${errorMessage}" class="alert alert-danger" style="margin: 20px; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24;">
+    <span th:text="${errorMessage}"></span>
+</div>
+
 <main>
     <section class="main-section">
         <a href="home">Trang chủ</a>

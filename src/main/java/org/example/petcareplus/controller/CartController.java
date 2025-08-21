@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Product;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -35,6 +37,11 @@ public class CartController {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return ResponseEntity.status(401).body("Bạn cần đăng nhập để mua hàng");
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được mua hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(403).body("Chỉ khách hàng mới được phép mua hàng");
         }
 
         // Kiểm tra sản phẩm có tồn tại không
@@ -77,6 +84,11 @@ public class CartController {
             return ResponseEntity.status(401).body("Bạn cần đăng nhập");
         }
 
+        // Kiểm tra role - chỉ CUSTOMER mới được thêm vào giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(403).body("Chỉ khách hàng mới được phép thêm vào giỏ hàng");
+        }
+
         // Kiểm tra sản phẩm có tồn tại không
         Optional<Product> productOpt = productService.getProductById(productId);
         if (productOpt.isEmpty()) {
@@ -107,10 +119,16 @@ public class CartController {
     }
 
     @GetMapping("/view-cart")
-    public String viewCart(HttpSession session, Model model) {
+    public String viewCart(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xem giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép xem giỏ hàng.");
+            return "redirect:/home";
         }
 
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
@@ -139,6 +157,20 @@ public class CartController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateCart(@RequestBody Map<String, Object> payload,
                                                           HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Bạn cần đăng nhập");
+            return ResponseEntity.status(401).body(errorResponse);
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được cập nhật giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Chỉ khách hàng mới được phép cập nhật giỏ hàng");
+            return ResponseEntity.status(403).body(errorResponse);
+        }
+
         Long productId = ((Number) payload.get("productId")).longValue();
         Integer quantity = (Integer) payload.get("quantity");
 
@@ -186,6 +218,16 @@ public class CartController {
     @ResponseBody
     public ResponseEntity<?> removeFromCart(@RequestParam("productId") Long productId,
                                             HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập");
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xóa khỏi giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(403).body("Chỉ khách hàng mới được phép xóa khỏi giỏ hàng");
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         if (cart != null) {
             cart.remove(productId);
@@ -197,6 +239,16 @@ public class CartController {
     @PostMapping("/clear-cart")
     @ResponseBody
     public ResponseEntity<?> clearCart(HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập");
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xóa giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(403).body("Chỉ khách hàng mới được phép xóa giỏ hàng");
+        }
+
         session.removeAttribute("cart");
         return ResponseEntity.ok().build();
     }
@@ -204,6 +256,20 @@ public class CartController {
     @GetMapping("/cart-total")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getCartTotal(HttpSession session) {
+        Account account = (Account) session.getAttribute("loggedInUser");
+        if (account == null) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Bạn cần đăng nhập");
+            return ResponseEntity.status(401).body(errorResponse);
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xem tổng giỏ hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Chỉ khách hàng mới được phép xem tổng giỏ hàng");
+            return ResponseEntity.status(403).body(errorResponse);
+        }
+
         Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
         BigDecimal total = BigDecimal.ZERO;
         if (cart != null) {

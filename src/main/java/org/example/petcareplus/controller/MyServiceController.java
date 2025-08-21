@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.BookingService;
 import org.example.petcareplus.service.PrescriptionService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -33,9 +35,15 @@ public class MyServiceController {
     }
 
     @GetMapping
-    public String viewMyService(Model model, HttpSession session) {
+    public String viewMyService(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) return "redirect:/login";
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xem lịch dịch vụ của mình
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép xem lịch dịch vụ.");
+            return "redirect:/home";
+        }
 
         List<MyServiceDTO> myServices = bookingService.getMyServices(account.getProfile().getProfileId());
         model.addAttribute("myServices", myServices);
@@ -52,6 +60,12 @@ public class MyServiceController {
         if (account == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Vui lòng đăng nhập."));
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được hủy lịch
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Chỉ khách hàng mới được phép hủy lịch."));
         }
 
         boolean success = bookingService.cancelBooking(type, id, account.getProfile().getProfileId());
@@ -74,6 +88,12 @@ public class MyServiceController {
                     .body(Map.of("message", "Vui lòng đăng nhập."));
         }
 
+        // Kiểm tra role - chỉ CUSTOMER mới được xem chi tiết lịch
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Chỉ khách hàng mới được phép xem chi tiết lịch."));
+        }
+
         MyServiceDTO detail = bookingService.getBookingDetail(type, id, account.getProfile().getProfileId());
         if (detail != null) {
             return ResponseEntity.ok(detail);
@@ -84,8 +104,20 @@ public class MyServiceController {
 
     @PostMapping("/update")
     @ResponseBody
-    public ResponseEntity<?> updateBooking(@RequestBody MyServiceDTO dto) {
+    public ResponseEntity<?> updateBooking(@RequestBody MyServiceDTO dto, HttpSession session) {
         try {
+            Account account = (Account) session.getAttribute("loggedInUser");
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("message", "Vui lòng đăng nhập."));
+            }
+
+            // Kiểm tra role - chỉ CUSTOMER mới được cập nhật lịch
+            if (account.getRole() != AccountRole.CUSTOMER) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Chỉ khách hàng mới được phép cập nhật lịch."));
+            }
+
             // Kiểm tra booking có tồn tại và status PENDING
             boolean canUpdate = bookingService.isPending(dto.getServiceCategory(), dto.getBookingId());
             if (!canUpdate) {

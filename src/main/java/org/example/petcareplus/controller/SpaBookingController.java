@@ -8,6 +8,7 @@ import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.PetProfileService;
 import org.example.petcareplus.service.ServiceService;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.SpaBookingService;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -119,12 +121,18 @@ public class SpaBookingController {
 
 
     @GetMapping("/spa-booking-form")
-    public String showSpaBookingForm(HttpSession session, Model model) {
+    public String showSpaBookingForm(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         List<Category> parentCategories = categoryService.getParentCategory();
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch spa
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch spa.");
+            return "redirect:/home";
         }
 
         List<PetProfile> petProfiles = petProfileService.findByProfileId(account.getProfile().getProfileId());
@@ -148,11 +156,18 @@ public class SpaBookingController {
             @RequestParam("petAge") Integer petAge,
             @PathVariable("id") Long petProfileId,
             HttpSession session,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         try {
             Account account = (Account) session.getAttribute("loggedInUser");
             if (account == null) return "redirect:/login";
+
+            // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch spa
+            if (account.getRole() != AccountRole.CUSTOMER) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch spa.");
+                return "redirect:/home";
+            }
             PetProfile petProfile = petProfileService.findById(petProfileId);
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);

@@ -6,6 +6,7 @@ import jakarta.validation.ValidationException;
 import org.example.petcareplus.dto.PrescriptionDTO;
 import org.example.petcareplus.dto.ProductDTO;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.repository.AppointmentRepository;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -53,11 +55,17 @@ public class AppointmentController {
     }
 
     @GetMapping("/appointment-booking-form")
-    public String showAppointmentBookingForm(HttpSession session, Model model) {
+    public String showAppointmentBookingForm(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch khám
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch khám.");
+            return "redirect:/home";
         }
 
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -88,11 +96,18 @@ public class AppointmentController {
             @RequestParam("petAge") Integer petAge,
             @PathVariable("id") Long petProfileId,
             HttpSession session,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         try {
             Account account = (Account) session.getAttribute("loggedInUser");
             if (account == null) return "redirect:/login";
+
+            // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch khám
+            if (account.getRole() != AccountRole.CUSTOMER) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch khám.");
+                return "redirect:/home";
+            }
             PetProfile petProfile = petProfileService.findById(petProfileId);
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);

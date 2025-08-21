@@ -2,6 +2,7 @@ package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.ServiceCategory;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.enums.BookingStatus;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -108,11 +110,17 @@ public class HotelBookingController {
     }
 
     @GetMapping("/hotel-booking-form")
-    public String showHotelBookingForm(HttpSession session, Model model) {
+    public String showHotelBookingForm(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch khách sạn
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch khách sạn.");
+            return "redirect:/home";
         }
 
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -138,11 +146,18 @@ public class HotelBookingController {
             @RequestParam("petAge") Integer petAge,
             @PathVariable("id") Long petProfileId,
             HttpSession session,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         try {
             Account account = (Account) session.getAttribute("loggedInUser");
             if (account == null) return "redirect:/login";
+
+            // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch khách sạn
+            if (account.getRole() != AccountRole.CUSTOMER) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt lịch khách sạn.");
+                return "redirect:/home";
+            }
             PetProfile petProfile = petProfileService.findById(petProfileId);
             petProfile.setName(petName);
             petProfile.setSpecies(petSpecies);

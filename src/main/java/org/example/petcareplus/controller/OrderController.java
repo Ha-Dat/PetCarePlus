@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Order;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.OrderService;
@@ -41,11 +42,18 @@ public class OrderController {
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
                             @RequestParam(required = false) String status,
-                            Model model) {
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xem đơn hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép xem đơn hàng.");
+            return "redirect:/home";
         }
 
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -95,6 +103,12 @@ public class OrderController {
         if (account == null) {
             redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thực hiện thao tác này");
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được hủy đơn hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Chỉ khách hàng mới được phép hủy đơn hàng");
+            return "redirect:/home";
         }
 
         try {
