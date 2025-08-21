@@ -498,27 +498,7 @@
             imageUpload.addEventListener("change", function () {
                 const files = this.files;
 
-                if (files.length <= 3) {
-                    imagePlaceholder.style.display = "none";
-                    
-                    // Ẩn nút xóa ảnh cũ và hiển thị nút xóa ảnh mới
-                    if (clearOldImagesBtn) {
-                        clearOldImagesBtn.style.display = "none";
-                    }
-                    clearImagesBtn.style.display = "inline-flex";
-                    
-                    // Thêm ảnh mới vào preview (giữ lại ảnh cũ)
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const img = document.createElement("img");
-                        img.src = URL.createObjectURL(file);
-                        img.style.maxWidth = "200px";
-                        img.style.maxHeight = "200px";
-                        img.style.marginRight = "10px";
-                        img.onload = () => URL.revokeObjectURL(img.src);
-                        imagePreview.appendChild(img);
-                    }
-                } else {
+                if (files.length > 3) {
                     alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
                     this.value = "";
                     clearImagesBtn.style.display = "none";
@@ -534,6 +514,47 @@
                     }
                     return;
                 }
+
+                // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+                const maxSize = 15 * 1024 * 1024; // 15MB
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > maxSize) {
+                        alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+                        this.value = "";
+                        clearImagesBtn.style.display = "none";
+                        
+                        // Hiển thị lại nút xóa ảnh cũ nếu có ảnh cũ
+                        if (hasOldImages && clearOldImagesBtn) {
+                            clearOldImagesBtn.style.display = "inline-flex";
+                        }
+                        
+                        // Hiển thị placeholder nếu không còn ảnh nào
+                        if (imagePreview.children.length === 0) {
+                            imagePlaceholder.style.display = "block";
+                        }
+                        return;
+                    }
+                }
+
+                imagePlaceholder.style.display = "none";
+                
+                // Ẩn nút xóa ảnh cũ và hiển thị nút xóa ảnh mới
+                if (clearOldImagesBtn) {
+                    clearOldImagesBtn.style.display = "none";
+                }
+                clearImagesBtn.style.display = "inline-flex";
+                
+                // Thêm ảnh mới vào preview (giữ lại ảnh cũ)
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = "200px";
+                    img.style.maxHeight = "200px";
+                    img.style.marginRight = "10px";
+                    img.onload = () => URL.revokeObjectURL(img.src);
+                    imagePreview.appendChild(img);
+                }
             });
         }
 
@@ -541,28 +562,7 @@
             videoUpload.addEventListener("change", function () {
                 const files = this.files;
 
-                if (files.length <= 3) {
-                    videoPlaceholder.style.display = "none";
-                    
-                    // Ẩn nút xóa video cũ và hiển thị nút xóa video mới
-                    if (clearOldVideosBtn) {
-                        clearOldVideosBtn.style.display = "none";
-                    }
-                    clearVideosBtn.style.display = "inline-flex";
-                    
-                    // Thêm video mới vào preview (giữ lại video cũ)
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const video = document.createElement("video");
-                        video.src = URL.createObjectURL(file);
-                        video.controls = true;
-                        video.style.maxWidth = "300px";
-                        video.style.maxHeight = "200px";
-                        video.style.marginRight = "10px";
-                        video.onloadeddata = () => URL.revokeObjectURL(video.src);
-                        videoPreview.appendChild(video);
-                    }
-                } else {
+                if (files.length > 3) {
                     alert("Bạn chỉ có thể đăng tối đa 3 video.");
                     this.value = "";
                     clearVideosBtn.style.display = "none";
@@ -577,6 +577,48 @@
                         videoPlaceholder.style.display = "block";
                     }
                     return;
+                }
+
+                // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+                const maxSize = 15 * 1024 * 1024; // 15MB
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > maxSize) {
+                        alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+                        this.value = "";
+                        clearVideosBtn.style.display = "none";
+                        
+                        // Hiển thị lại nút xóa video cũ nếu có video cũ
+                        if (hasOldVideos && clearOldVideosBtn) {
+                            clearOldVideosBtn.style.display = "inline-flex";
+                        }
+                        
+                        // Hiển thị placeholder nếu không còn video nào
+                        if (videoPreview.children.length === 0) {
+                            videoPlaceholder.style.display = "block";
+                        }
+                        return;
+                    }
+                }
+
+                videoPlaceholder.style.display = "none";
+                
+                // Ẩn nút xóa video cũ và hiển thị nút xóa video mới
+                if (clearOldVideosBtn) {
+                    clearOldVideosBtn.style.display = "none";
+                }
+                clearVideosBtn.style.display = "inline-flex";
+                
+                // Thêm video mới vào preview (giữ lại video cũ)
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const video = document.createElement("video");
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    video.style.maxWidth = "300px";
+                    video.style.maxHeight = "200px";
+                    video.style.marginRight = "10px";
+                    video.onloadeddata = () => URL.revokeObjectURL(video.src);
+                    videoPreview.appendChild(video);
                 }
             });
         }

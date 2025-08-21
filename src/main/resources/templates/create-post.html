@@ -342,9 +342,7 @@
     if (imageUpload) {
       imageUpload.addEventListener("change", function () {
         const files = this.files;
-        if ((files.length <= 3)) {
-          console.log(`Selected ${files.length} image(s)`);
-        } else {
+        if (files.length > 3) {
           alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
           this.value = "";
           imagePreview.innerHTML = "";
@@ -352,21 +350,46 @@
           return;
         }
 
+        // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+        const maxSize = 15 * 1024 * 1024; // 15MB
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].size > maxSize) {
+            alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+            this.value = "";
+            imagePreview.innerHTML = "";
+            imagePlaceholder.style.display = "block";
+            return;
+          }
+        }
+
+        console.log(`Selected ${files.length} image(s)`);
       });
     }
 
     if (videoUpload) {
       videoUpload.addEventListener("change", function () {
         const files = this.files;
-        if ((files.length <= 3)) {
-          console.log(`Selected ${files.length} video(s)`);
-        } else {
+        if (files.length > 3) {
           alert("Bạn chỉ có thể đăng tối đa 3 video.");
           this.value = "";
           videoPreview.innerHTML = "";
           videoPlaceholder.style.display = "block";
           return;
         }
+
+        // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+        const maxSize = 15 * 1024 * 1024; // 15MB
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].size > maxSize) {
+            alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+            this.value = "";
+            videoPreview.innerHTML = "";
+            videoPlaceholder.style.display = "block";
+            return;
+          }
+        }
+
+        console.log(`Selected ${files.length} video(s)`);
       });
     }
 
@@ -427,6 +450,30 @@
   if (imageUpload) {
     imageUpload.addEventListener("change", function () {
       const files = this.files;
+      
+      // Kiểm tra số lượng file
+      if (files.length > 3) {
+        alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
+        this.value = "";
+        imagePreview.innerHTML = "";
+        imagePlaceholder.style.display = "block";
+        clearImagesBtn.style.display = "none";
+        return;
+      }
+
+      // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+      const maxSize = 15 * 1024 * 1024; // 15MB
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size > maxSize) {
+          alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+          this.value = "";
+          imagePreview.innerHTML = "";
+          imagePlaceholder.style.display = "block";
+          clearImagesBtn.style.display = "none";
+          return;
+        }
+      }
+
       imagePreview.innerHTML = "";
       if (files.length > 0) {
         imagePlaceholder.style.display = "none";
@@ -451,6 +498,30 @@
   if (videoUpload) {
     videoUpload.addEventListener("change", function () {
       const files = this.files;
+      
+      // Kiểm tra số lượng file
+      if (files.length > 3) {
+        alert("Bạn chỉ có thể đăng tối đa 3 video.");
+        this.value = "";
+        videoPreview.innerHTML = "";
+        videoPlaceholder.style.display = "block";
+        clearVideosBtn.style.display = "none";
+        return;
+      }
+
+      // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+      const maxSize = 15 * 1024 * 1024; // 15MB
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size > maxSize) {
+          alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+          this.value = "";
+          videoPreview.innerHTML = "";
+          videoPlaceholder.style.display = "block";
+          clearVideosBtn.style.display = "none";
+          return;
+        }
+      }
+
       videoPreview.innerHTML = "";
       if (files.length > 0) {
         videoPlaceholder.style.display = "none";
