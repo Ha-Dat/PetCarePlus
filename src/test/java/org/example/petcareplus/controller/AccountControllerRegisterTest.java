@@ -64,13 +64,14 @@ class AccountControllerRegisterTest {
         registerDTO.setPassword("Ab@123456");
         registerDTO.setConfirmPassword("Ab@123456");
 
-        when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("register", result);
+        verify(model).addAttribute("error", "Họ tên phải từ 2 đến 50 ký tự!");
         verify(accountService, never()).save(any(Account.class));
     }
 
@@ -87,7 +88,7 @@ class AccountControllerRegisterTest {
         when(bindingResult.hasErrors()).thenReturn(true);
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("register", result);
@@ -107,7 +108,7 @@ class AccountControllerRegisterTest {
         when(bindingResult.hasErrors()).thenReturn(true);
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("register", result);
@@ -127,7 +128,7 @@ class AccountControllerRegisterTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("register", result);
@@ -149,7 +150,7 @@ class AccountControllerRegisterTest {
         when(accountService.isPhoneExists("0123456789")).thenReturn(true);
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("register", result);
@@ -170,9 +171,10 @@ class AccountControllerRegisterTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(accountService.isPhoneExists("0123456789")).thenReturn(false);
         when(accountService.getProfileByAccountAccountId(any())).thenReturn(null);
+        when(accountService.profileSave(any(Profile.class))).thenReturn(new Profile());
 
         // Act
-        String result = accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+        String result = accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
 
         // Assert
         assertEquals("redirect:/login", result);
@@ -196,7 +198,7 @@ class AccountControllerRegisterTest {
 
         // Act & Assert
         assertThrows(RuntimeException.class, () -> {
-            accountController.register(registerDTO, redirectAttributes, bindingResult, session, model);
+            accountController.register(registerDTO, bindingResult, redirectAttributes, session, model);
         });
         
         verify(accountService, never()).save(any(Account.class));

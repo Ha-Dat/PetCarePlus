@@ -1,13 +1,17 @@
 package org.example.petcareplus.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.petcareplus.entity.*;
+import org.example.petcareplus.entity.Account;
+import org.example.petcareplus.entity.PetProfile;
+import org.example.petcareplus.entity.Profile;
+import org.example.petcareplus.entity.Service;
+import org.example.petcareplus.entity.SpaBooking;
 import org.example.petcareplus.enums.AccountRole;
-import org.example.petcareplus.enums.AccountStatus;
 import org.example.petcareplus.enums.BookingStatus;
 import org.example.petcareplus.enums.ServiceCategory;
-import org.example.petcareplus.enums.ServiceStatus;
-import org.example.petcareplus.service.*;
+import org.example.petcareplus.service.PetProfileService;
+import org.example.petcareplus.service.SpaBookingService;
+import org.example.petcareplus.service.ServiceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,10 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,7 +33,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class SpaBookingControllerAddSpaBookingTest {
 
     @Mock
@@ -42,679 +45,663 @@ class SpaBookingControllerAddSpaBookingTest {
     private ServiceService serviceService;
 
     @Mock
-    private CategoryService categoryService;
+    private Model model;
 
     @Mock
-    private Model model;
+    private RedirectAttributes redirectAttributes;
+
+    @Mock
+    private HttpSession session;
 
     @InjectMocks
     private SpaBookingController spaBookingController;
 
-    private MockHttpSession session;
-    private Account testAccount;
-    private Profile testProfile;
-    private PetProfile testPetProfile;
-    private Service testService;
-    private SpaBooking testSpaBooking;
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        session = new MockHttpSession();
+        mockMvc = MockMvcBuilders.standaloneSetup(spaBookingController).build();
+    }
+
+    // ========== ADD SPA BOOKING() METHOD TEST CASES ==========
+    
+    @Test
+    @DisplayName("UTCID43: Add Spa Booking with NULL Pet Name")
+    void testAddSpaBooking_NullPetName_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup test account
-        testAccount = new Account();
-        testAccount.setAccountId(1L);
-        testAccount.setName("Nguyen Van A");
-        testAccount.setPhone("0912345678");
-        testAccount.setRole(AccountRole.CUSTOMER);
-        testAccount.setStatus(AccountStatus.ACTIVE);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                null, // petName - NULL
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID44: Add Spa Booking with Valid Pet Name")
+    void testAddSpaBooking_ValidPetName_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup test profile
-        testProfile = new Profile();
-        testProfile.setProfileId(1L);
-        testAccount.setProfile(testProfile);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName - Valid
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID45: Add Spa Booking with NULL Pet Species")
+    void testAddSpaBooking_NullPetSpecies_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup test pet profile
-        testPetProfile = new PetProfile();
-        testPetProfile.setPetProfileId(1L);
-        testPetProfile.setName("Luna");
-        testPetProfile.setSpecies("Cat");
-        testPetProfile.setBreeds("Persian");
-        testPetProfile.setWeight(10.0f);
-        testPetProfile.setAge(5);
-        testPetProfile.setProfile(testProfile);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                null, // petSpecies - NULL
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID46: Add Spa Booking with Invalid Pet Species")
+    void testAddSpaBooking_InvalidPetSpecies_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup test service
-        testService = new Service();
-        testService.setServiceId(1L);
-        testService.setName("Spa Treatment");
-        testService.setServiceCategory(ServiceCategory.SPA);
-        testService.setStatus(ServiceStatus.ACTIVE);
-        testService.setPrice(new BigDecimal("100000"));
-        testService.setDuration(60);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "1234", // petSpecies - Invalid
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID47: Add Spa Booking with Valid Pet Species")
+    void testAddSpaBooking_ValidPetSpecies_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup test spa booking
-        testSpaBooking = new SpaBooking();
-        testSpaBooking.setSpaBookingId(1L);
-        testSpaBooking.setBookDate(LocalDateTime.now().plusHours(2));
-        testSpaBooking.setNote("Test note");
-        testSpaBooking.setStatus(BookingStatus.PENDING);
-        testSpaBooking.setPetProfile(testPetProfile);
-        testSpaBooking.setService(testService);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies - Valid
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID48: Add Spa Booking with NULL Pet Breed")
+    void testAddSpaBooking_NullPetBreed_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
         
-        // Setup session
-        session.setAttribute("loggedInUser", testAccount);
-    }
-
-    // ========== ADDSPABOOKING() METHOD TEST CASES ==========
-
-    @Test
-    @DisplayName("UTCID00: Add Spa Booking Successfully")
-    void testAddSpaBooking_Success() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                null, // petBreed - NULL
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID01: Add Spa Booking with Empty Pet Name")
-    void testAddSpaBooking_EmptyPetName() {
+    @DisplayName("UTCID49: Add Spa Booking with Invalid Pet Breed")
+    void testAddSpaBooking_InvalidPetBreed_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "1234", // petBreed - Invalid
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID02: Add Spa Booking with Valid Pet Name")
-    void testAddSpaBooking_ValidPetName() {
+    @DisplayName("UTCID50: Add Spa Booking with Valid Pet Breed")
+    void testAddSpaBooking_ValidPetBreed_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed - Valid
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID03: Add Spa Booking with NULL Pet Species")
-    void testAddSpaBooking_NullPetSpecies() {
+    @DisplayName("UTCID51: Add Spa Booking with Zero Weight")
+    void testAddSpaBooking_ZeroWeight_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = null;
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                0.0f, // petWeight - Zero
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID04: Add Spa Booking with Empty Pet Species")
-    void testAddSpaBooking_EmptyPetSpecies() {
+    @DisplayName("UTCID52: Add Spa Booking with Negative Weight")
+    void testAddSpaBooking_NegativeWeight_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                -1.0f, // petWeight - Negative
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID05: Add Spa Booking with Invalid Pet Species")
-    void testAddSpaBooking_InvalidPetSpecies() {
+    @DisplayName("UTCID53: Add Spa Booking with Invalid Weight Format")
+    void testAddSpaBooking_InvalidWeightFormat_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "1234";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                999.0f, // petWeight - Invalid format (too high)
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID06: Add Spa Booking with Valid Pet Species")
-    void testAddSpaBooking_ValidPetSpecies() {
+    @DisplayName("UTCID54: Add Spa Booking with Weight Too High")
+    void testAddSpaBooking_WeightTooHigh_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                101.0f, // petWeight - Too high
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID07: Add Spa Booking with NULL Pet Breed")
-    void testAddSpaBooking_NullPetBreed() {
+    @DisplayName("UTCID55: Add Spa Booking with Valid Weight")
+    void testAddSpaBooking_ValidWeight_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = null;
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight - Valid
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID08: Add Spa Booking with Empty Pet Breed")
-    void testAddSpaBooking_EmptyPetBreed() {
+    @DisplayName("UTCID56: Add Spa Booking with Zero Age")
+    void testAddSpaBooking_ZeroAge_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                0, // petAge - Zero
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID09: Add Spa Booking with NULL Pet Weight")
-    void testAddSpaBooking_NullPetWeight() {
+    @DisplayName("UTCID57: Add Spa Booking with Invalid Age Format")
+    void testAddSpaBooking_InvalidAgeFormat_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 0.0f; // Simulating null weight
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                999, // petAge - Invalid format (too high)
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID10: Add Spa Booking with Empty Pet Weight")
-    void testAddSpaBooking_EmptyPetWeight() {
+    @DisplayName("UTCID58: Add Spa Booking with Negative Age")
+    void testAddSpaBooking_NegativeAge_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 0.0f; // Simulating empty weight
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                -1, // petAge - Negative
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID11: Add Spa Booking with Negative Pet Weight")
-    void testAddSpaBooking_NegativePetWeight() {
+    @DisplayName("UTCID59: Add Spa Booking with Age Too High")
+    void testAddSpaBooking_AgeTooHigh_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = -1.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                301, // petAge - Too high
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID12: Add Spa Booking with Invalid Pet Weight")
-    void testAddSpaBooking_InvalidPetWeight() {
+    @DisplayName("UTCID60: Add Spa Booking with Valid Age")
+    void testAddSpaBooking_ValidAge_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 101.0f; // Invalid weight > 100
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge - Valid
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID13: Add Spa Booking with Valid Pet Weight")
-    void testAddSpaBooking_ValidPetWeight() {
+    @DisplayName("UTCID61: Add Spa Booking with Non-existent Service")
+    void testAddSpaBooking_NonExistentService_Error() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(999L)).thenReturn(Optional.empty());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID14: Add Spa Booking with NULL Pet Age")
-    void testAddSpaBooking_NullPetAge() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = null;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID15: Add Spa Booking with Empty Pet Age")
-    void testAddSpaBooking_EmptyPetAge() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 0; // Simulating empty age
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID16: Add Spa Booking with Invalid Pet Age")
-    void testAddSpaBooking_InvalidPetAge() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = -1; // Invalid negative age
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID17: Add Spa Booking with High Pet Age")
-    void testAddSpaBooking_HighPetAge() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 301; // Invalid high age > 300
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID18: Add Spa Booking with Valid Pet Age")
-    void testAddSpaBooking_ValidPetAge() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID19: Add Spa Booking with Existing Service")
-    void testAddSpaBooking_ExistingService() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
-        verify(spaBookingService).save(any(SpaBooking.class));
-    }
-
-    @Test
-    @DisplayName("UTCID20: Add Spa Booking with Non-existent Service")
-    void testAddSpaBooking_NonExistentService() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 999L; // Non-existent service
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.empty());
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate
+                "Test note", // note
+                999L, // serviceId - Non-existent
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
@@ -723,116 +710,207 @@ class SpaBookingControllerAddSpaBookingTest {
     }
 
     @Test
-    @DisplayName("UTCID21: Add Spa Booking with Current Time")
-    void testAddSpaBooking_CurrentTime() {
+    @DisplayName("UTCID62: Add Spa Booking with Current Time")
+    void testAddSpaBooking_CurrentTime_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now(); // Current time
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now(), // bookDate - Current time
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID22: Add Spa Booking with 2 Hours Later")
-    void testAddSpaBooking_TwoHoursLater() {
+    @DisplayName("UTCID63: Add Spa Booking with Valid Time")
+    void testAddSpaBooking_ValidTime_Success() {
         // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2); // 2 hours later
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(testSpaBooking);
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now().plusHours(3), // bookDate - Valid time
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("redirect:/spa-booking-form", result);
-        verify(petProfileService).updatePetProfile(petProfileId, testPetProfile);
         verify(spaBookingService).save(any(SpaBooking.class));
     }
 
     @Test
-    @DisplayName("UTCID23: Add Spa Booking with Unauthenticated User")
-    void testAddSpaBooking_UnauthenticatedUser() {
+    @DisplayName("UTCID64: Add Spa Booking with Non-existent Service and Current Time")
+    void testAddSpaBooking_NonExistentServiceAndCurrentTime_Error() {
         // Arrange
-        session.removeAttribute("loggedInUser");
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(999L)).thenReturn(Optional.empty());
 
         // Act
         String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
-        );
-
-        // Assert
-        assertEquals("redirect:/login", result);
-    }
-
-    @Test
-    @DisplayName("UTCID24: Add Spa Booking with Server Error")
-    void testAddSpaBooking_ServerError() {
-        // Arrange
-        LocalDateTime bookDate = LocalDateTime.now().plusHours(2);
-        String note = "Test note";
-        Long serviceId = 1L;
-        String petName = "Luna";
-        String petSpecies = "Cat";
-        String petBreed = "Persian";
-        float petWeight = 10.0f;
-        Integer petAge = 5;
-        Long petProfileId = 1L;
-
-        when(petProfileService.findById(petProfileId)).thenReturn(testPetProfile);
-        when(spaBookingService.Service_findById(serviceId)).thenReturn(Optional.of(testService));
-        when(spaBookingService.save(any(SpaBooking.class))).thenThrow(new RuntimeException("Database error"));
-
-        // Act
-        String result = spaBookingController.addSpaBooking(
-                bookDate, note, serviceId, petName, petSpecies, petBreed, 
-                petWeight, petAge, petProfileId, session, model
+                LocalDateTime.now(), // bookDate - Current time
+                "Test note", // note
+                999L, // serviceId - Non-existent
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
         );
 
         // Assert
         assertEquals("error", result);
-        verify(model).addAttribute("error", "Lỗi khi đặt lịch: Database error");
+        verify(model).addAttribute("error", "Dịch vụ không tồn tại");
+    }
+
+    @Test
+    @DisplayName("UTCID65: Add Spa Booking with Valid Service and 2 Hours Later")
+    void testAddSpaBooking_ValidServiceAnd2HoursLater_Success() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        Service service = createMockService();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(1L)).thenReturn(Optional.of(service));
+        when(spaBookingService.save(any(SpaBooking.class))).thenReturn(new SpaBooking());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(2), // bookDate - 2 hours later
+                "Test note", // note
+                1L, // serviceId
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("redirect:/spa-booking-form", result);
+        verify(spaBookingService).save(any(SpaBooking.class));
+    }
+
+    @Test
+    @DisplayName("UTCID66: Add Spa Booking with Non-existent Service and 2 Hours Later")
+    void testAddSpaBooking_NonExistentServiceAnd2HoursLater_Error() {
+        // Arrange
+        Account account = createMockAccount();
+        PetProfile petProfile = createMockPetProfile();
+        
+        when(session.getAttribute("loggedInUser")).thenReturn(account);
+        when(petProfileService.findById(1L)).thenReturn(petProfile);
+        when(spaBookingService.Service_findById(999L)).thenReturn(Optional.empty());
+
+        // Act
+        String result = spaBookingController.addSpaBooking(
+                LocalDateTime.now().plusHours(2), // bookDate - 2 hours later
+                "Test note", // note
+                999L, // serviceId - Non-existent
+                "Luna", // petName
+                "Cat", // petSpecies
+                "Persian", // petBreed
+                10.0f, // petWeight
+                5, // petAge
+                1L, // petProfileId
+                session,
+                model,
+                redirectAttributes
+        );
+
+        // Assert
+        assertEquals("error", result);
+        verify(model).addAttribute("error", "Dịch vụ không tồn tại");
+    }
+
+    // Helper methods
+    private Account createMockAccount() {
+        Account account = new Account();
+        account.setAccountId(1L);
+        account.setRole(AccountRole.CUSTOMER);
+        
+        Profile profile = new Profile();
+        profile.setProfileId(1L);
+        account.setProfile(profile);
+        
+        return account;
+    }
+
+    private PetProfile createMockPetProfile() {
+        PetProfile petProfile = new PetProfile();
+        petProfile.setPetProfileId(1L);
+        petProfile.setName("Luna");
+        petProfile.setSpecies("Cat");
+        petProfile.setBreeds("Persian");
+        petProfile.setWeight(10.0f);
+        petProfile.setAge(5);
+        
+        Profile profile = new Profile();
+        profile.setProfileId(1L);
+        petProfile.setProfile(profile);
+        
+        return petProfile;
+    }
+
+    private Service createMockService() {
+        Service service = new Service();
+        service.setServiceId(1L);
+        service.setName("Spa Service");
+        service.setServiceCategory(ServiceCategory.SPA);
+        service.setPrice(BigDecimal.valueOf(100000));
+        service.setDuration(30);
+        return service;
     }
 }

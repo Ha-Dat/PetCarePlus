@@ -1,6 +1,7 @@
 package org.example.petcareplus.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.MyServiceDTO;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Profile;
@@ -99,7 +100,7 @@ class MyServiceControllerUpdateBookingTest {
         dto.setNote("Test note");
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -120,7 +121,7 @@ class MyServiceControllerUpdateBookingTest {
         dto.setNote("Test note");
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -143,7 +144,7 @@ class MyServiceControllerUpdateBookingTest {
         when(bookingService.isPending(ServiceCategory.SPA, -1L)).thenReturn(false);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -166,7 +167,7 @@ class MyServiceControllerUpdateBookingTest {
         when(bookingService.isPending(ServiceCategory.SPA, 1000L)).thenReturn(false);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -189,7 +190,7 @@ class MyServiceControllerUpdateBookingTest {
         when(bookingService.isPending(ServiceCategory.SPA, 1L)).thenReturn(false);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -214,7 +215,7 @@ class MyServiceControllerUpdateBookingTest {
         doThrow(new RuntimeException("Service not found")).when(bookingService).updateBooking(dto);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -238,7 +239,7 @@ class MyServiceControllerUpdateBookingTest {
         doNothing().when(bookingService).updateBooking(dto);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -259,7 +260,7 @@ class MyServiceControllerUpdateBookingTest {
         dto.setNote("Test note");
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         // Note: This method doesn't check authentication directly, but the service layer might
@@ -267,7 +268,7 @@ class MyServiceControllerUpdateBookingTest {
         when(bookingService.isPending(ServiceCategory.SPA, 1L)).thenReturn(true);
         doNothing().when(bookingService).updateBooking(dto);
 
-        response = myServiceController.updateBooking(dto);
+        response = myServiceController.updateBooking(dto, session);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -285,7 +286,7 @@ class MyServiceControllerUpdateBookingTest {
         doThrow(new RuntimeException("Database connection failed")).when(bookingService).updateBooking(dto);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -308,7 +309,7 @@ class MyServiceControllerUpdateBookingTest {
         when(bookingService.isPending(ServiceCategory.SPA, 1L)).thenReturn(false);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -331,7 +332,7 @@ class MyServiceControllerUpdateBookingTest {
         doNothing().when(bookingService).updateBooking(dto);
 
         // Act
-        ResponseEntity<?> response = myServiceController.updateBooking(dto);
+        ResponseEntity<?> response = myServiceController.updateBooking(dto, session);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
