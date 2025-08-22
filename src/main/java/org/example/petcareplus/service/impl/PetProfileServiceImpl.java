@@ -131,7 +131,7 @@ public class PetProfileServiceImpl implements PetProfileService {
             }
 
             // Upload to local storage
-            String fileUrl = saveFileToS3(imageFile, "uploads/images/");
+            String fileUrl = saveFileToS3(imageFile, "uploads/pets/");
 
             // Save media info to database
             Media media = new Media();

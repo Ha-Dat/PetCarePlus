@@ -885,7 +885,7 @@
         <h2>Thêm danh mục</h2>
         <form action="/seller/category/save" method="post">
             <label>Tên danh mục:</label>
-            <input type="text" name="name" id="name" required>
+            <input type="text" name="name" id="name" required maxlength="50">
 
             <select name="parentId" id="parentId" style="display: none;">
                 <option value="">-- Không có --</option>
@@ -910,7 +910,7 @@
             <input type="hidden" name="categoryId" id="editCategoryId" />
 
             <label>Tên danh mục:</label>
-            <input type="text" name="name" id="editCategoryName" required />
+            <input type="text" name="name" id="editCategoryName" required maxlength="50"/>
 
             <div class="modal-actions">
                 <button type="submit" class="btn submit">Cập nhật</button>

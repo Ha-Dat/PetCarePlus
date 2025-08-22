@@ -10,11 +10,11 @@ import jakarta.validation.constraints.Size;
 public class ResetPasswordDTO {
 
     @NotBlank(message = "Tên đăng nhập không được để trống")
-    @Size(min = 3, max = 50, message = "Tên đăng nhập phải từ 3-50 ký tự")
+    @Size(min = 2, max = 50, message = "Tên đăng nhập phải từ 2-50 ký tự")
     private String username;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10-11 chữ số")
+    @Pattern(regexp = "0[0-9]{9}", message = "Số điện thoại phải là 10 số và bắt đầu bằng 0")
     private String phoneNumber;
 
     @NotBlank(message = "Mật khẩu mới không được để trống")

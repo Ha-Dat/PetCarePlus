@@ -580,7 +580,7 @@
         <ul class="sidebar-menu">
             <li><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
             <li><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
-            <li class="active"><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
+            <li class="active"><a href="/manager/manager-dashboard">📅 Quản lý ca làm việc</a></li>
         </ul>
 
         <!-- Thông tin người dùng -->
@@ -800,6 +800,36 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Past Schedule Status Edit Modal -->
+<div id="pastStatusModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="pastStatusModalTitle">Chỉnh sửa trạng thái ca làm việc trong quá khứ</h2>
+        <form id="pastStatusForm" onsubmit="submitPastStatusEdit(event)">
+            <input type="hidden" id="pastStatusScheduleId" name="pastStatusScheduleId">
+            
+            <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="margin-bottom: 8px;"><strong>Nhân viên:</strong> <span id="pastStatusAccountName"></span></div>
+                <div style="margin-bottom: 8px;"><strong>Ngày:</strong> <span id="pastStatusWorkDate"></span></div>
+                <div style="margin-bottom: 8px;"><strong>Ca làm việc:</strong> <span id="pastStatusShift"></span></div>
+                <div><strong>Trạng thái hiện tại:</strong> <span id="pastStatusCurrentStatus"></span></div>
+            </div>
+            
+            <label for="pastStatusNewStatus">Trạng thái mới *</label>
+            <select id="pastStatusNewStatus" name="pastStatusNewStatus" required>
+                <option value="PENDING">Chưa đến</option>
+                <option value="PRESENT">Có mặt</option>
+                <option value="ABSENT">Vắng mặt</option>
+                <option value="LEAVE_APPROVED">Nghỉ có phép</option>
+            </select>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePastStatusModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Cập nhật trạng thái</button>
             </div>
         </form>
     </div>
@@ -1087,22 +1117,35 @@
             <td>${sche.accountPhone}</td>
             <td>${sche.note}</td>
             <td>${getStatusDisplay(sche.statusName)}</td>
-            <td>
-                <div class="action-buttons">
-                    <button onclick="openEditScheduleModal(this)"
-                            data-scheduleId="${sche.scheduleId}"
-                            data-accountId="${sche.accountId}"
-                            data-accountName="${sche.accountName}"
-                            data-workDate="${sche.workDate}"
-                            data-shiftName="${sche.shiftName}"
-                            data-statusName="${sche.statusName}"
-                            data-note="${sche.note}"
-                            class="edit-btn">
-                        ✏️
-                    </button>
-                    ${!isPast ? `<button onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')" class="delete-btn">🗑️</button>` : ''}
-                </div>
-            </td>
+                         <td>
+                 <div class="action-buttons">
+                     ${isPast ? 
+                         `<button onclick="openPastStatusModal(this)"
+                                 data-scheduleId="${sche.scheduleId}"
+                                 data-accountName="${sche.accountName}"
+                                 data-workDate="${sche.workDate}"
+                                 data-shiftName="${sche.shiftName}"
+                                 data-statusName="${sche.statusName}"
+                                 class="edit-btn"
+                                 style="color: white;"
+                                 title="Chỉnh sửa trạng thái (ca trong quá khứ)">
+                             📝
+                         </button>` : 
+                         `<button onclick="openEditScheduleModal(this)"
+                                 data-scheduleId="${sche.scheduleId}"
+                                 data-accountId="${sche.accountId}"
+                                 data-accountName="${sche.accountName}"
+                                 data-workDate="${sche.workDate}"
+                                 data-shiftName="${sche.shiftName}"
+                                 data-statusName="${sche.statusName}"
+                                 data-note="${sche.note}"
+                                 class="edit-btn">
+                             ✏️
+                         </button>`
+                     }
+                     ${!isPast ? `<button onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')" class="delete-btn">🗑️</button>` : ''}
+                 </div>
+             </td>
         `;
 
             console.log('Row HTML:', rowHTML);
@@ -1626,6 +1669,111 @@
             }
         }
     };
+
+    // ===== NEW SCRIPTS FOR PAST SCHEDULE STATUS EDIT =====
+    // These scripts are completely separate from existing code
+
+    function openPastStatusModal(element) {
+        console.log("Opening past status modal for:", element);
+        
+        // Get data from button attributes
+        const scheduleId = element.getAttribute('data-scheduleId');
+        const accountName = element.getAttribute('data-accountName');
+        const workDate = element.getAttribute('data-workDate');
+        const shiftName = element.getAttribute('data-shiftName');
+        const statusName = element.getAttribute('data-statusName');
+        
+        // Populate modal fields
+        document.getElementById('pastStatusScheduleId').value = scheduleId;
+        document.getElementById('pastStatusAccountName').textContent = accountName;
+        document.getElementById('pastStatusWorkDate').textContent = workDate;
+        document.getElementById('pastStatusShift').textContent = getShiftDisplay(shiftName);
+        document.getElementById('pastStatusCurrentStatus').textContent = getStatusDisplay(statusName);
+        
+        // Set current status as selected
+        const statusSelect = document.getElementById('pastStatusNewStatus');
+        statusSelect.value = statusName;
+        
+        // Show modal
+        document.getElementById('pastStatusModal').style.display = 'flex';
+        
+        console.log("Past status modal opened with data:", {
+            scheduleId: scheduleId,
+            accountName: accountName,
+            workDate: workDate,
+            shiftName: shiftName,
+            statusName: statusName
+        });
+    }
+
+    function closePastStatusModal() {
+        document.getElementById('pastStatusModal').style.display = 'none';
+    }
+
+    function submitPastStatusEdit(event) {
+        event.preventDefault();
+        
+        console.log("Submitting past status edit");
+        
+        const form = document.getElementById('pastStatusForm');
+        const scheduleId = document.getElementById('pastStatusScheduleId').value;
+        const newStatus = form.pastStatusNewStatus.value;
+        
+        // Get original schedule data from the schedules array
+        const originalSchedule = schedules.find(s => s.scheduleId == scheduleId);
+        if (!originalSchedule) {
+            showToast("Không tìm thấy thông tin ca làm việc!", "error");
+            return;
+        }
+        
+        // Prepare data for past schedule (only status change)
+        const data = {
+            status: newStatus,
+            accountId: parseInt(originalSchedule.accountId),
+            workDate: originalSchedule.workDate,
+            shift: originalSchedule.shiftName,
+            note: originalSchedule.note || ""
+        };
+        
+        console.log("Sending past status update data:", data);
+        
+        fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                closePastStatusModal();
+                showToast("Cập nhật trạng thái thành công!", "success");
+                
+                // Save modal info to localStorage before reload
+                localStorage.setItem('openModalAfterReload', JSON.stringify({
+                    type: 'schedule',
+                    date: originalSchedule.workDate,
+                    shift: originalSchedule.shiftName
+                }));
+                
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                return res.text().then(text => {
+                    console.log("Error response:", text);
+                    let errorMessage = "Cập nhật trạng thái thất bại!";
+                    
+                    if (text.includes("Cannot change date, account, or shift for past schedules")) {
+                        errorMessage = "Không thể thay đổi ngày, nhân viên hoặc ca làm việc cho lịch trong quá khứ. Chỉ có thể cập nhật trạng thái.";
+                    } else {
+                        errorMessage += " " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
+                });
+            }
+        }).catch(error => {
+            console.error("Lỗi cập nhật trạng thái:", error);
+            showToast("Có lỗi xảy ra khi cập nhật trạng thái!", "error");
+        });
+    }
+    // ===== END NEW SCRIPTS =====
 </script>
 </body>
 </html>

@@ -434,7 +434,7 @@
             <div class="promotions-grid">
                 <div class="promotion-card" th:each="promotion : ${activePromotions}">
                     <div class="promotion-status status-active">ĐANG DIỄN RA</div>
-                    <div class="discount-badge" th:text="'-' + ${promotion.discount} + '%'"></div>
+                    <div class="discount-badge" th:text="'-' + ${promotion.discount * 100} + '%'"></div>
                     <h4 th:text="${promotion.title}">Tên khuyến mãi</h4>
                     <p th:text="${promotion.description}">Mô tả khuyến mãi</p>
                     <div class="time-limited">
@@ -460,7 +460,7 @@
             <div class="promotions-grid">
                 <div class="promotion-card" th:each="promotion : ${upcomingPromotions}">
                     <div class="promotion-status status-upcoming">SẮP DIỄN RA</div>
-                    <div class="discount-badge" th:text="'-' + ${promotion.discount} + '%'"></div>
+                    <div class="discount-badge" th:text="'-' + ${promotion.discount * 100} + '%'"></div>
                     <h4 th:text="${promotion.title}">Tên khuyến mãi</h4>
                     <p th:text="${promotion.description}">Mô tả khuyến mãi</p>
                     <div class="time-limited">
