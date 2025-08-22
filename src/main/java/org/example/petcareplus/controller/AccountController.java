@@ -46,12 +46,18 @@ public class    AccountController {
     
     @PostMapping("/register")
     public String register(@ModelAttribute("registerDTO") @Valid RegisterDTO registerDTO,
-                           RedirectAttributes redirectAttributes,
                            BindingResult result,
+                           RedirectAttributes redirectAttributes,
                            HttpSession session,
                            Model model) {
 
         if (result.hasErrors()) {
+            return "register";
+        }
+
+        // Additional validation for name length
+        if (registerDTO.getName() == null || registerDTO.getName().trim().length() < 2 || registerDTO.getName().trim().length() > 50) {
+            model.addAttribute("error", "Họ tên phải từ 2 đến 50 ký tự!");
             return "register";
         }
 
@@ -60,20 +66,26 @@ public class    AccountController {
             return "register";
         }
 
-        if (accountService.isPhoneExists(registerDTO.getPhone())) {
+        if (accountService.isPhoneExists(registerDTO.getPhone().trim())) {
             model.addAttribute("error", "Số điện thoại đã tồn tại!");
             return "register";
         }
 
         // Tạo tài khoản với trạng thái ACTIVE (không cần OTP verification)
         Account account = new Account();
-        account.setName(registerDTO.getName());
-        account.setPhone(registerDTO.getPhone());
+        account.setName(registerDTO.getName().trim()); // Trim whitespace
+        account.setPhone(registerDTO.getPhone().trim()); // Trim whitespace
         account.setPassword(PasswordHasher.hash(registerDTO.getPassword()));
         account.setRole(AccountRole.CUSTOMER);
         account.setStatus(AccountStatus.ACTIVE); // Kích hoạt ngay lập tức
 
-        accountService.save(account);
+        // Validate the account object before saving
+        try {
+            accountService.save(account);
+        } catch (Exception e) {
+            model.addAttribute("error", "Có lỗi xảy ra khi tạo tài khoản: " + e.getMessage());
+            return "register";
+        }
 
         // Tạo hồ sơ người dùng nếu chưa có
         Profile existingProfile = accountService.getProfileByAccountAccountId(account.getAccountId());
