@@ -1105,6 +1105,7 @@
         filteredSchedules.forEach(sche => {
             // Check if the schedule is in the past
             const scheduleDate = new Date(sche.workDate);
+            scheduleDate.setDate(scheduleDate.getDate() - 1);
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
             const isPast = scheduleDate < today;
@@ -1385,7 +1386,7 @@
                          schedule.workDate === newWorkDate &&
                          schedule.shiftName === newShift;
                  });
-                 
+
                  if (hasDuplicate) {
             showToast("Nhân viên đã có lịch làm việc trong ca này rồi!", "error");
             return;
