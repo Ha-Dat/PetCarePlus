@@ -725,10 +725,6 @@
                     s.workDate === dateStr && s.shiftName === shiftName
                 ).length : 0;
 
-                const offCount = Array.isArray(absentRequests) ? absentRequests.filter(r =>
-                    r.workDate === dateStr && r.shiftName === shiftName
-                ).length : 0;
-
                 const schedule = Array.isArray(schedules)
                     ? schedules.find(s => s.workDate === dateStr && s.shiftName === shiftName)
                     : null;
@@ -742,11 +738,6 @@
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
 
-                // Debug log for off request
-                if (thisOffRequest) {
-                    console.log("Off Request found:", thisOffRequest);
-                    console.log("Off Request status:", thisOffRequest.status);
-                }
 
                 const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
@@ -794,7 +785,9 @@
 
                      html += `</div>`;
                      cell.innerHTML = html;
-                 }
+                 }else {
+                                     cell.innerHTML = "";
+                                 }
             });
         }
     }
