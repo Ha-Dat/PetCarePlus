@@ -1325,6 +1325,7 @@
 
              // Set minimum date to today for future schedules
              const today = new Date();
+             today.setDate(today.getDate() + 1);
              const todayStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
              workDateInput.min = todayStr;
          }
