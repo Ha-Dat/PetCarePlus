@@ -1375,17 +1375,18 @@
         }
 
         // Check for duplicate schedule for the same employee, date, and shift (excluding current schedule)
-        const hasDuplicate = schedules.some(schedule => {
-            const scheduleIdInt = parseInt(scheduleId);
-            const scheduleAccountId = parseInt(schedule.accountId);
-            
-            return schedule.scheduleId !== scheduleIdInt && // Exclude current schedule
-                   scheduleAccountId === accountId && 
-                   schedule.workDate === newWorkDate && 
-                   schedule.shiftName === newShift;
-        });
+                 const hasDuplicate = schedules.some(schedule => {
+                     const scheduleIdInt = parseInt(scheduleId);
+                     const currentScheduleId = parseInt(schedule.scheduleId);
+                     const scheduleAccountId = parseInt(schedule.accountId);
 
-        if (hasDuplicate) {
+                     return currentScheduleId !== scheduleIdInt && // properly exclude current schedule
+                         scheduleAccountId === accountId &&
+                         schedule.workDate === newWorkDate &&
+                         schedule.shiftName === newShift;
+                 });
+                 
+                 if (hasDuplicate) {
             showToast("Nhân viên đã có lịch làm việc trong ca này rồi!", "error");
             return;
         }
