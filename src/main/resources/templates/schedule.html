@@ -963,8 +963,10 @@
               document.getElementById("ChangeRequestReason").style.backgroundColor = 'white';
 
               // Set minimum date to today to prevent selecting past dates
-              const today = new Date().toISOString().split('T')[0];
-              document.getElementById("ChangeRequestWorkDate").min = today;
+              const nextday= new Date();
+              nextday.setDate(nextday.getDate() + 1);
+              const validateday = nextday.toISOString().split('T')[0];
+              document.getElementById("ChangeRequestWorkDate").min = validateday;
           }
 
           // Set delete form
