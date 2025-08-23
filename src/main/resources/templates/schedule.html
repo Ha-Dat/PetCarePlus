@@ -720,6 +720,11 @@
                 // Format date as yyyy-MM-dd to match database
                 const dateStr = currentDate.toISOString().split('T')[0];
 
+                const today = new Date();
+                today.setDate(today.getDate()+1);
+                today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+                const isPast = currentDate < today;
+
                 // Count schedules
                 const scheduleCount = Array.isArray(schedules) ? schedules.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
@@ -751,7 +756,7 @@
                                      </button>
                                  `;
 
-                     if (thisChangeRequest == null) {
+                     if (thisChangeRequest == null && !isPast) {
                          html += `<a
                                      data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
                                      data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
@@ -765,7 +770,7 @@
                                  </a>`;
                      }
 
-                     if (thisOffRequest == null) {
+                     if (thisOffRequest == null && !isPast) {
                          html += `
                                  <a
                                      data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
