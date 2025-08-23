@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manager dashboard</title>
+    <title>Ca làm việc</title>
     <style>
         .back-button {
             display: inline-block;
@@ -718,7 +718,7 @@
                 currentDate.setDate(dateObj.getDate() + (day - 1));
 
                 // Format date as yyyy-MM-dd to match database
-                const dateStr = currentDate.toISOString().split('T')[0];
+                const dateStr = formatDateISO(currentDate);
 
                 const today = new Date();
                 today.setDate(today.getDate()+1);
@@ -965,7 +965,7 @@
               // Set minimum date to today to prevent selecting past dates
               const nextday= new Date();
               nextday.setDate(nextday.getDate() + 1);
-              const validateday = nextday.toISOString().split('T')[0];
+              const validateday = formatDateISO(nextday);
               document.getElementById("ChangeRequestWorkDate").min = validateday;
           }
 

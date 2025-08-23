@@ -984,7 +984,7 @@
                 currentDate.setDate(dateObj.getDate() + (day - 1));
 
                 // Format date as yyyy-MM-dd to match database
-                const dateStr = currentDate.toISOString().split('T')[0];
+                const dateStr = formatDateISO(currentDate);
 
                 // Count schedules
                 const scheduleCount = Array.isArray(schedules) ? schedules.filter(s =>
@@ -1024,7 +1024,7 @@
                      buttonsHTML += `
                          <button onclick="openChangeRequestsModal('${dateStr}', '${shiftName}')"
                              style="background-color: #f97316; color: white; border: none; border-radius: 10px; padding: 2px 6px; font-size: 15px; font-weight: 500; cursor: pointer; width: 120px; text-align: center; line-height: 3;">
-                             Đổi lịch: ${shiftChangeCount}
+                             Đơn đổi lịch: ${shiftChangeCount}
                          </button>
                      `;
                  }
@@ -1294,6 +1294,7 @@
          const workDate = element.getAttribute('data-workDate');
          const scheduleDate = new Date(workDate);
          const today = new Date();
+         scheduleDate.setDate(scheduleDate.getDate() - 1);
          today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
          const isPast = scheduleDate < today;
 
@@ -1327,7 +1328,7 @@
              // Set minimum date to today for future schedules
              const today = new Date();
              today.setDate(today.getDate() + 1);
-             const todayStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+             const todayStr = formatDateISO(today); // Format YYYY-MM-DD
              workDateInput.min = todayStr;
          }
 
