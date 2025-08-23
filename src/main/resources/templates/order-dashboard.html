@@ -202,7 +202,8 @@
         }
 
         .seller-info {
-            margin: 12pc 0 10px 0;
+            margin: 9pc 0 10px 0;
+            height: 65px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -321,16 +322,17 @@
         </div>
         <form class="order-filter-form" method="get" th:action="@{/seller/order-dashboard}">
             <select class="form-select" name="status">
-                <option value="">Status</option>
-                <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
-                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
-                <option value="PROCESSING" th:selected="${status == 'PROCESSING'}">Processing</option>
-                <option value="DELIVERING" th:selected="${status == 'DELIVERING'}">Delivering</option>
-                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
-                <option value="REJECTED" th:selected="${status == 'REJECTED'}">Rejected</option>
-                <option value="APPROVED" th:selected="${status == 'APPROVED'}">Approved</option>
+                <option value="">Trạng thái</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Đang chờ</option>
+                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Đã hoàn thành</option>
+                <option value="PROCESSING" th:selected="${status == 'PROCESSING'}">Đang xử lý</option>
+                <option value="DELIVERING" th:selected="${status == 'DELIVERING'}">Đang giao</option>
+                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Đã hủy</option>
+                <option value="REJECTED" th:selected="${status == 'REJECTED'}">Từ chối</option>
+                <option value="APPROVED" th:selected="${status == 'APPROVED'}">Duyệt</option>
+                <option value="DELIVERY_FAILED" th:selected="${status == 'DELIVERY_FAILED'}">Giao hàng thất bại</option>
             </select>
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <button type="submit" class="btn btn-primary">Lọc</button>
         </form>
 
         <!-- Table Container -->

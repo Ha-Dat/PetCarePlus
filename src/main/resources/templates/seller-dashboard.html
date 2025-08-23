@@ -145,7 +145,8 @@
 
         /* Seller info section */
         .seller-info {
-            margin: 12pc 0 10px 0;
+            margin: 9pc 0 10px 0;
+            height: 65px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -307,15 +308,6 @@
             </div>
         </div>
 
-        <!-- Biểu đồ doanh thu theo danh mục -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="chart-container">
-                    <h5 class="chart-title">Phân tích doanh thu theo danh mục sản phẩm</h5>
-                    <div id="category_revenue_chart" style="width: 100%; height: 350px; border-radius: 8px; overflow: hidden;"></div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -371,31 +363,6 @@
     }
 </script>
 
-<script th:inline="javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawCategoryRevenueChart);
-
-    function drawCategoryRevenueChart() {
-        var data = google.visualization.arrayToDataTable([
-            ['Danh mục', 'Doanh thu'],
-            ['Thức ăn', 12000000],
-            ['Đồ chơi', 8000000],
-            ['Vật dụng', 15000000],
-            ['Thuốc', 5000000],
-            ['Dịch vụ', 25000000]
-        ]);
-
-        var options = {
-            title: 'Doanh thu theo danh mục sản phẩm',
-            legend: { position: 'right' },
-            colors: ['#2ec4b6', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'],
-            backgroundColor: 'transparent'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('category_revenue_chart'));
-        chart.draw(data, options);
-    }
-</script>
 
 <script>
     // Add active class to current menu item

@@ -36,7 +36,7 @@ public class ManagerController {
         this.workScheduleRequestService = workScheduleRequestService;
         this.accountService = accountService;
     }
-
+    
     @GetMapping("/manager-dashboard")
     public String showManagerPage(Model model) {
         // Get all data from services
@@ -132,10 +132,16 @@ public class ManagerController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Check if the new work date is in the past
+            // Allow updating past schedules but with some restrictions
             java.time.LocalDate today = java.time.LocalDate.now();
             if (dto.getWorkDate().isBefore(today)) {
-                return ResponseEntity.badRequest().body("Cannot update schedule to a past date");
+                // For past dates, only allow status updates, not date/account changes
+                WorkSchedule existingSchedule = existing.get();
+                if (!dto.getWorkDate().equals(existingSchedule.getWorkDate()) || 
+                    !dto.getAccountId().equals(existingSchedule.getAccount().getAccountId()) ||
+                    !dto.getShift().equals(existingSchedule.getShift())) {
+                    return ResponseEntity.badRequest().body("Cannot change date, account, or shift for past schedules. Only status and notes can be updated.");
+                }
             }
 
             WorkSchedule updatedSchedule = convertToSchedule(dto, existing.get());
@@ -184,6 +190,25 @@ public class ManagerController {
     @ResponseBody
     public ResponseEntity<?> createSchedule(@RequestBody WorkScheduleDTO dto) {
         try {
+            // Check if the work date is in the past
+            java.time.LocalDate today = java.time.LocalDate.now();
+            if (dto.getWorkDate().isBefore(today)) {
+                return ResponseEntity.badRequest().body("Cannot create schedule for past dates");
+            }
+
+            // Check for duplicate schedule (same employee, same date, same shift)
+            List<WorkSchedule> existingSchedules = workScheduleService.findAll();
+            boolean hasDuplicate = existingSchedules.stream()
+                    .anyMatch(schedule -> 
+                        schedule.getAccount().getAccountId().equals(dto.getAccountId()) &&
+                        schedule.getWorkDate().equals(dto.getWorkDate()) &&
+                        schedule.getShift().equals(dto.getShift())
+                    );
+            
+            if (hasDuplicate) {
+                return ResponseEntity.badRequest().body("Nhân viên này đã được phân công vào ca làm việc này trong ngày " + dto.getWorkDate());
+            }
+
             WorkSchedule newSchedule = new WorkSchedule();
             newSchedule.setNote(dto.getNote());
             newSchedule.setStatus(ScheduleStatus.PENDING);

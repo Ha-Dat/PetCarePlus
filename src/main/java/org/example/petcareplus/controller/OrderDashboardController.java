@@ -6,8 +6,10 @@ import org.example.petcareplus.entity.Payment;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.repository.PaymentRepository;
 import org.example.petcareplus.service.OrderService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +26,12 @@ public class OrderDashboardController {
 
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
+    private final ProductService productService;
 
-    public OrderDashboardController(OrderService orderService, PaymentRepository paymentRepository) {
+    public OrderDashboardController(OrderService orderService, PaymentRepository paymentRepository, ProductService productService) {
         this.orderService = orderService;
         this.paymentRepository = paymentRepository;
+        this.productService = productService;
     }
 
     @GetMapping("/seller/order-dashboard")
@@ -40,19 +44,16 @@ public class OrderDashboardController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             Model model) {
 
-        Page<OrderDTO> orderPage = orderService.filterOrders(orderId, status, startDate, endDate, PageRequest.of(page, size));
+        Page<OrderDTO> orderPage = orderService.filterOrders(orderId, status, startDate, endDate, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate")));
 
-        // Tính toán thống kê
+        // Tính toán thống kê cho trang hiện tại
         List<OrderDTO> orders = orderPage.getContent();
         long totalOrders = orders.size();
         long completedOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.COMPLETED).count();
         long pendingOrders = orders.stream().filter(o -> o.getStatus() == OrderStatus.PENDING).count();
 
-        BigDecimal totalRevenue = orders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.COMPLETED) // lọc đơn hoàn thành
-                .map(OrderDTO::getTotalPrice)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Tính tổng doanh thu từ tất cả đơn hàng đã hoàn thành (không phân trang)
+        BigDecimal totalRevenue = orderService.getTotalRevenueByFilters(orderId, status, startDate, endDate);
 
         model.addAttribute("orders", orders);
         model.addAttribute("currentPage", page);
@@ -85,6 +86,17 @@ public class OrderDashboardController {
     @GetMapping("/seller/orders/reject/{id}")
     public String rejectOrder(@PathVariable("id") Long id) {
         Order order = orderService.get(id);
+        
+        // Khôi phục số lượng sản phẩm trong kho
+        if (order.getOrderItems() != null) {
+            for (var orderItem : order.getOrderItems()) {
+                productService.increaseProductQuantity(
+                    orderItem.getProduct().getProductId(), 
+                    orderItem.getQuantity()
+                );
+            }
+        }
+        
         order.setStatus(OrderStatus.REJECTED);
         orderService.save(order);
         return "redirect:/seller/order-dashboard";
@@ -103,6 +115,19 @@ public class OrderDashboardController {
         Order order = orderService.get(id);
         try {
             OrderStatus orderStatus = OrderStatus.valueOf(status);
+            
+            // Khôi phục số lượng sản phẩm nếu đơn hàng bị hủy hoặc từ chối
+            if (orderStatus == OrderStatus.CANCELLED || orderStatus == OrderStatus.REJECTED || orderStatus == OrderStatus.DELIVERY_FAILED) {
+                if (order.getOrderItems() != null) {
+                    for (var orderItem : order.getOrderItems()) {
+                        productService.increaseProductQuantity(
+                            orderItem.getProduct().getProductId(), 
+                            orderItem.getQuantity()
+                        );
+                    }
+                }
+            }
+            
             order.setStatus(orderStatus);
             orderService.save(order);
         } catch (IllegalArgumentException e) {

@@ -620,7 +620,7 @@
         }
 
         .vet-info {
-            margin:25pc 0 10px 0;
+            margin: 13pc 0 10px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -664,6 +664,26 @@
 
         .logout-btn:hover {
             color: #c82333;
+        }
+
+        /* Close Button */
+        .close-button {
+            background-color: #38bdf8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .close-button:hover {
+            background-color: #0ea5e9;
         }
 
         /* Các item trong menu */
@@ -872,10 +892,10 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">Doctor Dashboard</h2>
                  <ul class="sidebar-menu">
-             <li><a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a></li>
-             <li><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
-             <li><a th:href="@{/vet/appointment/completed}">🏥 Lịch khám đã hoàn thành</a></li>
-             <li><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
+             <li th:classappend="${mode == 'pending'} ? 'active' : ''"><a th:href="@{/vet/appointment/pending}">⏳ Lịch khám chờ duyệt</a></li>
+             <li th:classappend="${mode == 'approved'} ? 'active' : ''"><a th:href="@{/vet/appointment/approved}">✅ Lịch khám đã duyệt</a></li>
+             <li th:classappend="${mode == 'completed'} ? 'active' : ''"><a th:href="@{/vet/appointment/completed}">🏥 Lịch khám đã hoàn thành</a></li>
+             <li th:classappend="${mode == 'history'} ? 'active' : ''"><a th:href="@{/vet/appointment/history}">❌ Lịch khám từ chối</a></li>
              <li th:if="${mode == 'pending'}"><a href="/staff/work-schedule?from=/vet/appointment/pending">📅 Ca làm việc</a></li>
              <li th:if="${mode == 'approved'}"><a href="/staff/work-schedule?from=/vet/appointment/approved">📅 Ca làm việc</a></li>
              <li th:if="${mode == 'completed'}"><a href="/staff/work-schedule?from=/vet/appointment/completed">📅 Ca làm việc</a></li>
@@ -1031,7 +1051,7 @@
                 <p><strong>Dịch vụ:</strong> <span id="popup-service"></span></p>
                 <hr>
                 <div class="pet-image">
-                    <img id="popup-image" src="" alt="Pet Image">
+                    <img id="popup-image" src="" alt="Pet Image" style="width: 100px;">
                 </div>
                 <div class="pet-info">
                     <p><strong>Tên thú cưng:</strong> <span id="popup-petName"></span></p>
@@ -1723,7 +1743,7 @@
         }
     }
 
-    // Add active class to current menu item
+    // Add active class to current menu item and handle dropdowns
     document.addEventListener('DOMContentLoaded', function() {
         const menuItems = document.querySelectorAll('.sidebar-menu li');
 
@@ -1772,8 +1792,8 @@
                     dropdown.style.zIndex = '10000';
                     setTimeout(() => {
                         menu.style.display = 'none';
-                    },);
-                },);
+                    }, 150);
+                }, 100);
             };
 
             // Sự kiện cho nút dropdown

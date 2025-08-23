@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,9 +5,34 @@
     <title>Lịch đặt dịch vụ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <style>
+
+        .select2-container .select2-selection--single {
+            height: calc(2.5rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: normal;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+            right: 0.75rem;
+        }
+
+        .select2-dropdown {
+            border-radius: 0.375rem;
+            border: 1px solid #ced4da;
+        }
+
         .sidebar {
             width: 220px;
             background-color: #ffffff;
@@ -84,185 +108,89 @@
             background-color: #388e3c;
         }
 
-        /* ========================
-           TABS STYLING
-        ======================== */
-
-        /* Tabs dịch vụ */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .tabs a {
-            padding: 12px 24px;
-            background-color: #f8f9fa;
-            color: #6c757d;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 14px;
-        }
-
-        .tabs a:hover {
-            background-color: #e9ecef;
-            color: #495057;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .tabs a.active {
-            background-color: #2ec4b6;
+        .prescription-btn {
+            background-color: #28a745;
             color: white;
-            border-color: #2ec4b6;
-            box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
-        }
-
-        /* Tabs trạng thái */
-        .status-tabs {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-        }
-
-        .status-tabs .nav-tabs {
-            border-bottom: none;
-            gap: 10px;
-        }
-
-        .status-tabs .nav-item {
-            margin-bottom: 0;
-        }
-
-        .status-tabs .nav-link {
             border: none;
-            background-color: #f8f9fa;
-            color: #6c757d;
-            border-radius: 25px;
-            padding: 12px 24px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
-        .status-tabs .nav-link:hover {
-            background-color: #e9ecef;
-            color: #495057;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .status-tabs .nav-link.active {
-            background-color: #2ec4b6;
+        .prescription-btn:hover {
+            background-color: #218838;
             color: white;
-            border-color: #2ec4b6;
-            box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
         }
 
-        /* Table styling */
-        .schedule-table {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        .prescription-table {
+            margin-top: 15px;
         }
 
-        .schedule-table .table {
-            margin-bottom: 0;
-        }
-
-        .schedule-table th {
+        .prescription-table th {
             background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+
+        .prescription-table td {
+            vertical-align: middle;
+        }
+
+        .prescription-modal .modal-header {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .prescription-modal .modal-title {
+            font-weight: 600;
+        }
+
+        .prescription-table th {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
             font-weight: 600;
             color: #495057;
-            padding: 15px;
         }
 
-        .schedule-table td {
-            padding: 15px;
-            vertical-align: middle;
-            border-bottom: 1px solid #dee2e6;
+        .prescription-table td {
+            border-color: #dee2e6;
         }
 
-        .schedule-table tbody tr:hover {
+        .prescription-table tbody tr:hover {
             background-color: #f8f9fa;
         }
 
-        /* Status badges */
-        .status-badge {
-            padding: 6px 12px;
+        /* Thêm style cho các nút filter */
+        .btn-outline-success.filter-type {
+            margin-right: 8px;
+            margin-bottom: 8px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
+        .btn-outline-success.filter-type.active {
+            background-color: #4caf50;
+            color: white !important;
         }
 
-        .status-approved {
-            background-color: #d1edff;
-            color: #0c5460;
+        /* Style cho tab filter trạng thái */
+        .nav-tabs .nav-link {
+            color: #495057;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
         }
 
-        .status-rejected {
-            background-color: #f8d7da;
-            color: #721c24;
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: #4caf50;
         }
 
-        .status-cancelled {
-            background-color: #e2e3e5;
-            color: #383d41;
+        .nav-tabs .nav-link.active {
+            background-color: #4caf50;
+            color: white !important;
+            border: none;
         }
 
-        /* Action buttons */
-        .action-link {
-            color: #dc3545;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .action-link:hover {
-            color: #c82333;
-            text-decoration: underline;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .tabs {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .tabs a {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-
-            .status-tabs .nav-tabs {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .status-tabs .nav-link {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
+        /* Hiệu ứng hover cho các hàng trong bảng */
+        .table tbody tr:hover {
+            background-color: rgba(76, 175, 80, 0.1);
         }
         .select2-container .select2-selection--single {
             height: calc(2.5rem + 2px);
@@ -286,13 +214,45 @@
             border-radius: 0.375rem;
             border: 1px solid #ced4da;
         }
+
+        
+
+        .form-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        /* Style cho trường disabled */
+        .select2-container--default.select2-container--disabled .select2-selection--single {
+            background-color: #e9ecef !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+        }
+
+        .select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
+
+        /* Style cho trường disabled khi select element bị disabled */
+        select:disabled + .select2-container .select2-selection--single {
+            background-color: #e9ecef !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+        }
+
+        select:disabled + .select2-container .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 <div th:insert="component/header :: header"></div>
 <div class="d-flex">
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" style="width: 220px;
+                background-color: #ffffff;
+                border-right: 1px solid #ddd;
+                padding: 30px 20px;">
         <ul class="list-unstyled">
             <li><a href="/profile">Hồ Sơ</a></li>
             <li><a href="/change-password">Đổi mật khẩu</a></li>
@@ -326,6 +286,9 @@
                 <a class="nav-link" data-status="ACCEPTED" href="#">Đã duyệt</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" data-status="COMPLETED" href="#">Hoàn thành</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" data-status="REJECTED" href="#">Từ chối</a>
             </li>
             <li class="nav-item">
@@ -333,146 +296,144 @@
             </li>
         </ul>
 
-        <!-- Bảng lịch -->
-        <div class="schedule-table">
-            <table class="table">
-                <thead>
-                <!--                <tr>-->
-                <!--                    <th>Thú cưng</th>-->
-                <!--                    <th>Dịch vụ</th>-->
-                <!--                    <th>Thời gian</th>-->
-                <!--                    <th>Trạng thái</th>-->
-                <!--                    <th>Hành động</th>-->
-                <!--                </tr>-->
-                </thead>
-                <tbody>
-                <tr th:each="s : ${schedules}">
-                    <td th:text="${s.petName}"></td>
-                    <td th:text="${s.serviceCategory.value}"></td>
-                    <td th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy')}"></td>
-                    <td>
-                        <span th:class="'status-badge ' +
-                                     (${s.status.value == 'Chờ duyệt'} ? 'status-pending' :
-                                     (${s.status.value == 'Đã duyệt'} ? 'status-approved' :
-                                     (${s.status.value == 'Từ chối'} ? 'status-rejected' : 'status-cancelled')))"
-                              th:text="${s.status.value}"></span>
-                    </td>
-                    <td>
-                        <span th:if="${s.status.value == 'Chờ duyệt'}">
-                            <a th:href="@{'/my-schedule/cancel'(id=${s.bookingId}, category=${s.serviceCategory.value}, type=${selectedType}, status=${selectedStatus})}"
-                               class="action-link"
-                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này?');">
-                                <i class="fas fa-times-circle"></i> Hủy
-                            </a>
-                        </span>
-                        <span th:if="${s.status.value != 'Chờ duyệt'}" class="text-muted">—</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <!-- Bảng -->
+        <table class="table table-bordered bg-white align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Thú cưng</th>
+                <th>Dịch vụ</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th style="width: 220px;">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="schedule-table">
+            <tr th:each="s : ${myServices}"
+                th:attr="data-id=${s.bookingId}"
+                th:data-type="${s.serviceCategory.name()}"
+                th:data-status="${s.status.name()}">
+                <td th:text="${s.petName}"></td>
+                <td th:text="${s.serviceName}"></td>
+                <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="col-status" th:text="${s.status.value}"></td>
+                <td>
+                    <button class="btn btn-sm btn-info detail-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Chi tiết
+                    </button>
+                    <button class="btn btn-sm btn-danger cancel-btn"
+                            th:if="${s.status.name() == 'PENDING'}"
+                            th:data-id="${s.bookingId}"
+                            th:data-type="${s.serviceCategory.name()}">
+                        Hủy
+                    </button>
+                    <button class="btn btn-sm btn-success prescription-btn"
+                            th:if="${s.serviceCategory.name() == 'APPOINTMENT' and s.status.name() == 'COMPLETED'}"
+                            th:data-id="${s.bookingId}">
+                        <i class="bi bi-file-medical me-1"></i>Xem đơn thuốc
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-            <!-- Bảng -->
-            <table class="table table-bordered bg-white align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>Thú cưng</th>
-                    <th>Dịch vụ</th>
-                    <th>Thời gian</th>
-                    <th>Trạng thái</th>
-                    <th style="width: 220px;">Hành động</th>
-                </tr>
-                </thead>
-                <tbody id="schedule-table">
-                <tr th:each="s : ${myServices}"
-                    th:attr="data-id=${s.bookingId}"
-                    th:data-type="${s.serviceCategory.name()}"
-                    th:data-status="${s.status.name()}">
-                    <td th:text="${s.petName}"></td>
-                    <td th:text="${s.serviceName}"></td>
-                    <td class="col-time" th:text="${#temporals.format(s.bookDate, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="col-status" th:text="${s.status.value}"></td>
-                    <td>
-                        <button class="btn btn-sm btn-info detail-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Chi tiết
-                        </button>
-                        <button class="btn btn-sm btn-danger cancel-btn"
-                                th:if="${s.status.name() == 'PENDING'}"
-                                th:data-id="${s.bookingId}"
-                                th:data-type="${s.serviceCategory.name()}">
-                            Hủy
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <!-- Thông báo khi không có dữ liệu -->
+        <div th:if="${#lists.isEmpty(myServices)}" class="text-center py-5">
+            <div class="text-muted">
+                <i class="bi bi-calendar-x" style="font-size: 3rem; color: #dee2e6;"></i>
+                <h5 class="mt-3">Không có lịch hẹn nào</h5>
+                <p>Bạn chưa có lịch hẹn dịch vụ nào.</p>
+            </div>
+        </div>
 
-            <!-- Modal Chi tiết -->
-            <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <form id="bookingDetailForm">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Chi tiết lịch đặt</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        
+
+        <!-- Modal Chi tiết -->
+        <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form id="bookingDetailForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chi tiết lịch đặt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="detailBookingId">
+                            <input type="hidden" id="detailBookingType">
+
+                            <div class="mb-3">
+                                <label class="form-label">Thú cưng</label>
+                                <input type="text" class="form-control" id="detailPetName" readonly>
                             </div>
-                            <div class="modal-body">
-                                <input type="hidden" id="detailBookingId">
-                                <input type="hidden" id="detailBookingType">
 
-                                <div class="mb-3">
-                                    <label class="form-label">Thú cưng</label>
-                                    <input type="text" class="form-control" id="detailPetName" readonly>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Loại dịch vụ</label>
-                                    <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;"
-                                            required>
-                                        <option value="">-- Chọn loại dịch vụ --</option>
-                                        <option value="SPA">Spa</option>
-                                        <option value="HOTEL">Khách sạn thú cưng</option>
-                                        <option value="APPOINTMENT">Khám bệnh</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Dịch vụ</label>
-                                    <select class="form-control" id="detailServiceNameSelect" style="width: 100%;"
-                                            required>
-                                        <option value="">-- Chọn dịch vụ --</option>
-                                    </select>
-                                </div>
-
-
-                                <div class="mb-3">
-                                    <label class="form-label">Ngày đặt</label>
-                                    <input type="datetime-local" class="form-control" id="detailBookDate">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Trạng thái</label>
-                                    <input type="text" class="form-control" id="detailStatus" readonly>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Ghi chú</label>
-                                    <textarea class="form-control" id="detailNote" rows="3"></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Loại dịch vụ</label>
+                                <select class="form-control" id="detailServiceTypeSelect" style="width: 100%;" required disabled>
+                                    <option value="">-- Chọn loại dịch vụ --</option>
+                                    <option value="SPA">Spa</option>
+                                    <option value="HOTEL">Khách sạn thú cưng</option>
+                                    <option value="APPOINTMENT">Khám bệnh</option>
+                                </select>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" class="btn btn-success" id="saveDetailBtn">Lưu</button>
+
+                            <div class="mb-3">
+                                <label class="form-label">Dịch vụ</label>
+                                <select class="form-control" id="detailServiceNameSelect" style="width: 100%;" required>
+                                    <option value="">-- Chọn dịch vụ --</option>
+                                </select>
                             </div>
-                        </form>
-                    </div>
+
+
+                            <div class="mb-3">
+                                <label class="form-label">Ngày đặt</label>
+                                <input type="datetime-local" class="form-control" id="detailBookDate">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <input type="text" class="form-control" id="detailStatus" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="detailNote" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-success" id="saveDetailBtn">Lưu</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Đơn thuốc -->
+<div class="modal fade prescription-modal" id="prescriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đơn thuốc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="prescriptionContent">
+                    <!-- Nội dung đơn thuốc sẽ được load động -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
 <div th:insert="component/footer :: footer"></div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -488,19 +449,33 @@
     const bookingStatusMap = {
         PENDING: "Chờ duyệt",
         ACCEPTED: "Đã duyệt",
+        COMPLETED: "Hoàn thành",
         REJECTED: "Từ chối",
         CANCELLED: "Hủy"
     };
 
     $(document).ready(function () {
-        // Khởi tạo Select2
-        $('#detailServiceTypeSelect, #detailServiceNameSelect').select2({
+        // Khởi tạo Select2 cho trường dịch vụ (cho phép clear)
+        $('#detailServiceNameSelect').select2({
             dropdownParent: $('#bookingDetailModal'),
             width: '100%',
             theme: 'bootstrap-5',
-            placeholder: '-- Chọn --',
+            placeholder: '-- Chọn dịch vụ --',
             allowClear: true
         });
+
+        // Khởi tạo Select2 cho trường loại dịch vụ (không cho phép clear và disable)
+        $('#detailServiceTypeSelect').select2({
+            dropdownParent: $('#bookingDetailModal'),
+            width: '100%',
+            theme: 'bootstrap-5',
+            placeholder: '-- Chọn loại dịch vụ --',
+            allowClear: false
+        });
+        
+        // Disable trường và trigger change để áp dụng style
+        $('#detailServiceTypeSelect').prop('disabled', true).trigger('change');
+        $('#detailServiceTypeSelect').next('.select2-container').addClass('select2-container--disabled');
 
         // Khi chọn loại dịch vụ => load dịch vụ từ DB
         $('#detailServiceTypeSelect').on('change', function () {
@@ -530,6 +505,7 @@
         });
     });
 
+
     // Set minimum date to today
     document.addEventListener("DOMContentLoaded", () => {
         const now = new Date();
@@ -549,22 +525,22 @@
         let selectedType = "ALL";
         let selectedStatus = "ALL";
 
-        // Filter theo loại dịch vụ
-        $(".filter-type").click(function () {
-            $(".filter-type").removeClass("active");
-            $(this).addClass("active");
-            selectedType = $(this).data("type");
-            filterTable();
-        });
-
-        // Filter theo trạng thái
-        $("#statusFilter .nav-link").click(function (e) {
-            e.preventDefault();
-            $("#statusFilter .nav-link").removeClass("active");
-            $(this).addClass("active");
-            selectedStatus = $(this).data("status");
-            filterTable();
-        });
+                 // Filter theo loại dịch vụ
+         $(".filter-type").click(function () {
+             $(".filter-type").removeClass("active");
+             $(this).addClass("active");
+             selectedType = $(this).data("type");
+             filterTable();
+         });
+ 
+         // Filter theo trạng thái
+         $("#statusFilter .nav-link").click(function (e) {
+             e.preventDefault();
+             $("#statusFilter .nav-link").removeClass("active");
+             $(this).addClass("active");
+             selectedStatus = $(this).data("status");
+             filterTable();
+         });
 
         function filterTable() {
             $("#schedule-table tr").each(function () {
@@ -660,7 +636,9 @@
 
                 // Ẩn các nút hành động
                 $row.find(".cancel-btn, .detail-btn").remove();
-                location.reload();
+                
+                                 // Reload trang
+                 location.reload();
             },
             error: function () {
                 alert("Có lỗi xảy ra khi hủy lịch.");
@@ -699,10 +677,71 @@
                 $row.find("td:nth-child(2)").text(data.serviceName);
                 $row.find(".col-time").text(new Date(data.bookDate).toLocaleString("vi-VN"));
                 $row.find(".col-status").text("Chờ duyệt");
-                location.reload();
+                
+                                 // Reload trang
+                 location.reload();
             },
             error: function () {
                 alert("Không thể cập nhật lịch.");
+            }
+        });
+    });
+
+    // Xử lý nút xem đơn thuốc
+    $(document).on("click", ".prescription-btn", function () {
+        let appointmentId = $(this).data("id");
+        
+        $.ajax({
+            url: `/my-schedule/prescriptions/${appointmentId}`,
+            type: "GET",
+            success: function (prescriptions) {
+                let content = "";
+                
+                if (prescriptions && prescriptions.length > 0) {
+                    content = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered prescription-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên thuốc</th>
+                                        <th>Liều lượng</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    prescriptions.forEach((prescription, index) => {
+                        content += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${prescription.drugName}</td>
+                                <td>${prescription.amount}</td>
+                                <td>${prescription.note}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    content += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    content = `
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Chưa có đơn thuốc cho lịch hẹn này.
+                        </div>
+                    `;
+                }
+                
+                $("#prescriptionContent").html(content);
+                $("#prescriptionModal").modal("show");
+            },
+            error: function () {
+                alert("Không thể lấy thông tin đơn thuốc.");
             }
         });
     });
@@ -711,4 +750,3 @@
 </body>
 <script th:src="@{/js/header.js}"></script>
 </html>
-Đang hiển thị 6655360171851803206.

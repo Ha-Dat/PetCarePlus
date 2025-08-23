@@ -196,7 +196,7 @@
             <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <div class="flex flex-col space-y-1.5 p-6 pb-4">
                     <h3 class="text-xl font-semibold leading-none tracking-tight">
-                        Tạo bài viết mới
+                        Cập nhật bài viết
                     </h3>
                 </div>
                 <div class="p-6 pt-0 space-y-6">
@@ -234,7 +234,6 @@
 
                                 <!-- Placeholder -->
                                 <div id="image-placeholder">
-                                    <p class="text-sm text-muted-foreground mb-2">Kéo thả hình ảnh mới vào đây</p>
                                     <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
                                         <circle cx="12" cy="13" r="3" />
@@ -242,11 +241,19 @@
                                 </div>
 
                                 <!-- Input & Label -->
-                                <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
-                                <label for="image-upload"
-                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                                    Chọn tệp hình ảnh
-                                </label>
+                                <div class="flex justify-center gap-2">
+                                    <input type="file" accept="image/*" class="hidden" id="image-upload" name="imageFiles" multiple/>
+                                    <label for="image-upload"
+                                           class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                        Chọn tệp hình ảnh
+                                    </label>
+                                    <button type="button" id="clear-old-images" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                                        Xóa ảnh cũ
+                                    </button>
+                                    <button type="button" id="clear-images" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                                        Xóa tất cả ảnh
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -267,7 +274,6 @@
 
                                 <!-- Placeholder -->
                                 <div id="video-placeholder">
-                                    <p class="text-sm text-muted-foreground mb-2">Kéo thả video mới vào đây</p>
                                     <svg class="h-12 w-12 mx-auto mb-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polygon points="23 7 16 12 23 17 23 7" />
                                         <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
@@ -275,11 +281,19 @@
                                 </div>
 
                                 <!-- Input & Label -->
-                                <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
-                                <label for="video-upload"
-                                       class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
-                                    Chọn tệp video
-                                </label>
+                                <div class="flex justify-center gap-2">
+                                    <input type="file" accept="video/*" class="hidden" id="video-upload" name="videoFiles" multiple/>
+                                    <label for="video-upload"
+                                           class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 cursor-pointer">
+                                        Chọn tệp video
+                                    </label>
+                                    <button type="button" id="clear-old-videos" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                                        Xóa video cũ
+                                    </button>
+                                    <button type="button" id="clear-videos" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive bg-background hover:bg-destructive hover:text-destructive-foreground h-9 px-4 py-2" style="display: none;">
+                                        Xóa tất cả video
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -362,33 +376,184 @@
 
         const imagePlaceholder = document.getElementById("image-placeholder");
         const imagePreview = document.getElementById("image-preview");
+        const clearImagesBtn = document.getElementById("clear-images");
+        const clearOldImagesBtn = document.getElementById("clear-old-images");
 
         const videoPlaceholder = document.getElementById("video-placeholder");
         const videoPreview = document.getElementById("video-preview");
+        const clearVideosBtn = document.getElementById("clear-videos");
+        const clearOldVideosBtn = document.getElementById("clear-old-videos");
+
+        // Kiểm tra xem có ảnh cũ không
+        const hasOldImages = document.querySelectorAll('input[name="oldImageUrls"]').length > 0;
+        const hasOldVideos = document.querySelectorAll('input[name="oldVideoUrls"]').length > 0;
+
+        // Hiển thị nút xóa ảnh cũ nếu có ảnh cũ
+        if (hasOldImages && clearOldImagesBtn) {
+            clearOldImagesBtn.style.display = "inline-flex";
+        }
+
+        // Hiển thị nút xóa video cũ nếu có video cũ
+        if (hasOldVideos && clearOldVideosBtn) {
+            clearOldVideosBtn.style.display = "inline-flex";
+        }
+
+        // Xử lý clear old images
+        if (clearOldImagesBtn) {
+            clearOldImagesBtn.addEventListener("click", function () {
+                // Xóa tất cả ảnh cũ khỏi preview
+                const oldImageElements = imagePreview.querySelectorAll('div');
+                oldImageElements.forEach(element => {
+                    element.remove();
+                });
+                
+                // Xóa tất cả input hidden của ảnh cũ
+                const oldImageInputs = document.querySelectorAll('input[name="oldImageUrls"]');
+                oldImageInputs.forEach(input => {
+                    input.remove();
+                });
+                
+                // Ẩn nút xóa ảnh cũ
+                clearOldImagesBtn.style.display = "none";
+                
+                // Hiển thị placeholder nếu không còn ảnh nào
+                if (imagePreview.children.length === 0) {
+                    imagePlaceholder.style.display = "block";
+                }
+            });
+        }
+
+        // Xử lý clear old videos
+        if (clearOldVideosBtn) {
+            clearOldVideosBtn.addEventListener("click", function () {
+                // Xóa tất cả video cũ khỏi preview
+                const oldVideoElements = videoPreview.querySelectorAll('div');
+                oldVideoElements.forEach(element => {
+                    element.remove();
+                });
+                
+                // Xóa tất cả input hidden của video cũ
+                const oldVideoInputs = document.querySelectorAll('input[name="oldVideoUrls"]');
+                oldVideoInputs.forEach(input => {
+                    input.remove();
+                });
+                
+                // Ẩn nút xóa video cũ
+                clearOldVideosBtn.style.display = "none";
+                
+                // Hiển thị placeholder nếu không còn video nào
+                if (videoPreview.children.length === 0) {
+                    videoPlaceholder.style.display = "block";
+                }
+            });
+        }
+
+        // Xử lý clear images mới
+        if (clearImagesBtn) {
+            clearImagesBtn.addEventListener("click", function () {
+                imageUpload.value = "";
+                // Chỉ xóa ảnh mới được thêm vào, giữ lại ảnh cũ
+                const newImages = imagePreview.querySelectorAll('img[src^="blob:"]');
+                newImages.forEach(img => img.remove());
+                
+                // Ẩn nút xóa ảnh mới
+                clearImagesBtn.style.display = "none";
+                
+                // Hiển thị lại nút xóa ảnh cũ nếu có ảnh cũ
+                if (hasOldImages && clearOldImagesBtn) {
+                    clearOldImagesBtn.style.display = "inline-flex";
+                }
+                
+                // Hiển thị placeholder nếu không còn ảnh nào
+                if (imagePreview.children.length === 0) {
+                    imagePlaceholder.style.display = "block";
+                }
+            });
+        }
+
+        // Xử lý clear videos mới
+        if (clearVideosBtn) {
+            clearVideosBtn.addEventListener("click", function () {
+                videoUpload.value = "";
+                // Chỉ xóa video mới được thêm vào, giữ lại video cũ
+                const newVideos = videoPreview.querySelectorAll('video[src^="blob:"]');
+                newVideos.forEach(video => video.remove());
+                
+                // Ẩn nút xóa video mới
+                clearVideosBtn.style.display = "none";
+                
+                // Hiển thị lại nút xóa video cũ nếu có video cũ
+                if (hasOldVideos && clearOldVideosBtn) {
+                    clearOldVideosBtn.style.display = "inline-flex";
+                }
+                
+                // Hiển thị placeholder nếu không còn video nào
+                if (videoPreview.children.length === 0) {
+                    videoPlaceholder.style.display = "block";
+                }
+            });
+        }
 
         if (imageUpload) {
             imageUpload.addEventListener("change", function () {
                 const files = this.files;
-                imagePreview.innerHTML = "";
 
-                if (files.length <= 3) {
-                    imagePlaceholder.style.display = "none";
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const img = document.createElement("img");
-                        img.src = URL.createObjectURL(file);
-                        img.style.maxWidth = "200px";
-                        img.style.maxHeight = "200px";
-                        img.style.marginRight = "10px";
-                        img.onload = () => URL.revokeObjectURL(img.src);
-                        imagePreview.appendChild(img);
-                    }
-                } else {
+                if (files.length > 3) {
                     alert("Bạn chỉ có thể đăng tối đa 3 ảnh.");
                     this.value = "";
-                    imagePreview.innerHTML = "";
-                    imagePlaceholder.style.display = "block";
+                    clearImagesBtn.style.display = "none";
+                    
+                    // Hiển thị lại nút xóa ảnh cũ nếu có ảnh cũ
+                    if (hasOldImages && clearOldImagesBtn) {
+                        clearOldImagesBtn.style.display = "inline-flex";
+                    }
+                    
+                    // Hiển thị placeholder nếu không còn ảnh nào
+                    if (imagePreview.children.length === 0) {
+                        imagePlaceholder.style.display = "block";
+                    }
                     return;
+                }
+
+                // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+                const maxSize = 15 * 1024 * 1024; // 15MB
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > maxSize) {
+                        alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+                        this.value = "";
+                        clearImagesBtn.style.display = "none";
+                        
+                        // Hiển thị lại nút xóa ảnh cũ nếu có ảnh cũ
+                        if (hasOldImages && clearOldImagesBtn) {
+                            clearOldImagesBtn.style.display = "inline-flex";
+                        }
+                        
+                        // Hiển thị placeholder nếu không còn ảnh nào
+                        if (imagePreview.children.length === 0) {
+                            imagePlaceholder.style.display = "block";
+                        }
+                        return;
+                    }
+                }
+
+                imagePlaceholder.style.display = "none";
+                
+                // Ẩn nút xóa ảnh cũ và hiển thị nút xóa ảnh mới
+                if (clearOldImagesBtn) {
+                    clearOldImagesBtn.style.display = "none";
+                }
+                clearImagesBtn.style.display = "inline-flex";
+                
+                // Thêm ảnh mới vào preview (giữ lại ảnh cũ)
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = "200px";
+                    img.style.maxHeight = "200px";
+                    img.style.marginRight = "10px";
+                    img.onload = () => URL.revokeObjectURL(img.src);
+                    imagePreview.appendChild(img);
                 }
             });
         }
@@ -396,27 +561,64 @@
         if (videoUpload) {
             videoUpload.addEventListener("change", function () {
                 const files = this.files;
-                videoPreview.innerHTML = "";
 
-                if (files.length <= 3) {
-                    videoPlaceholder.style.display = "none";
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const video = document.createElement("video");
-                        video.src = URL.createObjectURL(file);
-                        video.controls = true;
-                        video.style.maxWidth = "300px";
-                        video.style.maxHeight = "200px";
-                        video.style.marginRight = "10px";
-                        video.onloadeddata = () => URL.revokeObjectURL(video.src);
-                        videoPreview.appendChild(video);
-                    }
-                } else {
+                if (files.length > 3) {
                     alert("Bạn chỉ có thể đăng tối đa 3 video.");
                     this.value = "";
-                    videoPreview.innerHTML = "";
-                    videoPlaceholder.style.display = "block";
+                    clearVideosBtn.style.display = "none";
+                    
+                    // Hiển thị lại nút xóa video cũ nếu có video cũ
+                    if (hasOldVideos && clearOldVideosBtn) {
+                        clearOldVideosBtn.style.display = "inline-flex";
+                    }
+                    
+                    // Hiển thị placeholder nếu không còn video nào
+                    if (videoPreview.children.length === 0) {
+                        videoPlaceholder.style.display = "block";
+                    }
                     return;
+                }
+
+                // Kiểm tra kích thước file (15MB = 15 * 1024 * 1024 bytes)
+                const maxSize = 15 * 1024 * 1024; // 15MB
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > maxSize) {
+                        alert(`File "${files[i].name}" có kích thước ${(files[i].size / (1024 * 1024)).toFixed(2)}MB vượt quá giới hạn 15MB.`);
+                        this.value = "";
+                        clearVideosBtn.style.display = "none";
+                        
+                        // Hiển thị lại nút xóa video cũ nếu có video cũ
+                        if (hasOldVideos && clearOldVideosBtn) {
+                            clearOldVideosBtn.style.display = "inline-flex";
+                        }
+                        
+                        // Hiển thị placeholder nếu không còn video nào
+                        if (videoPreview.children.length === 0) {
+                            videoPlaceholder.style.display = "block";
+                        }
+                        return;
+                    }
+                }
+
+                videoPlaceholder.style.display = "none";
+                
+                // Ẩn nút xóa video cũ và hiển thị nút xóa video mới
+                if (clearOldVideosBtn) {
+                    clearOldVideosBtn.style.display = "none";
+                }
+                clearVideosBtn.style.display = "inline-flex";
+                
+                // Thêm video mới vào preview (giữ lại video cũ)
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const video = document.createElement("video");
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    video.style.maxWidth = "300px";
+                    video.style.maxHeight = "200px";
+                    video.style.marginRight = "10px";
+                    video.onloadeddata = () => URL.revokeObjectURL(video.src);
+                    videoPreview.appendChild(video);
                 }
             });
         }

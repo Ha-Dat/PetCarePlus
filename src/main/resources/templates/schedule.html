@@ -497,22 +497,22 @@
 
 <div id="OffRequestModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="OffRequestModalTitle">Đon xin nghỉ:</h2>
+        <h2 id="OffRequestModalTitle">Đơn xin nghỉ:</h2>
         <form id="OffRequestForm" onsubmit="submitOffRequest(event)">
             <input type="hidden" id="OffRequestScheduleId" name="OffRequestScheduleId">
             <input type="hidden" id="OffRequestRequestId" name="OffRequestRequestId">
             <input type="hidden" id="OffRequestAccountId" name="OffRequestAccountId">
 
-                         <label for="OffRequestStatus" id="OffRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
-             <input id="OffRequestStatus" name="OffRequestStatus" readonly style="display: none;">
+            <label for="OffRequestStatus" id="OffRequestStatusLabel" style="display: none;">Trạng thái đơn:</label>
+            <input id="OffRequestStatus" name="OffRequestStatus" readonly style="display: none;">
 
             <label for="OffRequestReason">Lý do:</label>
             <textarea id="OffRequestReason" name="OffRequestReason" rows="3"></textarea>
 
-                         <div class="modal-actions">
+            <div class="modal-actions">
                  <button type="button" class="btn btn-secondary" onclick="closeOffRequestModal()">Hủy</button>
                  <button type="submit" class="btn btn-primary" id="submitOffRequestBtn">Xin nghỉ</button>
-             </div>
+            </div>
         </form>
         <div class="modal-actions">
             <form id="DeleteOffRequestForm" method="post" onsubmit="confirmDeleteAndToast(event)">
@@ -526,7 +526,7 @@
 
 <div id="ChangeRequestModal" class="modal-overlay" style="display: none;">
     <div class="modal-box">
-        <h2 id="ChangeRequestModalTitle">Đon xin đổi lịch:</h2>
+        <h2 id="ChangeRequestModalTitle">Đơn xin đổi lịch:</h2>
         <form id="ChangeRequestForm" onsubmit="submitChangeRequest(event)">
             <input type="hidden" id="ChangeRequestScheduleId" name="ChangeRequestScheduleId">
             <input type="hidden" id="ChangeRequestRequestId" name="ChangeRequestRequestId">
@@ -741,7 +741,7 @@
                 const thisOffRequest = Array.isArray(absentRequests) ? (absentRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
-                
+
                 // Debug log for off request
                 if (thisOffRequest) {
                     console.log("Off Request found:", thisOffRequest);
@@ -759,7 +759,7 @@
                                          Có lịch:<br> ${thisStatus}
                                      </button>
                                  `;
-                     
+
                      if (thisChangeRequest == null) {
                          html += `<a
                                      data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
@@ -806,25 +806,25 @@
          document.getElementById("OffRequestRequestId").value = element.getAttribute('data-requestId');
          document.getElementById("OffRequestReason").value = element.getAttribute('data-reason');
          document.getElementById("OffRequestStatus").value = element.getAttribute('data-status');
-         
+
                    // Show status field only if request is APPROVED or REJECTED
           const status = element.getAttribute('data-status');
           const statusLabel = document.getElementById("OffRequestStatusLabel");
           const statusInput = document.getElementById("OffRequestStatus");
-          
+
           console.log("Off Request Status:", status); // Debug log
-          
+
           if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
               statusLabel.style.display = 'block';
               statusInput.style.display = 'block';
-              
+
               // Set all form fields to read-only
               document.getElementById("OffRequestReason").readOnly = true;
               document.getElementById("OffRequestReason").style.backgroundColor = '#f5f5f5';
           } else {
               statusLabel.style.display = 'none';
               statusInput.style.display = 'none';
-              
+
               // Enable form fields for editing
               document.getElementById("OffRequestReason").readOnly = false;
               document.getElementById("OffRequestReason").style.backgroundColor = 'white';
@@ -843,18 +843,18 @@
                   const urlParams = new URLSearchParams(window.location.search);
                   const fromParam = urlParams.get('from');
                   let redirectPath = '/staff/work-schedule';
-                  
+
                   // Preserve the from parameter in the redirect URL for the back button functionality
                   if (fromParam) {
                       redirectPath += `?from=${encodeURIComponent(fromParam)}`;
                   }
-                  
+
                   deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
               }
                     } else {
                deleteForm.style.display = 'none';
            }
-           
+
            // Hide submit button if request is already APPROVED or REJECTED
            const submitBtn = document.getElementById("submitOffRequestBtn");
            if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
@@ -862,7 +862,7 @@
            } else {
                submitBtn.style.display = 'block';
            }
-          
+
           // Show modal
           document.getElementById("OffRequestModal").style.display = 'flex';
      }
@@ -933,18 +933,18 @@
          document.getElementById("ChangeRequestStatus").value = element.getAttribute('data-status');
          document.getElementById("ChangeRequestWorkDate").value = element.getAttribute('data-requestedDate');
          document.getElementById("ChangeRequestShift").value = element.getAttribute('data-requestedShift');
-         
+
                    // Show status field only if request is APPROVED or REJECTED
           const status = element.getAttribute('data-status');
           const statusLabel = document.getElementById("ChangeRequestStatusLabel");
           const statusInput = document.getElementById("ChangeRequestStatus");
-          
+
           console.log("Change Request Status:", status); // Debug log
-          
+
           if (status && (status === 'Chấp nhận' || status === 'Từ chối')) {
               statusLabel.style.display = 'block';
               statusInput.style.display = 'block';
-              
+
               // Set all form fields to read-only
               document.getElementById("ChangeRequestWorkDate").readOnly = true;
               document.getElementById("ChangeRequestWorkDate").style.backgroundColor = '#f5f5f5';
@@ -955,7 +955,7 @@
           } else {
               statusLabel.style.display = 'none';
               statusInput.style.display = 'none';
-              
+
               // Enable form fields for editing
               document.getElementById("ChangeRequestWorkDate").readOnly = false;
               document.getElementById("ChangeRequestWorkDate").style.backgroundColor = 'white';
@@ -963,12 +963,12 @@
               document.getElementById("ChangeRequestShift").style.backgroundColor = 'white';
               document.getElementById("ChangeRequestReason").readOnly = false;
               document.getElementById("ChangeRequestReason").style.backgroundColor = 'white';
-              
+
               // Set minimum date to today to prevent selecting past dates
               const today = new Date().toISOString().split('T')[0];
               document.getElementById("ChangeRequestWorkDate").min = today;
           }
-          
+
           // Set delete form
           const requestId = element.getAttribute('data-requestId');
           const deleteForm = document.getElementById("DeleteChangeRequestForm");
@@ -983,12 +983,12 @@
                   const urlParams = new URLSearchParams(window.location.search);
                   const fromParam = urlParams.get('from');
                   let redirectPath = '/staff/work-schedule';
-                  
+
                   // Preserve the from parameter in the redirect URL for the back button functionality
                   if (fromParam) {
                       redirectPath += `?from=${encodeURIComponent(fromParam)}`;
                   }
-                  
+
                   deleteForm.action = `/staff/work-schedule/delete/${requestId}?redirect=${encodeURIComponent(redirectPath)}`;
               }
           } else {
@@ -1001,28 +1001,45 @@
            } else {
                submitBtn.style.display = 'block';
            }
-          
+
           // Show modal
           document.getElementById("ChangeRequestModal").style.display = 'flex';
      }
 
-         function submitChangeRequest(event) {
-         event.preventDefault();
- 
-         const form = document.getElementById('ChangeRequestForm');
-         const requestId = document.getElementById('ChangeRequestRequestId').value;
-         
-         // Validate that the requested date is not in the past
-         const requestedDate = form.ChangeRequestWorkDate.value;
-         const today = new Date();
-         today.setHours(0, 0, 0, 0); // Set to start of today
-         const requestedDateObj = new Date(requestedDate);
-         
-         if (requestedDateObj < today) {
-             showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
-             return;
-         }
- 
+             function submitChangeRequest(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('ChangeRequestForm');
+        const requestId = document.getElementById('ChangeRequestRequestId').value;
+        const accountId = document.getElementById('ChangeRequestAccountId').value;
+
+        // Validate that the requested date is not in the past
+        const requestedDate = form.ChangeRequestWorkDate.value;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to start of today
+        const requestedDateObj = new Date(requestedDate);
+
+        if (requestedDateObj < today) {
+            showToast("Không thể đổi lịch cho ngày trong quá khứ!", "error");
+            return;
+        }
+
+        // Check for duplicate schedule on the requested date and shift
+        const requestedShift = form.ChangeRequestShift.value.trim();
+        
+        const hasDuplicate = schedules.some(schedule => {
+            // Check if there's any schedule (not just the current user's) on the requested date and shift
+            return schedule.workDate === requestedDate && 
+                schedule.shiftName === requestedShift;
+        });
+
+        if (hasDuplicate) {
+            showToast("Bạn đã có lịch làm việc trong ca này rồi! Không thể tạo đơn đổi lịch.", "error");
+            return;
+        }
+
+
+
          if(requestId) {
              const data = {
                  reason: form.ChangeRequestReason.value.trim(),
@@ -1031,22 +1048,22 @@
                  requestedShift: form.ChangeRequestShift.value.trim()
              };
 
-            fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(res => {
-                if (res.ok) {
-                    closeChangeRequestModal();
-                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
-                }
-            }).catch(error => {
-                console.error("Lỗi cập nhật:", error);
-                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
-            });
+                         fetch(`/staff/work-schedule/update-change-request/${requestId}`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(data)
+             }).then(res => {
+                 if (res.ok) {
+                     closeChangeRequestModal();
+                     showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                     setTimeout(() => window.location.reload(), 1000);
+                 } else {
+                     showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                 }
+             }).catch(error => {
+                 console.error("Lỗi cập nhật:", error);
+                 showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+             });
         }
         else {
             const data = {
@@ -1055,22 +1072,22 @@
                 requestedDate: form.ChangeRequestWorkDate.value,
                 requestedShift: form.ChangeRequestShift.value.trim()
             };
-            fetch(`/staff/work-schedule/create-change-request`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(res => {
-                if (res.ok) {
-                    closeChangeRequestModal();
-                    showToast("Nộp đơn xin đổi lịch thành công!", "success");
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast("Nộp đơn xin đổi lịch thất bại!", "error");
-                }
-            }).catch(error => {
-                console.error("Lỗi cập nhật:", error);
-                showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
-            });
+                         fetch(`/staff/work-schedule/create-change-request`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(data)
+             }).then(res => {
+                 if (res.ok) {
+                     closeChangeRequestModal();
+                     showToast("Nộp đơn xin đổi lịch thành công!", "success");
+                     setTimeout(() => window.location.reload(), 1000);
+                 } else {
+                     showToast("Nộp đơn xin đổi lịch thất bại!", "error");
+                 }
+             }).catch(error => {
+                 console.error("Lỗi cập nhật:", error);
+                 showToast("Có lỗi xảy ra khi nộp đơn xin đổi lịch!", "error");
+             });
         }
 
     }

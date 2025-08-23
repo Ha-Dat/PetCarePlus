@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Manager dashboard</title>
     <style>
         body {
@@ -23,7 +24,6 @@
             max-width: 230px;
             background-color: #2ec4b6;
             color: white;
-            height: 100vh;
             top: 0;
             left: 0;
             padding: 20px;
@@ -32,7 +32,7 @@
         }
 
         .sidebar-title {
-            font-size: 30px;
+            font-size: 22px;
             margin-bottom: 30px;
             text-align: center;
         }
@@ -441,6 +441,79 @@
             background-color: #f0f0f0;
         }
 
+        .manager-info {
+            margin: 25pc 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .manager-details {
+            gap: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .manager-name {
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .manager-role {
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* Styles for past schedules */
+        .past-schedule {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+
+        .past-schedule .btn {
+            opacity: 0.8;
+        }
+
+        .past-schedule .btn:hover {
+            opacity: 1;
+        }
+
+        /* Warning text for past schedules */
+        .past-schedule-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .home-btn {
+            color: #28a745;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            color: #1e7e34;
+        }
+
+        .logout-btn {
+            color: #dc3545;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            color: #c82333;
+        }
+
         /* Styling for optgroup */
         optgroup {
             font-weight: bold;
@@ -507,8 +580,24 @@
         <ul class="sidebar-menu">
             <li><a href="/manager/service-dashboard">🛠️ Dịch vụ</a></li>
             <li><a href="/manager/post-dashboard">📰 Quản lý bài viết</a></li>
-            <li class="active"><a href="/manager/shift-dashboards">📅 Quản lý ca làm việc</a></li>
+            <li class="active"><a href="/manager/manager-dashboard">📅 Quản lý ca làm việc</a></li>
         </ul>
+
+        <!-- Thông tin người dùng -->
+        <div class="manager-info">
+            <div class="manager-details">
+                <span class="manager-name" th:text="${session.loggedInUser.getName()}">Name</span>
+                <span class="manager-role" th:text="${session.loggedInUser.getRole()}">Role</span>
+            </div>
+            <div class="manager-details">
+                <a href="/home" class="home-btn" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/logout" class="logout-btn" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -583,24 +672,24 @@
         <form id="addScheduleForm" onsubmit="submitAddSchedule(event)">
             <input type="hidden" id="addScheduleWorkDate" name="addScheduleWorkDate">
             <input type="hidden" id="addScheduleShift" name="addScheduleShift">
-            
+
             <label for="addScheduleAccountSelect">Chọn nhân viên:</label>
             <select id="addScheduleAccountSelect" name="addScheduleAccountSelect" required>
                 <option value="">-- Chọn nhân viên --</option>
                 <optgroup label="Nhân viên chăm sóc thú cưng">
-                    <option th:each="staff : ${availableStaff}" 
+                    <option th:each="staff : ${availableStaff}"
                             th:if="${staff.roleName == 'PET_GROOMER'}"
                             th:value="${staff.accountId}"
                             th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
                 </optgroup>
                 <optgroup label="Nhân viên bán hàng">
-                    <option th:each="staff : ${availableStaff}" 
+                    <option th:each="staff : ${availableStaff}"
                             th:if="${staff.roleName == 'SELLER'}"
                             th:value="${staff.accountId}"
                             th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
                 </optgroup>
                 <optgroup label="Bác sĩ thú y">
-                    <option th:each="staff : ${availableStaff}" 
+                    <option th:each="staff : ${availableStaff}"
                             th:if="${staff.roleName == 'VET'}"
                             th:value="${staff.accountId}"
                             th:text="${staff.accountName + ' - ' + staff.accountPhone}"></option>
@@ -711,6 +800,36 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeEditScheduleModal()">Hủy</button>
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Past Schedule Status Edit Modal -->
+<div id="pastStatusModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h2 id="pastStatusModalTitle">Chỉnh sửa trạng thái ca làm việc trong quá khứ</h2>
+        <form id="pastStatusForm" onsubmit="submitPastStatusEdit(event)">
+            <input type="hidden" id="pastStatusScheduleId" name="pastStatusScheduleId">
+            
+            <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+                <div style="margin-bottom: 8px;"><strong>Nhân viên:</strong> <span id="pastStatusAccountName"></span></div>
+                <div style="margin-bottom: 8px;"><strong>Ngày:</strong> <span id="pastStatusWorkDate"></span></div>
+                <div style="margin-bottom: 8px;"><strong>Ca làm việc:</strong> <span id="pastStatusShift"></span></div>
+                <div><strong>Trạng thái hiện tại:</strong> <span id="pastStatusCurrentStatus"></span></div>
+            </div>
+            
+            <label for="pastStatusNewStatus">Trạng thái mới *</label>
+            <select id="pastStatusNewStatus" name="pastStatusNewStatus" required>
+                <option value="PENDING">Chưa đến</option>
+                <option value="PRESENT">Có mặt</option>
+                <option value="ABSENT">Vắng mặt</option>
+                <option value="LEAVE_APPROVED">Nghỉ có phép</option>
+            </select>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePastStatusModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Cập nhật trạng thái</button>
             </div>
         </form>
     </div>
@@ -889,7 +1008,7 @@
                          Làm việc: ${scheduleCount}
                      </button>
                  `;
-                 
+
                  // Only show off request button if there are off requests
                  if (offCount > 0) {
                      buttonsHTML += `
@@ -899,7 +1018,7 @@
                          </button>
                      `;
                  }
-                 
+
                  // Only show change request button if there are change requests
                  if (shiftChangeCount > 0) {
                      buttonsHTML += `
@@ -909,7 +1028,7 @@
                          </button>
                      `;
                  }
-                 
+
                  cell.innerHTML = `
                  <div style="display: flex; flex-direction: column; gap: 2px; width: 100%; align-items: center;">
                      ${buttonsHTML}
@@ -922,7 +1041,7 @@
 
     function openSchedulesModal(date, shiftName) {
         console.log("openSchedulesModal called with:", { date, shiftName });
-        
+
         // Validate input parameters
         if (!date || !shiftName) {
             console.error("Invalid parameters:", { date, shiftName });
@@ -939,7 +1058,7 @@
         // Store current date and shift for add schedule functionality FIRST
         window.currentScheduleDate = date;
         window.currentScheduleShift = shiftName;
-        
+
         console.log("Stored values for add schedule:", {
             date: window.currentScheduleDate,
             shift: window.currentScheduleShift
@@ -950,7 +1069,7 @@
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
         const isPast = scheduleDate < today;
-        
+
         // Show/hide add schedule button based on date
         const addButtonContainer = document.getElementById('addScheduleButtonContainer');
         if (isPast) {
@@ -987,10 +1106,10 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
             const isPast = scheduleDate < today;
-            
+
             console.log('Creating row for schedule:', sche);
             console.log('Is past:', isPast);
-            
+
             const tr = document.createElement('tr');
             const rowHTML = `
             <td>${sche.accountName}</td>
@@ -998,24 +1117,37 @@
             <td>${sche.accountPhone}</td>
             <td>${sche.note}</td>
             <td>${getStatusDisplay(sche.statusName)}</td>
-            <td>
-                <div class="action-buttons">
-                    <button onclick="openEditScheduleModal(this)" 
-                            data-scheduleId="${sche.scheduleId}"
-                            data-accountId="${sche.accountId}"
-                            data-accountName="${sche.accountName}"
-                            data-workDate="${sche.workDate}"
-                            data-shiftName="${sche.shiftName}"
-                            data-statusName="${sche.statusName}"
-                            data-note="${sche.note}"
-                            class="edit-btn">
-                        ✏️
-                    </button>
-                    ${!isPast ? `<button onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')" class="delete-btn">🗑️</button>` : ''}
-                </div>
-            </td>
+                         <td>
+                 <div class="action-buttons">
+                     ${isPast ? 
+                         `<button onclick="openPastStatusModal(this)"
+                                 data-scheduleId="${sche.scheduleId}"
+                                 data-accountName="${sche.accountName}"
+                                 data-workDate="${sche.workDate}"
+                                 data-shiftName="${sche.shiftName}"
+                                 data-statusName="${sche.statusName}"
+                                 class="edit-btn"
+                                 style="color: white;"
+                                 title="Chỉnh sửa trạng thái (ca trong quá khứ)">
+                             📝
+                         </button>` : 
+                         `<button onclick="openEditScheduleModal(this)"
+                                 data-scheduleId="${sche.scheduleId}"
+                                 data-accountId="${sche.accountId}"
+                                 data-accountName="${sche.accountName}"
+                                 data-workDate="${sche.workDate}"
+                                 data-shiftName="${sche.shiftName}"
+                                 data-statusName="${sche.statusName}"
+                                 data-note="${sche.note}"
+                                 class="edit-btn">
+                             ✏️
+                         </button>`
+                     }
+                     ${!isPast ? `<button onclick="deleteSchedule(${sche.scheduleId}, '${sche.accountName}', '${sche.workDate}', '${getShiftDisplay(sche.shiftName)}')" class="delete-btn">🗑️</button>` : ''}
+                 </div>
+             </td>
         `;
-            
+
             console.log('Row HTML:', rowHTML);
             tr.innerHTML = rowHTML;
             tbody.appendChild(tr);
@@ -1146,7 +1278,7 @@
     }
 
          function openEditScheduleModal(element) {
- 
+
          document.getElementById("editScheduleId").value = element.getAttribute('data-scheduleId');
          document.getElementById("editAccountId").value = element.getAttribute('data-accountId');
          document.getElementById("editScheduleAccountName").value = element.getAttribute('data-accountName');
@@ -1154,41 +1286,41 @@
          document.getElementById("editScheduleShift").value = element.getAttribute('data-shiftName');
          document.getElementById("editScheduleStatus").value = element.getAttribute('data-statusName');
          document.getElementById("editScheduleNote").value = element.getAttribute('data-note');
-         
+
          // Check if the schedule is in the past
          const workDate = element.getAttribute('data-workDate');
          const scheduleDate = new Date(workDate);
          const today = new Date();
          today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
          const isPast = scheduleDate < today;
-         
+
          // Disable fields for past schedules (only allow status change)
          const workDateInput = document.getElementById("editScheduleWorkDate");
          const shiftSelect = document.getElementById("editScheduleShift");
          const noteTextarea = document.getElementById("editScheduleNote");
-         
+
          if (isPast) {
              workDateInput.disabled = true;
              shiftSelect.disabled = true;
              noteTextarea.disabled = true;
-             
+
              // Add visual indication
              workDateInput.style.backgroundColor = '#f5f5f5';
              shiftSelect.style.backgroundColor = '#f5f5f5';
              noteTextarea.style.backgroundColor = '#f5f5f5';
-             
+
              // Show warning message
              showToast("Lưu ý: Chỉ có thể thay đổi trạng thái cho ca làm việc trong quá khứ", "success");
          } else {
              workDateInput.disabled = false;
              shiftSelect.disabled = false;
              noteTextarea.disabled = false;
-             
+
              // Remove visual indication
              workDateInput.style.backgroundColor = '';
              shiftSelect.style.backgroundColor = '';
              noteTextarea.style.backgroundColor = '';
-             
+
              // Set minimum date to today for future schedules
              const today = new Date();
              const todayStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
@@ -1214,31 +1346,49 @@
         document.getElementById('editScheduleModal').style.display = 'none';
     }
 
-         function submitEditSchedule(event) {
-         event.preventDefault();
- 
-         const form = document.getElementById('editScheduleForm');
-         const scheduleId = document.getElementById('editScheduleId').value;
-         
-         // Check if the schedule is in the past
-         const workDate = form.editScheduleWorkDate.value;
-         const scheduleDate = new Date(workDate);
-         const today = new Date();
-         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
-         const isPast = scheduleDate < today;
-         
-         // Additional validation: prevent updating to past date for non-past schedules
-         if (!isPast) {
-             const newWorkDate = form.editScheduleWorkDate.value;
-             const newScheduleDate = new Date(newWorkDate);
-             if (newScheduleDate < today) {
-                 showToast("Không thể chỉnh sửa ca làm việc thành ngày trong quá khứ!", "error");
-                 return;
-             }
-         }
-         
+             function submitEditSchedule(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('editScheduleForm');
+        const scheduleId = document.getElementById('editScheduleId').value;
+        const accountId = parseInt(form.editAccountId.value);
+        const newWorkDate = form.editScheduleWorkDate.value;
+        const newShift = form.editScheduleShift.value.trim();
+
+        // Check if the schedule is in the past
+        const workDate = form.editScheduleWorkDate.value;
+        const scheduleDate = new Date(workDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        const isPast = scheduleDate < today;
+
+        // Additional validation: prevent updating to past date for non-past schedules
+        if (!isPast) {
+            const newScheduleDate = new Date(newWorkDate);
+            if (newScheduleDate < today) {
+                showToast("Không thể chỉnh sửa ca làm việc thành ngày trong quá khứ!", "error");
+                return;
+            }
+        }
+
+        // Check for duplicate schedule for the same employee, date, and shift (excluding current schedule)
+        const hasDuplicate = schedules.some(schedule => {
+            const scheduleIdInt = parseInt(scheduleId);
+            const scheduleAccountId = parseInt(schedule.accountId);
+            
+            return schedule.scheduleId !== scheduleIdInt && // Exclude current schedule
+                   scheduleAccountId === accountId && 
+                   schedule.workDate === newWorkDate && 
+                   schedule.shiftName === newShift;
+        });
+
+        if (hasDuplicate) {
+            showToast("Nhân viên đã có lịch làm việc trong ca này rồi!", "error");
+            return;
+        }
+
          let data;
-         
+
          if (isPast) {
              // For past schedules, only allow status change
              data = {
@@ -1257,6 +1407,16 @@
                  workDate: form.editScheduleWorkDate.value,
                  shift: form.editScheduleShift.value.trim()
              };
+
+             // Validate that the new date is not in the past
+             const selectedDate = new Date(form.editScheduleWorkDate.value);
+             const today = new Date();
+             today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+             
+             if (selectedDate < today) {
+                 showToast("Không thể cập nhật ca làm việc cho ngày trong quá khứ!", "error");
+                 return;
+             }
          }
 
         fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
@@ -1267,19 +1427,31 @@
             if (res.ok) {
                 closeEditScheduleModal();
                 showToast("Cập nhật lịch thành công!", "success");
-                
+
                 // Save modal info to localStorage before reload
                 localStorage.setItem('openModalAfterReload', JSON.stringify({
                     type: 'schedule',
                     date: form.editScheduleWorkDate.value,
                     shift: form.editScheduleShift.value.trim()
                 }));
-                
+
                 setTimeout(() => window.location.reload(), 1000);
             } else {
                 return res.text().then(text => {
                     console.log("Error response:", text);
-                    showToast("Cập nhật lịch thất bại! " + text, "error");
+                    let errorMessage = "Cập nhật lịch thất bại!";
+                    
+                    if (text.includes("Cannot change date, account, or shift for past schedules")) {
+                        errorMessage = "Không thể thay đổi ngày, nhân viên hoặc ca làm việc cho lịch trong quá khứ. Chỉ có thể cập nhật trạng thái và ghi chú.";
+                    } else if (text.includes("Cannot create schedule for past dates")) {
+                        errorMessage = "Không thể tạo ca làm việc cho ngày trong quá khứ.";
+                    } else if (text.includes("Cannot delete past schedules")) {
+                        errorMessage = "Không thể xóa ca làm việc trong quá khứ.";
+                    } else {
+                        errorMessage += " " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
                 });
             }
         }).catch(error => {
@@ -1303,7 +1475,7 @@
         };
         return shiftMap[shiftEnum] || shiftEnum;
     }
-    
+
     function getStatusDisplay(statusEnum) {
         const statusMap = {
             'PENDING': 'Chưa đến',
@@ -1316,7 +1488,7 @@
 
     function deleteSchedule(scheduleId, accountName, workDate, shiftDisplay) {
         const confirmMessage = `Bạn có chắc chắn muốn xóa ${accountName} khỏi ca làm việc ngày ${workDate}, ${shiftDisplay}?`;
-        
+
         if (confirm(confirmMessage)) {
             fetch(`/manager/manager-dashboard/delete-schedule/${scheduleId}`, {
                 method: 'DELETE',
@@ -1328,14 +1500,22 @@
                     localStorage.setItem('openModalAfterReload', JSON.stringify({
                         type: 'schedule',
                         date: workDate,
-                        shift: shiftDisplay === 'Ca sáng' ? 'MORNING' : 
+                        shift: shiftDisplay === 'Ca sáng' ? 'MORNING' :
                                shiftDisplay === 'Ca chiều' ? 'AFTERNOON' : 'EVENING'
                     }));
                     setTimeout(() => window.location.reload(), 1000);
                 } else {
                     return res.text().then(text => {
                         console.log("Error response:", text);
-                        showToast("Xóa ca làm việc thất bại! Chi tiết: " + text, "error");
+                        let errorMessage = "Xóa ca làm việc thất bại!";
+                        
+                        if (text.includes("Cannot delete past schedules")) {
+                            errorMessage = "Không thể xóa ca làm việc trong quá khứ.";
+                        } else {
+                            errorMessage += " Chi tiết: " + text;
+                        }
+                        
+                        showToast(errorMessage, "error");
                     });
                 }
             }).catch(error => {
@@ -1351,7 +1531,7 @@
             date: window.currentScheduleDate,
             shift: window.currentScheduleShift
         });
-        
+
         // Check if values are defined before setting
         if (window.currentScheduleDate && window.currentScheduleDate !== 'undefined') {
             document.getElementById('addScheduleWorkDate').value = window.currentScheduleDate;
@@ -1360,7 +1540,7 @@
             showToast("Lỗi: Không thể lấy ngày làm việc!", "error");
             return;
         }
-        
+
         if (window.currentScheduleShift && window.currentScheduleShift !== 'undefined') {
             document.getElementById('addScheduleShift').value = window.currentScheduleShift;
         } else {
@@ -1368,7 +1548,7 @@
             showToast("Lỗi: Không thể lấy ca làm việc!", "error");
             return;
         }
-        
+
         // Show the add schedule modal
         document.getElementById('addScheduleModal').style.display = 'flex';
     }
@@ -1411,6 +1591,16 @@
             return;
         }
 
+        // Validate that the date is not in the past
+        const selectedDate = new Date(workDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        
+        if (selectedDate < today) {
+            showToast("Không thể tạo ca làm việc cho ngày trong quá khứ!", "error");
+            return;
+        }
+
         const data = {
             accountId: parseInt(accountId),
             workDate: workDate,
@@ -1440,7 +1630,15 @@
             } else {
                 return res.text().then(text => {
                     console.log("Error response:", text);
-                    showToast("Thêm ca làm việc thất bại! Chi tiết: " + text, "error");
+                    let errorMessage = "Thêm ca làm việc thất bại!";
+                    
+                    if (text.includes("Cannot create schedule for past dates")) {
+                        errorMessage = "Không thể tạo ca làm việc cho ngày trong quá khứ.";
+                    } else {
+                        errorMessage += " Chi tiết: " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
                 });
             }
         }).catch(error => {
@@ -1452,14 +1650,14 @@
     window.onload = () => {
         initWeekSelect();
         onWeekChange();
-        
+
         // Check if we need to open a modal after reload
         const modalInfo = localStorage.getItem('openModalAfterReload');
         if (modalInfo) {
             try {
                 const info = JSON.parse(modalInfo);
                 localStorage.removeItem('openModalAfterReload'); // Clear the info
-                
+
                 // Wait a bit for the page to fully load
                 setTimeout(() => {
                     if (info.type === 'schedule') {
@@ -1471,6 +1669,111 @@
             }
         }
     };
+
+    // ===== NEW SCRIPTS FOR PAST SCHEDULE STATUS EDIT =====
+    // These scripts are completely separate from existing code
+
+    function openPastStatusModal(element) {
+        console.log("Opening past status modal for:", element);
+        
+        // Get data from button attributes
+        const scheduleId = element.getAttribute('data-scheduleId');
+        const accountName = element.getAttribute('data-accountName');
+        const workDate = element.getAttribute('data-workDate');
+        const shiftName = element.getAttribute('data-shiftName');
+        const statusName = element.getAttribute('data-statusName');
+        
+        // Populate modal fields
+        document.getElementById('pastStatusScheduleId').value = scheduleId;
+        document.getElementById('pastStatusAccountName').textContent = accountName;
+        document.getElementById('pastStatusWorkDate').textContent = workDate;
+        document.getElementById('pastStatusShift').textContent = getShiftDisplay(shiftName);
+        document.getElementById('pastStatusCurrentStatus').textContent = getStatusDisplay(statusName);
+        
+        // Set current status as selected
+        const statusSelect = document.getElementById('pastStatusNewStatus');
+        statusSelect.value = statusName;
+        
+        // Show modal
+        document.getElementById('pastStatusModal').style.display = 'flex';
+        
+        console.log("Past status modal opened with data:", {
+            scheduleId: scheduleId,
+            accountName: accountName,
+            workDate: workDate,
+            shiftName: shiftName,
+            statusName: statusName
+        });
+    }
+
+    function closePastStatusModal() {
+        document.getElementById('pastStatusModal').style.display = 'none';
+    }
+
+    function submitPastStatusEdit(event) {
+        event.preventDefault();
+        
+        console.log("Submitting past status edit");
+        
+        const form = document.getElementById('pastStatusForm');
+        const scheduleId = document.getElementById('pastStatusScheduleId').value;
+        const newStatus = form.pastStatusNewStatus.value;
+        
+        // Get original schedule data from the schedules array
+        const originalSchedule = schedules.find(s => s.scheduleId == scheduleId);
+        if (!originalSchedule) {
+            showToast("Không tìm thấy thông tin ca làm việc!", "error");
+            return;
+        }
+        
+        // Prepare data for past schedule (only status change)
+        const data = {
+            status: newStatus,
+            accountId: parseInt(originalSchedule.accountId),
+            workDate: originalSchedule.workDate,
+            shift: originalSchedule.shiftName,
+            note: originalSchedule.note || ""
+        };
+        
+        console.log("Sending past status update data:", data);
+        
+        fetch(`/manager/manager-dashboard/update/${scheduleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                closePastStatusModal();
+                showToast("Cập nhật trạng thái thành công!", "success");
+                
+                // Save modal info to localStorage before reload
+                localStorage.setItem('openModalAfterReload', JSON.stringify({
+                    type: 'schedule',
+                    date: originalSchedule.workDate,
+                    shift: originalSchedule.shiftName
+                }));
+                
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                return res.text().then(text => {
+                    console.log("Error response:", text);
+                    let errorMessage = "Cập nhật trạng thái thất bại!";
+                    
+                    if (text.includes("Cannot change date, account, or shift for past schedules")) {
+                        errorMessage = "Không thể thay đổi ngày, nhân viên hoặc ca làm việc cho lịch trong quá khứ. Chỉ có thể cập nhật trạng thái.";
+                    } else {
+                        errorMessage += " " + text;
+                    }
+                    
+                    showToast(errorMessage, "error");
+                });
+            }
+        }).catch(error => {
+            console.error("Lỗi cập nhật trạng thái:", error);
+            showToast("Có lỗi xảy ra khi cập nhật trạng thái!", "error");
+        });
+    }
+    // ===== END NEW SCRIPTS =====
 </script>
 </body>
 </html>

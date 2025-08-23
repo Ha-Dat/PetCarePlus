@@ -211,6 +211,8 @@
                 onclick="filterOrders('DELIVERING')">Đang giao</button>
         <button class="tab ${currentStatus == 'COMPLETED' ? 'active' : ''}"
                 onclick="filterOrders('COMPLETED')">Hoàn thành</button>
+        <button class="tab ${currentStatus == 'DELIVERY_FAILED' ? 'active' : ''}"
+                onclick="filterOrders('DELIVERY_FAILED')">Giao Hàng Thất bại</button>
         <button class="tab ${currentStatus == 'CANCELLED' ? 'active' : ''}"
                 onclick="filterOrders('CANCELLED')">Đã Hủy</button>
       </div>
@@ -249,7 +251,14 @@
               <tbody>
               <tr th:each="item : ${order.orderItems}">
                 <td style="width: 50px">
-                  <img th:src="${item.product.medias[0]?.url}" alt="Ảnh" class="product-thumb">
+                  <img th:if="${!#lists.isEmpty(item.product.medias) and item.product.medias[0] != null and item.product.medias[0].url != null}"
+                       th:src="${item.product.medias[0].url}" 
+                       alt="Ảnh sản phẩm" 
+                       class="product-thumb">
+                  <img th:if="${#lists.isEmpty(item.product.medias) or item.product.medias[0] == null or item.product.medias[0].url == null}"
+                       src="https://png.pngtree.com/png-vector/20250627/ourmid/pngtree-simple-black-and-white-square-face-with-sad-expression-as-icon-vector-png-image_7013880.png" 
+                       alt="Ảnh mặc định" 
+                       class="product-thumb">
                 </td>
                 <td th:text="${item.product.name}" style="width: 50%"></td>
                 <td th:text="${item.quantity}" style="width: 20%"></td>

@@ -440,7 +440,7 @@
                     <span class="font-medium text-foreground"
                           th:text="'' + ${reply.account.name}">u/replier</span>
                     <span class="opacity-40"
-                          th:text="' ' + ${comment.account.role.getValue()}"></span>
+                          th:text="' ' + ${reply.account.role.getValue()}"></span>
                     <span>•</span>
                     <span th:text="${#temporals.format(reply.createdAt, 'HH:mm dd/MM/yyyy')}">45 phút trước</span>
 

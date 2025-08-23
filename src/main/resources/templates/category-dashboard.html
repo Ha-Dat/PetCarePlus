@@ -618,7 +618,7 @@
         }
 
         .seller-info {
-            margin: 13pc 0 10px 0;
+            margin: 10pc 0 10px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -736,6 +736,9 @@
                                             <button type="button" class="dropdown-item"
                                                     th:attr="data-id=${parentCat.categoryId}, data-name=${parentCat.name}, data-parent=0"
                                                     onclick="handleOpenEditModal(this)">🖊️ Sửa</button>
+                                            <button type="button" class="dropdown-item"
+                                                    th:attr="data-id=${parentCat.categoryId}, data-name=${parentCat.name}"
+                                                    onclick="handleAddSubCategory(this)">➕ Thêm danh mục con</button>
                                             <form th:action="@{/seller/category/delete}" method="post">
                                                 <input type="hidden" name="categoryId" th:value="${parentCat.categoryId}" />
                                                 <button type="submit" class="dropdown-item delete-btn"
@@ -784,6 +787,9 @@
                                                 <button type="button" class="dropdown-item"
                                                         th:attr="data-id=${childCat.categoryId}, data-name=${childCat.name}, data-parent=${childCat.parent.categoryId}"
                                                         onclick="handleOpenEditModal(this)">🖊️ Sửa</button>
+                                                <button type="button" class="dropdown-item"
+                                                        th:attr="data-id=${childCat.categoryId}, data-name=${childCat.name}"
+                                                        onclick="handleAddSubCategory(this)">➕ Thêm danh mục con</button>
                                                 <form th:action="@{/seller/category/delete}" method="post">
                                                     <input type="hidden" name="categoryId" th:value="${childCat.categoryId}" />
                                                     <button type="submit" class="dropdown-item delete-btn"
@@ -879,10 +885,9 @@
         <h2>Thêm danh mục</h2>
         <form action="/seller/category/save" method="post">
             <label>Tên danh mục:</label>
-            <input type="text" name="name" id="name" required>
+            <input type="text" name="name" id="name" required maxlength="50">
 
-            <label>Danh mục cha:</label>
-            <select name="parentId" id="parentId">
+            <select name="parentId" id="parentId" style="display: none;">
                 <option value="">-- Không có --</option>
                 <option th:each="cat : ${allCategories}"
                         th:value="${cat.categoryId}"
@@ -905,16 +910,7 @@
             <input type="hidden" name="categoryId" id="editCategoryId" />
 
             <label>Tên danh mục:</label>
-            <input type="text" name="name" id="editCategoryName" required />
-
-            <label>Danh mục cha:</label>
-            <select name="parentId" id="editParentCategory">
-                <option value="">-- Không có --</option>
-                <option th:each="cat : ${allCategories}"
-                        th:value="${cat.categoryId}"
-                        th:text="${cat.name}">
-                </option>
-            </select>
+            <input type="text" name="name" id="editCategoryName" required maxlength="50"/>
 
             <div class="modal-actions">
                 <button type="submit" class="btn submit">Cập nhật</button>
@@ -935,22 +931,42 @@
 <script>
     function openAddModal() {
         document.getElementById("addCategoryModal").style.display = "flex";
+        // Reset title về mặc định
+        const modalTitle = document.querySelector("#addCategoryModal h2");
+        modalTitle.textContent = "Thêm danh mục";
+        // Reset form
+        document.getElementById("name").value = "";
+        document.getElementById("parentId").value = "";
     }
 
     function closeAddModal() {
         document.getElementById("addCategoryModal").style.display = "none";
+        // Reset form khi đóng modal
+        document.getElementById("name").value = "";
+        document.getElementById("parentId").value = "";
+    }
+
+    function handleAddSubCategory(button) {
+        const parentId = button.getAttribute("data-id");
+        const parentName = button.getAttribute("data-name");
+        
+        // Hiển thị modal thêm danh mục
+        document.getElementById("addCategoryModal").style.display = "flex";
+        
+        // Tự động set parentId cho danh mục con
+        document.getElementById("parentId").value = parentId;
+        
+        // Thay đổi title của modal để hiển thị rõ đang thêm danh mục con cho danh mục nào
+        const modalTitle = document.querySelector("#addCategoryModal h2");
+        modalTitle.textContent = `Thêm danh mục con cho: ${parentName}`;
     }
 
     function handleOpenEditModal(button) {
         const id = button.getAttribute("data-id");
         const name = button.getAttribute("data-name");
-        const parentId = button.getAttribute("data-parent");
 
         document.getElementById("editCategoryId").value = id;
         document.getElementById("editCategoryName").value = name;
-
-        // Nếu parentId là 0 (không có) thì đặt select về ""
-        document.getElementById("editParentCategory").value = (parentId === "0") ? "" : parentId;
         document.getElementById("editCategoryModal").style.display = "flex";
     }
 

@@ -3,6 +3,7 @@ package org.example.petcareplus.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.dto.CheckoutDTO;
 import org.example.petcareplus.entity.*;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.enums.PaymentStatus;
 import org.example.petcareplus.enums.PromotionStatus;
@@ -49,6 +50,12 @@ public class CheckoutController {
 
         if (id == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt hàng.");
+            return "redirect:/home";
         }
         Profile profile = profileService.getProfileByAccountAccountId(id);
         if (profile.getCity() == null || profile.getWard() == null) {
@@ -97,13 +104,19 @@ public class CheckoutController {
     }
 
     @PostMapping("/create")
-    public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request, Model model) throws Exception {
+    public String createOrder(HttpSession session, @ModelAttribute CheckoutDTO request, RedirectAttributes redirectAttributes, Model model) throws Exception {
 
         // Check session
         Account account = (Account) session.getAttribute("loggedInUser");
         Long id = account.getAccountId();
         if (id == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép đặt hàng.");
+            return "redirect:/home";
         }
 
         // Get cart

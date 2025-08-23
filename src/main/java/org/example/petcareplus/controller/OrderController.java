@@ -4,9 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.example.petcareplus.entity.Account;
 import org.example.petcareplus.entity.Category;
 import org.example.petcareplus.entity.Order;
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.enums.OrderStatus;
 import org.example.petcareplus.service.CategoryService;
 import org.example.petcareplus.service.OrderService;
+import org.example.petcareplus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,13 +27,14 @@ import java.util.List;
 @Controller
 public class OrderController {
     private final OrderService orderService;
-
     private final CategoryService categoryService;
+    private final ProductService productService;
 
     @Autowired
-    public OrderController(final OrderService orderService, CategoryService categoryService) {
+    public OrderController(final OrderService orderService, CategoryService categoryService, ProductService productService) {
         this.orderService = orderService;
         this.categoryService = categoryService;
+        this.productService = productService;
     }
 
     @GetMapping("/list-order")
@@ -39,11 +42,18 @@ public class OrderController {
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
                             @RequestParam(required = false) String status,
-                            Model model) {
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được xem đơn hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép xem đơn hàng.");
+            return "redirect:/home";
         }
 
         List<Category> parentCategories = categoryService.getParentCategory();
@@ -91,7 +101,14 @@ public class OrderController {
 
         Account account = (Account) session.getAttribute("loggedInUser");
         if (account == null) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thực hiện thao tác này");
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được hủy đơn hàng
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Chỉ khách hàng mới được phép hủy đơn hàng");
+            return "redirect:/home";
         }
 
         try {
@@ -107,6 +124,16 @@ public class OrderController {
             if (order.getStatus() != OrderStatus.PENDING) {
                 redirectAttributes.addFlashAttribute("error", "Chỉ có thể hủy đơn hàng ở trạng thái Chờ duyệt");
                 return "redirect:/list-order";
+            }
+
+            // Khôi phục số lượng sản phẩm trong kho
+            if (order.getOrderItems() != null) {
+                for (var orderItem : order.getOrderItems()) {
+                    productService.increaseProductQuantity(
+                        orderItem.getProduct().getProductId(), 
+                        orderItem.getQuantity()
+                    );
+                }
             }
 
             // Cập nhật trạng thái đơn hàng

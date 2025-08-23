@@ -276,7 +276,8 @@
             <div class="flex flex-row items-center p-2 space-x-2 min-w-[40px]">
               <!-- upvote -->
               <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=UPVOTE'}"
-                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-primary/10 hover:text-primary">
+                 th:class="'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' + 
+                 (${postDTO.userRating == T(org.example.petcareplus.enums.Rating).UPVOTE} ? 'bg-primary/10 text-primary' : 'hover:bg-primary/10 hover:text-primary')">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 7-7 7 7" />
                   <path d="M12 19V5" />
@@ -285,7 +286,8 @@
               <span class="text-xs font-medium text-muted-foreground" th:text="${postDTO.getRating()}"></span>
               <!-- downvote -->
               <a th:href="@{'/post-detail/' + ${post.getPostId()} + '/rating?rating=DOWNVOTE'}"
-                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 hover:bg-destructive/10 hover:text-destructive">
+                 th:class="'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ' + 
+                 (${postDTO.userRating == T(org.example.petcareplus.enums.Rating).DOWNVOTE} ? 'bg-destructive/10 text-destructive' : 'hover:bg-destructive/10 hover:text-destructive')">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 5v14" />
                   <path d="m19 12-7 7-7-7" />
@@ -471,7 +473,7 @@
                   </div>
 
                   <!-- Nội dung Reply -->
-                  <p class="text-sm mb-3 break-words whitespace-pre-line max-w-[80ch]" th:text="${reply.comment}">
+                  <p class="text-sm mb-3 break-words whitespace-pre-line max-w-[70ch]" th:text="${reply.comment}">
                     Nội dung trả lời...
                   </p>
 

@@ -5,6 +5,7 @@ import org.example.petcareplus.entity.Account;
 
 import org.example.petcareplus.entity.PetProfile;
 
+import org.example.petcareplus.enums.AccountRole;
 import org.example.petcareplus.service.PetProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,11 +30,18 @@ public class PetProfileController {
     @GetMapping("/pet-profile")
     public String showPetProfilePage(Model model,
                                      HttpSession session,
-                                     @RequestParam(value = "selectedId", required = false) Long selectedId) {
+                                     @RequestParam(value = "selectedId", required = false) Long selectedId,
+                                     RedirectAttributes redirectAttributes) {
         Account account = (Account) session.getAttribute("loggedInUser");
 
         if (account == null) {
             return "redirect:/login";
+        }
+
+        // Kiểm tra role - chỉ CUSTOMER mới được đặt lịch khách sạn
+        if (account.getRole() != AccountRole.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ khách hàng mới được phép tạo hồ sơ thú cưng.");
+            return "redirect:/home";
         }
 
         List<PetProfile> petProfiles = petProfileService.findByAccount(account);
@@ -298,24 +306,22 @@ public class PetProfileController {
                 petProfileService.getSpaBookingsByPetId(petId);
             
             StringBuilder message = new StringBuilder();
-            message.append("Không thể xóa thú cưng vì đang sử dụng các dịch vụ sau: ");
+            message.append("Không thể xóa thú cưng vì đã sử dụng các dịch vụ của hệ thống: ");
             
             if (!appointments.isEmpty()) {
-                message.append("Đặt lịch khám (").append(appointments.size()).append(" lịch hẹn), ");
+                message.append("lịch khám (").append(appointments.size()).append(" đơn đặt), ");
             }
             if (!hotelBookings.isEmpty()) {
-                message.append("Đặt khách sạn (").append(hotelBookings.size()).append(" lịch đặt phòng), ");
+                message.append("Đặt trông hộ (").append(hotelBookings.size()).append(" đơn đặt), ");
             }
             if (!spaBookings.isEmpty()) {
-                message.append("Đặt spa (").append(spaBookings.size()).append(" lịch hẹn), ");
+                message.append("Đặt spa (").append(spaBookings.size()).append(" đơn đặt), ");
             }
             
             // Xóa dấu phẩy cuối cùng
             if (message.charAt(message.length() - 2) == ',') {
                 message.setLength(message.length() - 2);
             }
-            
-            message.append(". Vui lòng hủy tất cả dịch vụ trước khi xóa thú cưng.");
             
             return message.toString();
         } catch (Exception e) {

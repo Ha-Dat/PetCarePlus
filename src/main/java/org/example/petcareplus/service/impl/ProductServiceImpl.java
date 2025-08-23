@@ -47,6 +47,11 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findByNameContainingIgnoreCase(String keyword) {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
+    
+    @Override
+    public List<Product> findByNameOrCategoryContainingIgnoreCase(String keyword) {
+        return productRepository.findByNameOrCategoryContainingIgnoreCase(keyword);
+    }
 
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
@@ -124,6 +129,20 @@ public class ProductServiceImpl implements ProductService {
 
         product.setUnitInStock(product.getUnitInStock() - quantity);
         productRepository.save(product);
+    }
+
+    @Override
+    public void increaseProductQuantity(Long productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        product.setUnitInStock(product.getUnitInStock() + quantity);
+        productRepository.save(product);
+    }
+
+    @Override
+    public List<Product> getTop3BestSellingProducts() {
+        return productRepository.findTop3ByOrderByUnitSoldDesc();
     }
 
     public class InsufficientStockException extends Exception {
