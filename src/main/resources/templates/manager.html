@@ -1066,6 +1066,8 @@
 
         // Check if the date is in the past
         const scheduleDate = new Date(date);
+        // add 1 day
+        scheduleDate.setDate(scheduleDate.getDate() - 1);
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
         const isPast = scheduleDate < today;
