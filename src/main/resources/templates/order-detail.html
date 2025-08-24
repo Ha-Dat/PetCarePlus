@@ -191,7 +191,7 @@
                                             th:selected="${order.status.name() == 'COMPLETED'}">Đã hoàn thành</option>
 
                                     <option value="DELIVERY_FAILED"
-                                            th:if="${order.status.name() == 'DELIVERING' or order.status.name() == 'COMPLETED'}"
+                                            th:if="${order.status.name() == 'DELIVERING'}"
                                             th:selected="${order.status.name() == 'DELIVERY_FAILED'}">Khách không nhận hàng</option>
 
                                     <option value="REJECTED"
