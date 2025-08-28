@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Order Details</title>
+    <title>Chi tiết đơn hàng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
@@ -34,67 +34,67 @@
             background-color: #007bff;
             color: black;
         }
-        
+
         .table th {
             background-color: #f8f9fa;
             font-weight: 600;
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .text-center {
             text-align: center;
         }
-        
+
         .price-column {
         }
     </style>
 </head>
 <body>
 <div class="container p-3" id="order-detail-content">
-    <h4>Order Details #<span th:text="${order.orderId}"></span></h4>
+    <h4>Chi tiết đơn hàng #<span th:text="${order.orderId}"></span></h4>
 
     <div class="row mt-4">
         <!-- Order Items -->
         <div class="col-md-8 mb-3">
             <div class="card">
-                <div class="card-header">Order Items</div>
+                <div class="card-header">Sản phẩm</div>
                 <div class="card-body p-2">
                     <table class="table table-bordered table-sm">
                         <thead class="thead-light">
                         <tr>
-                            <th>Product</th>
-                            <th class="text-right">Price</th>
-                            <th class="text-center">QTY</th>
-                            <th class="text-right">Total</th>
+                            <th>Sản phẩm</th>
+                            <th class="text-right">Giá</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-right">Thành tiền</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="item : ${order.orderItems}">
-                            <td th:text="${item.product.name}">Product Name</td>
+                            <td th:text="${item.product.name}">Tên sản phẩm</td>
                             <td class="text-right price-column" th:text="${item.product.price != null ? #numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}">0 đ</td>
                             <td class="text-center" th:text="${item.quantity}">0</td>
                             <td class="text-right price-column" th:text="${item.product.price != null ? #numbers.formatDecimal(item.quantity * item.product.price, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}">0 đ</td>
                         </tr>
                         </tbody>
                     </table>
-                    
+
                     <!-- Price breakdown -->
                     <div class="row mt-3">
                         <div class="col-md-6 offset-md-6">
                             <table class="table table-sm">
                                 <tr>
-                                    <td><strong>Shipping Fee:</strong></td>
+                                    <td><strong>Phí vận chuyển:</strong></td>
                                     <td class="text-right price-column" th:text="${order.shippingFee != null ? #numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Discount:</strong></td>
+                                    <td><strong>Giảm giá:</strong></td>
                                     <td class="text-right price-column text-danger" th:text="${order.discountAmount != null ? #numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
                                 </tr>
                                 <tr class="table-active">
-                                    <td><strong>Total:</strong></td>
+                                    <td><strong>Tổng cộng:</strong></td>
                                     <td class="text-right price-column font-weight-bold" th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ' : 'N/A'}"></td>
                                 </tr>
                             </table>
@@ -107,17 +107,17 @@
         <!-- Customer -->
         <div class="col-md-4 mb-3">
             <div class="card">
-                <div class="card-header">Customer</div>
+                <div class="card-header">Khách hàng</div>
                 <div class="card-body">
-                    <p><strong>Name:</strong> <span th:text="${order.account.name}">Customer Name</span></p>
-                    <p><strong>Phone:</strong> <span th:text="${order.account.phone}">Phone Number</span></p>
+                    <p><strong>Họ tên:</strong> <span th:text="${order.account.name}">Tên khách hàng</span></p>
+                    <p><strong>Số điện thoại:</strong> <span th:text="${order.account.phone}">Số điện thoại</span></p>
                     <p th:if="${order.account.profile != null}">
-                        <strong>Address:</strong> 
+                        <strong>Địa chỉ:</strong>
                         <span th:if="${order.account.profile.ward != null}" th:text="${order.account.profile.ward.name}"></span>
                         <span th:if="${order.account.profile.city != null}" th:text="${', ' + order.account.profile.city.name}"></span>
                     </p>
                     <p th:unless="${order.account.profile != null}">
-                        <strong>Address:</strong> <span th:text="${order.deliverAddress}">Delivery Address</span>
+                        <strong>Địa chỉ:</strong> <span th:text="${order.deliverAddress}">Địa chỉ giao hàng</span>
                     </p>
                 </div>
             </div>
@@ -128,22 +128,22 @@
         <!-- Payment -->
         <div class="col-md-8 mb-3">
             <div class="card">
-                <div class="card-header">Payment</div>
+                <div class="card-header">Thanh toán</div>
                 <div class="card-body p-2">
                     <table class="table table-bordered table-sm">
                         <thead class="thead-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>Bank</th>
+                            <th>Mã</th>
+                            <th>Ngày</th>
+                            <th>Trạng thái</th>
+                            <th>Số tiền</th>
+                            <th>Ngân hàng</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${payment != null}">
                             <td th:text="${payment.paymentId}">1</td>
-                            <td th:text="${#temporals.format(payment.createdAt, 'MMM d, yyyy HH:mm:ss')}">---</td>
+                            <td th:text="${#temporals.format(payment.createdAt, 'dd/MM/yyyy HH:mm:ss')}">---</td>
                             <td>
                                 <span style="color: #16bf16" th:class="${'badge ' +
                                                payment.status.name() == 'APPROVED' ? 'badge badge-success' :
@@ -155,7 +155,7 @@
                             <td th:text="${payment.bankCode}">---</td>
                         </tr>
                         <tr th:unless="${payment != null}">
-                            <td colspan="5" class="text-center text-muted">No payment information available.</td>
+                            <td colspan="5" class="text-center text-muted">Không có thông tin thanh toán.</td>
                         </tr>
                         </tbody>
                     </table>
@@ -167,11 +167,11 @@
         <!-- Order Detail -->
         <div class="col-md-4 mb-3">
             <div class="card">
-                <div class="card-header">Order Details</div>
+                <div class="card-header">Chi tiết đơn hàng</div>
                 <div class="card-body">
                     <form method="post" th:action="@{'/seller/orders/update-status/' + ${order.orderId}}">
                         <div class="form-group">
-                            <label>Change Orders Status:</label>
+                            <label>Cập nhật trạng thái đơn:</label>
                             <div class="input-group">
                                 <select class="form-control" name="status">
                                     <option value="PENDING"
@@ -208,17 +208,17 @@
                                 </select>
 
                                 <div th:disabled="${order.status.name() == 'REJECTED'}" class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">Change</button>
+                                    <button type="submit" class="btn btn-primary">Cập nhật</button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <p><strong>Date created:</strong>
-                        <span th:if="${order.orderDate}" th:text="${#temporals.format(order.orderDate, 'MMMM d, yyyy HH:mm:ss')}"></span>
+                    <p><strong>Ngày tạo:</strong>
+                        <span th:if="${order.orderDate}" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm:ss')}"></span>
                         <span th:unless="${order.orderDate}">Chưa cập nhật</span>
                     </p>
-                    <p><strong>Address:</strong> <span th:text="${order.deliverAddress}"></span></p>
-                    <p><strong>Payment Method:</strong> <span th:text="${order.paymentMethod}"></span></p>
+                    <p><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.deliverAddress}"></span></p>
+                    <p><strong>Phương thức thanh toán:</strong> <span th:text="${order.paymentMethod}"></span></p>
                 </div>
             </div>
         </div>

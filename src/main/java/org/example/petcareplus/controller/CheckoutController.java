@@ -202,17 +202,25 @@ public class CheckoutController {
         Payment savedPayment = paymentService.savePaymentFromVnPayReturn(params);
         Long orderId = savedPayment.getOrder().getOrderId();
 
-        // Update order status
-        orderService.updateStatus(orderId, OrderStatus.PROCESSING);
+        String responseCode = params.get("vnp_ResponseCode"); // VNPay trả về mã kết quả
 
-        model.addAttribute("orderId", orderId);
-        model.addAttribute("payment", savedPayment);
-        model.addAttribute("message", savedPayment.getStatus() == PaymentStatus.APPROVED
-                ? "Thanh toán thành công!"
-                : "Thanh toán thất bại!");
-
-        return "order-success";
+        if ("00".equals(responseCode)) {
+            // Thanh toán thành công
+            orderService.updateStatus(orderId, OrderStatus.PROCESSING);
+            model.addAttribute("orderId", orderId);
+            model.addAttribute("payment", savedPayment);
+            model.addAttribute("message", "Thanh toán thành công!");
+            return "order-success";
+        } else {
+            // Thanh toán thất bại hoặc KH quay lại mà không thanh toán
+            orderService.updateStatus(orderId, OrderStatus.CANCELLED);
+            model.addAttribute("orderId", orderId);
+            model.addAttribute("payment", savedPayment);
+            model.addAttribute("message", "Thanh toán thất bại hoặc đã hủy!");
+            return "order-success";
+        }
     }
+
 
     @PostMapping("/apply-coupon")
     @ResponseBody

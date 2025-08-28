@@ -446,9 +446,12 @@
                 if (receiverName.length === 0) {
                     isValid = false;
                     errors.push("Tên người nhận không được để trống.");
-                } else if (receiverName.length < 2) {
+                } else if (receiverName.length < 2 || receiverName.length > 50) {
                     isValid = false;
                     errors.push("Tên người nhận phải có ít nhất 2 ký tự.");
+                } else if (/^\d+$/.test(receiverName)) {
+                    isValid = false;
+                    errors.push("Tên người nhận không được chỉ nhập số.");
                 }
 
                 const receiverPhone = $('input[name="receiverPhone"]').val()?.trim() || "";
@@ -465,19 +468,29 @@
                 if (address.length === 0) {
                     isValid = false;
                     errors.push("Vui lòng nhập số nhà, tên đường hợp lệ.");
+                } else if (/^\d+$/.test(address)) {
+                    isValid = false;
+                    errors.push("Số nhà, tên đường không được chỉ nhập số.");
                 }
 
                 const ward = $('input[name="ward"]').val()?.trim() || "";
                 if (ward.length === 0) {
                     isValid = false;
                     errors.push("Phường/Xã không được để trống.");
+                } else if (/^\d+$/.test(ward)) {
+                    isValid = false;
+                    errors.push("Phường/Xã không được chỉ nhập số.");
                 }
 
                 const city = $('input[name="city"]').val()?.trim() || "";
                 if (city.length === 0) {
                     isValid = false;
                     errors.push("Tỉnh/Thành phố không được để trống.");
+                } else if (/^\d+$/.test(city)) {
+                    isValid = false;
+                    errors.push("Tỉnh/Thành phố không được chỉ nhập số.");
                 }
+
 
             } else {
                 const defaultAddressDetail = $('#defaultAddressDetail').val()?.trim() || "";
