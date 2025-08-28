@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manager dashboard</title>
+    <title>Ca làm việc</title>
     <style>
         .back-button {
             display: inline-block;
@@ -718,15 +718,16 @@
                 currentDate.setDate(dateObj.getDate() + (day - 1));
 
                 // Format date as yyyy-MM-dd to match database
-                const dateStr = currentDate.toISOString().split('T')[0];
+                const dateStr = formatDateISO(currentDate);
+
+                const today = new Date();
+                today.setDate(today.getDate()+1);
+                today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+                const isPast = currentDate < today;
 
                 // Count schedules
                 const scheduleCount = Array.isArray(schedules) ? schedules.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
-                ).length : 0;
-
-                const offCount = Array.isArray(absentRequests) ? absentRequests.filter(r =>
-                    r.workDate === dateStr && r.shiftName === shiftName
                 ).length : 0;
 
                 const schedule = Array.isArray(schedules)
@@ -742,11 +743,6 @@
                     s.workDate === dateStr && s.shiftName === shiftName
                 )[0] || null) : null;
 
-                // Debug log for off request
-                if (thisOffRequest) {
-                    console.log("Off Request found:", thisOffRequest);
-                    console.log("Off Request status:", thisOffRequest.status);
-                }
 
                 const thisChangeRequest = Array.isArray(shiftChangeRequests) ? (shiftChangeRequests.filter(s =>
                     s.workDate === dateStr && s.shiftName === shiftName
@@ -760,7 +756,7 @@
                                      </button>
                                  `;
 
-                     if (thisChangeRequest == null) {
+                     if (thisChangeRequest == null && !isPast) {
                          html += `<a
                                      data-requestId="${thisOffRequest != null ? thisOffRequest.requestId : ''}"
                                      data-scheduleId="${schedule != null ? schedule.scheduleId : ''}"
@@ -774,7 +770,7 @@
                                  </a>`;
                      }
 
-                     if (thisOffRequest == null) {
+                     if (thisOffRequest == null && !isPast) {
                          html += `
                                  <a
                                      data-requestId="${thisChangeRequest != null ? thisChangeRequest.requestId : ''}"
@@ -794,7 +790,9 @@
 
                      html += `</div>`;
                      cell.innerHTML = html;
-                 }
+                 }else {
+                                     cell.innerHTML = "";
+                                 }
             });
         }
     }
@@ -965,8 +963,10 @@
               document.getElementById("ChangeRequestReason").style.backgroundColor = 'white';
 
               // Set minimum date to today to prevent selecting past dates
-              const today = new Date().toISOString().split('T')[0];
-              document.getElementById("ChangeRequestWorkDate").min = today;
+              const nextday= new Date();
+              nextday.setDate(nextday.getDate() + 1);
+              const validateday = formatDateISO(nextday);
+              document.getElementById("ChangeRequestWorkDate").min = validateday;
           }
 
           // Set delete form

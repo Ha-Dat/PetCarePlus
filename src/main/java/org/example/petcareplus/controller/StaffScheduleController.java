@@ -192,7 +192,7 @@ public class StaffScheduleController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Failed to update schedule: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to create request: " + e.getMessage());
         }
     }
 
