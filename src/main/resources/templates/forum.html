@@ -243,6 +243,10 @@
             <div class="w-full">
                 <!-- Posts List -->
                 <div id="posts-container" class="space-y-4">
+                    <!-- Empty state message -->
+                    <div th:if="${#lists.isEmpty(posts)}" class="text-center py-8">
+                        <div class="text-muted-foreground text-lg font-medium">Không có bài viết nào</div>
+                    </div>
                     <!-- Loop Posts -->
                     <div th:each="post : ${posts}" class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
                         <div class="flex">
