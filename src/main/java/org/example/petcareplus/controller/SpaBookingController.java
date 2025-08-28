@@ -95,12 +95,12 @@ public class SpaBookingController {
         Optional<SpaBooking> booking = spaBookingService.findById(id);
         if (booking.isPresent()) {
             SpaBooking spaBooking = booking.get();
-            if (BookingStatus.PENDING.equals(spaBooking.getStatus())){
+            if(BookingStatus.REJECTED.equals(spaBooking.getStatus())){
+                return "lịch đặt đã bị từ chối rồi";
+            } else {
                 spaBooking.setStatus(BookingStatus.REJECTED);
                 spaBookingService.save(spaBooking);
-                return "Từ chối lịch thành công";
-            }else {
-                return "Lịch đã được duyệt!, Không thể từ chối";
+                return "lịch đặt đã được từ chối";
             }
         }
         return "Không tìm thấy lịch";

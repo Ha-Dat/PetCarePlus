@@ -1006,6 +1006,14 @@
                                         <button type="submit" class="dropdown-item disapproved-btn">Không chấp nhận</button>
                                     </form>
 
+                                    <!-- Nút Không Huy-->
+                                    <form th:if="${mode == 'approved'}"
+                                          th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                          method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                        <button type="submit" class="dropdown-item disapproved-btn">Hủy</button>
+                                    </form>
+
                                 </div>
                             </div>
                         </td>
