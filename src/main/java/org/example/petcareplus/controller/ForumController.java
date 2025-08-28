@@ -64,6 +64,7 @@ public class ForumController {
     public List<PostDTO> getMorePosts(@RequestParam int page,
                                       @RequestParam int size,
                                       @RequestParam(required = false) String keyword,
+                                      @RequestParam(defaultValue = "default") String sort,
                                       HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
         List<Post> allPosts = forumService.findAll();
@@ -74,10 +75,22 @@ public class ForumController {
                     .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
                     .toList();
         }
-        List<PostDTO> sortedPosts = allPosts.stream()
-                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
-                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
-                .toList();
+        
+        List<PostDTO> sortedPosts;
+        if ("oldest".equals(sort)) {
+            // Sắp xếp theo thời gian tạo cũ nhất trước
+            sortedPosts = allPosts.stream()
+                    .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
+                    .sorted(Comparator.comparing(PostDTO::getCreatedAt))
+                    .toList();
+        } else {
+            // Mặc định sắp xếp theo thời gian tạo mới nhất trước
+            sortedPosts = allPosts.stream()
+                    .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
+                    .sorted(Comparator.comparing(PostDTO::getCreatedAt).reversed())
+                    .toList();
+        }
+        
         int fromIndex = page * size;
         int toIndex = Math.min(fromIndex + size, sortedPosts.size());
         if (fromIndex >= sortedPosts.size()) {
@@ -330,7 +343,7 @@ public class ForumController {
 
         List<PostDTO> sortedPosts = allPosts.stream()
                 .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
-                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
+                .sorted(Comparator.comparing(PostDTO::getCreatedAt).reversed())
                 .toList();
 
         // Tự tính chỉ số trang
@@ -356,6 +369,7 @@ public class ForumController {
     public List<PostDTO> getMoreMyPosts(@RequestParam int page,
                                       @RequestParam int size,
                                       @RequestParam(required = false) String keyword,
+                                      @RequestParam(defaultValue = "newest") String sort,
                                       @PathVariable Long accountId,
                                       HttpSession session) {
         Account account = (Account) session.getAttribute("loggedInUser");
@@ -367,10 +381,21 @@ public class ForumController {
                     .filter(p -> p.getTitle().toLowerCase().contains(lowerKeyword))
                     .toList();
         }
-        List<PostDTO> sortedPosts = allPosts.stream()
-                .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
-                .sorted(Comparator.comparing(PostDTO::getRating, Comparator.nullsLast(Integer::compareTo)).reversed())
-                .toList();
+        
+        List<PostDTO> sortedPosts;
+        if ("oldest".equals(sort)) {
+            // Sắp xếp theo thời gian tạo cũ nhất trước
+            sortedPosts = allPosts.stream()
+                    .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
+                    .sorted(Comparator.comparing(PostDTO::getCreatedAt))
+                    .toList();
+        } else {
+            // Mặc định sắp xếp theo thời gian tạo mới nhất trước
+            sortedPosts = allPosts.stream()
+                    .map(post -> new PostDTO(post, account != null ? account.getAccountId() : null))
+                    .sorted(Comparator.comparing(PostDTO::getCreatedAt).reversed())
+                    .toList();
+        }
 
         int fromIndex = page * size;
         int toIndex = Math.min(fromIndex + size, sortedPosts.size());

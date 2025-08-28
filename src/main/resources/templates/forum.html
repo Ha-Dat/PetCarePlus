@@ -191,6 +191,7 @@
                                     </svg>
                                     Trang chủ
                                 </a>
+                                
                             </nav>
                         </div>
                     </div>
@@ -238,15 +239,20 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 max-w-2xl">
-            <div class="w-full">
-                <!-- Posts List -->
-                <div id="posts-container" class="space-y-4">
-                    <!-- Empty state message -->
-                    <div th:if="${#lists.isEmpty(posts)}" class="text-center py-8">
-                        <div class="text-muted-foreground text-lg font-medium">Không có bài viết nào</div>
-                    </div>
+                 <!-- Main Content -->
+         <div class="flex-1 max-w-2xl">
+             <div class="w-full">
+                                                      <!-- Sort Buttons -->
+                   <div class="flex justify-start mb-4 space-x-2">
+                       <button id="default-btn" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 border bg-primary text-primary-foreground shadow-sm">
+                          <span>Phổ biến</span>
+                      </button>
+                       <button id="sort-btn" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 border opacity-60">
+                          <span>Mới nhất</span>
+                      </button>
+                  </div>
+                 <!-- Posts List -->
+                 <div id="posts-container" class="space-y-4">
                     <!-- Loop Posts -->
                     <div th:each="post : ${posts}" class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
                         <div class="flex">
@@ -429,14 +435,191 @@
 
     let currentPage = 0;
     const pageSize = 5;
+    let currentSort = 'newest'; // Always sort by newest when on this page
 
     const loggedInUserId = /*[[${session.loggedInUser != null ? session.loggedInUser.accountId : 'null'}]]*/ null;
+
+    // Default button functionality - redirect to /forum
+    document.getElementById("default-btn").addEventListener("click", function () {
+        // Redirect to /forum to reset to default state
+        window.location.href = '/forum';
+    });
+
+    // Sort button functionality - refresh newest posts
+    document.getElementById("sort-btn").addEventListener("click", function () {
+        // Update button states - highlight newest button
+        document.getElementById("default-btn").className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 border opacity-60";
+        document.getElementById("sort-btn").className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 border bg-primary text-primary-foreground shadow-sm";
+        
+        // Reset page and reload posts
+        currentPage = 0;
+        const container = document.getElementById("posts-container");
+        container.innerHTML = '';
+        
+        const keyword = document.getElementById("searchInput").value;
+        loadPosts(keyword);
+    });
+
+    function loadPosts(keyword) {
+        const sortParam = currentSort === 'newest' ? 'newest' : 'default';
+        fetch(`/api/posts?page=${currentPage}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}&sort=${sortParam}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    // Show empty state message
+                    const container = document.getElementById("posts-container");
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="text-muted-foreground text-lg font-medium">Không có bài viết nào</div>
+                            <p class="text-sm text-muted-foreground mt-2">Hãy là người đầu tiên chia sẻ bài viết!</p>
+                        </div>
+                    `;
+                    document.getElementById("load-more-btn").style.display = "none";
+                    return;
+                }
+
+                const container = document.getElementById("posts-container");
+                
+                // Clear empty state message if it exists
+                const emptyState = container.querySelector('.text-center');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+
+                data.forEach(post => {
+                    const isOwner = loggedInUserId !== null && loggedInUserId === post.accountId;
+
+                    const createdAt = new Date(post.createdAt);
+                    const formattedCreatedAt = createdAt.toLocaleString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    });
+
+                    // Tạo HTML cho ảnh và video
+                    let mediaHtml = '';
+                    if (post.medias && Array.isArray(post.medias)) {
+                        post.medias.forEach(media => {
+                            if (media.mediaCategory === 'POST_IMAGE') {
+                                mediaHtml += `
+                                <div class="mb-3 rounded-md overflow-hidden max-h-96 relative">
+                                    <img src="${media.url}" alt="" class="w-full h-auto object-cover" />
+                                </div>`;
+                            } else if (media.mediaCategory === 'POST_VIDEO') {
+                                mediaHtml += `
+                                <div class="mb-3 rounded-md overflow-hidden relative">
+                                    <video controls class="w-full h-auto object-cover">
+                                        <source src="${media.url}" type="video/mp4" />
+                                        Trình duyệt của bạn không hỗ trợ video.
+                                    </video>
+                                </div>`;
+                            }
+                        });
+                    }
+
+                    const postHtml = `
+<div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full hover:bg-accent/50 transition-colors">
+    <div class="flex">
+        <!-- Voting Section -->
+        <div class="flex flex-col items-center p-2 space-y-1 min-w-[40px]">
+            <!-- upvote -->
+            <a href="/forum/${post.postId}/rating?rating=UPVOTE"
+               class="vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ${post.userRating === 'UPVOTE' ? 'bg-primary/10 text-primary voted' : 'hover:bg-primary/10 hover:text-primary'}">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m5 12 7-7 7 7" />
+                    <path d="M12 19V5" />
+                </svg>
+            </a>
+            <span class="text-xs font-medium text-muted-foreground">${post.rating}</span>
+            <!-- downvote -->
+            <a href="/forum/${post.postId}/rating?rating=DOWNVOTE"
+               class="vote-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6 ${post.userRating === 'DOWNVOTE' ? 'bg-destructive/10 text-destructive voted' : 'hover:bg-destructive/10 hover:text-destructive'}">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14" />
+                    <path d="m19 12-7 7-7-7" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- Content Section -->
+        <div class="flex-1 p-3">
+            <!-- Post Meta -->
+            <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+                <span>Đăng bởi <u>${post.accountName || 'Ẩn danh'}</u></span>
+                <span>•</span>
+                <span>${formattedCreatedAt}</span>
+            </div>
+
+            <!-- Post Title -->
+            <a href="/post-detail/${post.postId}">
+                <h3 class="text-sm font-medium leading-tight mb-2 hover:text-primary cursor-pointer"
+                    title="${post.title}">
+                    ${post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title}
+                </h3>
+            </a>
+
+            ${mediaHtml}
+
+            <!-- Post Content -->
+            <p class="text-sm text-muted-foreground mb-3 description-text"
+               title="${post.description}">
+               ${post.description}
+            </p>
+
+            <!-- Post Actions -->
+            <div class="flex items-center space-x-2">
+                <!-- Bình luận -->
+                <a href="/post-detail/${post.postId}"
+                   class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                    </svg>
+                    <span>Bình luận</span>
+                </a>
+
+                ${isOwner ? `
+                <!-- Chỉ hiện nếu là chủ bài viết -->
+                <a href="/update-post/${post.postId}"
+                   class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    <span>Sửa</span>
+                </a>
+
+                <a href="/delete-post/${post.postId}"
+                   onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
+                   class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 py-2 text-xs">
+                    <svg class="h-3 w-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-2 14H7L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M5 6l1-3h12l1 3"></path>
+                    </svg>
+                    <span>Xóa</span>
+                </a>
+                ` : ''}
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+                    container.insertAdjacentHTML('beforeend', postHtml);
+                });
+            });
+    }
 
     document.getElementById("load-more-btn").addEventListener("click", function () {
         currentPage++;
 
         const keyword = document.getElementById("searchInput").value;
-        fetch(`/api/posts?page=${currentPage}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}`)
+        const sortParam = currentSort === 'newest' ? 'newest' : 'default';
+        fetch(`/api/posts?page=${currentPage}&size=${pageSize}&keyword=${encodeURIComponent(keyword)}&sort=${sortParam}`)
             .then(res => res.json())
             .then(data => {
                 if (data.length === 0) {
