@@ -109,11 +109,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-                            <a th:href="@{/profile}" class="active">Hồ Sơ</a>
-                <a th:href="@{/change-password}">Đổi mật khẩu</a>
-                <a th:href="@{/pet-profile}">Hồ Sơ thú cưng</a>
-                <a th:href="@{/list-order}">Đơn mua</a>
-                <a th:href="@{/my-schedule}">Lịch</a>
+            <a th:href="@{/profile}" class="active">Hồ Sơ</a>
+            <a th:href="@{/change-password}">Đổi mật khẩu</a>
+            <a th:href="@{/pet-profile}">Hồ Sơ thú cưng</a>
+            <a th:href="@{/list-order}">Đơn mua</a>
+            <a th:href="@{/my-schedule}">Lịch</a>
         </ul>
     </div>
 
@@ -133,6 +133,7 @@
                     <div class="col-sm-9">
                         <input type="text" th:field="*{name}" class="form-control"
                                th:readonly="${!edit}" />
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
                     </div>
                 </div>
 

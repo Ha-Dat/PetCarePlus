@@ -97,8 +97,15 @@ public class ProfileController {
         if (account == null) return "redirect:/login";
 
         if (bindingResult.hasErrors()) {
+            // Load lại dữ liệu cần thiết cho form edit
+            List<Category> parentCategories = categoryService.getParentCategory();
+            List<City> cities = locationService.getAllCities();
+            List<Ward> wards = locationService.getWardsByCityId(profileDTO.getCityId());
+            
             model.addAttribute("edit", true);
-            model.addAttribute("categories", categoryService.getParentCategory());
+            model.addAttribute("categories", parentCategories);
+            model.addAttribute("cities", cities);
+            model.addAttribute("wards", wards);
             return "profile";
         }
         profileService.updateProfile(profileDTO, account.getAccountId());
