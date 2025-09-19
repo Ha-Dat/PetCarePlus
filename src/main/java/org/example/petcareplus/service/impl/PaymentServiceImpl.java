@@ -113,4 +113,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         return paymentRepository.save(payment);
     }
+
+    @Override
+    public Payment save(Payment payment) {
+        return paymentRepository.save(payment);
+    }
 }

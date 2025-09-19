@@ -180,7 +180,20 @@ public class CheckoutController {
             return "redirect:" + vnpayUrl;
         }
 
+        // For COD orders, create a PENDING payment record
+        Payment codPayment = new Payment();
+        codPayment.setOrder(order);
+        codPayment.setPaymentMethod("COD");
+        codPayment.setAmount(request.getTotalPrice());
+        codPayment.setStatus(PaymentStatus.PENDING);
+        codPayment.setPaymentDate(LocalDateTime.now());
+        codPayment.setCreatedAt(LocalDateTime.now());
+        codPayment.setUpdatedAt(LocalDateTime.now());
+        paymentService.save(codPayment);
+
         model.addAttribute("orderId", orderId);
+        model.addAttribute("payment", codPayment);
+        model.addAttribute("message", "Đơn hàng của bạn đã được tạo thành công và đang chờ xử lý.");
 
         // Clear cart
         session.removeAttribute("cart");

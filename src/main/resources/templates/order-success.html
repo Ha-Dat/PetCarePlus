@@ -17,7 +17,7 @@
     <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
 
         <!-- Header success -->
-        <div th:if="${payment != null and payment.status.name() == 'APPROVED'}"
+        <div th:if="${payment == null or payment.status.name() == 'PENDING' or payment.status.name() == 'APPROVED'}"
              class="bg-green-100 p-6 border-b border-green-200">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Header fail -->
-        <div th:unless="${payment != null and payment.status.name() == 'APPROVED'}"
+        <div th:if="${payment != null and payment.status.name() == 'CANCELLED'}"
              class="bg-red-100 p-6 border-b border-red-200">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -55,13 +55,16 @@
                 <p class="text-gray-600" th:if="${payment != null and payment.status.name() == 'APPROVED'}">
                     Đơn hàng của bạn đã được nhận và đang được xử lý.
                 </p>
-                <p class="text-gray-600" th:unless="${payment != null and payment.status.name() == 'APPROVED'}">
+                <p class="text-gray-600" th:if="${payment == null or payment.status.name() == 'PENDING'}">
+                    Đơn hàng của bạn đã được tạo thành công và đang chờ xử lý.
+                </p>
+                <p class="text-gray-600" th:if="${payment != null and payment.status.name() == 'CANCELLED'}">
                     Đơn hàng chưa được thanh toán thành công. Vui lòng thử lại hoặc chọn phương thức khác.
                 </p>
             </div>
 
             <!-- Gợi ý tiếp theo nếu success -->
-            <div th:if="${payment != null and payment.status.name() == 'APPROVED'}"
+            <div th:if="${payment == null or payment.status.name() == 'PENDING' or payment.status.name() == 'APPROVED'}"
                  class="bg-gray-50 p-4 rounded-md mb-6">
                 <h4 class="font-medium text-gray-900 mb-3">Tiếp theo là gì?</h4>
                 <ul class="space-y-2">

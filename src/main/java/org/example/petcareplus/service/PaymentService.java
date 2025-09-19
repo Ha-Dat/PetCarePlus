@@ -9,4 +9,6 @@ public interface PaymentService {
     String createPaymentUrl(BigDecimal amount, Long orderId) throws Exception;
 
     Payment savePaymentFromVnPayReturn(Map<String, String> params);
+    
+    Payment save(Payment payment);
 }
