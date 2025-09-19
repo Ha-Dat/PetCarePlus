@@ -160,6 +160,7 @@
                                         th:selected="${c.cityId == profileDTO.cityId}">
                                 </option>
                             </select>
+                            <div th:if="${#fields.hasErrors('cityId')}" th:errors="*{cityId}" class="text-danger"></div>
                         </th:block>
                         <th:block th:unless="${edit}">
                             <!-- Khi edit=false -->
@@ -182,6 +183,7 @@
                                         th:selected="${w.wardId == profileDTO.wardId}">
                                 </option>
                             </select>
+                            <div th:if="${#fields.hasErrors('wardId')}" th:errors="*{wardId}" class="text-danger"></div>
                         </th:block>
                         <th:block th:unless="${edit}">
                             <!-- Khi edit=false -->
@@ -224,7 +226,7 @@
 
             wardSelect.innerHTML = '<option value="">-- Đang tải... --</option>';
 
-            if (!cityId) {
+            if (!cityId || cityId === '') {
                 wardSelect.innerHTML = '<option value="">-- Phường/xã --</option>';
                 return;
             }
