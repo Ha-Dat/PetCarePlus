@@ -538,13 +538,6 @@
         <div class="sidebar-container">
             <form method="get" th:action="@{/view-product}">
                 <aside class="sidebar">
-                    <h4>Tìm kiếm sản phẩm</h4>
-                    <div style="margin-bottom: 18px;">
-                        <input type="text" name="searchKeyword" placeholder="Nhập tên sản phẩm..." 
-                               th:value="${param.searchKeyword != null ? param.searchKeyword[0] : ''}"
-                               style="width: 90%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
-                    </div>
-
                     <h4>Loại</h4>
                     <ul class="checkbox-list">
                         <li th:each="cate : ${ {'Thức ăn','Đồ chơi','Vòng / Dây xích','Chuồng / đệm','Dụng cụ vệ sinh','Thuốc / Thực phẩm chức năng','Dụng cụ ăn uống','Khác'} }">
