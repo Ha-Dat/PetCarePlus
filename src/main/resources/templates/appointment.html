@@ -924,7 +924,7 @@
     <main class="main-content">
         <h1 class="page-title" th:if="${mode == 'pending'}">Lịch khám chờ duyệt</h1>
         <h1 class="page-title" th:if="${mode == 'approved'}">Lịch khám đã duyệt</h1>
-        <h1 class="page-title" th:if="${mode == 'completed'}">Lịch khám đã hoàn tích</h1>
+        <h1 class="page-title" th:if="${mode == 'completed'}">Lịch khám đã hoàn thành</h1>
         <h1 class="page-title" th:if="${mode == 'history'}">Lịch khám từ chối</h1>
         <div class="content">
             <!-- Table Container -->
@@ -1004,6 +1004,14 @@
                                           method="post"
                                           onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
                                         <button type="submit" class="dropdown-item disapproved-btn">Không chấp nhận</button>
+                                    </form>
+
+                                    <!-- Nút Không Huy-->
+                                    <form th:if="${mode == 'approved'}"
+                                          th:action="@{/vet/appointment/disapprove/{id}(id=${appointment.appointmentBookingId})}"
+                                          method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn từ chối cuộc hẹn này không?')">
+                                        <button type="submit" class="dropdown-item disapproved-btn">Hủy</button>
                                     </form>
 
                                 </div>

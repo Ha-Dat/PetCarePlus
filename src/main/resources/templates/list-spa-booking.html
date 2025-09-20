@@ -506,7 +506,7 @@
                                         onclick="acceptBooking(this)">
                                     Duyệt
                                 </button>
-                                <button th:if="${spaBooking.status.name() == 'PENDING'}"
+                                <button th:if="${spaBooking.status.name() == 'PENDING' or spaBooking.status.name() == 'ACCEPTED'}"
                                         class="dropdown-item reject-btn"
                                         th:data-id="${spaBooking.spaBookingId}"
                                         onclick="rejectBooking(this)">

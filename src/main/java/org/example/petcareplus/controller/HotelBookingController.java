@@ -96,14 +96,12 @@ public class HotelBookingController {
         Optional<HotelBooking> bookingOpt = hotelBookingService.findById(id);
         if (bookingOpt.isPresent()) {
             HotelBooking booking = bookingOpt.get();
-            if (BookingStatus.PENDING.equals(booking.getStatus())) {
+            if(BookingStatus.REJECTED.equals(booking.getStatus())){
+                return "lịch đặt đã bị từ chối rồi";
+            } else {
                 booking.setStatus(BookingStatus.REJECTED);
                 hotelBookingService.save(booking);
                 return "lịch đặt đã được từ chối";
-            } else if(BookingStatus.REJECTED.equals(booking.getStatus())){
-                return "lịch đặt đã bị từ chối rồi";
-            } else {
-                return "lịch đặt được duyệt rồi";
             }
         }
         return "Not found";
